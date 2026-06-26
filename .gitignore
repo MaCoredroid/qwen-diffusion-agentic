@@ -8,6 +8,7 @@ __pycache__/
 .ruff_cache/
 
 # Model weights, adapters, datasets, and generated outputs
+data/
 models/
 runs/
 logs/

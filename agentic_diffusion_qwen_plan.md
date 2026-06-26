@@ -24,8 +24,8 @@ Fast-dLLM v2 is the scaffold. The actual target is a dLLM that can:
 - VRAM: about 32 GB
 - Best role:
   - primary fast iteration machine
-  - 1.5B/4B training and eval
-  - LoRA/QLoRA pilots
+  - SGLang serving/eval for quantized Qwen3.6-27B teacher/reference at reduced context
+  - Qwen3.5-9B LoRA/QLoRA pilots
   - sampler/harness development
   - NVFP4/FP8 serving experiments
 - Weak role:
@@ -96,18 +96,74 @@ modes:
 - code edits that do not apply
 - output that looks fluent but violates schema
 
-## Phase 1: Agentic Eval Gate on 1.5B
+## Phase 1: SGLang Teacher / Reference Serving
 
-Goal: build fast evals that expose whether a diffusion model is even viable for
-agentic workflows.
+Goal: put a strong Qwen3.6-family AR model behind an OpenAI-compatible local
+endpoint so it can act as:
 
-Models to compare:
+- label generator
+- repair/verifier for tool-call data
+- AR quality baseline
+- logit/behavior teacher for later distillation
+- reference implementation for Qwen tool-call formatting
 
-- local base, no LoRA
-- best local LoRA checkpoint, currently `lora_9500`
-- final local LoRA, `lora_final`
-- released `Efficient-Large-Model/Fast_dLLM_v2_1.5B`
-- optional AR `Qwen2.5-1.5B-Instruct` baseline with normal decoding
+Preferred server stack:
+
+- SGLang first. Local notes and upstream support suggest Qwen3.6 support is
+  better there than in our current vLLM path.
+- Current local `.venv-sglang` is `sglang==0.5.9`; Qwen3.6 serving should use
+  `sglang>=0.5.10` before serious 27B work.
+
+Teacher selection policy:
+
+Use **Qwen3.6-27B** as the teacher/reference for the eval/data loop. The teacher
+should be served in whichever Qwen3.6-27B precision/profile gives the best
+quality-throughput-memory tradeoff on the RTX 5090:
+
+- FP8 first if it fits with reduced context and acceptable cache headroom.
+- NVFP4/Q4 fallback is acceptable and likely practical for local 5090 serving.
+- MTP/speculative decoding should be enabled once validated for this model/server
+  path.
+- Fast attention/GEMM backends should be used when stable on Blackwell.
+- GX10/GB10 is the backup for capacity-heavy checks, but the preferred teacher
+  loop should run on the 5090 if quality and speed are acceptable.
+
+Teacher profile priority:
+
+1. `Qwen/Qwen3.6-27B-FP8` on the RTX 5090 with reduced context.
+2. Qwen3.6-27B NVFP4 / Q4 variant if FP8 is too tight.
+3. Same Qwen3.6-27B profile with MTP/speculative and fast attention enabled.
+4. GX10/GB10 for capacity-heavy 27B checks if local 5090 serving is unstable.
+
+Speed knobs to expose:
+
+- MTP/speculative decoding when supported by the model/server path.
+- `--attention-backend fa3` or another proven fast backend on Blackwell.
+- `--fp8-gemm-backend auto` or a backend validated on 5090.
+- `--fp4-gemm-backend auto` / NVFP4 backend for Q4 fallback.
+- reduced `--context-length` first, then increase only after stable load.
+- constrained JSON/tool-call parser options for agentic evals.
+- small `max-running-requests` and conservative memory fraction until stable.
+
+Exit gate:
+
+- SGLang serves Qwen3.6-27B-class teacher locally or on GX10.
+- A simple OpenAI-compatible chat request succeeds.
+- Tool-call formatting works with the Qwen parser/template.
+- Throughput and VRAM/memory use are recorded.
+
+## Phase 2: Agentic Eval and Data Loop on Qwen3.5/3.6
+
+Goal: build eval/data plumbing around the actual target family, not only the
+Qwen2.5/Fast-dLLM lab model.
+
+Primary model set:
+
+- SGLang-served Qwen3.6-27B AR teacher/reference.
+- Qwen3.5-9B as first real GDN diffusion target.
+- Qwen3.5-4B only as an architecture/debug smoke target.
+- Local Fast-dLLM/Qwen2.5-1.5B remains a cheap sampler/objective lab, not the
+  main target.
 
 Eval set:
 
@@ -145,29 +201,46 @@ Eval set:
 
 Exit gate:
 
-- released Fast-dLLM 1.5B and/or local LoRA can complete strict JSON/tool-call
-  tasks above a minimal threshold
-- failures are categorized enough to train against
+- Qwen3.6 teacher/reference passes the local tool-call eval and can label/repair
+  public examples.
+- Qwen3.5-9B AR baseline is measured on the same eval.
+- Failure modes are categorized enough to train against.
 
-## Phase 2: Agentic/Code Data Instead of Alpaca
+## Phase 3: Agentic/Code Data Instead of Alpaca
 
 Goal: train on the behavior we actually need.
 
-Candidate data:
+Public candidate data:
 
-- function-call / tool-call conversations
+- Hermes function-calling v1: open, schema/tool-call examples.
+- Glaive function-calling v2: open, mixed tool/no-tool examples.
+- ToolACE: open, multi-turn tool-use traces.
+- ToolBench / ToolLLM: larger real-API tool-use trajectories.
+- xLAM function-calling 60K: useful, but gated in the current HF environment;
+  use only when authenticated access is available.
+- BFCL: evaluation gate, not a training set.
+
+Generated/teacher data:
+
+- Qwen3.6 teacher rewrites public examples into Qwen tool-call chat format.
+- Qwen3.6 teacher repairs invalid JSON/tool calls.
+- Qwen3.6 teacher generates “think / tool / observation / final” traces where
+  allowed by the target format.
+- Hard negatives from failed local eval cases.
+
+Data requirements:
+
 - JSON-schema constrained outputs
-- coding instruction data
+- function-call / tool-call conversations
+- coding instruction data tied to tools
 - repo-edit traces
 - patch generation examples
-- “think then tool call” traces generated by a strong AR teacher
-- curated failure cases from Phase 1
 - some general instruction data to prevent narrow collapse
 
 Do not rely on Alpaca as the main corpus. Alpaca is useful only as a plumbing
 smoke test.
 
-## Phase 3: Better Objective
+## Phase 4: Better Objective
 
 Fast-dLLM’s core recipe is AR initialization plus masked-token CE on ground-truth
 tokens. For agentic behavior, we should test adding explicit AR-teacher
@@ -187,7 +260,7 @@ Hypothesis:
 Agentic tasks need symbolic precision and causal ordering. Ground-truth CE alone
 may not preserve enough AR behavior after block diffusion conversion.
 
-## Phase 4: Block-Size Curriculum
+## Phase 5: Block-Size Curriculum
 
 Goal: avoid jumping straight into large-block denoising that smears action order.
 
@@ -207,22 +280,25 @@ Track metrics per block size:
 - denoising steps
 - tokens/s
 
-## Phase 5: Move from Qwen2.5 to GDN Qwen3.5
+## Phase 6: GDN Qwen3.5 / Qwen3.6 Target Sequence
 
-Only move after 1.5B proves the eval/training loop.
+The main target loop should move to Qwen3.5/3.6 as soon as the eval/data plumbing
+exists. The 1.5B path remains useful for cheap sampler debugging, but it should
+not dominate the roadmap.
 
 Target sequence:
 
-1. Qwen2.5-1.5B / Fast-dLLM lab model
-2. Qwen3.5-4B GDN proxy
-3. Qwen3.5-9B
-4. Qwen3.6-27B
+1. Qwen3.6-27B AR teacher/reference via SGLang.
+2. Qwen3.5-9B AR baseline and first real GDN LoRA/QLoRA target.
+3. Qwen3.5-4B only when a cheap GDN architecture smoke test is needed.
+4. Qwen3.6-27B diffusion LoRA/selective adapter after the 9B loop proves out.
 
-Why Qwen3.5-4B next:
+Why 9B before 4B:
 
-- same Gated DeltaNet/full-attention hybrid family as the 27B target
-- small enough to iterate
-- exercises the novel architectural issue absent from Qwen2.5
+- 4B is too weak to be a serious teacher or quality target.
+- 9B is still plausibly trainable with LoRA/QLoRA on the available hardware.
+- 9B exercises the same GDN/full-attention hybrid family as the 27B target.
+- 9B quality is more likely to make agentic eval trends meaningful.
 
 GDN starting strategy:
 
@@ -235,7 +311,7 @@ GDN starting strategy:
   - add backward within-block GDN scan
   - more expensive and more implementation risk
 
-## Phase 6: Serving and Quantization
+## Phase 7: Serving and Quantization
 
 Training format:
 
@@ -244,8 +320,8 @@ Training format:
 
 Serving/export:
 
-- use FP8 as reference/quality format when memory allows
-- use NVFP4/Q4 as the practical 5090 deployment target
+- use SGLang FP8 as reference/quality format when memory allows
+- use NVFP4/Q4 as the practical 5090 deployment fallback
 - expose generation knobs:
   - block size
   - denoising steps
@@ -256,15 +332,21 @@ Serving/export:
 
 ## Immediate Next Goal
 
-Build the agentic eval harness on top of the current 1.5B setup.
+Build the Qwen3.6 teacher serving path and public-data agentic eval/data harness.
 
 Minimum first version:
 
+- SGLang launch script for Qwen3.6-27B FP8 teacher.
+- NVFP4/Q4 fallback launch path.
+- speed knobs exposed: MTP/speculative options, attention backend, GEMM backend,
+  reduced context, memory fraction, tool parser.
+- data prep script for Hermes/Glaive/ToolACE, with xLAM optional when HF access
+  is available.
 - 20 strict JSON/tool-call prompts
 - 20 function-choice prompts
 - 10 two-step tool traces
 - 10 small code-generation tasks
-- same model set as the checkpoint sweep
+- model set: Qwen3.6 teacher, Qwen3.5-9B AR baseline, local diffusion baselines
 - summary with:
   - schema pass rate
   - correct tool rate
@@ -283,3 +365,5 @@ Then use the failure cases to define the next training corpus and objective.
 - Can the sampler force structural tokens more safely without ruining speed?
 - Is the released Fast-dLLM 1.5B good enough on tool calls to serve as a local
   diffusion baseline, or do we need to compare with DiffusionGemma directly?
+- Does SGLang Qwen3.6 FP8 fit comfortably enough on the 5090, or should NVFP4 be
+  the default local teacher path?

@@ -10,12 +10,14 @@ datasets, logs, and generated eval outputs are kept out of git.
 
 ## Current Focus
 
-- Reproduce Fast-dLLM v2 mechanics on a small Qwen2.5 1.5B baseline.
-- Evaluate diffusion decoding with GSM8K, IFEval, and checkpoint sweeps.
+- Serve a Qwen3.6-27B teacher/reference through SGLang, using FP8 first and
+  NVFP4/Q4 when that is the practical 5090 path.
+- Build a public tool-call data/eval loop around Hermes, Glaive, ToolACE, and
+  optional gated xLAM.
 - Build agentic/tool-call evals that catch JSON/schema, tool-choice, loop, stop,
   and code-edit failures.
-- Use the small model as a fast lab before moving to Qwen3.5 GDN models and,
-  eventually, Qwen3.6 27B-class experiments.
+- Keep the small Fast-dLLM/Qwen2.5 1.5B model as a cheap sampler/objective lab,
+  while moving the real target loop toward Qwen3.5/3.6-family models.
 
 ## Hardware Context
 
@@ -37,6 +39,13 @@ datasets, logs, and generated eval outputs are kept out of git.
 
 ## Scripts
 
+- `scripts/serve_sglang_qwen36_teacher.sh`: launches a Qwen3.6-27B
+  teacher/reference through SGLang with FP8 and NVFP4/Q4 profiles plus exposed
+  attention, GEMM, memory, and speculative/MTP knobs.
+- `scripts/prepare_toolcall_seed_data.py`: builds normalized seed JSONL from
+  public tool-call datasets.
+- `scripts/eval_toolcall_jsonl.py`: scores normalized JSONL for assistant
+  turns, strict JSON tool calls, and known-tool matches.
 - `scripts/run_fastdllm_checkpoint_sweep.py`: limited `lm-eval` checkpoint sweep
   over local base, LoRA checkpoints, and released Fast-dLLM reference.
 - `scripts/eval_fastdllm_lora_gsm8k_mini.py`: small direct GSM8K smoke eval.
