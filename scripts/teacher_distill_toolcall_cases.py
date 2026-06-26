@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import re
 import time
 import urllib.error
 import urllib.request
@@ -15,6 +16,10 @@ DEFAULT_OUT = ROOT / "data/toolcall_eval/synthetic_onecall_teacher.jsonl"
 
 
 def parse_tool_names(text):
+    function_tag_names = re.findall(r"<function=([^>\s]+)>", text)
+    if function_tag_names:
+        return function_tag_names, 0
+
     names = []
     invalid = 0
     for obj in extract_json_objects(text):
@@ -50,7 +55,7 @@ def post_json(url, payload, timeout):
         return json.loads(resp.read().decode("utf-8"))
 
 
-def ask_teacher(case, endpoint, model, timeout, temperature):
+def ask_teacher(case, endpoint, model, timeout, temperature, enable_thinking):
     messages = list(case["prompt_messages"])
     messages.append(
         {
@@ -70,10 +75,25 @@ def ask_teacher(case, endpoint, model, timeout, temperature):
         "tools": case.get("tools") or None,
         "temperature": temperature,
         "max_tokens": 256,
+        "chat_template_kwargs": {"enable_thinking": enable_thinking},
     }
     payload = {key: value for key, value in payload.items() if value is not None}
     response = post_json(endpoint.rstrip("/") + "/chat/completions", payload, timeout)
-    return response["choices"][0]["message"].get("content", "")
+    message = response["choices"][0]["message"]
+    tool_calls = message.get("tool_calls") or []
+    if tool_calls:
+        rendered = []
+        for call in tool_calls:
+            function = call.get("function") or {}
+            name = function.get("name")
+            arguments = function.get("arguments") or "{}"
+            rendered.append(
+                "<tool_call>\n"
+                + json.dumps({"name": name, "arguments": arguments}, ensure_ascii=False)
+                + "\n</tool_call>"
+            )
+        return "\n".join(rendered)
+    return message.get("content", "")
 
 
 def main():
@@ -85,6 +105,7 @@ def main():
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--timeout", type=float, default=30.0)
     parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--enable-thinking", action="store_true")
     args = parser.parse_args()
 
     cases = load_cases(args.input_jsonl, args.limit)
@@ -108,7 +129,14 @@ def main():
                 "available_tool_names": case.get("available_tool_names") or [],
             }
             try:
-                text = ask_teacher(case, args.endpoint, args.model, args.timeout, args.temperature)
+                text = ask_teacher(
+                    case,
+                    args.endpoint,
+                    args.model,
+                    args.timeout,
+                    args.temperature,
+                    args.enable_thinking,
+                )
                 names, invalid = parse_tool_names(text)
                 gold = set(row["gold_tool_names"])
                 called = set(names)

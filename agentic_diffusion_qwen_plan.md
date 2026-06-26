@@ -83,6 +83,8 @@ We have:
   `/home/mark/qwen_diffusion/scripts/run_fastdllm_checkpoint_sweep.py`
 - DiffusionGemma / agentic dLLM research notes:
   `/home/mark/qwen_diffusion/diffusiongemma_agentic_research_notes.md`
+- Local Qwen3.6-27B NVFP4 teacher serving result:
+  `/home/mark/qwen_diffusion/qwen36_teacher_serving_result.md`
 
 The Alpaca LoRA is functional but far behind the released Fast-dLLM v2 1.5B
 checkpoint. That is expected; it is a plumbing proof, not the final training
@@ -157,6 +159,17 @@ Exit gate:
 - A simple OpenAI-compatible chat request succeeds.
 - Tool-call formatting works with the Qwen parser/template.
 - Throughput and VRAM/memory use are recorded.
+
+Current result:
+
+- Local RTX 5090 NVFP4 serving works with SGLang `0.5.14`, Triton attention,
+  CUTLASS FP4 GEMM, 2k context, one running request, and CUDA graph disabled.
+- The endpoint returns `/v1/models` and chat completions when Qwen thinking is
+  disabled through `chat_template_kwargs.enable_thinking=false`.
+- The teacher gets 48/48 exact tool-name selection on the synthetic one-call
+  held-out probe.
+- The speed profile is not final; FlashInfer, CUDA graph, and MTP remain
+  separate optimization work.
 
 ## Phase 2: Agentic Eval and Data Loop on Qwen3.5/3.6
 

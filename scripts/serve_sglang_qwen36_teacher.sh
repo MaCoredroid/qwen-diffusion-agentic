@@ -22,16 +22,30 @@ case "${PROFILE}" in
     MODEL_PATH="${MODEL_PATH:-Qwen/Qwen3.6-27B-FP8}"
     QUANTIZATION="${QUANTIZATION:-fp8}"
     KV_CACHE_DTYPE="${KV_CACHE_DTYPE:-auto}"
+    DEFAULT_ATTENTION_BACKEND="flashinfer"
+    DEFAULT_FP4_GEMM_BACKEND="auto"
+    DEFAULT_CUDA_GRAPH_BACKEND_DECODE=""
+    DEFAULT_CUDA_GRAPH_BACKEND_PREFILL=""
     ;;
   nvfp4|fp4|q4)
-    MODEL_PATH="${MODEL_PATH:-Qwen/Qwen3.6-27B-NVFP4}"
-    QUANTIZATION="${QUANTIZATION:-petit_nvfp4}"
+    MODEL_PATH="${MODEL_PATH:-sakamakismile/Qwen3.6-27B-NVFP4}"
+    # This NVFP4 checkpoint declares `compressed-tensors` in config.json; forcing
+    # `petit_nvfp4` makes newer SGLang reject the load before weights download.
+    QUANTIZATION="${QUANTIZATION:-compressed-tensors}"
     KV_CACHE_DTYPE="${KV_CACHE_DTYPE:-auto}"
+    DEFAULT_ATTENTION_BACKEND="triton"
+    DEFAULT_FP4_GEMM_BACKEND="cutlass"
+    DEFAULT_CUDA_GRAPH_BACKEND_DECODE="disabled"
+    DEFAULT_CUDA_GRAPH_BACKEND_PREFILL="disabled"
     ;;
   custom)
     MODEL_PATH="${MODEL_PATH:?Set MODEL_PATH for PROFILE=custom}"
     QUANTIZATION="${QUANTIZATION:-}"
     KV_CACHE_DTYPE="${KV_CACHE_DTYPE:-auto}"
+    DEFAULT_ATTENTION_BACKEND="flashinfer"
+    DEFAULT_FP4_GEMM_BACKEND="auto"
+    DEFAULT_CUDA_GRAPH_BACKEND_DECODE=""
+    DEFAULT_CUDA_GRAPH_BACKEND_PREFILL=""
     ;;
   *)
     echo "Unknown PROFILE=${PROFILE}; use fp8, nvfp4, or custom." >&2
@@ -44,11 +58,13 @@ MEM_FRACTION_STATIC="${MEM_FRACTION_STATIC:-0.84}"
 MAX_RUNNING_REQUESTS="${MAX_RUNNING_REQUESTS:-4}"
 MAX_TOTAL_TOKENS="${MAX_TOTAL_TOKENS:-}"
 CHUNKED_PREFILL_SIZE="${CHUNKED_PREFILL_SIZE:-4096}"
-ATTENTION_BACKEND="${ATTENTION_BACKEND:-fa3}"
+ATTENTION_BACKEND="${ATTENTION_BACKEND:-${DEFAULT_ATTENTION_BACKEND}}"
 PREFILL_ATTENTION_BACKEND="${PREFILL_ATTENTION_BACKEND:-${ATTENTION_BACKEND}}"
 DECODE_ATTENTION_BACKEND="${DECODE_ATTENTION_BACKEND:-${ATTENTION_BACKEND}}"
+CUDA_GRAPH_BACKEND_DECODE="${CUDA_GRAPH_BACKEND_DECODE:-${DEFAULT_CUDA_GRAPH_BACKEND_DECODE}}"
+CUDA_GRAPH_BACKEND_PREFILL="${CUDA_GRAPH_BACKEND_PREFILL:-${DEFAULT_CUDA_GRAPH_BACKEND_PREFILL}}"
 FP8_GEMM_BACKEND="${FP8_GEMM_BACKEND:-auto}"
-FP4_GEMM_BACKEND="${FP4_GEMM_BACKEND:-auto}"
+FP4_GEMM_BACKEND="${FP4_GEMM_BACKEND:-${DEFAULT_FP4_GEMM_BACKEND}}"
 TOOL_CALL_PARSER="${TOOL_CALL_PARSER:-qwen}"
 REASONING_PARSER="${REASONING_PARSER:-qwen3}"
 SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-qwen3.6-27b-teacher}"
@@ -66,6 +82,91 @@ SPECULATIVE_NUM_DRAFT_TOKENS="${SPECULATIVE_NUM_DRAFT_TOKENS:-4}"
 if [[ ! -x "${SGLANG_PYTHON}" ]]; then
   echo "Missing SGLang Python: ${SGLANG_PYTHON}" >&2
   exit 1
+fi
+
+# SGLang/FlashInfer JIT needs nvcc, CUDA headers, and conventional toolkit
+# linker paths. The local SGLang env is built from Python CUDA packages, so
+# `/usr/local/cuda` may not exist and the package may expose `lib/` rather than
+# the `lib64/` layout expected by generated FlashInfer build files.
+if [[ -z "${CUDA_HOME:-}" ]]; then
+  PYTHON_CUDA_HOME="$("${SGLANG_PYTHON}" - <<'PY'
+import pathlib
+import site
+
+for site_dir in site.getsitepackages():
+    candidate = pathlib.Path(site_dir) / "nvidia" / "cu13"
+    if (candidate / "bin" / "nvcc").exists():
+        print(candidate)
+        break
+PY
+)"
+  if [[ -n "${PYTHON_CUDA_HOME}" ]]; then
+    CUDA_WRAPPER_HOME="${CUDA_WRAPPER_HOME:-${XDG_CACHE_HOME:-${HOME}/.cache}/qwen_diffusion/cuda/cu13}"
+    mkdir -p "${CUDA_WRAPPER_HOME}/lib64/stubs"
+
+    for cuda_dir in bin include nvvm; do
+      if [[ -e "${PYTHON_CUDA_HOME}/${cuda_dir}" ]]; then
+        ln -sfn "${PYTHON_CUDA_HOME}/${cuda_dir}" "${CUDA_WRAPPER_HOME}/${cuda_dir}"
+      fi
+    done
+
+    if [[ -d "${PYTHON_CUDA_HOME}/lib" ]]; then
+      while IFS= read -r lib_file; do
+        ln -sfn "${lib_file}" "${CUDA_WRAPPER_HOME}/lib64/$(basename "${lib_file}")"
+      done < <(find "${PYTHON_CUDA_HOME}/lib" -maxdepth 1 -mindepth 1 -type f | sort)
+
+      if [[ ! -e "${CUDA_WRAPPER_HOME}/lib64/libcudart.so" ]]; then
+        CUDART_SO="$(find "${PYTHON_CUDA_HOME}/lib" -maxdepth 1 -name 'libcudart.so.*' | sort -V | tail -n 1)"
+        if [[ -n "${CUDART_SO}" ]]; then
+          ln -sfn "${CUDART_SO}" "${CUDA_WRAPPER_HOME}/lib64/libcudart.so"
+        fi
+      fi
+    fi
+
+    if [[ ! -e "${CUDA_WRAPPER_HOME}/lib" || -L "${CUDA_WRAPPER_HOME}/lib" ]]; then
+      ln -sfn lib64 "${CUDA_WRAPPER_HOME}/lib"
+    fi
+
+    if [[ -e /usr/lib/x86_64-linux-gnu/libcuda.so ]]; then
+      ln -sfn /usr/lib/x86_64-linux-gnu/libcuda.so "${CUDA_WRAPPER_HOME}/lib64/stubs/libcuda.so"
+    fi
+
+    CUDA_HOME="${CUDA_WRAPPER_HOME}"
+  fi
+fi
+
+if [[ -n "${CUDA_HOME:-}" ]]; then
+  export CUDA_HOME
+  export PATH="${CUDA_HOME}/bin:${PATH}"
+  export LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${CUDA_HOME}/lib:${LD_LIBRARY_PATH:-}"
+  export LIBRARY_PATH="${CUDA_HOME}/lib64:${CUDA_HOME}/lib64/stubs:${CUDA_HOME}/lib:${LIBRARY_PATH:-}"
+fi
+
+# The SGLang NVFP4 CUTLASS JIT includes CUDA headers that depend on libcudacxx
+# headers such as `nv/target`. FlashInfer vendors CCCL/libcudacxx, but SGLang's
+# generated NVFP4 compile command does not add that include path.
+CUDA_CCCL_INCLUDE="$("${SGLANG_PYTHON}" - <<'PY'
+import pathlib
+import site
+
+for site_dir in site.getsitepackages():
+    candidate = (
+        pathlib.Path(site_dir)
+        / "flashinfer"
+        / "data"
+        / "cccl"
+        / "libcudacxx"
+        / "include"
+    )
+    if (candidate / "nv" / "target").exists():
+        print(candidate)
+        break
+PY
+)"
+
+if [[ -n "${CUDA_CCCL_INCLUDE}" ]]; then
+  export CPATH="${CUDA_CCCL_INCLUDE}:${CPATH:-}"
+  export CPLUS_INCLUDE_PATH="${CUDA_CCCL_INCLUDE}:${CPLUS_INCLUDE_PATH:-}"
 fi
 
 if [[ "${SKIP_VERSION_CHECK}" != "1" ]]; then
@@ -117,6 +218,14 @@ fi
 
 if [[ -n "${MAX_TOTAL_TOKENS}" ]]; then
   cmd+=(--max-total-tokens "${MAX_TOTAL_TOKENS}")
+fi
+
+if [[ -n "${CUDA_GRAPH_BACKEND_DECODE}" ]]; then
+  cmd+=(--cuda-graph-backend-decode "${CUDA_GRAPH_BACKEND_DECODE}")
+fi
+
+if [[ -n "${CUDA_GRAPH_BACKEND_PREFILL}" ]]; then
+  cmd+=(--cuda-graph-backend-prefill "${CUDA_GRAPH_BACKEND_PREFILL}")
 fi
 
 if [[ "${ENABLE_MTP}" == "1" ]]; then

@@ -44,6 +44,9 @@ datasets, logs, and generated eval outputs are kept out of git.
 - [synthetic_onecall_curriculum_result.md](synthetic_onecall_curriculum_result.md):
   synthetic one-call curriculum result showing tool-name learning and the
   current structural decoding gap.
+- [qwen36_teacher_serving_result.md](qwen36_teacher_serving_result.md): local
+  SGLang NVFP4 Qwen3.6 teacher serving result and first 48-case synthetic
+  tool-call teacher probe.
 - [machine_notes.md](machine_notes.md): sanitized hardware notes.
 
 ## Scripts
@@ -89,5 +92,7 @@ The first Alpaca LoRA run was a plumbing proof. The first public-data tool-call
 run did not produce held-out tool calls. The synthetic one-call curriculum does
 teach the 1.5B lab model to name the right tool in most held-out examples, but
 the model still needs constrained decoding/repair to emit runnable tool-call
-structure. The next useful milestone is Qwen3.6 teacher labels plus
-argument-level and multi-call evals before moving this loop to Qwen3.5-9B.
+structure. The Qwen3.6 NVFP4 teacher now serves locally through SGLang and gets
+48/48 exact tool-name selection on the synthetic one-call held-out probe. The
+next useful milestone is public-data teacher labels plus argument-level and
+multi-call evals before moving this loop to Qwen3.5-9B.
