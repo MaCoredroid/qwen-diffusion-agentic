@@ -47,6 +47,8 @@ datasets, logs, and generated eval outputs are kept out of git.
 - [qwen36_teacher_serving_result.md](qwen36_teacher_serving_result.md): local
   SGLang NVFP4 Qwen3.6 teacher serving result and first 48-case synthetic
   tool-call teacher probe.
+- [qwen36_teacher_toolcall_arg_eval_result.md](qwen36_teacher_toolcall_arg_eval_result.md):
+  argument-level synthetic and public one-call teacher eval result.
 - [machine_notes.md](machine_notes.md): sanitized hardware notes.
 
 ## Scripts
@@ -93,6 +95,7 @@ run did not produce held-out tool calls. The synthetic one-call curriculum does
 teach the 1.5B lab model to name the right tool in most held-out examples, but
 the model still needs constrained decoding/repair to emit runnable tool-call
 structure. The Qwen3.6 NVFP4 teacher now serves locally through SGLang and gets
-48/48 exact tool-name selection on the synthetic one-call held-out probe. The
-next useful milestone is public-data teacher labels plus argument-level and
-multi-call evals before moving this loop to Qwen3.5-9B.
+48/48 exact tool-name and argument match on the synthetic one-call held-out
+probe. On a 24-case public Hermes one-call slice it gets 21/24 exact tool
+sequence and 18/24 exact arguments. The next useful milestone is public
+multi-call/tool-result evals before moving this loop to Qwen3.5-9B.

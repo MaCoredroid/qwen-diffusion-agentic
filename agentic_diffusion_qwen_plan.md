@@ -85,6 +85,8 @@ We have:
   `/home/mark/qwen_diffusion/diffusiongemma_agentic_research_notes.md`
 - Local Qwen3.6-27B NVFP4 teacher serving result:
   `/home/mark/qwen_diffusion/qwen36_teacher_serving_result.md`
+- Qwen3.6 teacher argument-level tool-call eval result:
+  `/home/mark/qwen_diffusion/qwen36_teacher_toolcall_arg_eval_result.md`
 
 The Alpaca LoRA is functional but far behind the released Fast-dLLM v2 1.5B
 checkpoint. That is expected; it is a plumbing proof, not the final training
@@ -168,6 +170,10 @@ Current result:
   disabled through `chat_template_kwargs.enable_thinking=false`.
 - The teacher gets 48/48 exact tool-name selection on the synthetic one-call
   held-out probe.
+- Argument-level scoring is now wired. Current teacher result:
+  - synthetic one-call held-out: 48/48 exact arguments and schema-valid
+  - public Hermes one-call slice: 21/24 exact tool sequence, 18/24 exact
+    arguments, 23/24 schema-valid
 - The speed profile is not final; FlashInfer, CUDA graph, and MTP remain
   separate optimization work.
 

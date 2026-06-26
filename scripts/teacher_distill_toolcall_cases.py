@@ -1,35 +1,17 @@
 #!/usr/bin/env python3
 import argparse
 import json
-import re
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 
-from eval_toolcall_jsonl import extract_json_objects
+from eval_toolcall_jsonl import score_tool_calls
 
 
 ROOT = Path("/home/mark/qwen_diffusion")
 DEFAULT_INPUT = ROOT / "data/toolcall_eval/synthetic_onecall_smoke.jsonl"
 DEFAULT_OUT = ROOT / "data/toolcall_eval/synthetic_onecall_teacher.jsonl"
-
-
-def parse_tool_names(text):
-    function_tag_names = re.findall(r"<function=([^>\s]+)>", text)
-    if function_tag_names:
-        return function_tag_names, 0
-
-    names = []
-    invalid = 0
-    for obj in extract_json_objects(text):
-        if not isinstance(obj, dict):
-            invalid += 1
-            continue
-        name = obj.get("name")
-        if name:
-            names.append(str(name))
-    return names, invalid
 
 
 def load_cases(path, limit):
@@ -55,14 +37,14 @@ def post_json(url, payload, timeout):
         return json.loads(resp.read().decode("utf-8"))
 
 
-def ask_teacher(case, endpoint, model, timeout, temperature, enable_thinking):
+def ask_teacher(case, endpoint, model, timeout, temperature, max_tokens, enable_thinking):
     messages = list(case["prompt_messages"])
     messages.append(
         {
             "role": "user",
             "content": (
-                "Return exactly one Qwen tool call for the request above. "
-                "Use this exact format and no prose:\n"
+                "Return the necessary Qwen tool call or calls for the request above. "
+                "Use only this format and no prose:\n"
                 "<tool_call>\n"
                 "{\"name\": \"tool_name\", \"arguments\": {}}\n"
                 "</tool_call>"
@@ -74,7 +56,7 @@ def ask_teacher(case, endpoint, model, timeout, temperature, enable_thinking):
         "messages": messages,
         "tools": case.get("tools") or None,
         "temperature": temperature,
-        "max_tokens": 256,
+        "max_tokens": max_tokens,
         "chat_template_kwargs": {"enable_thinking": enable_thinking},
     }
     payload = {key: value for key, value in payload.items() if value is not None}
@@ -105,6 +87,7 @@ def main():
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--timeout", type=float, default=30.0)
     parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--max-tokens", type=int, default=256)
     parser.add_argument("--enable-thinking", action="store_true")
     args = parser.parse_args()
 
@@ -135,24 +118,41 @@ def main():
                     args.model,
                     args.timeout,
                     args.temperature,
+                    args.max_tokens,
                     args.enable_thinking,
                 )
-                names, invalid = parse_tool_names(text)
-                gold = set(row["gold_tool_names"])
-                called = set(names)
+                metrics = score_tool_calls(text, case.get("tools") or [], case.get("gold_assistant"))
+                names = metrics["called_names"]
                 row.update(
                     {
                         "status": "ok",
                         "teacher_assistant": text,
                         "teacher_tool_names": names,
-                        "invalid_tool_json_count": invalid,
-                        "valid_tool_json": bool(names) and invalid == 0,
-                        "exact_tool_name_set": called == gold,
+                        "teacher_calls": metrics["calls"],
+                        "invalid_tool_json_count": metrics["invalid_tool_call_count"],
+                        "valid_tool_json": metrics["valid_tool_call"],
+                        "valid_tool_call": metrics["valid_tool_call"],
+                        "exact_tool_name_set": metrics.get("exact_tool_name_set"),
+                        "exact_tool_sequence": metrics.get("exact_tool_sequence"),
+                        "exact_arguments": metrics.get("exact_arguments"),
+                        "all_schema_valid": metrics["all_schema_valid"],
+                        "all_required_args_present": metrics["all_required_args_present"],
+                        "schema_valid_count": metrics["schema_valid_count"],
+                        "required_args_count": metrics["required_args_count"],
+                        "call_errors": metrics["call_errors"],
                     }
                 )
                 totals["ok"] += 1
                 totals["valid_tool_json"] += int(row["valid_tool_json"])
-                totals["exact_tool_name_set"] += int(row["exact_tool_name_set"])
+                totals["exact_tool_name_set"] += int(bool(row["exact_tool_name_set"]))
+                totals.setdefault("exact_tool_sequence", 0)
+                totals.setdefault("exact_arguments", 0)
+                totals.setdefault("all_schema_valid", 0)
+                totals.setdefault("all_required_args_present", 0)
+                totals["exact_tool_sequence"] += int(bool(row["exact_tool_sequence"]))
+                totals["exact_arguments"] += int(bool(row["exact_arguments"]))
+                totals["all_schema_valid"] += int(bool(row["all_schema_valid"]))
+                totals["all_required_args_present"] += int(bool(row["all_required_args_present"]))
             except (urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError) as exc:
                 row.update({"status": "error", "error": f"{type(exc).__name__}: {exc}"})
                 totals["errors"] += 1
