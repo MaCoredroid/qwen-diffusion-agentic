@@ -30,6 +30,9 @@ datasets, logs, and generated eval outputs are kept out of git.
 
 - [agentic_diffusion_qwen_plan.md](agentic_diffusion_qwen_plan.md): end-to-end
   strategy for agentic diffusion Qwen.
+- [qwen36_diffusion_closeout_metrics.md](qwen36_diffusion_closeout_metrics.md):
+  measurable closeout targets for Qwen3.6 diffusion, including SWE-bench Verified
+  baselines and success gates.
 - [diffusion_qwen_distillation_runbook.md](diffusion_qwen_distillation_runbook.md):
   original Qwen3.6 block-diffusion distillation runbook.
 - [experiment_plan.md](experiment_plan.md): hardware and model feasibility plan.

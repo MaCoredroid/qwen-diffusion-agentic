@@ -16,6 +16,12 @@ Fast-dLLM v2 is the scaffold. The actual target is a dLLM that can:
 - run through coding-agent harnesses with stable stop/tool boundaries
 - eventually serve fast enough locally to matter
 
+Closeout metrics are tracked separately in
+`qwen36_diffusion_closeout_metrics.md`. In short, the final Qwen3.6 diffusion
+target must be compared against both the local AR Qwen3.6 baseline and the
+diffusion-init pretraining baseline, with SWE-bench Verified as the expensive
+final gate.
+
 ## Available Hardware
 
 ### Local Workstation
@@ -205,6 +211,12 @@ Exit gate:
   public examples.
 - Qwen3.5-9B AR baseline is measured on the same eval.
 - Failure modes are categorized enough to train against.
+- Qwen3.6 closeout metrics are initialized:
+  - `AR_Q36`: local AR Qwen3.6-27B teacher/reference
+  - `DIFF_INIT_Q36`: converted diffusion Qwen3.6 before diffusion training
+  - `DIFF_TRAIN_Q36`: trained diffusion checkpoints
+  - SWE-bench Verified slices are not run until tool-call and patch-harness gates
+    are stable.
 
 ## Phase 3: Agentic/Code Data Instead of Alpaca
 
@@ -355,6 +367,17 @@ Minimum first version:
   - tokens/s
 
 Then use the failure cases to define the next training corpus and objective.
+
+Closeout target:
+
+- full target definitions live in `qwen36_diffusion_closeout_metrics.md`
+- minimum full SWE-bench Verified closeout:
+  `DIFF_TRAIN_Q36 >= max(DIFF_INIT_Q36 + 15pp, 0.70 * AR_Q36, 30%)`
+- project-success target:
+  `DIFF_TRAIN_Q36 >= max(DIFF_INIT_Q36 + 25pp, 0.80 * AR_Q36, 45%)`
+- speed target:
+  `DIFF_TRAIN_Q36` should resolve at least 1.3x as many Verified instances per
+  hour as `AR_Q36` under the same harness.
 
 ## Open Questions
 
