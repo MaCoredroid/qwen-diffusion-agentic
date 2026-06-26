@@ -35,6 +35,9 @@ datasets, logs, and generated eval outputs are kept out of git.
 - [experiment_plan.md](experiment_plan.md): hardware and model feasibility plan.
 - [diffusiongemma_agentic_research_notes.md](diffusiongemma_agentic_research_notes.md):
   DiffusionGemma and agentic dLLM research notes.
+- [early_qwen_diffusion_toolcall_result.md](early_qwen_diffusion_toolcall_result.md):
+  first public-data tool-call LoRA train/eval result for the local 1.5B
+  diffusion lab model.
 - [machine_notes.md](machine_notes.md): sanitized hardware notes.
 
 ## Scripts
@@ -46,6 +49,12 @@ datasets, logs, and generated eval outputs are kept out of git.
   public tool-call datasets.
 - `scripts/eval_toolcall_jsonl.py`: scores normalized JSONL for assistant
   turns, strict JSON tool calls, and known-tool matches.
+- `scripts/build_fastdllm_toolcall_data.py`: converts normalized public
+  tool-call JSONL into Fast-dLLM conversation train/eval files.
+- `scripts/run_fastdllm_qwen25_1p5b_toolcall_lora_smoke.sh`: bounded LoRA
+  training run for the local Qwen2.5 1.5B Fast-dLLM lab model on tool-call data.
+- `scripts/eval_fastdllm_toolcall_smoke.py`: direct diffusion sampler eval for
+  strict `<tool_call>` JSON and loose function-name mention metrics.
 - `scripts/run_fastdllm_checkpoint_sweep.py`: limited `lm-eval` checkpoint sweep
   over local base, LoRA checkpoints, and released Fast-dLLM reference.
 - `scripts/eval_fastdllm_lora_gsm8k_mini.py`: small direct GSM8K smoke eval.
