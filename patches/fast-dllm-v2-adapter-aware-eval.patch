@@ -1,0 +1,106 @@
+diff --git a/v2/eval.py b/v2/eval.py
+index cd0ca2a..8cf835b 100644
+--- a/v2/eval.py
++++ b/v2/eval.py
+@@ -37,6 +37,14 @@ import time
+ import types
+ import generation_functions
+
++
++def _as_bool(value):
++    if isinstance(value, bool):
++        return value
++    if value is None:
++        return False
++    return str(value).lower() in {"1", "true", "yes", "y", "on"}
++
+ def set_seed(seed):
+     torch.manual_seed(seed)
+     random.seed(seed)
+@@ -60,6 +68,11 @@ class Fast_dLLM_v2EvalHarness(LM):
+         small_block_size=8,
+         bd_size=32,
+         threshold=0.9,
++        top_p=0.95,
++        temperature=0.0,
++        adapter_path=None,
++        tokenizer_path=None,
++        merge_adapter=True,
+         **kwargs,
+     ):
+
+@@ -81,6 +94,12 @@ class Fast_dLLM_v2EvalHarness(LM):
+             torch_dtype=torch.bfloat16,
+             **model_kwargs
+         )
++        if adapter_path:
++            from peft import PeftModel
++
++            self.model = PeftModel.from_pretrained(self.model, adapter_path)
++            if _as_bool(merge_adapter):
++                self.model = self.model.merge_and_unload()
+         self.model.eval()
+
+         self.model.mdm_sample = types.MethodType(generation_functions.Fast_dLLM_QwenForCausalLM.batch_sample, self.model)
+@@ -96,17 +115,20 @@ class Fast_dLLM_v2EvalHarness(LM):
+             self._rank = 0
+             self._world_size = 1
+
+-        self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
++        tokenizer_path = tokenizer_path or adapter_path or model_path
++        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=True)
+
+-        self.show_speed = show_speed
+-        self.max_new_tokens = max_new_tokens
++        self.show_speed = _as_bool(show_speed)
++        self.max_new_tokens = int(max_new_tokens)
+         self.batch_size = int(batch_size)
+-        self.mask_id = mask_id
++        self.mask_id = int(mask_id)
+         self.model_path = model_path
+-        self.use_block_cache = use_block_cache
+-        self.small_block_size = small_block_size
+-        self.threshold = threshold
+-        self.bd_size = bd_size
++        self.use_block_cache = _as_bool(use_block_cache)
++        self.small_block_size = int(small_block_size)
++        self.threshold = float(threshold)
++        self.bd_size = int(bd_size)
++        self.top_p = float(top_p)
++        self.temperature = float(temperature)
+
+     @property
+     def rank(self):
+@@ -232,10 +254,11 @@ class Fast_dLLM_v2EvalHarness(LM):
+
+             for orig_idx, req in batch:
+                 question = req.args[0]
+-
+-                if req.task_name.startswith('minerva_math'):
++
++                task_name = getattr(req, "task_name", "")
++                if task_name.startswith('minerva_math'):
+                     question = question.replace("Solution:", "Please reason step by step, and put your final answer within \\boxed{{}}.")
+-                elif req.task_name.startswith('gsm8k'):
++                elif task_name.startswith('gsm8k'):
+                     question = question.replace("Answer:", "Please reason step by step, and put your final answer within \\boxed{{}}.")
+                 model_inputs = self.tokenizer([question], return_tensors="pt").to(self.device)
+                 batched_input_ids.append(model_inputs["input_ids"])
+@@ -261,6 +284,8 @@ class Fast_dLLM_v2EvalHarness(LM):
+                         seq_len=torch.tensor(seq_len, device=self.device),
+                         use_block_cache=self.use_block_cache,
+                         threshold=self.threshold,
++                        top_p=self.top_p,
++                        temperature=self.temperature,
+                     )
+                 else:
+                     generated_ids = self.model.mdm_sample(
+@@ -274,6 +299,8 @@ class Fast_dLLM_v2EvalHarness(LM):
+                         seq_len=torch.tensor(seq_len, device=self.device),
+                         use_block_cache=self.use_block_cache,
+                         threshold=self.threshold,
++                        top_p=self.top_p,
++                        temperature=self.temperature,
+                     )
+
+             # extract new generated tokens, and keep original index order
