@@ -34,6 +34,31 @@ def called_tool_names(text):
     return names, invalid
 
 
+def constrained_repair(text, available_names):
+    ordered = []
+    for name in sorted(available_names, key=len, reverse=True):
+        pos = text.find(name)
+        if pos >= 0:
+            ordered.append((pos, name))
+    ordered.sort()
+
+    names = []
+    seen = set()
+    for _, name in ordered:
+        if name not in seen:
+            names.append(name)
+            seen.add(name)
+
+    if not names:
+        return "", []
+
+    repaired = []
+    for name in names:
+        payload = {"name": name, "arguments": {}}
+        repaired.append("<tool_call>\n" + json.dumps(payload, separators=(",", ": ")) + "\n</tool_call>")
+    return "\n".join(repaired), names
+
+
 def load_cases(path, limit):
     rows = []
     with path.open("r", encoding="utf-8") as f:
@@ -95,6 +120,7 @@ def main():
     parser.add_argument("--threshold", type=float, default=0.9)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top-p", type=float, default=0.95)
+    parser.add_argument("--repair-mode", choices=["none", "known-name"], default="none")
     parser.add_argument("--no-merge-adapter", action="store_true")
     args = parser.parse_args()
 
@@ -116,6 +142,10 @@ def main():
         "mentions_any_gold_name": 0,
         "mentions_all_gold_names": 0,
         "mentions_known_tool": 0,
+        "repaired_any_tool_call": 0,
+        "repaired_exact_tool_name_set": 0,
+        "repaired_contains_all_gold_names": 0,
+        "repaired_called_known_tool": 0,
         "unresolved_mask_examples": 0,
     }
     total_new_tokens = 0
@@ -152,10 +182,15 @@ def main():
             available_names = set(case.get("available_tool_names") or [])
             mentioned_gold_names = [name for name in gold_names if name in text]
             mentioned_available_names = [name for name in sorted(available_names) if name in text]
+            repaired_text = ""
+            repaired_names = []
+            if args.repair_mode == "known-name":
+                repaired_text, repaired_names = constrained_repair(text, available_names)
 
             called_set = set(called_names)
             gold_set = set(gold_names)
             mentioned_gold_set = set(mentioned_gold_names)
+            repaired_set = set(repaired_names)
             row = {
                 "idx": idx,
                 "source": case.get("source"),
@@ -171,6 +206,13 @@ def main():
                 "mentions_any_gold_name": bool(mentioned_gold_names),
                 "mentions_all_gold_names": gold_set.issubset(mentioned_gold_set),
                 "mentions_known_tool": bool(mentioned_available_names),
+                "repair_mode": args.repair_mode,
+                "repaired_assistant": repaired_text,
+                "repaired_tool_names": repaired_names,
+                "repaired_any_tool_call": bool(repaired_names),
+                "repaired_exact_tool_name_set": repaired_set == gold_set,
+                "repaired_contains_all_gold_names": gold_set.issubset(repaired_set),
+                "repaired_called_known_tool": bool(repaired_set & available_names),
                 "generated": text,
                 "mask_count": mask_count,
                 "seconds": sample_seconds,
@@ -187,6 +229,10 @@ def main():
             totals["mentions_any_gold_name"] += int(row["mentions_any_gold_name"])
             totals["mentions_all_gold_names"] += int(row["mentions_all_gold_names"])
             totals["mentions_known_tool"] += int(row["mentions_known_tool"])
+            totals["repaired_any_tool_call"] += int(row["repaired_any_tool_call"])
+            totals["repaired_exact_tool_name_set"] += int(row["repaired_exact_tool_name_set"])
+            totals["repaired_contains_all_gold_names"] += int(row["repaired_contains_all_gold_names"])
+            totals["repaired_called_known_tool"] += int(row["repaired_called_known_tool"])
             totals["unresolved_mask_examples"] += int(mask_count > 0)
             total_new_tokens += int((new_ids != MASK_ID).sum().item())
             print(
@@ -215,6 +261,7 @@ def main():
         "threshold": args.threshold,
         "temperature": args.temperature,
         "top_p": args.top_p,
+        "repair_mode": args.repair_mode,
     }
     summary_path = args.out.with_suffix(".summary.json")
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

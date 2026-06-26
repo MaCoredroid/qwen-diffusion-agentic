@@ -38,6 +38,9 @@ datasets, logs, and generated eval outputs are kept out of git.
 - [early_qwen_diffusion_toolcall_result.md](early_qwen_diffusion_toolcall_result.md):
   first public-data tool-call LoRA train/eval result for the local 1.5B
   diffusion lab model.
+- [synthetic_onecall_curriculum_result.md](synthetic_onecall_curriculum_result.md):
+  synthetic one-call curriculum result showing tool-name learning and the
+  current structural decoding gap.
 - [machine_notes.md](machine_notes.md): sanitized hardware notes.
 
 ## Scripts
@@ -51,10 +54,15 @@ datasets, logs, and generated eval outputs are kept out of git.
   turns, strict JSON tool calls, and known-tool matches.
 - `scripts/build_fastdllm_toolcall_data.py`: converts normalized public
   tool-call JSONL into Fast-dLLM conversation train/eval files.
+- `scripts/build_synthetic_onecall_curriculum.py`: creates deterministic
+  synthetic single-tool-call train/eval data with distractor tools.
+- `scripts/teacher_distill_toolcall_cases.py`: probes or records
+  OpenAI-compatible Qwen3.6 teacher outputs for tool-call cases.
 - `scripts/run_fastdllm_qwen25_1p5b_toolcall_lora_smoke.sh`: bounded LoRA
   training run for the local Qwen2.5 1.5B Fast-dLLM lab model on tool-call data.
 - `scripts/eval_fastdllm_toolcall_smoke.py`: direct diffusion sampler eval for
-  strict `<tool_call>` JSON and loose function-name mention metrics.
+  strict `<tool_call>` JSON, loose function-name mention metrics, and optional
+  constrained tool-name repair.
 - `scripts/run_fastdllm_checkpoint_sweep.py`: limited `lm-eval` checkpoint sweep
   over local base, LoRA checkpoints, and released Fast-dLLM reference.
 - `scripts/eval_fastdllm_lora_gsm8k_mini.py`: small direct GSM8K smoke eval.
@@ -74,7 +82,9 @@ stored under `patches/`.
 
 ## Status
 
-The first Alpaca LoRA run was a plumbing proof. It showed that the local
-Fast-dLLM/Qwen2.5 1.5B hybrid can train and decode, but quality remains far behind
-the released Fast-dLLM v2 1.5B checkpoint. The next useful milestone is an
-agentic eval harness, not another generic instruction-tuning run.
+The first Alpaca LoRA run was a plumbing proof. The first public-data tool-call
+run did not produce held-out tool calls. The synthetic one-call curriculum does
+teach the 1.5B lab model to name the right tool in most held-out examples, but
+the model still needs constrained decoding/repair to emit runnable tool-call
+structure. The next useful milestone is Qwen3.6 teacher labels plus
+argument-level and multi-call evals before moving this loop to Qwen3.5-9B.
