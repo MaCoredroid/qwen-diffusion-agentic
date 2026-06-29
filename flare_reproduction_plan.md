@@ -347,3 +347,21 @@ causal-full-context+mask-ban is the most coherent inference path so far; (3) pos
 one-example check → full init/A/B generation table + denoising-NLL (does B-A WIDEN with scale?). No more
 open-ended sampler whack-a-mole. This is the well-justified inflection: model works, needs scale + a correct
 diffusion sampler.
+
+## 4th SAMPLER BUG (tail-fill vs fresh-block) + scale run TRAINING (2026-06-29)
+Scale run LAUNCHED + training: `qwen-flare-stage1-ab-s1024-step1000.service` active, arm A (diffusion_only) at
+~171/1000 @ 2.38s/it, GPU 100%. Arm B (two-stream) follows; ~6h total. Committed + pushed (65495f2).
+**Masking audit CONFIRMED the `initial_masks=1` red flag was a real bug:** the old sampler **tail-filled the
+prompt remainder** instead of starting a **fresh 32-token masked active block** — GSM8K-0 (prompt len 799)
+produced initial_masks=1. Existed in BOTH batch_sample AND full_context_sample. Fix (CPU-only, during training):
+`fresh_generation_blocks` — active block starts with 32 masks (`fast-dllm/v2/generation_functions.py:38`,
+gitignored→needs patch; `scripts/eval_flare_stage1_ab_diffusion.py:540`, `diagnose_flare_generation_speed.py:483`,
+`eval_fastdllm_toolcall_cases.py:1675`). py_compile clean; no GPU eval during training.
+**HONESTY CAVEAT on the "undertraining" conclusion:** the bidirectional "ducks ducks" garbage AND the
+causal-collapse tests were ALL run with this tail-fill bug present → the free-gen evidence is CONFOUNDED. The
+"undertraining" verdict is therefore PROVISIONAL. The clean test = post-scale free-gen with the FULLY-CORRECTED
+fresh-block sampler. (Force-fed→correct "#### 18" still stands as the existence proof that capability is there.)
+This is the 4th gen-sampler bug (mask-loop → prefix-blind → causal-OOD → tail-fill) — reinforces that the
+generation path needs a validation harness vs the bit-exact training forward, like training had. Scale run
+proceeds regardless (it's training data, independent of the eval sampler); post-scale we eval with the corrected
+sampler — which may show coherent free-gen even pre-scale, or cleanly confirm undertraining.
