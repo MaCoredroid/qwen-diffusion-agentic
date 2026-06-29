@@ -1,0 +1,128 @@
+{
+  "before_jsonl": "runs/candidate_ranking/public_multicall_qwen35_ckpt275_masked_span_rank_v3_12_prefix_only.jsonl",
+  "after_jsonl": "runs/candidate_ranking/public12_qwen35_candidate_ranker_public_train_ckpt1_masked_span_rank_v3_prefix_only.jsonl",
+  "shared": 86,
+  "improved": [],
+  "regressed": [],
+  "remaining_failures": [
+    {
+      "id": "3f440c20-b332-48e2-aaa5-a7bfb0781ae9",
+      "kind": "argument_value",
+      "tool_call_index": 0,
+      "json_key": "schedule_time",
+      "target": "19:00",
+      "predicted_value": "11:00",
+      "candidate_values": [
+        "19:00",
+        "07:00",
+        "11:00",
+        "06:00",
+        "23:00"
+      ],
+      "target_margin": -4.25,
+      "candidate_count": 5
+    },
+    {
+      "id": "adc48a37-6341-4ea6-972a-8ec2b5421321",
+      "kind": "argument_value",
+      "tool_call_index": 1,
+      "json_key": "client_id",
+      "target": "CLI-102",
+      "predicted_value": "CLI-103",
+      "candidate_values": [
+        "XYZ-123",
+        "INV-301",
+        "CLI-101",
+        "INV-302",
+        "CLI-102",
+        "INV-303",
+        "CLI-103",
+        "PAY-401",
+        "PAY-402"
+      ],
+      "target_margin": -0.5,
+      "candidate_count": 9
+    },
+    {
+      "id": "adc48a37-6341-4ea6-972a-8ec2b5421321",
+      "kind": "argument_value",
+      "tool_call_index": 1,
+      "json_key": "client_id",
+      "target": "CLI-103",
+      "predicted_value": "CLI-101",
+      "candidate_values": [
+        "XYZ-123",
+        "INV-301",
+        "CLI-101",
+        "INV-302",
+        "CLI-102",
+        "INV-303",
+        "CLI-103",
+        "PAY-401",
+        "PAY-402"
+      ],
+      "target_margin": -1.25,
+      "candidate_count": 9
+    },
+    {
+      "id": "adc48a37-6341-4ea6-972a-8ec2b5421321",
+      "kind": "argument_value",
+      "tool_call_index": 1,
+      "json_key": "invoice_id",
+      "target": "INV-302",
+      "predicted_value": "INV-301",
+      "candidate_values": [
+        "XYZ-123",
+        "INV-301",
+        "CLI-101",
+        "INV-302",
+        "CLI-102",
+        "INV-303",
+        "CLI-103",
+        "PAY-401",
+        "PAY-402"
+      ],
+      "target_margin": -0.25,
+      "candidate_count": 9
+    },
+    {
+      "id": "adc48a37-6341-4ea6-972a-8ec2b5421321",
+      "kind": "argument_value",
+      "tool_call_index": 2,
+      "json_key": "invoice_id",
+      "target": "INV-301",
+      "predicted_value": "INV-303",
+      "candidate_values": [
+        "XYZ-123",
+        "INV-301",
+        "CLI-101",
+        "INV-302",
+        "CLI-102",
+        "INV-303",
+        "CLI-103",
+        "PAY-401",
+        "PAY-402"
+      ],
+      "target_margin": -0.125,
+      "candidate_count": 9
+    },
+    {
+      "id": "e279e98f-095a-4d44-9c2d-170b3cfdc4bb",
+      "kind": "argument_value",
+      "tool_call_index": 0,
+      "json_key": "start_time",
+      "target": "23:00",
+      "predicted_value": "22:00",
+      "candidate_values": [
+        "23:00",
+        "07:00",
+        "22:00"
+      ],
+      "target_margin": -0.875,
+      "candidate_count": 3
+    }
+  ],
+  "counts": {
+    "remaining:argument_value": 6
+  }
+}

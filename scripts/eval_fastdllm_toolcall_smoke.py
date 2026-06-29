@@ -17,6 +17,7 @@ ROOT = Path("/home/mark/qwen_diffusion")
 DEFAULT_BASE = ROOT / "models/qwen2.5-1.5b-fastdllm-init"
 DEFAULT_EVAL = ROOT / "data/toolcall_eval/fastdllm_toolcall_smoke.jsonl"
 MASK_ID = 151665
+STOP_TOKEN_ID = 151645
 
 
 def called_tool_names(text):
@@ -70,15 +71,30 @@ def load_cases(path, limit):
     return rows
 
 
-def make_prompt(tokenizer, case):
+def resolve_chat_template(name):
+    if not name:
+        return None
+    third_party = ROOT / "fast-dllm/third_party"
+    if str(third_party) not in sys.path:
+        sys.path.insert(0, str(third_party))
+    from lmflow.utils.conversation_template import PRESET_TEMPLATES
+
+    if name not in PRESET_TEMPLATES:
+        raise ValueError(f"Unknown conversation template {name!r}")
+    return PRESET_TEMPLATES[name]
+
+
+def make_prompt(tokenizer, case, chat_template=None):
     messages = case["prompt_messages"]
     tools = case.get("tools") or None
-    return tokenizer.apply_chat_template(
-        messages,
-        tools=tools,
-        tokenize=False,
-        add_generation_prompt=True,
-    )
+    kwargs = {
+        "tools": tools,
+        "tokenize": False,
+        "add_generation_prompt": True,
+    }
+    if chat_template is not None:
+        kwargs["chat_template"] = chat_template
+    return tokenizer.apply_chat_template(messages, **kwargs)
 
 
 def load_model(base_model, adapter, merge_adapter):
@@ -107,6 +123,24 @@ def load_model(base_model, adapter, merge_adapter):
     return model, tokenizer
 
 
+def resolve_token_ids(model, tokenizer):
+    mask_id = getattr(model.config, "mask_token_id", None)
+    if mask_id is None:
+        converted = tokenizer.convert_tokens_to_ids("|<MASK>|")
+        if converted != tokenizer.unk_token_id:
+            mask_id = converted
+    if mask_id is None:
+        mask_id = MASK_ID
+
+    stop_token_id = getattr(model.config, "eos_token_id", None) or tokenizer.eos_token_id
+    if isinstance(stop_token_id, (list, tuple)):
+        stop_token_id = stop_token_id[0] if stop_token_id else None
+    if stop_token_id is None:
+        stop_token_id = STOP_TOKEN_ID
+
+    return int(mask_id), int(stop_token_id)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-model", type=Path, default=DEFAULT_BASE)
@@ -121,14 +155,17 @@ def main():
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument("--repair-mode", choices=["none", "known-name"], default="none")
+    parser.add_argument("--conversation-template", default=None)
     parser.add_argument("--no-merge-adapter", action="store_true")
     args = parser.parse_args()
+    chat_template = resolve_chat_template(args.conversation_template)
 
     model, tokenizer = load_model(
         str(args.base_model),
         str(args.adapter) if args.adapter else None,
         merge_adapter=not args.no_merge_adapter,
     )
+    mask_id, stop_token_id = resolve_token_ids(model, tokenizer)
     cases = load_cases(args.eval_jsonl, args.limit)
     args.out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -153,7 +190,7 @@ def main():
 
     with args.out.open("w", encoding="utf-8") as f:
         for idx, case in enumerate(cases):
-            prompt = make_prompt(tokenizer, case)
+            prompt = make_prompt(tokenizer, case, chat_template=chat_template)
             input_ids = tokenizer([prompt], return_tensors="pt").input_ids.to("cuda")
             seq_len = torch.tensor([input_ids.shape[1]], device="cuda")
 
@@ -165,7 +202,8 @@ def main():
                     block_size=args.block_size,
                     small_block_size=args.small_block_size,
                     max_new_tokens=args.max_new_tokens,
-                    mask_id=MASK_ID,
+                    mask_id=mask_id,
+                    stop_token=stop_token_id,
                     min_len=input_ids.shape[1],
                     seq_len=seq_len,
                     threshold=args.threshold,
@@ -175,7 +213,7 @@ def main():
             sample_seconds = time.time() - sample_start
 
             new_ids = generated[input_ids.shape[1] :]
-            mask_count = int((new_ids == MASK_ID).sum().item())
+            mask_count = int((new_ids == mask_id).sum().item())
             text = tokenizer.decode(new_ids, skip_special_tokens=True).strip()
             called_names, invalid_json_count = called_tool_names(text)
             gold_names = [str(name) for name in case["gold_tool_names"]]
@@ -234,7 +272,7 @@ def main():
             totals["repaired_contains_all_gold_names"] += int(row["repaired_contains_all_gold_names"])
             totals["repaired_called_known_tool"] += int(row["repaired_called_known_tool"])
             totals["unresolved_mask_examples"] += int(mask_count > 0)
-            total_new_tokens += int((new_ids != MASK_ID).sum().item())
+            total_new_tokens += int((new_ids != mask_id).sum().item())
             print(
                 f"{idx + 1}/{len(cases)} exact={totals['exact_tool_name_set']} "
                 f"contains={totals['contains_all_gold_names']} called={called_names}"
@@ -262,6 +300,9 @@ def main():
         "temperature": args.temperature,
         "top_p": args.top_p,
         "repair_mode": args.repair_mode,
+        "mask_id": mask_id,
+        "stop_token_id": stop_token_id,
+        "conversation_template": args.conversation_template,
     }
     summary_path = args.out.with_suffix(".summary.json")
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

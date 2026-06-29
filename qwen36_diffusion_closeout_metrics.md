@@ -14,6 +14,12 @@ coarse to use as the first signal. We should only run full SWE-bench Verified
 after strict tool-call, code-edit, and harness-stability metrics are already
 passing.
 
+Goal framing, 2026-06-28: closeout is behavior preservation, not just
+diffusion training. `DIFF_TRAIN_Q36` must be measured as a converted version of
+the AR Qwen policy. Protected tool-calling scores are useful operational
+metrics, but the closeout evidence must include raw and constrained-decoder
+movement toward `AR_Q36`, not only deterministic repair/projection wins.
+
 ## Where This Fits
 
 Primary plan:

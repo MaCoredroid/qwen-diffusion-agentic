@@ -1,0 +1,123 @@
+{
+  "before_jsonl": "runs/candidate_ranking/public_train_multicall_qwen35_diffusion_init_masked_span_rank.jsonl",
+  "after_jsonl": "runs/candidate_ranking/public_train_multicall_qwen35_ckpt275_masked_span_rank.jsonl",
+  "shared": 299,
+  "improved": [
+    {
+      "id": "public_train_toolcall_0000",
+      "kind": "tool_name",
+      "tool_call_index": 1,
+      "json_key": "name",
+      "target": "plan_drilling_operations",
+      "predicted_value": "plan_drilling_operations",
+      "candidate_values": [
+        "analyze_geological_data",
+        "plan_drilling_operations"
+      ],
+      "target_margin": 1.5,
+      "candidate_count": 2
+    },
+    {
+      "id": "public_train_toolcall_0054",
+      "kind": "argument_value",
+      "tool_call_index": 2,
+      "json_key": "start_time",
+      "target": "2023-04-22T15:00:00Z",
+      "predicted_value": "2023-04-22T15:00:00Z",
+      "candidate_values": [
+        "2023-04-22T15:00:00Z",
+        "2023-04-22T17:00:00Z"
+      ],
+      "target_margin": 1.0,
+      "candidate_count": 2
+    }
+  ],
+  "regressed": [
+    {
+      "id": "public_train_toolcall_0055",
+      "kind": "argument_value",
+      "tool_call_index": 1,
+      "json_key": "material_id",
+      "target": "mat_001",
+      "predicted_value": "mat_002",
+      "candidate_values": [
+        "mat_001",
+        "mat_002",
+        "trans_001"
+      ],
+      "target_margin": -0.6875,
+      "candidate_count": 3
+    }
+  ],
+  "remaining_failures": [
+    {
+      "id": "public_train_toolcall_0023",
+      "kind": "argument_value",
+      "tool_call_index": 0,
+      "json_key": "schedule_time",
+      "target": "19:00",
+      "predicted_value": "11:00",
+      "candidate_values": [
+        "19:00",
+        "07:00",
+        "11:00",
+        "06:00",
+        "23:00"
+      ],
+      "target_margin": -4.25,
+      "candidate_count": 5
+    },
+    {
+      "id": "public_train_toolcall_0034",
+      "kind": "argument_value",
+      "tool_call_index": 0,
+      "json_key": "start_time",
+      "target": "23:00",
+      "predicted_value": "22:00",
+      "candidate_values": [
+        "23:00",
+        "07:00",
+        "22:00"
+      ],
+      "target_margin": -0.875,
+      "candidate_count": 3
+    },
+    {
+      "id": "public_train_toolcall_0041",
+      "kind": "argument_value",
+      "tool_call_index": 2,
+      "json_key": "bandwidth_requirement",
+      "target": 0,
+      "predicted_value": 1,
+      "candidate_values": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "target_margin": -3.71875,
+      "candidate_count": 4
+    },
+    {
+      "id": "public_train_toolcall_0055",
+      "kind": "argument_value",
+      "tool_call_index": 1,
+      "json_key": "material_id",
+      "target": "mat_001",
+      "predicted_value": "mat_002",
+      "candidate_values": [
+        "mat_001",
+        "mat_002",
+        "trans_001"
+      ],
+      "target_margin": -0.6875,
+      "candidate_count": 3
+    }
+  ],
+  "counts": {
+    "improved:argument_value": 1,
+    "improved:tool_name": 1,
+    "regressed:argument_value": 1,
+    "remaining:argument_value": 4
+  }
+}

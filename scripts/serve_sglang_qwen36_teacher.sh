@@ -63,12 +63,22 @@ PREFILL_ATTENTION_BACKEND="${PREFILL_ATTENTION_BACKEND:-${ATTENTION_BACKEND}}"
 DECODE_ATTENTION_BACKEND="${DECODE_ATTENTION_BACKEND:-${ATTENTION_BACKEND}}"
 CUDA_GRAPH_BACKEND_DECODE="${CUDA_GRAPH_BACKEND_DECODE:-${DEFAULT_CUDA_GRAPH_BACKEND_DECODE}}"
 CUDA_GRAPH_BACKEND_PREFILL="${CUDA_GRAPH_BACKEND_PREFILL:-${DEFAULT_CUDA_GRAPH_BACKEND_PREFILL}}"
+CUDA_GRAPH_MAX_BS_DECODE="${CUDA_GRAPH_MAX_BS_DECODE:-}"
+CUDA_GRAPH_MAX_BS_PREFILL="${CUDA_GRAPH_MAX_BS_PREFILL:-}"
+CUDA_GRAPH_BS_DECODE="${CUDA_GRAPH_BS_DECODE:-}"
+CUDA_GRAPH_BS_PREFILL="${CUDA_GRAPH_BS_PREFILL:-}"
 FP8_GEMM_BACKEND="${FP8_GEMM_BACKEND:-auto}"
 FP4_GEMM_BACKEND="${FP4_GEMM_BACKEND:-${DEFAULT_FP4_GEMM_BACKEND}}"
 TOOL_CALL_PARSER="${TOOL_CALL_PARSER:-qwen}"
 REASONING_PARSER="${REASONING_PARSER:-qwen3}"
 SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-qwen3.6-27b-teacher}"
 DTYPE="${DTYPE:-auto}"
+DISABLE_RADIX_CACHE="${DISABLE_RADIX_CACHE:-0}"
+MAMBA_RADIX_CACHE_STRATEGY="${MAMBA_RADIX_CACHE_STRATEGY:-}"
+MAX_MAMBA_CACHE_SIZE="${MAX_MAMBA_CACHE_SIZE:-}"
+MAMBA_FULL_MEMORY_RATIO="${MAMBA_FULL_MEMORY_RATIO:-}"
+ENABLE_INT8_MAMBA_CHECKPOINT="${ENABLE_INT8_MAMBA_CHECKPOINT:-0}"
+INT8_MAMBA_CKPT_SIZE="${INT8_MAMBA_CKPT_SIZE:-}"
 
 # Qwen3.6 uses MTP in the model family. SGLang exposes this through speculative
 # decoding flags when the backend/model path supports it. Enable it after the
@@ -76,8 +86,14 @@ DTYPE="${DTYPE:-auto}"
 # settings can prevent the server from starting.
 ENABLE_MTP="${ENABLE_MTP:-0}"
 SPECULATIVE_ALGORITHM="${SPECULATIVE_ALGORITHM:-NEXTN}"
-SPECULATIVE_NUM_STEPS="${SPECULATIVE_NUM_STEPS:-1}"
+SPECULATIVE_NUM_STEPS="${SPECULATIVE_NUM_STEPS:-3}"
+SPECULATIVE_EAGLE_TOPK="${SPECULATIVE_EAGLE_TOPK:-1}"
 SPECULATIVE_NUM_DRAFT_TOKENS="${SPECULATIVE_NUM_DRAFT_TOKENS:-4}"
+SPECULATIVE_DFLASH_BLOCK_SIZE="${SPECULATIVE_DFLASH_BLOCK_SIZE:-}"
+SPECULATIVE_ATTENTION_MODE="${SPECULATIVE_ATTENTION_MODE:-prefill}"
+SPECULATIVE_DRAFT_ATTENTION_BACKEND="${SPECULATIVE_DRAFT_ATTENTION_BACKEND:-}"
+SPECULATIVE_DRAFT_MODEL_PATH="${SPECULATIVE_DRAFT_MODEL_PATH:-}"
+SPECULATIVE_DRAFT_MODEL_QUANTIZATION="${SPECULATIVE_DRAFT_MODEL_QUANTIZATION:-}"
 
 if [[ ! -x "${SGLANG_PYTHON}" ]]; then
   echo "Missing SGLang Python: ${SGLANG_PYTHON}" >&2
@@ -228,12 +244,75 @@ if [[ -n "${CUDA_GRAPH_BACKEND_PREFILL}" ]]; then
   cmd+=(--cuda-graph-backend-prefill "${CUDA_GRAPH_BACKEND_PREFILL}")
 fi
 
+if [[ -n "${CUDA_GRAPH_MAX_BS_DECODE}" ]]; then
+  cmd+=(--cuda-graph-max-bs-decode "${CUDA_GRAPH_MAX_BS_DECODE}")
+fi
+
+if [[ -n "${CUDA_GRAPH_MAX_BS_PREFILL}" ]]; then
+  cmd+=(--cuda-graph-max-bs-prefill "${CUDA_GRAPH_MAX_BS_PREFILL}")
+fi
+
+if [[ -n "${CUDA_GRAPH_BS_DECODE}" ]]; then
+  read -r -a cuda_graph_bs_decode_args <<< "${CUDA_GRAPH_BS_DECODE}"
+  cmd+=(--cuda-graph-bs-decode "${cuda_graph_bs_decode_args[@]}")
+fi
+
+if [[ -n "${CUDA_GRAPH_BS_PREFILL}" ]]; then
+  read -r -a cuda_graph_bs_prefill_args <<< "${CUDA_GRAPH_BS_PREFILL}"
+  cmd+=(--cuda-graph-bs-prefill "${cuda_graph_bs_prefill_args[@]}")
+fi
+
+if [[ "${DISABLE_RADIX_CACHE}" == "1" ]]; then
+  cmd+=(--disable-radix-cache)
+fi
+
+if [[ -n "${MAMBA_RADIX_CACHE_STRATEGY}" ]]; then
+  cmd+=(--mamba-radix-cache-strategy "${MAMBA_RADIX_CACHE_STRATEGY}")
+fi
+
+if [[ -n "${MAX_MAMBA_CACHE_SIZE}" ]]; then
+  cmd+=(--max-mamba-cache-size "${MAX_MAMBA_CACHE_SIZE}")
+fi
+
+if [[ -n "${MAMBA_FULL_MEMORY_RATIO}" ]]; then
+  cmd+=(--mamba-full-memory-ratio "${MAMBA_FULL_MEMORY_RATIO}")
+fi
+
+if [[ "${ENABLE_INT8_MAMBA_CHECKPOINT}" == "1" ]]; then
+  cmd+=(--enable-int8-mamba-checkpoint)
+fi
+
+if [[ -n "${INT8_MAMBA_CKPT_SIZE}" ]]; then
+  cmd+=(--int8-mamba-ckpt-size "${INT8_MAMBA_CKPT_SIZE}")
+fi
+
 if [[ "${ENABLE_MTP}" == "1" ]]; then
   cmd+=(
     --speculative-algorithm "${SPECULATIVE_ALGORITHM}"
     --speculative-num-steps "${SPECULATIVE_NUM_STEPS}"
+    --speculative-eagle-topk "${SPECULATIVE_EAGLE_TOPK}"
     --speculative-num-draft-tokens "${SPECULATIVE_NUM_DRAFT_TOKENS}"
   )
+
+  if [[ -n "${SPECULATIVE_DFLASH_BLOCK_SIZE}" ]]; then
+    cmd+=(--speculative-dflash-block-size "${SPECULATIVE_DFLASH_BLOCK_SIZE}")
+  fi
+
+  if [[ -n "${SPECULATIVE_ATTENTION_MODE}" ]]; then
+    cmd+=(--speculative-attention-mode "${SPECULATIVE_ATTENTION_MODE}")
+  fi
+
+  if [[ -n "${SPECULATIVE_DRAFT_ATTENTION_BACKEND}" ]]; then
+    cmd+=(--speculative-draft-attention-backend "${SPECULATIVE_DRAFT_ATTENTION_BACKEND}")
+  fi
+
+  if [[ -n "${SPECULATIVE_DRAFT_MODEL_PATH}" ]]; then
+    cmd+=(--speculative-draft-model-path "${SPECULATIVE_DRAFT_MODEL_PATH}")
+  fi
+
+  if [[ -n "${SPECULATIVE_DRAFT_MODEL_QUANTIZATION}" ]]; then
+    cmd+=(--speculative-draft-model-quantization "${SPECULATIVE_DRAFT_MODEL_QUANTIZATION}")
+  fi
 fi
 
 echo "Launching SGLang teacher:"

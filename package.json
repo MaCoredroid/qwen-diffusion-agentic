@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "qwen-code:smoke": "scripts/run_qwen_code_sglang_smoke.sh",
+    "codegen:build": "python3 scripts/build_synthetic_codegen_tasks.py",
+    "codegen:q36": ".venv-lmeval/bin/python scripts/eval_openai_codegen_cases.py --input-jsonl data/codegen_eval/synthetic_codegen_10.jsonl --out-jsonl data/codegen_eval/synthetic_codegen_q36_mtp4k_10.jsonl --endpoint http://127.0.0.1:30000/v1 --model qwen3.6-27b-teacher --timeout 120 --temperature 0 --max-tokens 1024 --test-timeout 5"
+  },
+  "devDependencies": {
+    "@qwen-code/qwen-code": "^0.19.2"
+  }
+}

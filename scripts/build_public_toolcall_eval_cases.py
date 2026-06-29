@@ -21,6 +21,7 @@ def main():
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--limit", type=int, default=24)
+    parser.add_argument("--min-gold-calls", type=int, default=1)
     parser.add_argument("--max-gold-calls", type=int, default=1)
     parser.add_argument("--sources", nargs="*", default=["hermes"])
     args = parser.parse_args()
@@ -50,7 +51,7 @@ def main():
                 totals["skipped_no_eval_case"] += 1
                 continue
             gold_calls, invalid = extract_tool_calls(case.get("gold_assistant") or "")
-            if invalid or not gold_calls or len(gold_calls) > args.max_gold_calls:
+            if invalid or len(gold_calls) < args.min_gold_calls or len(gold_calls) > args.max_gold_calls:
                 totals["skipped_call_count"] += 1
                 continue
             case["gold_tool_calls"] = gold_calls
@@ -65,6 +66,7 @@ def main():
         "input": str(args.input),
         "output": str(args.out),
         "limit": args.limit,
+        "min_gold_calls": args.min_gold_calls,
         "max_gold_calls": args.max_gold_calls,
         "sources": args.sources,
         "totals": totals,

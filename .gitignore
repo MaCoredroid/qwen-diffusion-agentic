@@ -1,39 +1,16 @@
-# Python / local environments
-.venv/
-.venv-*/
+.env
 __pycache__/
 *.py[cod]
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# Model weights, adapters, datasets, and generated outputs
 data/
-models/
-runs/
-logs/
-third_party/
-*.safetensors
-*.bin
-*.pt
-*.pth
-*.gguf
-*.tar
-*.tar.gz
-*.zip
-
-# Cloned upstream repos stay local; use patches/ for project-specific changes.
 fast-dllm/
-
-# Local secrets and machine-specific files
-.env
-.env.*
-*.key
-*.pem
-hosts.yml
-
-# OS/editor
-.DS_Store
-.idea/
-.vscode/
-*.swp
+logs/
+models/*
+!models/qwen3.5-9b-fastdllm-init/
+models/qwen3.5-9b-fastdllm-init/*
+!models/qwen3.5-9b-fastdllm-init/config.json
+!models/qwen3.5-9b-fastdllm-init/configuration.py
+!models/qwen3.5-9b-fastdllm-init/conversion_manifest.json
+!models/qwen3.5-9b-fastdllm-init/modeling.py
+node_modules/
+runs/
+third_party/

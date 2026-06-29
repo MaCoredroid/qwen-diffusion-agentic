@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+from collections import Counter
 import json
 import re
 from pathlib import Path
@@ -91,6 +92,26 @@ def normalize_json_tool_call(obj):
     if not name:
         return None
     return {"name": str(name), "arguments": arguments, "format": "json"}
+
+
+def normalize_tool_call_object(obj):
+    """Normalize JSON-style or OpenAI-native tool-call objects."""
+    return normalize_json_tool_call(obj)
+
+
+def extract_tool_call_objects(tool_calls):
+    calls = []
+    invalid = 0
+    if not isinstance(tool_calls, list):
+        return calls, 1
+    for item in tool_calls:
+        call = normalize_tool_call_object(item)
+        if call is None:
+            invalid += 1
+        else:
+            call["format"] = "openai_tool_call" if isinstance(item, dict) and item.get("type") == "function" else call["format"]
+            calls.append(call)
+    return calls, invalid
 
 
 def extract_qwen_function_calls(text):
@@ -268,8 +289,23 @@ def normalize_call_for_compare(call, schemas):
     }
 
 
-def score_tool_calls(text, tools, gold_text=None):
-    calls, invalid = extract_tool_calls(text)
+def count_extra_missing(called_names, gold_names):
+    called = Counter(called_names)
+    gold = Counter(gold_names)
+    extra = called - gold
+    missing = gold - called
+    repeated = Counter({name: count - 1 for name, count in called.items() if count > 1})
+    return {
+        "extra_call_count": sum(extra.values()),
+        "missing_call_count": sum(missing.values()),
+        "repeated_call_count": sum(repeated.values()),
+        "extra_call_names": sorted(extra.elements()),
+        "missing_call_names": sorted(missing.elements()),
+        "repeated_call_names": sorted(repeated.elements()),
+    }
+
+
+def score_normalized_tool_calls(calls, invalid, tools, gold_calls=None, gold_invalid=0):
     schemas = tool_schema_by_name(tools)
     called_names = [call["name"] for call in calls]
     schema_valid_count = 0
@@ -302,21 +338,45 @@ def score_tool_calls(text, tools, gold_text=None):
         "calls": calls,
     }
 
-    if gold_text is not None:
-        gold_calls, gold_invalid = extract_tool_calls(gold_text)
+    if gold_calls is not None:
+        gold_names = [call["name"] for call in gold_calls]
         normalized_calls = [normalize_call_for_compare(call, schemas) for call in calls]
         normalized_gold = [normalize_call_for_compare(call, schemas) for call in gold_calls]
+        count_metrics = count_extra_missing(called_names, gold_names)
         metrics.update(
             {
                 "gold_tool_call_count": len(gold_calls) + gold_invalid,
                 "gold_invalid_tool_call_count": gold_invalid,
-                "gold_called_names": [call["name"] for call in gold_calls],
-                "exact_tool_sequence": [call["name"] for call in calls] == [call["name"] for call in gold_calls],
-                "exact_tool_name_set": set(called_names) == {call["name"] for call in gold_calls},
+                "gold_called_names": gold_names,
+                "exact_tool_sequence": called_names == gold_names,
+                "exact_tool_name_multiset": Counter(called_names) == Counter(gold_names),
+                "exact_tool_name_set": set(called_names) == set(gold_names),
+                "same_tool_call_count": len(calls) == len(gold_calls),
                 "exact_arguments": normalized_calls == normalized_gold,
+                **count_metrics,
             }
         )
     return metrics
+
+
+def score_tool_calls(text, tools, gold_text=None):
+    calls, invalid = extract_tool_calls(text)
+    gold_calls = None
+    gold_invalid = 0
+    if gold_text is not None:
+        gold_calls, gold_invalid = extract_tool_calls(gold_text)
+    return score_normalized_tool_calls(calls, invalid, tools, gold_calls, gold_invalid)
+
+
+def score_tool_call_objects(tool_calls, tools, gold_tool_calls=None, gold_text=None):
+    calls, invalid = extract_tool_call_objects(tool_calls)
+    gold_calls = None
+    gold_invalid = 0
+    if gold_tool_calls is not None:
+        gold_calls, gold_invalid = extract_tool_call_objects(gold_tool_calls)
+    elif gold_text is not None:
+        gold_calls, gold_invalid = extract_tool_calls(gold_text)
+    return score_normalized_tool_calls(calls, invalid, tools, gold_calls, gold_invalid)
 
 
 def score_record(record):

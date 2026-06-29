@@ -123,10 +123,10 @@ teacher repair, and the later Qwen3.5-9B diffusion loop.
 
 ## Next Step
 
-The next useful gate is public multi-call/tool-result traces:
+The next useful gate is to put Qwen3.5-9B and the diffusion target through the
+same one-call, multi-call, and tool-result slices:
 
-1. Build a public multi-call eval slice.
-2. Add repeated-call and extra-call metrics.
-3. Add argument repair/regenerate output that preserves schema.
-4. Use synthetic + public failures as the next 1.5B diffusion curriculum.
-5. Measure Qwen3.5-9B AR on the same eval before training its diffusion target.
+1. Measure Qwen3.5-9B AR on the same eval before training its diffusion target.
+2. Add argument repair/regenerate output that preserves schema.
+3. Use synthetic + public failures as the next diffusion curriculum.
+4. Compare each diffusion checkpoint against these teacher/reference baselines.

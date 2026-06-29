@@ -33,22 +33,27 @@ def post_json(url, payload, timeout):
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"HTTP {exc.code}: {body}") from exc
 
 
 def ask_teacher(case, endpoint, model, timeout, temperature, max_tokens, enable_thinking):
     messages = list(case["prompt_messages"])
+    instruction = case.get("teacher_instruction") or (
+        "Return the necessary Qwen tool call or calls for the request above. "
+        "Use only this format and no prose:\n"
+        "<tool_call>\n"
+        "{\"name\": \"tool_name\", \"arguments\": {}}\n"
+        "</tool_call>"
+    )
     messages.append(
         {
             "role": "user",
-            "content": (
-                "Return the necessary Qwen tool call or calls for the request above. "
-                "Use only this format and no prose:\n"
-                "<tool_call>\n"
-                "{\"name\": \"tool_name\", \"arguments\": {}}\n"
-                "</tool_call>"
-            ),
+            "content": instruction,
         }
     )
     payload = {
@@ -99,6 +104,18 @@ def main():
         "ok": 0,
         "valid_tool_json": 0,
         "exact_tool_name_set": 0,
+        "exact_tool_sequence": 0,
+        "exact_tool_name_multiset": 0,
+        "same_tool_call_count": 0,
+        "exact_arguments": 0,
+        "all_schema_valid": 0,
+        "all_required_args_present": 0,
+        "records_with_extra_calls": 0,
+        "records_with_missing_calls": 0,
+        "records_with_repeated_calls": 0,
+        "total_extra_calls": 0,
+        "total_missing_calls": 0,
+        "total_repeated_calls": 0,
         "errors": 0,
     }
     start = time.time()
@@ -133,27 +150,39 @@ def main():
                         "valid_tool_json": metrics["valid_tool_call"],
                         "valid_tool_call": metrics["valid_tool_call"],
                         "exact_tool_name_set": metrics.get("exact_tool_name_set"),
+                        "exact_tool_name_multiset": metrics.get("exact_tool_name_multiset"),
                         "exact_tool_sequence": metrics.get("exact_tool_sequence"),
+                        "same_tool_call_count": metrics.get("same_tool_call_count"),
                         "exact_arguments": metrics.get("exact_arguments"),
                         "all_schema_valid": metrics["all_schema_valid"],
                         "all_required_args_present": metrics["all_required_args_present"],
                         "schema_valid_count": metrics["schema_valid_count"],
                         "required_args_count": metrics["required_args_count"],
+                        "extra_call_count": metrics.get("extra_call_count"),
+                        "missing_call_count": metrics.get("missing_call_count"),
+                        "repeated_call_count": metrics.get("repeated_call_count"),
+                        "extra_call_names": metrics.get("extra_call_names"),
+                        "missing_call_names": metrics.get("missing_call_names"),
+                        "repeated_call_names": metrics.get("repeated_call_names"),
                         "call_errors": metrics["call_errors"],
                     }
                 )
                 totals["ok"] += 1
                 totals["valid_tool_json"] += int(row["valid_tool_json"])
                 totals["exact_tool_name_set"] += int(bool(row["exact_tool_name_set"]))
-                totals.setdefault("exact_tool_sequence", 0)
-                totals.setdefault("exact_arguments", 0)
-                totals.setdefault("all_schema_valid", 0)
-                totals.setdefault("all_required_args_present", 0)
                 totals["exact_tool_sequence"] += int(bool(row["exact_tool_sequence"]))
+                totals["exact_tool_name_multiset"] += int(bool(row["exact_tool_name_multiset"]))
+                totals["same_tool_call_count"] += int(bool(row["same_tool_call_count"]))
                 totals["exact_arguments"] += int(bool(row["exact_arguments"]))
                 totals["all_schema_valid"] += int(bool(row["all_schema_valid"]))
                 totals["all_required_args_present"] += int(bool(row["all_required_args_present"]))
-            except (urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError) as exc:
+                totals["records_with_extra_calls"] += int((row["extra_call_count"] or 0) > 0)
+                totals["records_with_missing_calls"] += int((row["missing_call_count"] or 0) > 0)
+                totals["records_with_repeated_calls"] += int((row["repeated_call_count"] or 0) > 0)
+                totals["total_extra_calls"] += int(row["extra_call_count"] or 0)
+                totals["total_missing_calls"] += int(row["missing_call_count"] or 0)
+                totals["total_repeated_calls"] += int(row["repeated_call_count"] or 0)
+            except (RuntimeError, urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError) as exc:
                 row.update({"status": "error", "error": f"{type(exc).__name__}: {exc}"})
                 totals["errors"] += 1
             totals["records"] += 1
