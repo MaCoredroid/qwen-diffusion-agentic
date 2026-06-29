@@ -348,6 +348,21 @@ one-example check → full init/A/B generation table + denoising-NLL (does B-A W
 open-ended sampler whack-a-mole. This is the well-justified inflection: model works, needs scale + a correct
 diffusion sampler.
 
+## Scale run LAUNCHED + sampler masking bug FIXED in parallel (2026-06-29)
+- **1000-step A/B run TRAINING:** systemd `qwen-flare-stage1-ab-s1024-step1000` (A diffusion-only first, then B
+  two-stream), MAX_STEPS=1000 BLOCK_SIZE=1024 GRADIENT_CHECKPOINTING=0 expandable_segments, GPU **100% util**
+  (rule satisfied), ~6h. Driver: `runs/flare_stage1_ab_pilot/optimized_ab_s1024_step1000/driver.log`.
+- **Diffusion-sampler masking bug CONFIRMED + fixed (CPU, parallel, no GPU contention):** the `initial_masks=1`
+  flag was real — the full-context diffusion path was NOT fresh-masking the active block (tail-fill mode).
+  Fix: full-context path now defaults to **fresh 32-mask blocks** (`diagnose_flare_generation_speed.py:483`;
+  `eval_fastdllm_toolcall_cases.py:1675` golden `full_context_sample` gets `--fresh-generation-blocks`;
+  `--tail-fill-generation` kept as compat). py_compile clean. → This means the earlier bidirectional "ducks
+  ducks" collapse was PARTLY this masking bug, not pure undertraining; the diffusion sampler will be correct
+  (fresh-masked blocks + mask-ban + full-context) for the post-scale eval. The causal-sampler evidence
+  (coherent block 0 → accumulation collapse; force-fed→correct) still supports undertraining for free-gen.
+- POST-SCALE PLAN: corrected-sampler one-example free-gen check → full init/A/B generation table + denoising-NLL
+  (does B−A widen with scale? does free-gen cohere with more training?).
+
 ## 4th SAMPLER BUG (tail-fill vs fresh-block) + scale run TRAINING (2026-06-29)
 Scale run LAUNCHED + training: `qwen-flare-stage1-ab-s1024-step1000.service` active, arm A (diffusion_only) at
 ~171/1000 @ 2.38s/it, GPU 100%. Arm B (two-stream) follows; ~6h total. Committed + pushed (65495f2).
