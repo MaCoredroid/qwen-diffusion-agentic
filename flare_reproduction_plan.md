@@ -362,6 +362,10 @@ diffusion sampler.
   (coherent block 0 → accumulation collapse; force-fed→correct) still supports undertraining for free-gen.
 - POST-SCALE PLAN: corrected-sampler one-example free-gen check → full init/A/B generation table + denoising-NLL
   (does B−A widen with scale? does free-gen cohere with more training?).
+- **Arm A (diffusion-only) DONE @1000 steps** (2026-06-29 13:14): train_loss 7.74→**3.4278** (substantial
+  denoising-objective learning over 5× the steps), 40 min, peak 27889 MiB, adapter saved. **Arm B (two-stream)
+  training** (~18.7s/it, ~5h). train_loss is the objective, NOT capability — the decisive read is the post-arm-B
+  eval (free-gen + heldout denoising-NLL). No capability conclusion from train_loss.
 
 ## 4th SAMPLER BUG (tail-fill vs fresh-block) + scale run TRAINING (2026-06-29)
 Scale run LAUNCHED + training: `qwen-flare-stage1-ab-s1024-step1000.service` active, arm A (diffusion_only) at
