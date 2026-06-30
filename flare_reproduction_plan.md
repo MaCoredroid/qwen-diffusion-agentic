@@ -764,3 +764,19 @@ module. ONE RISK: FLA GDN BACKWARD Triton on sm_120 Blackwell (#607 tmem_store, 
 3.2-3.6, we're on 3.7.1 (newer) -> may be fixed, UNVERIFIED. SPIKE TEST (1-2h) decides: green=0.5-1.5d adopt
 (util 63->~90-100%); #607 reproduces=accept 63% (no hand-rolled Triton, per lead). PLAN: CPU-prep FLA (install
 bare + flagged adapter) during the v2 retrain; AFTER retrain -> endgame eval FIRST, then the spike test -> gate.
+
+## ENDGAME — native-trained x live decoder = 19/28, IDENTICAL to transfer; decoder DOMINATES (2026-06-30)
+Native mix-v2 student (fresh-from-init, native, verified-correct, 50/50), loss 3.4846, ~89min (util fix).
+| eval | one-call | multicall | teacher | TOTAL exact-args |
+| native-trained RAW native | 1/8 | 1/12 | 0/8 | **2/28** (vs B@1000 raw ~0) |
+| native-trained + LIVE DECODER | 5/8 | 10/12 | 4/8 | **19/28** |
+| B@1000 (transfer) + LIVE DECODER | 5/8 | 10/12 | 4/8 | **19/28** |
+**Native-trained x live decoder = 19/28, EXACTLY = B@1000-transfer x decoder (19/28), per-slice identical.**
+RED-TEAM (verified, not a bug): compared generations -- ex0 byte-identical, ex1 differs -> a MIX (caching bug
+would be all-identical; independence all-different) => GENUINE decoder-DOMINATED convergence. Under greedy + heavy
+schema constraint, both students reach the same 19/28. Native training lifted RAW native slightly (0->2/28) but the
+decoder washes it out. **mix-v2 did NOT beat the success bar (must beat 19/28); it TIED.** => the data lever is
+EXHAUSTED: mix-v1 net-negative, mix-v2 neutral. The CONSTRAINED LIVE DECODER is the lever (19/28=68%, label-free,
+on ANY student, no special training). The ~68% ceiling is value-CONTENT accuracy, which agentic SFT doesn't move
+(would need 27B-teacher distillation at scale or a different approach). RETENTION (native-trained GSM8K vs 0.65)
+pending. NEXT: refresh the heavy flare session at this boundary; then the FLA spike test (util).
