@@ -604,3 +604,13 @@ mix (27B-teacher traces) vs both. flare scoping the live decoder (no build) whil
 **Net project state:** conversion WORKS (GSM8K 0.70 diffusion-mode); tool-call grounding is PRESENT in the base
 converted model and the constrained DECODER renders it (9/28 exact-args, label-free, promotable). The structure
 wall is the diffusion serializer; constrained decoding is the proven lever.
+
+## ROADMAP: lead chose mix-v2 (27B-teacher data lever) (2026-06-30)
+After the mix-v1 net-negative + constrained-decoder-is-the-lever result, lead chose the BETTER DATA MIX path
+(over the live-grammar-decoder build, which is scoped + deferred). mix-v2 = same-family Qwen3.6-27B-teacher
+diffusion-friendly traces (DIVERSE — fix mix-v1's 52-unique-call low diversity) + MORE retention (fix the 0.55
+GSM8K). Steered, CHECKPOINT-before-train: (1) teacher-trace pipeline pilot (~20-30 diverse traces, quality +
+diversity read + diffusion-friendly formatting); (2) mix-v2 design (counts, retention rebalanced to 40-50%,
+start-point, near-dup leak-check). SUCCESS BAR: beat B@1000-constrained 9/28 exact-args AND keep GSM8K ≥~0.65;
+if it can't beat 9/28, data lever exhausted → pivot to the live decoder. No big run until I review the pilot +
+mix design.
