@@ -880,3 +880,14 @@ calling FLA, matching the direct spike's bf16 state path while keeping fp32 vali
 validators still pass: `validate_flare_two_stream_forward.py` PASS and `validate_flare_production_integration.py`
 PASS. **Not promoted**: the strengthened FLA gate (real-weight logits/NLL, multi-doc schedule parity, detached seed,
 fp32 tight tolerance, loss overlay, eval regression check, util re-measure) is still pending.
+
+## FLA integration step 2 — strengthened tiny CUDA gate added and PASS (2026-06-30)
+Added `scripts/validate_fla_gdn_integration.py` for the holes called out by FLA-verify before loading the 9B model:
+fp32 realistic-magnitude kernel parity, detached `initial_state` (`requires_grad=False`) parity, multi-block /
+multi-doc production two-stream schedule parity, and the legacy detached clean-state injection path with noisy-only
+loss proving clean seed gradients stay zero. Result on RTX 5090: PASS. Key maxima: fp32 kernel output 1.71e-4,
+final_state 4.64e-4, loss_abs 2.27e-5; detached seed grad is None for both torch and FLA; two-stream multi-doc
+schedule logits 5.55e-3, total loss_abs 5.73e-4, AR/diff counts match; legacy detached path clean_grad_max_abs=0
+for both. Tolerances are split deliberately: tight 5e-4 on the low-level fp32 kernel/grad check, 6e-3 logits /
+1e-3 loss for accumulated multi-layer schedule parity. **Still not promoted**: real-weight logits/NLL, loss-overlay,
+eval regression, and util re-measure remain pending.
