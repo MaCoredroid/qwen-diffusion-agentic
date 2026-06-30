@@ -47,7 +47,7 @@ EVAL_SLICES = [
 TOOL_CATEGORY_SPECS = [
     {
         "name": "verified_teacher_native_exact",
-        "target": 28,
+        "target": 23,
         "kind": "teacher_verified_jsonl",
         "paths": [
             ROOT / "runs/flare_agentic_mix_v2_teacher_native_fresh30/teacher_q36_native_t07.jsonl",
@@ -62,7 +62,7 @@ TOOL_CATEGORY_SPECS = [
     },
     {
         "name": "raw_public_real_toolcall_native",
-        "target": 96,
+        "target": 51,
         "kind": "train_json",
         "paths": [ROOT / "data/fastdllm_toolcall_train/train_toolcall_no_public_multicall_smoke.json"],
         "allow_repeats": False,
@@ -70,7 +70,7 @@ TOOL_CATEGORY_SPECS = [
     },
     {
         "name": "public_multicall_gold_native",
-        "target": 56,
+        "target": 28,
         "kind": "eval_jsonl",
         "paths": [ROOT / "data/toolcall_eval/public_train_multicall_gold_cases.jsonl"],
         "allow_repeats": False,
@@ -78,7 +78,7 @@ TOOL_CATEGORY_SPECS = [
     },
     {
         "name": "public_multicall_no_public_native",
-        "target": 45,
+        "target": 28,
         "kind": "eval_jsonl",
         "paths": [ROOT / "data/toolcall_eval/public_train_multicall_no_public_smoke_cases.jsonl"],
         "allow_repeats": False,
@@ -86,7 +86,7 @@ TOOL_CATEGORY_SPECS = [
     },
     {
         "name": "onecall_argument_grounding_native",
-        "target": 96,
+        "target": 136,
         "kind": "train_json",
         "paths": [ROOT / "data/qwen35_9b_toolcall_argument_curriculum/train_agentic_mix.json"],
         "allow_repeats": False,
@@ -94,7 +94,7 @@ TOOL_CATEGORY_SPECS = [
     },
     {
         "name": "multicall_sequence_plan_native",
-        "target": 96,
+        "target": 164,
         "kind": "train_json",
         "paths": [ROOT / "data/qwen35_9b_toolcall_multicall_curriculum/train_agentic_mix.json"],
         "allow_repeats": False,
@@ -102,7 +102,7 @@ TOOL_CATEGORY_SPECS = [
     },
     {
         "name": "multicall_gap_complex_extract_native",
-        "target": 50,
+        "target": 38,
         "kind": "train_json",
         "paths": [ROOT / "data/qwen35_9b_toolcall_multicall_gap_curriculum/train_agentic_mix.json"],
         "allow_repeats": False,
@@ -110,7 +110,7 @@ TOOL_CATEGORY_SPECS = [
     },
     {
         "name": "grounded_spanfill_value_copy_native",
-        "target": 45,
+        "target": 44,
         "kind": "train_json",
         "paths": [
             ROOT
@@ -508,6 +508,13 @@ def main() -> int:
     write_json(manifest_path, manifest)
     write_json(leak_path, final_leak)
     write_leak_markdown(leak_md_path, final_leak)
+    leak_md_path.write_text(
+        leak_md_path.read_text(encoding="utf-8").replace(
+            "# FLARE Agentic Mix V1 Leak Check",
+            "# FLARE Agentic Mix V2 Native Leak Check",
+        ),
+        encoding="utf-8",
+    )
     write_manifest_markdown(manifest_md_path, manifest)
     print(json.dumps(manifest, indent=2, ensure_ascii=False))
     return 0
