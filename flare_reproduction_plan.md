@@ -753,3 +753,14 @@ recurrence. Full util needs the FUSED GDN kernel (deferred multi-day Triton, the
 larger batch (OOM-blocked at block 1024). DECISION (escalated): finish the now-fast v2 retrain (~1.5h, gets the
 agentic endgame) THEN build the fused GDN kernel (the 100%-util path + speeds ALL future two-stream runs) -- don't
 pause a 1.5h run for a multi-day kernel. Task-boundary refresh of the heavy flare session available here.
+
+## FLA KERNEL FEASIBILITY RESOLVED (workflow, 2026-06-30) — cheap drop-in CONTINGENT on a spike test
+Workflow (4 web + 2 codebase agents + adversarial synthesis) -> `fla_kernel_feasibility.md`. DECISIVE: our
+pure-torch `torch_chunk_gated_delta_rule` IS the official HF qwen3_next FLA fallback (same name/math; FLARE Route I
+"reuses standard FLA kernels"). FLA `chunk_gated_delta_rule` = a torch.autograd.Function with backward + bf16 +
+per-segment initial_state + dh0 grad (= our two-stream schedule). Flag map: use_qk_l2norm_in_kernel=False,
+use_beta_sigmoid_in_kernel=False, drop our cumsum, scale=1/sqrt(d_k), allow_neg_eigval=False; ShortConv stays in
+module. ONE RISK: FLA GDN BACKWARD Triton on sm_120 Blackwell (#607 tmem_store, #734 cumsum) -- reported on triton
+3.2-3.6, we're on 3.7.1 (newer) -> may be fixed, UNVERIFIED. SPIKE TEST (1-2h) decides: green=0.5-1.5d adopt
+(util 63->~90-100%); #607 reproduces=accept 63% (no hand-rolled Triton, per lead). PLAN: CPU-prep FLA (install
+bare + flagged adapter) during the v2 retrain; AFTER retrain -> endgame eval FIRST, then the spike test -> gate.
