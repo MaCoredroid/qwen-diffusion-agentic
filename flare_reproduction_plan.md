@@ -517,3 +517,25 @@ exact 3 baseline slices raw diffusion-mode (corrected sampler + stop-fix) vs B@1
 multicall 0/12, teacher 1/8 exact args) — per-example exact-args requested; (2) RETENTION: GSM8K first20 vs 0.70,
 MBPP raw. Success bar: valid JSON ~5→15+/28, exact args ~1→8+/24 (1→3=noise); GSM8K guardrail <0.5. Red-team; no
 promote.
+
+## POST-TRAIN TOOL-CALL RESULT (2026-06-30) — RAW well-formedness REGRESSED, but CONTENT learned (the structure wall)
+Apples-to-apples (baseline flags) raw diffusion-mode, new agentic adapter vs B@1000 baseline:
+| slice | new valid_json | new exact_args | missing_calls | baseline valid/args |
+| one-call 8 | 0 | 0 | 8 | 1 / 0 |
+| multicall 12 | 2 | 0 | 12 | 2 / 0 |
+| teacher 8 | 0 | 0 | 8 | 2 / 1 |
+On the RAW metric the new adapter is WORSE (valid JSON one-call 1->0, teacher 2->0; exact args 1->0). BUT I read
+the generated text: **the model produces the RIGHT tool + RIGHT arg names + RIGHT VALUES** (set_thermostat_schedule
++ ther123 + full schedule; open_garage_door + SGDO12345678 + auth token) **with TOKEN-LEVEL CORRUPTION** —
+duplicated "argumentsarguments", dropped chars ("open_gar_door"), missing quotes/braces. = **diffusion-generation
+JSON WELL-FORMEDNESS corruption from parallel denoising, NOT a content/knowledge regression.** The training WORKED
+(model now attempts RICH correct tool calls); the longer richer outputs corrupt MORE under the sampler -> fewer
+parse valid than the baseline's shorter occasionally-valid outputs. **Precisely re-confirms the project's original
+thesis: STRUCTURE is the wall; grounding/content is more present than the raw metric shows** — and the
+diffusion-specific manifestation is exact-token-sequence corruption in parallel denoising.
+**NEXT (steered, queued behind retention):** (1) CONTENT-VS-STRUCTURE lenient scoring — JSON-repair/fuzzy-extract
+{tool,args} per output, score tool-name + arg-VALUES ignoring well-formedness -> the model's TRUE grounding vs the
+strict 0/24; + corruption-type counts. (2) If content accuracy is materially high -> next lever = CONSTRAINED
+DECODING (grammar/JSON-schema-constrained diffusion denoising; the project's CONSTRAINED lane; DINGO /
+constrained-diffusion) -> scope existing repo grammar/projection decoders, don't build yet. Retention (GSM8K vs
+0.70) pending. Do NOT promote on RAW.
