@@ -797,3 +797,17 @@ consistent across both mixes.) DECISION per the plan's rule: data lever exhauste
 (built, validated, banked). Refreshing the heavy flare mutator at this clean boundary; next mechanical step = FLA
 spike test (util fix, user-pre-approved, orthogonal). Strategic next-lever question ESCALATED to user (their chosen
 'do both' data direction is now refuted).
+
+## FLA fused-GDN spike test -- GREEN on sm_120 (2026-06-30)
+Step 0 gate only; no model integration or promotion. Confirmed `.venv-fastdllm` has bare
+`flash-linear-attention==0.5.1` while keeping `torch==2.12.1+cu130` and `triton==3.7.1`; GPU is RTX 5090
+`sm_120`. Added `scripts/spike_fla_gdn_kernel.py` and result note `fla_gdn_kernel_spike_result.md`.
+Full-block spike: one bf16 GDN block `[B=1, T=1024, HV=32, K=128, V=128]`, non-zero trainable `initial_state`,
+direct `fla.ops.gated_delta_rule.chunk_gated_delta_rule`, flags exactly per plan
+(`use_qk_l2norm_in_kernel=False`, `use_beta_sigmoid_in_kernel=False`, `scale=1/sqrt(d_k)`,
+`allow_neg_eigval=False`) and **raw per-token `g` only, no pre-cumsum**.
+Checks PASS: no #607 `tmem_store` / `no kernel image` backward crash; no #734 cumsum crash; FLA and torch-reference
+grads finite for `dq/dk/dv/dbeta/dg/dh0`; parity vs local `_torch_chunk_gated_delta_rule_impl` at bf16 tolerance
+`rtol=1e-2, atol=2e-2` for output/final_state and all listed grads. Full-block max abs diffs:
+output 2.44e-4, final_state 1.08e-3, dq 1.53e-5, dk 4.88e-4, dv 2.44e-4, dbeta 2.44e-4, dg 4.59e-4,
+dh0 7.63e-6. **VERDICT: GREEN** -- ready for monitor red-team and then a separate integration step if approved.
