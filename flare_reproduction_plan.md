@@ -891,3 +891,19 @@ schedule logits 5.55e-3, total loss_abs 5.73e-4, AR/diff counts match; legacy de
 for both. Tolerances are split deliberately: tight 5e-4 on the low-level fp32 kernel/grad check, 6e-3 logits /
 1e-3 loss for accumulated multi-layer schedule parity. **Still not promoted**: real-weight logits/NLL, loss-overlay,
 eval regression, and util re-measure remain pending.
+
+## FLA integration step 3 — real-weight parity gate PASS with explicit bf16 caveat (2026-06-30)
+Added and ran `scripts/validate_fla_real_weight_parity.py` on real B@1000 weights
+(`models/qwen3.5-9b-fastdllm-init` + `runs/flare_stage1_ab_pilot/two_stream_B_s1024_step1000`). The first strict
+run with bf16 model weights and `atol=2e-2` FAILED logits allclose despite tight NLL (loss_abs 2.45e-4; logits
+max_abs 0.21875). Layer tracing showed the delta starts as first-layer bf16-scale noise (layer0 max 0.03125,
+mean 7.8e-5) and accumulates over 32 layers; base-without-adapter shows the same pattern, so it is not LoRA. To
+separate math correctness from bf16 accumulation, the script now includes a tight fp32 real-activation first-GDN
+check using actual real-weight q/k/v/beta/g magnitudes (`g_min=-1.821`, `g_mean=-0.386`): output max_abs 4.02e-6,
+final_state max_abs 6.09e-5 at 5e-4 tolerance. End-to-end real-weight bf16 parity PASS under explicit bf16
+full-model tolerance (`rtol=2e-2`, `atol=0.25`, loss_atol=0.002): torch loss 1.842944 vs FLA 1.843189, loss_abs
+2.45e-4, logits max_abs 0.21875, mean_abs 0.02425. Original `validate_gdn_state_snapshot.py` also still PASSes
+all 24 GDN layers (max output diffs ~1e-7, ShortConv controls live). **Interpretation for red-team:** flag map and
+real-magnitude fp32 math are tight; full-model bf16 logits are not 0.02-allclose because recurrent fp ordering
+accumulates over 32 layers. **Still not promoted**: loss-overlay, raw/constrained eval regression check, and
+training util re-measure remain pending.

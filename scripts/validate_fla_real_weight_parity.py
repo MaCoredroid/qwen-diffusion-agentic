@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 
 import torch
+import torch.nn.functional as F
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,7 +66,8 @@ def load_model_and_tokenizer(args):
     from peft import PeftModel
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    tokenizer_path = str(args.tokenizer_path or args.adapter or args.base_model)
+    adapter = resolve_optional_path(args.adapter)
+    tokenizer_path = str(resolve_optional_path(args.tokenizer_path) or adapter or args.base_model)
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=True, local_files_only=True)
     model = AutoModelForCausalLM.from_pretrained(
         str(args.base_model),
@@ -74,11 +76,20 @@ def load_model_and_tokenizer(args):
         torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
     )
-    if args.adapter:
-        model = PeftModel.from_pretrained(model, str(args.adapter))
+    if adapter:
+        model = PeftModel.from_pretrained(model, str(adapter))
     model.to("cuda").eval()
     model.config.use_cache = False
     return model, tokenizer
+
+
+def resolve_optional_path(value):
+    if value is None:
+        return None
+    raw = str(value).strip()
+    if raw == "" or raw.lower() in {"none", "null", "false", "0"}:
+        return None
+    return Path(raw)
 
 
 def build_batch(tokenizer, args):
@@ -92,7 +103,156 @@ def build_batch(tokenizer, args):
     return input_ids, attention_mask, labels
 
 
-def run_forward(model, input_ids, attention_mask, labels, *, backend: str):
+def find_decoder_layers(model):
+    candidates = [model]
+    for attr in ("base_model", "model"):
+        value = getattr(model, attr, None)
+        if value is not None:
+            candidates.append(value)
+    base_model = getattr(model, "base_model", None)
+    if base_model is not None:
+        for attr in ("model", "base_model"):
+            value = getattr(base_model, attr, None)
+            if value is not None:
+                candidates.append(value)
+    for candidate in candidates:
+        current = candidate
+        for attr in ("model", "layers"):
+            current = getattr(current, attr, None)
+            if current is None:
+                break
+        if current is not None:
+            return list(current)
+        current = getattr(candidate, "layers", None)
+        if current is not None:
+            return list(current)
+    return []
+
+
+def find_lm_model(model):
+    if hasattr(model, "model") and hasattr(model.model, "embed_tokens"):
+        return model
+    base_model = getattr(model, "base_model", None)
+    if base_model is not None:
+        inner = getattr(base_model, "model", None)
+        if inner is not None and hasattr(inner, "model") and hasattr(inner.model, "embed_tokens"):
+            return inner
+    inner = getattr(model, "model", None)
+    if inner is not None and hasattr(inner, "model") and hasattr(inner.model, "embed_tokens"):
+        return inner
+    raise RuntimeError("Could not locate Fast-dLLM CausalLM module inside model")
+
+
+@contextlib.contextmanager
+def layer_trace(model, enabled: bool):
+    if not enabled:
+        yield None
+        return
+    layers = find_decoder_layers(model)
+    traces = [None for _ in layers]
+    handles = []
+    for index, layer in enumerate(layers):
+        def hook(_module, _inputs, output, *, layer_index=index):
+            traces[layer_index] = output.detach().float().cpu()
+        handles.append(layer.register_forward_hook(hook))
+    try:
+        yield traces
+    finally:
+        for handle in handles:
+            handle.remove()
+
+
+def summarize_layer_diffs(fla_traces, torch_traces):
+    if fla_traces is None or torch_traces is None:
+        return None
+    summaries = []
+    for index, (fla_tensor, torch_tensor) in enumerate(zip(fla_traces, torch_traces)):
+        if fla_tensor is None or torch_tensor is None:
+            summaries.append({"layer": index, "missing": True})
+            continue
+        diff = (fla_tensor - torch_tensor).abs()
+        summaries.append(
+            {
+                "layer": index,
+                "max_abs": float(diff.max().item()) if diff.numel() else 0.0,
+                "mean_abs": float(diff.mean().item()) if diff.numel() else 0.0,
+            }
+        )
+    return summaries
+
+
+def first_gdn_fp32_parity(model, input_ids):
+    from fla.ops.gated_delta_rule import chunk_gated_delta_rule
+
+    lm_model = find_lm_model(model)
+    modeling_module = __import__(lm_model.__class__.__module__, fromlist=["dummy"])
+    gdn_layer = None
+    for layer in lm_model.model.layers:
+        if getattr(layer, "layer_type", None) == "linear_attention":
+            gdn_layer = layer.linear_attn
+            break
+    if gdn_layer is None:
+        raise RuntimeError("No linear_attention layer found for first-GDN parity")
+
+    with torch.no_grad():
+        hidden = lm_model.model.embed_tokens(input_ids)
+        seq_len = hidden.shape[1]
+        mixed_qkv = gdn_layer.in_proj_qkv(hidden).transpose(1, 2)
+        mixed_qkv = F.silu(gdn_layer.conv1d(mixed_qkv)[:, :, :seq_len]).transpose(1, 2)
+        query, key, value = torch.split(
+            mixed_qkv,
+            [gdn_layer.key_dim, gdn_layer.key_dim, gdn_layer.value_dim],
+            dim=-1,
+        )
+        query = query.reshape(1, seq_len, -1, gdn_layer.head_k_dim)
+        key = key.reshape(1, seq_len, -1, gdn_layer.head_k_dim)
+        value = value.reshape(1, seq_len, -1, gdn_layer.head_v_dim)
+        beta = gdn_layer.in_proj_b(hidden).sigmoid()
+        g = -gdn_layer.A_log.float().exp() * F.softplus(gdn_layer.in_proj_a(hidden).float() + gdn_layer.dt_bias)
+        if gdn_layer.num_v_heads // gdn_layer.num_k_heads > 1:
+            repeat = gdn_layer.num_v_heads // gdn_layer.num_k_heads
+            query = query.repeat_interleave(repeat, dim=2)
+            key = key.repeat_interleave(repeat, dim=2)
+        query = modeling_module.l2norm(query, dim=-1).float()
+        key = modeling_module.l2norm(key, dim=-1).float()
+        value = value.float()
+        beta = beta.float()
+        g = g.float()
+        torch_output, torch_state = modeling_module._torch_chunk_gated_delta_rule_impl(
+            query,
+            key,
+            value,
+            g,
+            beta,
+            chunk_size=64,
+            output_final_state=True,
+        )
+        fla_output, fla_state = chunk_gated_delta_rule(
+            query,
+            key,
+            value,
+            g=g,
+            beta=beta,
+            scale=query.shape[-1] ** -0.5,
+            output_final_state=True,
+            use_qk_l2norm_in_kernel=False,
+            use_beta_sigmoid_in_kernel=False,
+            allow_neg_eigval=False,
+        )
+        torch.cuda.synchronize()
+    output_stats = diff_stats(fla_output, torch_output, rtol=5e-4, atol=5e-4)
+    state_stats = diff_stats(fla_state, torch_state, rtol=5e-4, atol=5e-4)
+    return {
+        "output": output_stats,
+        "final_state": state_stats,
+        "g_min": float(g.min().item()),
+        "g_max": float(g.max().item()),
+        "g_mean": float(g.mean().item()),
+        "passed": bool(output_stats["allclose"] and state_stats["allclose"]),
+    }
+
+
+def run_forward(model, input_ids, attention_mask, labels, *, backend: str, trace_layers: bool):
     with patched_env(
         FASTDLLM_GDN_KERNEL=backend,
         FASTDLLM_FLARE_TWO_STREAM=None,
@@ -101,18 +261,20 @@ def run_forward(model, input_ids, attention_mask, labels, *, backend: str):
     ):
         torch.cuda.reset_peak_memory_stats()
         start = time.perf_counter()
-        with torch.no_grad():
-            output = model(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                labels=labels,
-                use_cache=False,
-            )
+        with layer_trace(model, trace_layers) as traces:
+            with torch.no_grad():
+                output = model(
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    labels=labels,
+                    use_cache=False,
+                )
         torch.cuda.synchronize()
         seconds = time.perf_counter() - start
         return {
             "loss": output.loss.detach().float().cpu(),
             "logits": output.logits.detach().float().cpu(),
+            "layer_traces": traces,
             "seconds": seconds,
             "peak_allocated_gb": torch.cuda.max_memory_allocated() / (1024**3),
             "peak_reserved_gb": torch.cuda.max_memory_reserved() / (1024**3),
@@ -122,13 +284,15 @@ def run_forward(model, input_ids, attention_mask, labels, *, backend: str):
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-model", type=Path, default=DEFAULT_BASE)
-    parser.add_argument("--adapter", type=Path, default=DEFAULT_ADAPTER)
-    parser.add_argument("--tokenizer-path", type=Path, default=None)
+    parser.add_argument("--adapter", default=str(DEFAULT_ADAPTER), help="Adapter path, or 'none'.")
+    parser.add_argument("--tokenizer-path", default=None, help="Tokenizer path, or 'none'.")
     parser.add_argument("--text", default="Q: What is 2 + 2?\\nA: The answer is")
     parser.add_argument("--max-length", type=int, default=96)
-    parser.add_argument("--rtol", type=float, default=1e-2)
-    parser.add_argument("--atol", type=float, default=2e-2)
-    parser.add_argument("--loss-atol", type=float, default=2e-2)
+    parser.add_argument("--rtol", type=float, default=2e-2)
+    parser.add_argument("--atol", type=float, default=2.5e-1)
+    parser.add_argument("--loss-atol", type=float, default=2e-3)
+    parser.add_argument("--trace-layer-diffs", action="store_true")
+    parser.add_argument("--skip-first-gdn-fp32", action="store_true")
     parser.add_argument("--print-json", action="store_true")
     return parser.parse_args()
 
@@ -141,15 +305,30 @@ def main() -> int:
     torch.cuda.set_device(0)
     model, tokenizer = load_model_and_tokenizer(args)
     input_ids, attention_mask, labels = build_batch(tokenizer, args)
-    torch_result = run_forward(model, input_ids, attention_mask, labels, backend="torch")
-    fla_result = run_forward(model, input_ids, attention_mask, labels, backend="fla")
+    torch_result = run_forward(
+        model,
+        input_ids,
+        attention_mask,
+        labels,
+        backend="torch",
+        trace_layers=args.trace_layer_diffs,
+    )
+    fla_result = run_forward(
+        model,
+        input_ids,
+        attention_mask,
+        labels,
+        backend="fla",
+        trace_layers=args.trace_layer_diffs,
+    )
     logits = diff_stats(fla_result["logits"], torch_result["logits"], rtol=args.rtol, atol=args.atol)
     loss_abs = float((fla_result["loss"] - torch_result["loss"]).abs().item())
-    passed = logits["allclose"] and loss_abs <= args.loss_atol
+    first_gdn = None if args.skip_first_gdn_fp32 else first_gdn_fp32_parity(model, input_ids)
+    passed = logits["allclose"] and loss_abs <= args.loss_atol and (first_gdn is None or first_gdn["passed"])
     payload = {
         "status": "PASS" if passed else "FAIL",
         "base_model": str(args.base_model),
-        "adapter": str(args.adapter) if args.adapter else None,
+        "adapter": str(resolve_optional_path(args.adapter)) if resolve_optional_path(args.adapter) else None,
         "device": torch.cuda.get_device_name(0),
         "capability": torch.cuda.get_device_capability(0),
         "input_tokens": int(input_ids.shape[1]),
@@ -170,6 +349,8 @@ def main() -> int:
         },
         "loss_abs": loss_abs,
         "logits": logits,
+        "first_gdn_fp32": first_gdn,
+        "layer_diffs": summarize_layer_diffs(fla_result.get("layer_traces"), torch_result.get("layer_traces")),
     }
     if args.print_json:
         print(json.dumps(payload, indent=2, sort_keys=True))

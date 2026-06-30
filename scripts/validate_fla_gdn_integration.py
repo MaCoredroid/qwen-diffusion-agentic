@@ -115,7 +115,12 @@ def make_kernel_inputs(modeling_module, *, seed: int, device: torch.device, dtyp
     value = (0.35 * torch.randn(batch, seq_len, heads, value_dim, device=device, dtype=torch.float32, generator=generator)).to(dtype)
     beta = torch.rand(batch, seq_len, heads, device=device, dtype=torch.float32, generator=generator)
     beta = beta.mul(0.90).add(0.05).to(dtype)
-    g = -(torch.rand(batch, seq_len, heads, device=device, dtype=torch.float32, generator=generator).mul(0.075).add(0.002))
+    g = -(
+        torch.rand(batch, seq_len, heads, device=device, dtype=torch.float32, generator=generator)
+        .pow(2)
+        .mul(1.85)
+        .add(7e-5)
+    )
     h0 = (0.05 * torch.randn(batch, heads, key_dim, value_dim, device=device, dtype=torch.float32, generator=generator)).to(dtype)
     output_grad = 0.02 * torch.randn(batch, seq_len, heads, value_dim, device=device, dtype=torch.float32, generator=generator)
     state_grad = 0.02 * torch.randn(batch, heads, key_dim, value_dim, device=device, dtype=torch.float32, generator=generator)
