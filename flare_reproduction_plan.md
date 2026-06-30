@@ -384,3 +384,14 @@ This is the 4th gen-sampler bug (mask-loop → prefix-blind → causal-OOD → t
 generation path needs a validation harness vs the bit-exact training forward, like training had. Scale run
 proceeds regardless (it's training data, independent of the eval sampler); post-scale we eval with the corrected
 sampler — which may show coherent free-gen even pre-scale, or cleanly confirm undertraining.
+
+## 1000-step run COMPLETE → post-scale eval launched (2026-06-29 18:30)
+A diffusion-only loss 3.4278 (40min), B two-stream loss 3.9430 (5.25h) — NOT comparable (different objectives);
+no capability read from train_loss. Both adapters saved, run inactive, GPU freed.
+EVAL LAUNCHED (NLL-first ordering — learned from the 200-step round where slow generation gated the decisive
+metric): (1) denoising-NLL init/A/B @1000 vs the same disjoint heldout-40 — **KEY READ: does B−A WIDEN vs the
+200-step −0.0608?** (widen = recovery emerging with scale; flat/shrink = two-stream benefit marginal); (2)
+corrected fresh-block sampler one-example free-gen coherence gate (cohere at 1000 vs the 200-step collapse?);
+(3) if coherent → full init/A/B generation table (per-example GSM8K/MBPP + B−A + AR ceiling). Red-team each;
+do not promote. (flare flagged the undertraining verdict as PROVISIONAL — correct, given the tail-fill was the
+4th sampler bug; the corrected-sampler post-scale free-gen is the clean test.)
