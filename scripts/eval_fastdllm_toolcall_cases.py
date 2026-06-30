@@ -202,6 +202,104 @@ def tool_json_prefix_completable(text):
         cursor = close_idx + len(TOOL_CLOSE)
 
 
+def _prefix_of_any(text, candidates):
+    return any(str(candidate).startswith(text) for candidate in candidates)
+
+
+def _valid_native_name_fragment(fragment, candidates):
+    if any(ch in fragment for ch in "\n<>"):
+        return False
+    if not candidates:
+        return bool(fragment) or fragment == ""
+    return _prefix_of_any(fragment, candidates)
+
+
+def native_tool_prefix_completable(text, schemas=None):
+    """Return whether text is a prefix of Qwen-native tool-call blocks.
+
+    This is syntax/schema-shape only: it constrains tags, available tool names,
+    and known argument names. It does not use gold calls or gold values.
+    """
+    schemas = schemas or {}
+    available_names = sorted(schemas)
+    s = str(text or "").lstrip()
+    pos = 0
+    while pos < len(s):
+        if not s.startswith(TOOL_OPEN, pos):
+            return TOOL_OPEN.startswith(s[pos:])
+        pos += len(TOOL_OPEN)
+
+        expected = "\n<function="
+        if not s.startswith(expected, pos):
+            return expected.startswith(s[pos:])
+        pos += len(expected)
+
+        gt = s.find(">", pos)
+        if gt < 0:
+            return _valid_native_name_fragment(s[pos:], available_names)
+        name = s[pos:gt]
+        if available_names and name not in schemas:
+            return False
+        pos = gt + 1
+        properties = ((schemas.get(name) or {}).get("properties") or {}) if isinstance(schemas.get(name), dict) else {}
+        property_names = sorted(properties)
+
+        while True:
+            if pos >= len(s):
+                return True
+            tail = s[pos:]
+            parameter_open = "\n<parameter="
+            function_close = "\n</function>"
+            if parameter_open.startswith(tail) or function_close.startswith(tail):
+                return True
+            if tail.startswith(parameter_open):
+                pos += len(parameter_open)
+                gt = s.find(">", pos)
+                if gt < 0:
+                    return _valid_native_name_fragment(s[pos:], property_names)
+                parameter_name = s[pos:gt]
+                if property_names and parameter_name not in properties:
+                    return False
+                pos = gt + 1
+                if pos >= len(s):
+                    return True
+                if not s.startswith("\n", pos):
+                    return "\n".startswith(s[pos:])
+                pos += 1
+                close = "\n</parameter>"
+                close_idx = s.find(close, pos)
+                if close_idx < 0:
+                    value_tail = s[pos:]
+                    tag_start = value_tail.rfind("\n<")
+                    if tag_start >= 0:
+                        partial_tag = value_tail[tag_start:]
+                        if not close.startswith(partial_tag):
+                            return False
+                    if "\n</function>" in value_tail or "\n</tool_call>" in value_tail:
+                        return False
+                    return True
+                value_text = s[pos:close_idx]
+                if "\n</function>" in value_text or "\n</tool_call>" in value_text:
+                    return False
+                pos = close_idx + len(close)
+                continue
+            if tail.startswith(function_close):
+                pos += len(function_close)
+                expected = "\n</tool_call>"
+                if not s.startswith(expected, pos):
+                    return expected.startswith(s[pos:])
+                pos += len(expected)
+                if pos >= len(s):
+                    return True
+                expected = "\n<tool_call>"
+                if not s.startswith(expected, pos):
+                    return expected.startswith(s[pos:])
+                pos += 1
+                break
+            return False
+    return True
+
+
 def tool_call_mode_force_mask(
     tokenizer,
     x_t,
@@ -225,12 +323,12 @@ def tool_call_mode_force_mask(
     return force_mask
 
 
-def proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id):
+def proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id, schemas=None):
     proposal = sequence.clone()
     proposal[abs_idx] = int(token_id)
     generated = proposal[original_len:].detach().tolist()
     text = contiguous_decoded_prefix(tokenizer, generated, mask_id)
-    return tool_json_prefix_completable(text)
+    return native_tool_prefix_completable(text, schemas=schemas)
 
 
 def tool_json_live_prefix_active(text):
@@ -238,7 +336,7 @@ def tool_json_live_prefix_active(text):
     if body is not None:
         return True
     stripped = str(text or "").lstrip()
-    return bool(stripped and TOOL_OPEN.startswith(stripped))
+    return stripped == "" or TOOL_OPEN.startswith(stripped)
 
 
 def live_tool_json_top_token(
@@ -249,11 +347,12 @@ def live_tool_json_top_token(
     abs_idx,
     mask_id,
     topk,
+    schemas=None,
 ):
     topk = max(1, min(int(topk), logits.shape[-1]))
     for token_id in torch.topk(logits, k=topk).indices.detach().tolist():
         token_id = int(token_id)
-        if proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id):
+        if proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id, schemas=schemas):
             return token_id, True
     return int(torch.argmax(logits).item()), False
 
@@ -282,6 +381,7 @@ def apply_live_tool_json_grammar(
     active_rows = 0
     rejected = 0
     unsafe = 0
+    schemas = getattr(args, "_live_tool_schemas", {}) or {}
 
     for row_idx in range(x_t.shape[0]):
         if not current_mask[row_idx].any():
@@ -302,6 +402,7 @@ def apply_live_tool_json_grammar(
             abs_idx,
             args.mask_id,
             args.live_tool_json_topk,
+            schemas=schemas,
         )
         if not safe:
             unsafe += 1
@@ -2400,39 +2501,50 @@ def generate_case(model, tokenizer, case, args, sampler_schedule=None):
     prompt = make_prompt(tokenizer, case, args.append_instruction, chat_template=args.chat_template)
     prompt_input_ids = tokenizer([prompt], return_tensors="pt").input_ids.to("cuda")
     input_ids = prompt_input_ids
+    previous_live_tool_schemas = getattr(args, "_live_tool_schemas", None)
+    args._live_tool_schemas = tool_schema_by_name(case.get("tools") or [])
     forced_prefix = args.forced_assistant_prefix or ""
     if args.force_tool_call_prefix:
         forced_prefix = "<tool_call>\n" + forced_prefix
     if forced_prefix:
         prefix_ids = tokenizer(forced_prefix, add_special_tokens=False, return_tensors="pt").input_ids.to("cuda")
         input_ids = torch.cat([prompt_input_ids, prefix_ids], dim=1)
-    with torch.no_grad():
-        if args.full_context_sampling:
-            generated = full_context_sample(
-                model,
-                input_ids,
-                tokenizer,
-                args,
-                sampler_schedule=sampler_schedule,
-                original_len_override=prompt_input_ids.shape[1],
-            )
+    try:
+        with torch.no_grad():
+            if args.full_context_sampling:
+                generated = full_context_sample(
+                    model,
+                    input_ids,
+                    tokenizer,
+                    args,
+                    sampler_schedule=sampler_schedule,
+                    original_len_override=prompt_input_ids.shape[1],
+                )
+            else:
+                seq_len = torch.tensor([input_ids.shape[1]], device="cuda")
+                generated = model.mdm_sample(
+                    input_ids,
+                    tokenizer=tokenizer,
+                    block_size=args.block_size,
+                    small_block_size=args.small_block_size,
+                    max_new_tokens=args.max_new_tokens,
+                    mask_id=args.mask_id,
+                    stop_token=args.stop_token_id,
+                    min_len=input_ids.shape[1],
+                    seq_len=seq_len,
+                    threshold=args.threshold,
+                    temperature=args.temperature,
+                    top_p=args.top_p,
+                    use_block_cache=args.use_block_cache,
+                )[0]
+    finally:
+        if previous_live_tool_schemas is None:
+            try:
+                delattr(args, "_live_tool_schemas")
+            except AttributeError:
+                pass
         else:
-            seq_len = torch.tensor([input_ids.shape[1]], device="cuda")
-            generated = model.mdm_sample(
-                input_ids,
-                tokenizer=tokenizer,
-                block_size=args.block_size,
-                small_block_size=args.small_block_size,
-                max_new_tokens=args.max_new_tokens,
-                mask_id=args.mask_id,
-                stop_token=args.stop_token_id,
-                min_len=input_ids.shape[1],
-                seq_len=seq_len,
-                threshold=args.threshold,
-                temperature=args.temperature,
-                top_p=args.top_p,
-                use_block_cache=args.use_block_cache,
-            )[0]
+            args._live_tool_schemas = previous_live_tool_schemas
     new_ids = generated[prompt_input_ids.shape[1] :]
     mask_count = int((new_ids == args.mask_id).sum().item())
     generated_token_count = int((new_ids != args.mask_id).sum().item())
@@ -2886,7 +2998,7 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
         "json_prefix_guard_target_fallback": args.json_prefix_guard_target_fallback,
         "live_tool_json_grammar": args.live_tool_json_grammar,
         "live_tool_json_topk": args.live_tool_json_topk,
-        "live_tool_json_mode": "hybrid_diffusion_nl_constrained_ar_json" if args.live_tool_json_grammar else "off",
+        "live_tool_json_mode": "hybrid_diffusion_nl_constrained_ar_qwen_native" if args.live_tool_json_grammar else "off",
         "strip_gold_for_generation": args.strip_gold_for_generation,
         "argument_boundary_token_ids": args.argument_boundary_token_ids,
         "argument_newline_token_ids": args.argument_newline_token_ids,
@@ -3074,9 +3186,18 @@ def main():
         "--live-tool-json-grammar",
         action="store_true",
         help=(
-            "Hybrid sampler mode: normal diffusion outside tool JSON spans, but inside an active "
-            "<tool_call> body commit the leftmost masked token using the highest-logit token that "
-            "keeps the JSON prefix grammar-completable. Label-free: uses no gold target tokens."
+            "Deprecated alias for --live-tool-native-grammar."
+        ),
+    )
+    parser.add_argument(
+        "--live-tool-native-grammar",
+        dest="live_tool_json_grammar",
+        action="store_true",
+        help=(
+            "Hybrid sampler mode: normal diffusion outside tool-call spans, but inside an active "
+            "Qwen-native <tool_call>/<function>/<parameter> span commit the leftmost masked token "
+            "using the highest-logit token that keeps the native prefix grammar-completable. "
+            "Label-free: uses tool schema only, no gold target tokens."
         ),
     )
     parser.add_argument(

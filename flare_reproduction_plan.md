@@ -668,3 +668,17 @@ native; (4) RE-BASELINE B@1000 raw + constrained on NATIVE format (9/28 was <too
 its true native). Do this BEFORE more teacher-gen / mix-v2 / decoder eval -- one consistent format underneath
 everything. (Hypothesis: <tool_call> may have been an imposed format the student is worse at than its native; native
 could lift the raw + constrained numbers.)
+
+## STANDING RULE: retrain freely (don't preserve sunk training) + native re-baseline is a TRANSFER number (2026-06-30)
+Lead set a STANDING RULE (memory: retrain-freely-rule): never let already-trained checkpoints constrain design;
+training is cheap, retrain. Triggered by: B@1000 was trained on Hermes <tool_call>, but the native-format rule
+requires native -> RETRAIN on native, don't keep Hermes-B@1000.
+Native re-baseline so far (Hermes-trained student on NATIVE eval = a TRANSFER number, NOT the target): one-call
+constrained 3/8 (native) vs 4/8 (old Hermes) -- slightly worse, = the expected Hermes->native transfer gap; do NOT
+over-weight (N=8). The REAL native result needs native-TRAINED student.
+**DECISION (autonomous, per the rule):** standardize native EVERYWHERE incl. TRAINING TARGETS -> retrain the
+student on native. Forward path: mix-v2 with NATIVE verified-correct targets + leak-check -> retrain (start-point
+flare's call: continue-from-B@1000 is Hermes-contaminated, so fresh-from-init on a native general+tool mix may be
+cleaner) -> native eval -> native constrained decoder grammar. That is the apples-to-apples vs the old 9/28.
+flare proceeding autonomously; holds 2 checkpoints (mix manifest before ~5h train; promotable numbers before
+crediting); commits each step. Standing rules now: GPU-util, commit-each-step, native-format, retrain-freely.
