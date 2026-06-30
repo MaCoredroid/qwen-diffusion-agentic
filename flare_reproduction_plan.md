@@ -483,3 +483,20 @@ AND argument-grounding). WATCH: 75/25 forgetting — GSM8K retention check is th
 bump retention next iteration; report GSM8K pre(0.70)/post. SUCCESS BAR (N=28 coarse): valid JSON ~5→15+/28, exact
 args ~1→8+/24 (a 1→3 move is noise). flare to BUILD mix+manifest+leak-table+breakdown → review → THEN green-light
 the ~5h run. No launch before review.
+
+## Agentic mix V1 built + VERIFIED → GREEN-LIT the ~5h run (2026-06-29)
+`data/flare_agentic_mix_v1` (1024 rows: 768 tool-call / 256 retention). Breakdown: raw_public 170 (52 unique) +
+onecall_argument 220 + multicall_seq 90 + multicall_gap_extract 50 + grounded_spanfill 44 + synthetic_format 194;
+retention gsm8k 160 + mbpp 96. Call-count: 1-call 642 / 2-call 77 / 3-call 42 / 4-call 7. (flare corrected:
+train_toolcall.json = 96 conversations, not 9644 — that was a pretty-printed line count.)
+**LEAK CHECK CLEAN + non-vacuous, INDEPENDENTLY VERIFIED:** leak_check.md 0 exact + 0 near (same-tool+same-arg-
+values) across all 3 eval slices; the near-dup gate caught + removed REAL leaks (thermo123, smart_plug_123, garage
+tokens, multicall device-IDs/timestamps) + rejected 20 truncation-risk examples. I independently confirmed
+thermo123/smart_plug_123 are ABSENT from training, present in eval → removal genuinely worked. (My mandate:
+verify non-leakage — done.) Breakdown attacks BOTH baseline failure modes (format + grounding); full assistant
+labels under block 1024.
+**GREEN-LIT:** continue from B_two_stream_s1024_step1000, two-stream, block 1024, ~1000 steps, optimized path,
+systemd. Post-train eval = exact baseline tool-call slices vs 0/24 + GSM8K(0.70 pre)/MBPP/NLL retention. Success
+bar: valid JSON 5→15+/28, exact args 1→8+/24 (1→3 = noise); flag GSM8K post <0.5. CAVEATS for interpretation +
+iteration 2: limited tool-call diversity (52 unique raw) → 27B-teacher diffusion-friendly traces are the next
+lever if generalization caps; mostly 1-call (multicall coverage lighter).
