@@ -63,6 +63,13 @@ export HF_XET_HIGH_PERFORMANCE=1
 export TOKENIZERS_PARALLELISM=false
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export DS_SKIP_CUDA_CHECK=1
+if [[ -f "${MODEL_PATH}/modeling.py" ]]; then
+    MODEL_CODE_HASH="$(
+        (sha256sum "${MODEL_PATH}/modeling.py" "${MODEL_PATH}/configuration.py" 2>/dev/null || true) | sha256sum | cut -d' ' -f1
+    )"
+    export HF_MODULES_CACHE="${HF_MODULES_CACHE:-${ROOT}/.hf_modules_cache/${MODEL_CODE_HASH}}"
+    mkdir -p "${HF_MODULES_CACHE}"
+fi
 export FASTDLLM_STRUCTURAL_LOSS_WEIGHT="${STRUCTURAL_LOSS_WEIGHT}"
 export FASTDLLM_ARGUMENT_SPAN_LOSS_WEIGHT="${ARGUMENT_SPAN_LOSS_WEIGHT}"
 export FASTDLLM_ARGUMENT_SPAN_MASK_PROB="${ARGUMENT_SPAN_MASK_PROB}"

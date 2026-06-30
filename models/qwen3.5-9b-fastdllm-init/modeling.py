@@ -497,8 +497,24 @@ def _fla_chunk_gated_delta_rule_adapter(
         raise ValueError("FLA GDN adapter does not provide output_chunk_states")
     if not query.is_cuda:
         raise RuntimeError("FASTDLLM_GDN_KERNEL=fla requires CUDA tensors")
-    if initial_state is not None and initial_state.dtype != value.dtype:
-        initial_state = initial_state.to(value.dtype)
+    output_dtype = query.dtype
+    try:
+        autocast_enabled = torch.is_autocast_enabled(query.device.type)
+    except TypeError:
+        autocast_enabled = torch.is_autocast_enabled()
+    compute_dtype = torch.float32 if autocast_enabled and g.dtype == torch.float32 else value.dtype
+    if autocast_enabled and query.dtype != compute_dtype:
+        query = query.to(compute_dtype)
+    if autocast_enabled and key.dtype != compute_dtype:
+        key = key.to(compute_dtype)
+    if autocast_enabled and value.dtype != compute_dtype:
+        value = value.to(compute_dtype)
+    if autocast_enabled and beta.dtype != compute_dtype:
+        beta = beta.to(compute_dtype)
+    if autocast_enabled and g.dtype != compute_dtype:
+        g = g.to(compute_dtype)
+    if initial_state is not None and initial_state.dtype != compute_dtype:
+        initial_state = initial_state.to(compute_dtype)
     try:
         from fla.ops.gated_delta_rule import chunk_gated_delta_rule as fla_chunk_gated_delta_rule
     except Exception as exc:
@@ -519,6 +535,8 @@ def _fla_chunk_gated_delta_rule_adapter(
         use_beta_sigmoid_in_kernel=False,
         allow_neg_eigval=False,
     )
+    if output.dtype != output_dtype:
+        output = output.to(output_dtype)
     return output, final_state
 
 

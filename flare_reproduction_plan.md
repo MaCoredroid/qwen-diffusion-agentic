@@ -907,3 +907,33 @@ all 24 GDN layers (max output diffs ~1e-7, ShortConv controls live). **Interpret
 real-magnitude fp32 math are tight; full-model bf16 logits are not 0.02-allclose because recurrent fp ordering
 accumulates over 32 layers. **Still not promoted**: loss-overlay, raw/constrained eval regression check, and
 training util re-measure remain pending.
+
+## FLA integration final gate — correctness PASS, performance FAIL, DO NOT PROMOTE (2026-06-30)
+Autocast trap found during the first 200-step FLA overlay attempt: FLA Triton compile failed inside WY
+`tl.dot(b_A, b_vb)` because trainer autocast produced `A` fp32 and `v` bf16. Fixed the adapter narrowly: outside
+autocast it keeps the original mixed FLA path (best real-weight NLL parity); inside active autocast with fp32 `g`,
+it promotes q/k/v/beta/g/initial_state to fp32 for the FLA scan and casts only the output activations back to the
+model dtype, keeping recurrent final states fp32. Also keyed `HF_MODULES_CACHE` by the bridge code hash in the
+training launcher and real-weight validator so `trust_remote_code` cannot silently run stale `modeling.py`.
+
+Post-fix gates:
+- Tiny CUDA strengthened gate still PASS: fp32 realistic-magnitude kernel output 1.32e-4, final_state 3.80e-4,
+  detached seed grad None, multi-doc schedule logits 5.55e-3 / loss_abs 5.73e-4, legacy detached clean seed
+  clean_grad_max_abs=0.
+- Real-weight no-autocast parity still PASS: first real GDN fp32 output 4.02e-6 / final_state 6.09e-5; full-model
+  bf16 end-to-end torch loss 1.842944 vs FLA 1.843189 (loss_abs 2.45e-4), logits max_abs 0.21875 under explicit
+  bf16 full-model tolerance.
+- 200-step two-stream loss overlay PASS on same data/seed/budget (`data/flare_agentic_mix_v2_native_train_only`,
+  block 1024, seed 20260705): torch train_loss 5.3458 vs FLA 5.3372. Logged loss examples:
+  step10 7.1497 vs 7.1428, step20 6.3471 vs 6.3444, step30 6.2588 vs 6.2532, step80 5.2383 vs 5.2220,
+  step90 5.2263 vs 5.2166, final logged 4.8876 vs 4.8870.
+- **Util/speed gate FAIL:** torch trainer runtime 952.1s / 0.210 steps/s / peak 29149 MiB / mean nonzero util
+  65.3%; FLA runtime 1154.5s / 0.173 steps/s / peak 30461 MiB / mean nonzero util 61.4%. End-to-end step is
+  **0.825x as fast** (about 21% slower), memory **+1312 MiB**, utilization slightly lower. The FLA path is not the
+  util fix in this QLoRA/autocast integration because avoiding the autocast dtype crash requires fp32 FLA scans.
+
+Verdict: keep `FASTDLLM_GDN_KERNEL=fla` opt-in only; torch remains default. **No promotion, no suggestion to promote.**
+Raw/constrained eval regression was not run because the validation gate already failed on the required util/speed
+criterion; running eval cannot rescue a performance-failed kernel. If this is revisited, the next technical target
+is an FLA-compatible bf16 autocast path (or upstream FLA fix for mixed `A` fp32 / `v` bf16) that preserves real NLL
+without fp32 scan promotion.

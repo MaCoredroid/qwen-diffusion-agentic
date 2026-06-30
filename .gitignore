@@ -1,4 +1,5 @@
 .env
+.hf_modules_cache/
 __pycache__/
 *.py[cod]
 data/

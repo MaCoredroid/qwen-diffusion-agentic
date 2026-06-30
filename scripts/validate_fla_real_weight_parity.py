@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import hashlib
 import json
 import os
 import time
@@ -45,6 +46,12 @@ def configure_cuda_env():
         os.environ["LD_LIBRARY_PATH"] = f"{cuda_root / 'lib'}:{os.environ.get('LD_LIBRARY_PATH', '')}"
     os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
     os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+    hasher = hashlib.sha256()
+    for filename in ("modeling.py", "configuration.py"):
+        path = DEFAULT_BASE / filename
+        if path.exists():
+            hasher.update(path.read_bytes())
+    os.environ.setdefault("HF_MODULES_CACHE", str(ROOT / ".hf_modules_cache" / hasher.hexdigest()))
 
 
 def diff_stats(left: torch.Tensor, right: torch.Tensor, *, rtol: float, atol: float):
