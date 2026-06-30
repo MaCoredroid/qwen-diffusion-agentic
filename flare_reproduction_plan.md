@@ -470,3 +470,16 @@ proving a small A-vs-B generation effect that needs ~9× scale.
   two-stream mix (tool-call subset of 9644 balanced + RETENTION GSM8K/math/IF vs forgetting + optional 27B-teacher
   traces), start-point (B@1000-continue vs init-fresh), eval = same tool-call slices vs the 0/24 baseline + a GSM8K
   retention check. Review the mix before the ~5h run.
+
+## Agentic mix design APPROVED w/ tightenings (2026-06-29)
+flare proposed: continue from **B_two_stream_s1024_step1000** (isolates "tool-call data adds grounding" from
+"conversion recovers"; two-stream's L_AR is itself a retention mechanism), two-stream only, ~1000 steps, mix =
+**768 tool-call / 256 retention (75/25)** (multicall 140 + grounded-span 80 + synthetic-format 158 + ~390 more),
+eval on the exact baseline slices vs 0/24 + GSM8K/MBPP/NLL retention. APPROVED with 2 tightenings + a watch:
+(1) **leak check must catch NEAR-DUPLICATES** not just exact hashes — per eval slice, count train examples sharing
+the same tool name + same argument VALUES; bar = ZERO same-tool+same-arg-values overlap (else "same call, reworded
+prompt" leaks). (2) show the FULL 768 breakdown — must attack BOTH baseline failure modes (valid-JSON/structure
+AND argument-grounding). WATCH: 75/25 forgetting — GSM8K retention check is the guardrail; if GSM8K <0.5 post,
+bump retention next iteration; report GSM8K pre(0.70)/post. SUCCESS BAR (N=28 coarse): valid JSON ~5→15+/28, exact
+args ~1→8+/24 (a 1→3 move is noise). flare to BUILD mix+manifest+leak-table+breakdown → review → THEN green-light
+the ~5h run. No launch before review.
