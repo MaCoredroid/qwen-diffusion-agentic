@@ -63,3 +63,15 @@ the diffusion-native way to add revision.
 +2605.28860+2510.18874 (RL's Razor) · 2606.06712 (OPDLM) · 2505.13820 (Structured Agent Distillation) · 2602.00286
 (parallel-decoding limit) · 2510.19304 (Loopholing) · 2602.11590 (self-correcting MDMs) · 2503.00307 (ReMDM).
 Full output: tasks/w9sldj0k3.output.
+
+## DESIGN DECISIONS (2026-06-30, user)
+1. **Constrained decoder in the loop for BOTH train and eval.** RL rollouts AND eval generate via diffusion + our
+   in-house live grammar constrained decoder (label-free). Rationale: structure is always valid → the reward focuses
+   purely on value-content / task-success (denser, not sparse), AND train==inference (we deploy with the decoder).
+   **RL implication:** the policy is (model+decoder) — the grammar masking is part of the sampling distribution, so the
+   diffu-GRPO/GDPO likelihood/advantage must be computed over the CONSTRAINED distribution (decoder is part of the
+   env/policy, not a post-hoc filter). The decoder is a METHOD, not data → no contamination.
+2. **RL training tasks/rewards = PUBLIC, well-created verifiable datasets ONLY** — NOT the in-house Lumo Codex-Long
+   verifier pack, which is HELD-OUT EVAL (training on it = train-on-test leakage). We use the flywheel INFRASTRUCTURE
+   (Codex+vLLM+verifier-runner) to run PUBLIC tasks. Dataset selection delegated to an ultracode research workflow
+   (user: "just use the research, no opinion"). Held-out eval = in-house Lumo pack + SWE-bench Verified + BFCL test.
