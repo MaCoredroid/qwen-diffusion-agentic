@@ -780,3 +780,20 @@ EXHAUSTED: mix-v1 net-negative, mix-v2 neutral. The CONSTRAINED LIVE DECODER is 
 on ANY student, no special training). The ~68% ceiling is value-CONTENT accuracy, which agentic SFT doesn't move
 (would need 27B-teacher distillation at scale or a different approach). RETENTION (native-trained GSM8K vs 0.65)
 pending. NEXT: refresh the heavy flare session at this boundary; then the FLA spike test (util).
+
+## ENDGAME COMPLETE — mix-v2 FAILS both bars; data lever EXHAUSTED + net-negative (2026-06-30)
+Full native mix-v2 endgame (util held: raw 97.9% / live 97.6% / retention 94.1% GPU-bound):
+| eval | result | vs bar |
+| RAW native | 2/28 args | > B@1000 raw ~0 (training lifted raw slightly) |
+| + LIVE DECODER | 19/28 args, 28/28 valid | TIES transfer x decoder 19/28 -- does NOT beat |
+| GSM8K retention | 0.60 (12/20) | FAILS: < 0.65 floor AND < B@1000 0.70 |
+| MBPP | 0.25 (5/20) | < B@1000 0.30 |
+**mix-v2 FAILS BOTH success criteria** (beat 19/28 AND keep GSM8K>=0.65): tied the decoder, regressed capability.
+Same regression direction as mix-v1 (0.55). => the AGENTIC-DATA-MIX LEVER IS EXHAUSTED + NET-NEGATIVE: both mixes
+cost general capability without beating the decoder. The 19/28 grounding gain is ENTIRELY the live constrained
+decoder (works on ANY student, no agentic SFT). **PROMOTABLE SOTA = converted base (B@1000, GSM8K 0.70) + live
+grammar decoder = 19/28 exact-args, 28/28 valid JSON -- no agentic training.** (n=20 GSM8K noise caveat; direction
+consistent across both mixes.) DECISION per the plan's rule: data lever exhausted -> the live decoder IS the lever
+(built, validated, banked). Refreshing the heavy flare mutator at this clean boundary; next mechanical step = FLA
+spike test (util fix, user-pre-approved, orthogonal). Strategic next-lever question ESCALATED to user (their chosen
+'do both' data direction is now refuted).
