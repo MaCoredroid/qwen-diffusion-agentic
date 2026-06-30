@@ -27,13 +27,17 @@ block_size=1024
 train_bd_size=32
 mode=two_stream
 route=route_i
+batch_noisy_gdn=1
+clean_gdn_optimized=0
 gradient_checkpointing=0
+kbit_gradient_checkpointing=1
 seed=20260704
 data_seed=20260704
 native_format=qwen_native_function_parameter
 EOF
 
 exec env \
+  PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
   DATASET_DIR="${DATA}" \
   LORA_MODEL_PATH="" \
   MAX_STEPS=1000 \
@@ -54,6 +58,7 @@ exec env \
   LOGGING_STEPS=10 \
   FASTDLLM_FLARE_DEBUG=1000 \
   FASTDLLM_FLARE_GDN_ROUTE=route_i \
+  FASTDLLM_BATCH_FLARE_NOISY_GDN=1 \
   "${ROOT}/scripts/run_flare_stage1_ab_pilot_job.sh" \
   two_stream \
   "${OUT}"

@@ -34,6 +34,7 @@ FASTDLLM_PROFILE_FLARE_SECTIONS_ENV = "FASTDLLM_PROFILE_FLARE_SECTIONS"
 FASTDLLM_COMPILE_GDN_SCAN_ENV = "FASTDLLM_COMPILE_GDN_SCAN"
 FASTDLLM_COMPILE_GDN_SCAN_MODE_ENV = "FASTDLLM_COMPILE_GDN_SCAN_MODE"
 FASTDLLM_OPTIMIZE_FLARE_CLEAN_GDN_ENV = "FASTDLLM_OPTIMIZE_FLARE_CLEAN_GDN"
+FASTDLLM_BATCH_FLARE_NOISY_GDN_ENV = "FASTDLLM_BATCH_FLARE_NOISY_GDN"
 IGNORE_INDEX = -100
 _FASTDLLM_GDN_PROFILE = None
 _FASTDLLM_FLARE_SECTION_PROFILE = None
@@ -314,6 +315,10 @@ def _flare_section_profile_enabled():
 
 def _optimize_flare_clean_gdn_enabled():
     return env_flag_enabled(FASTDLLM_OPTIMIZE_FLARE_CLEAN_GDN_ENV)
+
+
+def _batch_flare_noisy_gdn_enabled():
+    return env_flag_enabled(FASTDLLM_BATCH_FLARE_NOISY_GDN_ENV)
 
 
 def _gdn_compile_enabled():
@@ -761,6 +766,17 @@ def noisy_gdn_route_i(
     clean_raw_qkv: torch.Tensor,
     block_size: int,
 ):
+    if _batch_flare_noisy_gdn_enabled():
+        return noisy_gdn_route_i_batched(
+            gdn_layer,
+            noisy_states,
+            noisy_doc_ids,
+            clean_doc_ids,
+            clean_boundary_states,
+            clean_raw_qkv,
+            block_size,
+        )
+
     batch_size = clean_doc_ids.shape[0]
     noisy_output = torch.zeros_like(noisy_states)
     conv_lag = int(gdn_layer.conv_kernel_size) - 1
@@ -783,6 +799,107 @@ def noisy_gdn_route_i(
                     conv_tail=conv_tail,
                 )
                 noisy_output[noisy_batch : noisy_batch + 1, block_start:block_end] = block_output
+    return noisy_output
+
+
+def _gdn_conv_tail_for_block(
+    *,
+    clean_raw_qkv: torch.Tensor,
+    clean_batch: int,
+    doc_start: int,
+    block_start: int,
+    conv_lag: int,
+):
+    if conv_lag <= 0:
+        return clean_raw_qkv.new_empty(0, clean_raw_qkv.shape[-1])
+    tail = clean_raw_qkv[
+        clean_batch,
+        max(doc_start, block_start - conv_lag) : block_start,
+    ]
+    if tail.shape[0] >= conv_lag:
+        return tail[-conv_lag:]
+    padded = torch.zeros(
+        conv_lag,
+        clean_raw_qkv.shape[-1],
+        dtype=clean_raw_qkv.dtype,
+        device=clean_raw_qkv.device,
+    )
+    if tail.numel() > 0:
+        padded[-tail.shape[0] :] = tail
+    return padded
+
+
+def noisy_gdn_route_i_batched(
+    gdn_layer,
+    noisy_states: torch.Tensor,
+    noisy_doc_ids: torch.Tensor,
+    clean_doc_ids: torch.Tensor,
+    clean_boundary_states,
+    clean_raw_qkv: torch.Tensor,
+    block_size: int,
+):
+    batch_size = clean_doc_ids.shape[0]
+    noisy_output = torch.zeros_like(noisy_states)
+    conv_lag = int(gdn_layer.conv_kernel_size) - 1
+    groups = {}
+
+    for noisy_batch in range(noisy_states.shape[0]):
+        clean_batch = noisy_batch % batch_size
+        for doc_start, doc_end, _ in contiguous_doc_segments(noisy_doc_ids[noisy_batch]):
+            for block_start in range(doc_start, doc_end, block_size):
+                block_end = min(block_start + block_size, doc_end)
+                block_len = int(block_end - block_start)
+                groups.setdefault(block_len, []).append(
+                    (
+                        noisy_batch,
+                        clean_batch,
+                        int(doc_start),
+                        int(block_start),
+                        int(block_end),
+                    )
+                )
+
+    for block_len, entries in groups.items():
+        hidden_blocks = torch.cat(
+            [
+                noisy_states[noisy_batch : noisy_batch + 1, block_start:block_end]
+                for noisy_batch, _, _, block_start, block_end in entries
+            ],
+            dim=0,
+        )
+        initial_states = torch.cat(
+            [
+                clean_boundary_states[(clean_batch, block_start)]
+                for _, clean_batch, _, block_start, _ in entries
+            ],
+            dim=0,
+        )
+        if conv_lag > 0:
+            conv_tail = torch.stack(
+                [
+                    _gdn_conv_tail_for_block(
+                        clean_raw_qkv=clean_raw_qkv,
+                        clean_batch=clean_batch,
+                        doc_start=doc_start,
+                        block_start=block_start,
+                        conv_lag=conv_lag,
+                    )
+                    for _, clean_batch, doc_start, block_start, _ in entries
+                ],
+                dim=0,
+            )
+        else:
+            conv_tail = None
+
+        block_outputs, _, _, _ = run_gdn_manual_route_i(
+            gdn_layer,
+            hidden_blocks,
+            chunk_size=block_size,
+            initial_state=initial_states,
+            conv_tail=conv_tail,
+        )
+        for idx, (noisy_batch, _, _, block_start, block_end) in enumerate(entries):
+            noisy_output[noisy_batch : noisy_batch + 1, block_start:block_end] = block_outputs[idx : idx + 1]
     return noisy_output
 
 
