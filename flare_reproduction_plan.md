@@ -869,3 +869,14 @@ same ones) -> the RL target, not a diffusion or decoder limit. n=44 > 28, more r
 not serving.) Identity = expected decoder-dominated convergence (same weights, greedy+grammar), consistent with the
 earlier verified 19/28 identity. CONFIRMS the roadmap (RL targets the shared value-content ceiling; decoder = safety
 net for both lanes). NEXT: refresh flare -> FLA integration with the STRENGTHENED gate.
+
+## FLA integration step 1 — call-site swap landed, gate pending (2026-06-30)
+`FASTDLLM_GDN_KERNEL=fla` remains opt-in; default torch path unchanged. Implemented the schedule-complete clean GDN
+swap: when FLA is selected, `clean_gdn_docwise_with_boundaries` no longer asks for unsupported `output_chunk_states`
+and silently falls back to torch. It now scans each clean document block with `output_final_state=True`, threads the
+returned final state into the next block, preserves ShortConv tails from the clean raw-QKV stream, and stores the
+per-block boundary states that seed noisy scans. Also made the adapter cast `initial_state` to the value dtype before
+calling FLA, matching the direct spike's bf16 state path while keeping fp32 validation possible. Existing non-FLA
+validators still pass: `validate_flare_two_stream_forward.py` PASS and `validate_flare_production_integration.py`
+PASS. **Not promoted**: the strengthened FLA gate (real-weight logits/NLL, multi-doc schedule parity, detached seed,
+fp32 tight tolerance, loss overlay, eval regression check, util re-measure) is still pending.

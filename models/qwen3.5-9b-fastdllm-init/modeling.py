@@ -497,6 +497,8 @@ def _fla_chunk_gated_delta_rule_adapter(
         raise ValueError("FLA GDN adapter does not provide output_chunk_states")
     if not query.is_cuda:
         raise RuntimeError("FASTDLLM_GDN_KERNEL=fla requires CUDA tensors")
+    if initial_state is not None and initial_state.dtype != value.dtype:
+        initial_state = initial_state.to(value.dtype)
     try:
         from fla.ops.gated_delta_rule import chunk_gated_delta_rule as fla_chunk_gated_delta_rule
     except Exception as exc:
@@ -773,6 +775,42 @@ def clean_gdn_docwise_with_boundaries(gdn_layer, clean_states: torch.Tensor, doc
         device=clean_states.device,
     )
     boundary_states = {}
+    if _fla_gdn_kernel_enabled():
+        conv_lag = int(gdn_layer.conv_kernel_size) - 1
+        for batch in range(batch_size):
+            for start, end, _ in contiguous_doc_segments(doc_ids[batch]):
+                running_state = None
+                zero_state = torch.zeros(
+                    1,
+                    gdn_layer.num_v_heads,
+                    gdn_layer.head_k_dim,
+                    gdn_layer.head_v_dim,
+                    dtype=clean_states.dtype,
+                    device=clean_states.device,
+                )
+                for block_start in range(start, end, block_size):
+                    block_end = min(block_start + block_size, end)
+                    boundary_states[(batch, block_start)] = zero_state if running_state is None else running_state
+                    if block_start == start or conv_lag <= 0:
+                        conv_tail = None
+                    else:
+                        conv_tail = _gdn_conv_tail_for_block(
+                            clean_raw_qkv=clean_raw_qkv,
+                            clean_batch=batch,
+                            doc_start=start,
+                            block_start=block_start,
+                            conv_lag=conv_lag,
+                        ).unsqueeze(0)
+                    block_output, running_state, _, raw_qkv = run_gdn_manual_route_i(
+                        gdn_layer,
+                        clean_states[batch : batch + 1, block_start:block_end],
+                        chunk_size=block_size,
+                        initial_state=running_state,
+                        conv_tail=conv_tail,
+                    )
+                    clean_output[batch : batch + 1, block_start:block_end] = block_output
+                    clean_raw_qkv[batch : batch + 1, block_start:block_end] = raw_qkv
+        return clean_output, boundary_states, clean_raw_qkv
 
     for batch in range(batch_size):
         for start, end, _ in contiguous_doc_segments(doc_ids[batch]):
