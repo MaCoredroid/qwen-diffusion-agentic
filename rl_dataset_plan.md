@@ -40,8 +40,13 @@ partial credit is reward-hackable if misaligned.
 - **APIGen-MT-5k — REJECT as picked train source (CC-BY-NC-4.0 + no-compete clause).** Research-only fallback.
 - Nexusflow/NexusBench — optional aux EVAL only (small, Pythonic-call, some subsets need live APIs).
 
-## HELD-OUT EVAL (public, distinct from training)
-In-house Lumo Codex-Long pack + SWE-bench Verified + BFCL AST/test + tau2 held-out domain + MATH-500 (math-verifier).
+## TRAIN/EVAL SPLITS (user 2026-06-30: the in-house Lumo pack is LOW QUALITY — do NOT use it as eval)
+For EACH public training dataset, make a **DISJOINT train/eval split** (dedup by prompt + tool-signature → leak-check
+0 overlap, same discipline as the agentic-mix `leak_check`); report on the held-out split. PLUS public official test
+benchmarks where they exist: **xLAM-60k / ToolACE → held-out split**; **BFCL AST/test**; **tau2 held-out DOMAIN**;
+**MATH-500** (math-verifier); **SWE-bench Verified** (only if Tier C). The **in-house Lumo Codex-Long pack is LOW
+QUALITY → DROPPED from the eval set** (it is neither train nor a reported benchmark). The flywheel's value is now
+purely its **INFRASTRUCTURE** (Codex+vLLM+verifier-runner) used to RUN the PUBLIC tasks.
 
 ## MONITOR CAVEATS
 - xLAM-60k GATED → flare accepts terms + sets HF token at use time.
