@@ -436,3 +436,20 @@ GDN, single 5090, QLoRA). Two-stream is the principled objective to carry forwar
 FLARE recipe) even though A≈B on generation at this scale. Next phase = leverage the working conversion: data-mix
 + the agentic/tool-call extension (the project's actual goal + our edge over FLARE), rather than over-investing in
 proving a small A-vs-B generation effect that needs ~9× scale.
+
+## Scoring verification (flare) + USER DECISION → agentic phase (2026-06-29)
+- **GSM8K flex inversion:** flex extractor buggy; trust **strict** (matches verified-correct text). A 14/20 vs B
+  13/20 confirmed tied; no B>A.
+- **MBPP=0 was a HARNESS ARTIFACT:** model generates valid code then leaks role text ("…user\nWrite\nassistant");
+  the harness executes ALL of it → NameError. Sanitized (cut at role markers) rescore: init 0/20, **A 6/20, B
+  3/20**. Code partially recovered (weak but nonzero), masked by broken scoring. (Fix generation stop behavior +
+  the eval harness in the agentic phase — clean termination matters for tool-call generation.)
+- **Sharpened verdict:** A ≥ B on BOTH tasks (GSM8K 14v13, sanitized MBPP 6v3) → two-stream is NOT ahead on
+  generation anywhere; B wins only on denoising-NLL. Conversion WORKS; B>A NOT supported. Firm.
+- **USER DECISION:** next phase = **Agentic/data-mix extension** (the project's goal + FLARE's unclaimed frontier).
+  Carry two-stream forward (principled, better NLL, AR-preserving). Plan: (1) tool-call/agentic transfer data +
+  same-family Qwen3.6-27B-teacher diffusion-friendly traces into the FLARE-style mix (Long-CoT+Math+IF + agentic);
+  (2) two-stream train on it; (3) a BFCL-style tool-call eval in DIFFUSION mode (the thing FLARE never measured) +
+  the retention battery. Immediate: scope what agentic/tool-call data + teacher we have, fix generation stop
+  behavior (the leaked-role-text issue), stand up a minimal diffusion-mode tool-call eval baseline on the current
+  best checkpoint.
