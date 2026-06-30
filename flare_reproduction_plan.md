@@ -624,3 +624,20 @@ training -- does live schema-constraining at each denoise commit beat the 9/28 p
 the longer pole (teacher pilot -> mix-v2 -> ~5h train). Both keep checkpoints (decoder design + label-free; teacher
 pilot + mix design before the 5h run). Endgame = best model (B@1000 or mix-v2) x live grammar decoder. Success
 bars: decoder must beat 9/28 label-free; mix-v2 must beat 9/28 AND keep GSM8K >=~0.65.
+
+## 27B-teacher pilot + live-decoder design APPROVED (2026-06-30)
+**Teacher pilot (30 diverse traces):** 30/30 endpoint OK, 29/30 valid emission, 24/30 exact-seq, but only **11/30
+exact-args** -- the teacher is ~37% exact on DIVERSE/multicall scenarios (vs 18/24 on easy one-call). Diversity is
+real (multi-tool workflows -- fixes mix-v1's gap) BUT raw teacher traces are NOT clean targets. **mix-v2 GATE:
+verified-correct targets ONLY** (filter to exact-args-correct ~37%, generate more for yield; OR gold targets) --
+never train on the teacher's wrong calls (mix-v1's mistake).
+**Live-decoder design APPROVED (Track A):** hook = full-context sampler `eval_fastdllm_toolcall_cases.py:2113`
+(post-mask-ban, pre-sample). LABEL-FREE (schema/prefix only; gold-stripped leakage proof in validation). Key
+insight: grammar legality is prefix-dependent -> FORCE LEFT-TO-RIGHT commit during tool-call JSON spans (parallel
+diffusion corrupts delimiters) = a HYBRID (diffusion NL + constrained-AR JSON; exactness>parallelism for structure).
+Grammar constrains tool names + arg keys + value TYPES from schema; model still supplies value CONTENT (so exact-
+args rides on the 70-87% lenient). Notes given: label the hybrid honestly; if it doesn't beat 9/28 the bottleneck
+is content not structure; GPU-util watch (token-by-token grammar risks the .item() host-bound trap -> cached trie).
+**GREEN-LIT both tracks:** build live decoder + filtered mix-v2 manifest in parallel. CHECKPOINTS before
+credit/launch: (a) live-decoder B@1000 eval (beats 9/28 label-free? + gold-stripped proof + util); (b) mix-v2
+manifest+design (verified-correct targets, retention rebalance, near-dup leak-check) before the 5h train.
