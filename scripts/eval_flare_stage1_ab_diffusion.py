@@ -510,7 +510,130 @@ def score_mbpp(code: str, row: dict[str, Any], timeout: float) -> dict[str, Any]
     }
 
 
+def sample_with_top_p(logits: torch.Tensor, top_p: float, temperature: float) -> tuple[torch.Tensor, torch.Tensor]:
+    if temperature <= 0:
+        probs = torch.softmax(logits, dim=-1)
+        return probs.argmax(dim=-1), probs
+    probs = torch.softmax(logits / temperature, dim=-1)
+    sorted_probs, sorted_indices = torch.sort(probs, descending=True)
+    cumulative_probs = torch.cumsum(sorted_probs, dim=-1)
+    sorted_indices_to_remove = cumulative_probs > top_p
+    sorted_indices_to_remove[..., 1:] = sorted_indices_to_remove[..., :-1].clone()
+    sorted_indices_to_remove[..., 0] = False
+    indices_to_remove = torch.zeros_like(probs, dtype=torch.bool).scatter_(
+        dim=-1,
+        index=sorted_indices,
+        src=sorted_indices_to_remove,
+    )
+    probs = probs.masked_fill(indices_to_remove, 0)
+    probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-12)
+    sampled = torch.multinomial(probs.reshape(-1, probs.shape[-1]), num_samples=1)
+    return sampled.reshape(probs.shape[:-1]), probs
+
+
+def ban_mask_token_logits(logits: torch.Tensor, mask_id: int) -> torch.Tensor:
+    logits = logits.clone()
+    logits[..., int(mask_id)] = torch.finfo(logits.dtype).min
+    return logits
+
+
+def full_context_sample_one(model, input_ids: torch.Tensor, args) -> tuple[torch.Tensor, dict[str, Any]]:
+    output_ids = input_ids.unsqueeze(0).to("cuda")
+    original_len = int(output_ids.shape[1])
+    metrics = {
+        "blocks": [],
+        "denoise_forwards": 0,
+        "selected_mask_tokens": 0,
+        "natural_commits": 0,
+        "forced_commits": 0,
+    }
+    while output_ids.shape[1] - original_len < args.max_new_tokens:
+        remaining = args.max_new_tokens - (output_ids.shape[1] - original_len)
+        if args.fresh_generation_blocks:
+            block_pad = args.block_size
+        else:
+            block_pad = args.block_size - (output_ids.shape[1] % args.block_size)
+            if block_pad == 0:
+                block_pad = args.block_size
+        block_pad = min(block_pad, remaining)
+        masks = torch.full(
+            (output_ids.shape[0], block_pad),
+            args.mask_id,
+            dtype=torch.long,
+            device=output_ids.device,
+        )
+        x_t = torch.cat([output_ids, masks], dim=1)
+        block_metrics = {
+            "block_pad": int(block_pad),
+            "initial_masks": int((x_t[:, -block_pad:] == args.mask_id).sum().item()),
+            "denoise_steps": 0,
+            "selected_mask_tokens": 0,
+        }
+        while bool((x_t[:, -block_pad:] == args.mask_id).any().item()):
+            window_len = min(args.block_size, x_t.shape[1])
+            num_small_blocks = (window_len + args.small_block_size - 1) // args.small_block_size
+            for small_block_idx in range(num_small_blocks):
+                start = small_block_idx * args.small_block_size
+                end = min(start + args.small_block_size, window_len)
+                while True:
+                    mask_idx = x_t[:, -window_len:] == args.mask_id
+                    current_mask = mask_idx[:, start:end]
+                    if not bool(current_mask.any().item()):
+                        break
+                    output = model(input_ids=x_t, use_cache=False)
+                    logits = torch.cat([output.logits[:, :1, :], output.logits[:, :-1, :]], dim=1)
+                    logits = logits[:, -window_len:][:, start:end]
+                    logits = ban_mask_token_logits(logits, args.mask_id)
+                    x_1, p_1t = sample_with_top_p(logits, args.top_p, args.temperature)
+                    x1_p = torch.squeeze(torch.gather(p_1t, dim=-1, index=torch.unsqueeze(x_1, -1)), -1)
+                    active_probs = torch.where(current_mask, x1_p, torch.full_like(x1_p, -torch.inf))
+                    natural = active_probs > args.threshold
+                    max_prob_idx = active_probs.argmax(dim=-1)
+                    unmask_idx = natural.clone()
+                    unmask_idx[torch.arange(x_1.shape[0], device=x_1.device), max_prob_idx] = True
+                    unmask_idx = unmask_idx & current_mask
+                    selected_mask = int(((x_1 == args.mask_id) & unmask_idx).sum().item())
+                    natural_count = int(natural.sum().item())
+                    committed = int(unmask_idx.sum().item())
+                    window = x_t[:, -window_len:]
+                    span = window[:, start:end].clone()
+                    span[unmask_idx] = x_1[unmask_idx]
+                    window[:, start:end] = span
+                    x_t[:, -window_len:] = window
+                    block_metrics["denoise_steps"] += 1
+                    block_metrics["selected_mask_tokens"] += selected_mask
+                    metrics["denoise_forwards"] += 1
+                    metrics["selected_mask_tokens"] += selected_mask
+                    metrics["natural_commits"] += natural_count
+                    metrics["forced_commits"] += max(0, committed - natural_count)
+            if bool((x_t[:, -block_pad:] == args.mask_id).all().item()):
+                break
+        output_ids = x_t
+        metrics["blocks"].append(block_metrics)
+        generated = output_ids[:, original_len:]
+        stop_positions = (generated == args.stop_token_id).nonzero(as_tuple=False)
+        if len(stop_positions):
+            stop_idx = int(stop_positions[0, 1].item()) + 1
+            output_ids = output_ids[:, : original_len + stop_idx]
+            break
+    return output_ids[0].detach().cpu(), metrics
+
+
 def sample_batch(model, tokenizer, prompt_ids: list[torch.Tensor], args) -> tuple[dict[int, torch.Tensor], float]:
+    if args.full_context_generation:
+        sync_cuda()
+        start = time.perf_counter()
+        generated = {}
+        sampler_metrics = []
+        with torch.inference_mode():
+            for idx, ids in enumerate(prompt_ids):
+                output_ids, metrics = full_context_sample_one(model, ids, args)
+                generated[idx] = output_ids
+                sampler_metrics.append(metrics)
+        sync_cuda()
+        args._last_generation_sampler_metrics = sampler_metrics
+        return generated, time.perf_counter() - start
+
     seq_lens = [int(ids.numel()) for ids in prompt_ids]
     max_len = max(seq_lens)
     padded = []
@@ -570,6 +693,7 @@ def evaluate_generation(model, tokenizer, args) -> dict[str, Any]:
             f"[generation-batch] start={batch_start} size={len(batch)} seconds={seconds:.3f}",
             flush=True,
         )
+        sampler_metrics = getattr(args, "_last_generation_sampler_metrics", [{} for _ in batch])
         for batch_pos, item in enumerate(batch):
             row = item["row"]
             prompt_len = int(item["prompt_ids"].numel())
@@ -597,6 +721,7 @@ def evaluate_generation(model, tokenizer, args) -> dict[str, Any]:
                         "mask_count": mask_count,
                         "nonmask_generated_tokens": nonmask_tokens,
                         "seconds": per_example_seconds,
+                        "sampler": sampler_metrics[batch_pos] if batch_pos < len(sampler_metrics) else {},
                         "generated": text,
                     }
                 )
@@ -613,6 +738,7 @@ def evaluate_generation(model, tokenizer, args) -> dict[str, Any]:
                         "mask_count": mask_count,
                         "nonmask_generated_tokens": nonmask_tokens,
                         "seconds": per_example_seconds,
+                        "sampler": sampler_metrics[batch_pos] if batch_pos < len(sampler_metrics) else {},
                         "generated": text,
                         "extracted_code": code,
                         "score": score,
@@ -703,12 +829,19 @@ def parse_args():
     parser.add_argument("--generation-limit", type=int, default=20)
     parser.add_argument("--generation-batch-size", type=int, default=1)
     parser.add_argument(
+        "--active-block-generation",
+        action="store_false",
+        dest="full_context_generation",
+        help="Use the original mdm_sample active-block generation path instead of full-context recompute.",
+    )
+    parser.add_argument(
         "--tail-fill-generation",
         action="store_false",
         dest="fresh_generation_blocks",
         help="Compatibility mode: fill only the prompt-tail remainder before full generated blocks.",
     )
     parser.set_defaults(fresh_generation_blocks=True)
+    parser.set_defaults(full_context_generation=True)
     parser.add_argument("--gsm8k-fewshot", type=int, default=5)
     parser.add_argument("--block-size", type=int, default=32)
     parser.add_argument("--small-block-size", type=int, default=32)

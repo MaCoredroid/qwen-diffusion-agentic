@@ -410,3 +410,29 @@ is ~8× wall-clock/step (5.25h vs A's 40min) and ~2× FLOPs/step (the known two-
 intended FLARE token-equal comparison (objective differs, same data/steps; the cost is part of the objective).
 VERDICT: strong right-direction signal for two-stream; the headline recover-capability claim still needs the
 GENERATION result (coherence gate + table, running next). Not promoted on NLL alone.
+
+## DECISIVE POST-SCALE GENERATION RESULT (2026-06-29) — conversion WORKS; A≈B on generation
+1000-step diffusion generation, corrected sampler (fresh-block + mask-ban + full-context), N=20 GSM8K + 20 MBPP,
+0 unresolved masks:
+| model | GSM8K strict | MBPP |
+| init  | 0.05 (1/20)  | 0 |
+| A diffusion-only | **0.70 (14/20)** | 0 |
+| B two-stream     | **0.65 (13/20)** | 0 |
+**TWO findings, both honest:**
+1. **CONVERSION WORKS AT SCALE (major positive):** both A and B free-generate COHERENT, CORRECT GSM8K (verified
+   text: full step-by-step reasoning → "#### 18", "#### 3"), ~0.65-0.70 = **~78% of AR's ~0.90** in diffusion
+   mode, up from the 200-step collapse and the init-baseline 0.05. **Undertraining hypothesis CONFIRMED — scale
+   fixed free generation.** (init baseline still 0.05 → it's the training, not the sampler, that builds capability.)
+2. **A-vs-B = TIE on generation (disciplined NULL on the headline):** B 13/20 vs A 14/20 = 1 example, within N=20
+   noise; high per-example overlap (both solve same 12; A+2 unique, B+1 unique). **The NLL widening (B-A=-0.25)
+   did NOT translate to a generation-accuracy advantage.** The FLARE two-stream>diffusion-only effect does NOT
+   appear in generation at our scale — likely because diffusion-only A hasn't DEGRADED yet at 1000 steps (FLARE's
+   degradation was ~9× more steps); the effect may need larger scale to manifest. NOT promoting B>A.
+**Caveats / pending verification (flare):** (a) strict(0.70)>flex(0.55) inversion for BOTH arms → flex extractor
+likely buggy; trust strict (matches the verified-correct text). (b) MBPP=0/20 for ALL (incl. A which solves GSM8K)
+→ verify whether code is genuinely unrecovered or the MBPP test-harness/extraction is broken. N=20 is coarse.
+**ROADMAP IMPLICATION:** the AR→block-diffusion CONVERSION is now demonstrably viable on our setup (Qwen3.5-9B
+GDN, single 5090, QLoRA). Two-stream is the principled objective to carry forward (better NLL, AR-preserving, the
+FLARE recipe) even though A≈B on generation at this scale. Next phase = leverage the working conversion: data-mix
++ the agentic/tool-call extension (the project's actual goal + our edge over FLARE), rather than over-investing in
+proving a small A-vs-B generation effect that needs ~9× scale.
