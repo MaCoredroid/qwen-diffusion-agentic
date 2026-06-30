@@ -717,3 +717,12 @@ SOTA. ENDGAME (autonomous): Track B native mix-v2 (verified-correct teacher rows
 trained student x live decoder = the full native-everywhere number vs 9/28 (post-hoc) and 19/28 (transfer live).
 Net: the constrained-decoding lever DECISIVELY works -- the project's founding argument-grounding wall is a
 diffusion-SERIALIZATION problem, and a live grammar decoder solves it (valid JSON 100%, exact-args 32%->68%).
+
+## LABEL-FREE GATE SATISFIED -> 19/28 CREDITED as CONSTRAINED-lane SOTA (2026-06-30)
+Promotion gate cleared: gold-fully-stripped run = valid 8/8 with gold ENTIRELY ABSENT (seq/args=0 is a SCORER
+artifact -- no reference, not a decoder failure) -> proves the live decoder uses NO gold. The 19/28 is from strict3
+(--strip-gold-for-generation = gold out of generation, held out for scoring only) -> correct label-free config.
+**CREDITED: B@1000 + live grammar decoder = 19/28 exact-args, 28/28 valid JSON, live_unsafe=0, GPU-bound = the
+project's CONSTRAINED-lane SOTA (transfer case).** Endgame (autonomous): fail-closed native-v2 mix builder
+(verified-correct native targets; leak/truncation/non-native fail-closed) -> retrain native -> native-trained x
+live decoder. Standing rules all holding (GPU-util, commit-each-step, native-format, retrain-freely).
