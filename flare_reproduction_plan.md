@@ -395,3 +395,18 @@ corrected fresh-block sampler one-example free-gen coherence gate (cohere at 100
 (3) if coherent → full init/A/B generation table (per-example GSM8K/MBPP + B−A + AR ceiling). Red-team each;
 do not promote. (flare flagged the undertraining verdict as PROVISIONAL — correct, given the tail-fill was the
 4th sampler bug; the corrected-sampler post-scale free-gen is the clean test.)
+
+## POST-SCALE DENOISING-NLL — B−A WIDENS ~4× WITH SCALE (2026-06-29, red-teamed raw numbers)
+Deterministic, disjoint heldout-40 (0 overlap). @1000 steps: init all=5.3748 (unchanged), A=3.7325, B=3.4806.
+Deltas @1000: all A-init=-1.642 B-init=-1.894 **B-A=-0.2519**; gsm8k B-A=-0.2582; mbpp B-A=-0.2369.
+**B-A widened from -0.0608 (@200) → -0.252 (@1000): ~4.1×, CONSISTENT across all 3 slices.** Real, clean signal:
+the two-stream objective is increasingly better at diffusion-mode modeling than diffusion-only as scale grows.
+**Mechanistically meaningful:** B beats A at DENOISING despite "spending" half its objective on L_AR — the clean
+AR stream preserves language modeling that *transfers* to better denoising (the FLARE mechanism), and it compounds
+with scale. Controlled: same data/seed/1000 steps.
+**Honest caveats:** (1) still the PROXY — denoising-NLL can't show FLARE's *generation*-capability degradation;
+both A and B improve vs init (no degradation pattern, structural). (2) NOT compute-matched: B's two-stream forward
+is ~8× wall-clock/step (5.25h vs A's 40min) and ~2× FLOPs/step (the known two-stream cost) — but it IS the
+intended FLARE token-equal comparison (objective differs, same data/steps; the cost is part of the objective).
+VERDICT: strong right-direction signal for two-stream; the headline recover-capability claim still needs the
+GENERATION result (coherence gate + table, running next). Not promoted on NLL alone.
