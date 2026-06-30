@@ -1,6 +1,13 @@
 # FLA fused GDN kernel — feasibility (workflow ww7vf3mge, 2026-06-30)
 
-## ⏸ STATUS: PARKED (2026-06-30, by user directive) — GREEN spike, integration DEFERRED
+## ▶ STATUS: UN-PARKED → INTEGRATING (2026-06-30, user directive "switch to FLA before more work")
+User decided to land the kernel BEFORE any more training (so every future run — incl. the likely on-policy/RL
+agentic phase — benefits). Sequence: finish the in-flight AR-vs-diffusion baseline eval (frees the GPU) → flare
+executes the call-site swap below → validation gate. A monitor-side workflow is adversarially verifying the
+integration spec first (esp. that single-block spike parity EXTENDS to the multi-block two-stream schedule — a
+single-block test can pass while cross-block initial_state threading is wrong). Was: PARKED (below, kept for record).
+
+## ⏸ (prior) PARKED (2026-06-30) — GREEN spike, integration DEFERRED
 The Step-0 gate **PASSED GREEN** (see `fla_gdn_kernel_spike_result.md`, commit `74b80f4`): on this exact box
 (RTX 5090 sm_120, torch 2.12.1+cu130, triton 3.7.1, FLA 0.5.1 bare) the FLA `chunk_gated_delta_rule` fwd+bwd runs
 with **no #607 tmem_store / no #734 cumsum crash**, all grads finite **including dh0** (grad through the per-block
