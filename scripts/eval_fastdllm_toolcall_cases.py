@@ -14,7 +14,13 @@ from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from diagnose_toolcall_json_completability import JsonPrefixParser
-from eval_toolcall_jsonl import extract_tool_calls, score_tool_calls, tool_schema_by_name
+from eval_toolcall_jsonl import (
+    extract_qwen_function_calls,
+    extract_tool_calls,
+    qwen_native_tool_call_text,
+    score_tool_calls,
+    tool_schema_by_name,
+)
 
 
 ROOT = Path("/home/mark/qwen_diffusion")
@@ -407,7 +413,11 @@ def generation_instruction(case):
         "Return the necessary Qwen tool call or calls for the request above. "
         "Use only this format and no prose:\n"
         "<tool_call>\n"
-        "{\"name\": \"tool_name\", \"arguments\": {}}\n"
+        "<function=tool_name>\n"
+        "<parameter=argument_name>\n"
+        "argument value\n"
+        "</parameter>\n"
+        "</function>\n"
         "</tool_call>"
     )
 
@@ -419,7 +429,11 @@ def model_repair_instruction(raw_text):
         "using the same user request and available tools. Return only valid Qwen "
         "tool-call block(s) in this exact shape, with no prose before or after:\n"
         "<tool_call>\n"
-        "{\"name\": \"tool_name\", \"arguments\": {}}\n"
+        "<function=tool_name>\n"
+        "<parameter=argument_name>\n"
+        "argument value\n"
+        "</parameter>\n"
+        "</function>\n"
         "</tool_call>\n\n"
         "Previous assistant draft:\n"
         f"{raw_text}"
@@ -651,6 +665,11 @@ def parsed_arguments_from_text(text):
             arguments = json.loads(arguments)
         except Exception:
             arguments = {}
+    if isinstance(arguments, dict) and arguments:
+        return arguments
+    qwen_calls = extract_qwen_function_calls(text)
+    if qwen_calls:
+        return qwen_calls[0].get("arguments") or {}
     return arguments if isinstance(arguments, dict) else {}
 
 
@@ -658,6 +677,11 @@ def candidate_call_from_tool_body(body, available_names):
     payload = parse_jsonish_call(body) or {}
     name = None
     arguments = {}
+    qwen_calls = extract_qwen_function_calls(body)
+    if qwen_calls:
+        call = qwen_calls[0]
+        name = closest_tool_name(call.get("name"), available_names)
+        arguments = call.get("arguments") or {}
     if isinstance(payload, dict):
         raw_name = payload.get("name") or payload.get("function") or payload.get("tool_name")
         if isinstance(raw_name, dict):
@@ -1436,12 +1460,7 @@ def sequence_preserving_constrained_tool_call_text(
                 if value is not None:
                     arguments[prop] = value
 
-        payload = {"name": name, "arguments": arguments}
-        constrained_calls.append(
-            "<tool_call>\n"
-            + json.dumps(payload, ensure_ascii=False, separators=(",", ": "))
-            + "\n</tool_call>"
-        )
+        constrained_calls.append(qwen_native_tool_call_text([{"name": name, "arguments": arguments}]))
     return "\n".join(constrained_calls)
 
 
@@ -1539,12 +1558,7 @@ def constrained_tool_call_text(text, tools, context_text="", max_calls=0, assume
             if value is not None or prop in required:
                 if value is not None:
                     arguments[prop] = value
-        payload = {"name": name, "arguments": arguments}
-        constrained_calls.append(
-            "<tool_call>\n"
-            + json.dumps(payload, ensure_ascii=False, separators=(",", ": "))
-            + "\n</tool_call>"
-        )
+        constrained_calls.append(qwen_native_tool_call_text([{"name": name, "arguments": arguments}]))
     return "\n".join(constrained_calls)
 
 
@@ -1590,8 +1604,7 @@ def repaired_tool_call_text(text, tools):
                 value = scalar_value_from_text(text, prop, prop_schema, numbers)
             if value is not None:
                 arguments[prop] = value
-        payload = {"name": name, "arguments": arguments}
-        repaired_calls.append("<tool_call>\n" + json.dumps(payload, ensure_ascii=False, separators=(",", ": ")) + "\n</tool_call>")
+        repaired_calls.append(qwen_native_tool_call_text([{"name": name, "arguments": arguments}]))
     return "\n".join(repaired_calls)
 
 

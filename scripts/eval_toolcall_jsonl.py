@@ -65,12 +65,56 @@ def parse_scalar_value(text):
     value = str(text).strip()
     if not value:
         return ""
+    if value.lower() in {"true", "false", "null"}:
+        try:
+            return json.loads(value.lower())
+        except Exception:
+            return value
     if value[0] in "[{\"":
         try:
             return json.loads(value)
         except Exception:
             return value
     return value
+
+
+def qwen_native_parameter_value(value, *, student_style=True):
+    """Render one parameter value the way the Qwen native tool-call template does.
+
+    Qwen3.5 student renders mappings/sequences through JSON and scalar non-strings
+    through string conversion. Qwen3.6 teacher renders all non-strings through JSON.
+    Student style is the training/eval target contract for this repo.
+    """
+    if isinstance(value, str):
+        return value
+    if student_style:
+        if isinstance(value, dict) or (isinstance(value, (list, tuple))):
+            return json.dumps(value, ensure_ascii=False)
+        return str(value)
+    return json.dumps(value, ensure_ascii=False)
+
+
+def qwen_native_tool_call_text(calls, *, student_style=True):
+    """Format normalized tool calls as Qwen chat_template-native tool_call blocks."""
+    blocks = []
+    if not isinstance(calls, list):
+        return ""
+    for item in calls:
+        call = normalize_tool_call_object(item)
+        if call is None:
+            continue
+        arguments = call.get("arguments") or {}
+        if not isinstance(arguments, dict):
+            arguments = {"arguments": arguments}
+        lines = ["<tool_call>", f"<function={call['name']}>"]
+        for key, value in arguments.items():
+            lines.append(f"<parameter={key}>")
+            lines.append(qwen_native_parameter_value(value, student_style=student_style))
+            lines.append("</parameter>")
+        lines.append("</function>")
+        lines.append("</tool_call>")
+        blocks.append("\n".join(lines))
+    return "\n".join(blocks)
 
 
 def normalize_json_tool_call(obj):

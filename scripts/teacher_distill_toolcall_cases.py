@@ -60,7 +60,11 @@ def ask_teacher(
             "Return the necessary Qwen tool call or calls for the request above. "
             "Use only this format and no prose:\n"
             "<tool_call>\n"
-            "{\"name\": \"tool_name\", \"arguments\": {}}\n"
+            "<function=tool_name>\n"
+            "<parameter=argument_name>\n"
+            "argument value\n"
+            "</parameter>\n"
+            "</function>\n"
             "</tool_call>"
         )
         messages.append(
@@ -106,8 +110,8 @@ def main():
     parser.add_argument(
         "--instruction-mode",
         choices=["canonical", "native"],
-        default="canonical",
-        help="canonical appends the historical <tool_call> JSON instruction; native sends only prompt_messages+tools.",
+        default="native",
+        help="native sends only prompt_messages+tools; canonical appends an explicit Qwen-native format reminder.",
     )
     args = parser.parse_args()
 
