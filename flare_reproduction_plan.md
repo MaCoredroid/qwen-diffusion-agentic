@@ -508,3 +508,12 @@ lever if generalization caps; mostly 1-call (multicall coverage lighter).
 bugs (systemd inline var expansion; LMFlow trying to load manifest.json as data — would've corrupted training) —
 both failed BEFORE training, no wasted compute; v3 is the real run. Post-train: tool-call eval vs 0/24 baseline +
 GSM8K(0.70)/MBPP/NLL retention.
+
+## Agentic v1 run COMPLETE → post-train eval launched (2026-06-30)
+Run done: train_loss 2.2493, ~4.9h (17619s), adapter saved
+(`runs/flare_agentic_phase1/two_stream_agentic_v1_from_B1000_s1024_step1000`), service inactive, GPU freed.
+POST-TRAIN EVAL LAUNCHED on the new adapter: (1) TOOL-CALL (decisive — the original argument-grounding crux):
+exact 3 baseline slices raw diffusion-mode (corrected sampler + stop-fix) vs B@1000 baseline (one-call 0/8,
+multicall 0/12, teacher 1/8 exact args) — per-example exact-args requested; (2) RETENTION: GSM8K first20 vs 0.70,
+MBPP raw. Success bar: valid JSON ~5→15+/28, exact args ~1→8+/24 (1→3=noise); GSM8K guardrail <0.5. Red-team; no
+promote.
