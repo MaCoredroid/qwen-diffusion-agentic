@@ -614,3 +614,13 @@ diversity read + diffusion-friendly formatting); (2) mix-v2 design (counts, rete
 start-point, near-dup leak-check). SUCCESS BAR: beat B@1000-constrained 9/28 exact-args AND keep GSM8K ≥~0.65;
 if it can't beat 9/28, data lever exhausted → pivot to the live decoder. No big run until I review the pilot +
 mix design.
+
+## ROADMAP CORRECTION: do BOTH levers (decoder + data) (2026-06-30)
+Lead clarified: pursue BOTH the live grammar-constrained decoder AND mix-v2 (27B-teacher data) -- complementary
+(decoder fixes serialization; teacher data fixes raw grounding; they multiply). Orchestration across the single
+GPU/mutator by interleaving: TRACK A (live grammar decoder) is code-first/CPU -> build while GPU runs TRACK B
+(teacher generation / mix-v2 training); run decoder EVAL + training when GPU free. TRACK A is the FAST path (no
+training -- does live schema-constraining at each denoise commit beat the 9/28 post-hoc on B@1000?). TRACK B is
+the longer pole (teacher pilot -> mix-v2 -> ~5h train). Both keep checkpoints (decoder design + label-free; teacher
+pilot + mix design before the 5h run). Endgame = best model (B@1000 or mix-v2) x live grammar decoder. Success
+bars: decoder must beat 9/28 label-free; mix-v2 must beat 9/28 AND keep GSM8K >=~0.65.
