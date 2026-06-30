@@ -1,6 +1,11 @@
 # FLA fused GDN kernel — feasibility (workflow ww7vf3mge, 2026-06-30)
 
-## ⛔ STATUS: spike GREEN, integration NOT BENEFICIAL at our scale (2026-06-30)
+## ⛔ STATUS: PARKED (2026-06-30, user: "lets park FLA") — spike GREEN, integration NOT BENEFICIAL at our scale
+No further FLA work (no profile). Adapter stays behind `FASTDLLM_GDN_KERNEL=fla`, torch is default. Revisit only if a
+future regime changes the math (larger batch, or an upstream kernel that returns per-block boundary states in one
+fused call). Why it lost is understood: our torch baseline is already chunked (so headroom was never 16×), the
+two-stream per-block boundary-state schedule forces a per-block loop around FLA's one-fused-call API, and batch-1
+removes its GEMM-parallelism advantage.
 FLA remains implemented behind `FASTDLLM_GDN_KERNEL=fla`, but **torch stays the default**. Correctness gates passed
 (fp32 tight kernel/schedule parity, detached seeds, real-weight NLL parity, loss overlay), but the required value
 gate failed: end-to-end two-stream training was slower and used more memory on this single-5090 / batch-1 QLoRA
