@@ -227,6 +227,97 @@ def proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, 
     return tool_json_prefix_completable(text)
 
 
+def tool_json_live_prefix_active(text):
+    body = active_tool_call_body(text)
+    if body is not None:
+        return True
+    stripped = str(text or "").lstrip()
+    return bool(stripped and TOOL_OPEN.startswith(stripped))
+
+
+def live_tool_json_top_token(
+    tokenizer,
+    sequence,
+    logits,
+    original_len,
+    abs_idx,
+    mask_id,
+    topk,
+):
+    topk = max(1, min(int(topk), logits.shape[-1]))
+    for token_id in torch.topk(logits, k=topk).indices.detach().tolist():
+        token_id = int(token_id)
+        if proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id):
+            return token_id, True
+    return int(torch.argmax(logits).item()), False
+
+
+def apply_live_tool_json_grammar(
+    tokenizer,
+    x_t,
+    logits,
+    current_mask,
+    window_abs_start,
+    span_start,
+    original_len,
+    args,
+    schedule_events,
+):
+    if not current_mask.any():
+        return None, None, False
+
+    x_1 = torch.full(
+        current_mask.shape,
+        args.mask_id,
+        dtype=torch.long,
+        device=x_t.device,
+    )
+    unmask_idx = torch.zeros_like(current_mask, dtype=torch.bool)
+    active_rows = 0
+    rejected = 0
+    unsafe = 0
+
+    for row_idx in range(x_t.shape[0]):
+        if not current_mask[row_idx].any():
+            continue
+        generated = x_t[row_idx, original_len:].detach().tolist()
+        text = contiguous_decoded_prefix(tokenizer, generated, args.mask_id)
+        if not tool_json_live_prefix_active(text):
+            continue
+
+        active_rows += 1
+        local_pos = int(current_mask[row_idx].nonzero(as_tuple=False)[0, 0].item())
+        abs_idx = window_abs_start + span_start + local_pos
+        token_id, safe = live_tool_json_top_token(
+            tokenizer,
+            x_t[row_idx].clone(),
+            logits[row_idx, local_pos],
+            original_len,
+            abs_idx,
+            args.mask_id,
+            args.live_tool_json_topk,
+        )
+        if not safe:
+            unsafe += 1
+        original_top = int(torch.argmax(logits[row_idx, local_pos]).item())
+        if token_id != original_top:
+            rejected += 1
+        x_1[row_idx, local_pos] = token_id
+        unmask_idx[row_idx, local_pos] = True
+
+    if not active_rows:
+        return None, None, False
+
+    dropped = int(current_mask.sum().item()) - int(unmask_idx.sum().item())
+    schedule_events["live_tool_json_grammar_interval_visits"] += 1
+    schedule_events["live_tool_json_grammar_active_rows"] += active_rows
+    schedule_events["live_tool_json_grammar_token_visits"] += int(unmask_idx.sum().item())
+    schedule_events["live_tool_json_grammar_left_to_right_dropped_token_visits"] += dropped
+    schedule_events["live_tool_json_grammar_replacement_token_visits"] += rejected
+    schedule_events["live_tool_json_grammar_unsafe_fallback_token_visits"] += unsafe
+    return x_1, unmask_idx, True
+
+
 def apply_tool_json_prefix_guard(
     tokenizer,
     x_t,
@@ -1702,6 +1793,12 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         "json_prefix_guard_target_fallback_token_visits": 0,
         "json_prefix_guard_unsafe_fallback_token_visits": 0,
         "json_prefix_guard_left_to_right_dropped_token_visits": 0,
+        "live_tool_json_grammar_interval_visits": 0,
+        "live_tool_json_grammar_active_rows": 0,
+        "live_tool_json_grammar_token_visits": 0,
+        "live_tool_json_grammar_left_to_right_dropped_token_visits": 0,
+        "live_tool_json_grammar_replacement_token_visits": 0,
+        "live_tool_json_grammar_unsafe_fallback_token_visits": 0,
     }
     candidate_group_choices = {}
     candidate_group_allowed_indices = {}
@@ -2112,13 +2209,28 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                             schedule_events["argument_boundary_ban_token_visits"] += int(current_mask.sum().item())
                     logits = logits.clone()
                     logits[..., int(args.mask_id)] = torch.finfo(logits.dtype).min
-                    x_1, p_1t = sample_with_top_p(model, logits, args.top_p, args.temperature)
-                    x1_p = torch.squeeze(torch.gather(p_1t, dim=-1, index=torch.unsqueeze(x_1, -1)), -1)
-                    x1_p = torch.where(current_mask, x1_p, -torch.inf)
-                    unmask_idx = x1_p > args.threshold
-                    max_prob_idx = x1_p.argmax(dim=-1)
-                    unmask_idx[torch.arange(x_1.shape[0], device=x_1.device), max_prob_idx] = True
-                    unmask_idx = unmask_idx & current_mask
+                    if args.live_tool_json_grammar:
+                        x_1, unmask_idx, handled_by_live_grammar = apply_live_tool_json_grammar(
+                            tokenizer,
+                            x_t,
+                            logits,
+                            current_mask,
+                            window_abs_start,
+                            start,
+                            original_len,
+                            args,
+                            schedule_events,
+                        )
+                    else:
+                        handled_by_live_grammar = False
+                    if not handled_by_live_grammar:
+                        x_1, p_1t = sample_with_top_p(model, logits, args.top_p, args.temperature)
+                        x1_p = torch.squeeze(torch.gather(p_1t, dim=-1, index=torch.unsqueeze(x_1, -1)), -1)
+                        x1_p = torch.where(current_mask, x1_p, -torch.inf)
+                        unmask_idx = x1_p > args.threshold
+                        max_prob_idx = x1_p.argmax(dim=-1)
+                        unmask_idx[torch.arange(x_1.shape[0], device=x_1.device), max_prob_idx] = True
+                        unmask_idx = unmask_idx & current_mask
                     if (
                         args.guard_tool_json_prefix
                         and interval.get("scheduled")
@@ -2247,6 +2359,12 @@ def empty_totals():
         "sampler_json_prefix_guard_target_fallback_token_visits": 0,
         "sampler_json_prefix_guard_unsafe_fallback_token_visits": 0,
         "sampler_json_prefix_guard_left_to_right_dropped_token_visits": 0,
+        "sampler_live_tool_json_grammar_interval_visits": 0,
+        "sampler_live_tool_json_grammar_active_rows": 0,
+        "sampler_live_tool_json_grammar_token_visits": 0,
+        "sampler_live_tool_json_grammar_left_to_right_dropped_token_visits": 0,
+        "sampler_live_tool_json_grammar_replacement_token_visits": 0,
+        "sampler_live_tool_json_grammar_unsafe_fallback_token_visits": 0,
         "stop_boundary_guard_trimmed": 0,
         "errors": 0,
     }
@@ -2350,10 +2468,15 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
                 key = case_key(case, idx)
                 sampler_schedule = args.sampler_schedules.get(key) if args.full_context_sampling else None
                 sampler_schedule_row = args.sampler_schedule_rows.get(key) if args.full_context_sampling else None
+                generation_case = case
+                if args.strip_gold_for_generation:
+                    generation_case = copy.deepcopy(case)
+                    for gold_key in ("gold_assistant", "gold_tool_names", "gold_tool_calls"):
+                        generation_case.pop(gold_key, None)
                 text, mask_count, token_count = generate_case(
                     model,
                     tokenizer,
-                    case,
+                    generation_case,
                     args,
                     sampler_schedule=sampler_schedule,
                 )
@@ -2642,6 +2765,24 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
                 totals["sampler_json_prefix_guard_left_to_right_dropped_token_visits"] += int(
                     schedule_events.get("json_prefix_guard_left_to_right_dropped_token_visits") or 0
                 )
+                totals["sampler_live_tool_json_grammar_interval_visits"] += int(
+                    schedule_events.get("live_tool_json_grammar_interval_visits") or 0
+                )
+                totals["sampler_live_tool_json_grammar_active_rows"] += int(
+                    schedule_events.get("live_tool_json_grammar_active_rows") or 0
+                )
+                totals["sampler_live_tool_json_grammar_token_visits"] += int(
+                    schedule_events.get("live_tool_json_grammar_token_visits") or 0
+                )
+                totals["sampler_live_tool_json_grammar_left_to_right_dropped_token_visits"] += int(
+                    schedule_events.get("live_tool_json_grammar_left_to_right_dropped_token_visits") or 0
+                )
+                totals["sampler_live_tool_json_grammar_replacement_token_visits"] += int(
+                    schedule_events.get("live_tool_json_grammar_replacement_token_visits") or 0
+                )
+                totals["sampler_live_tool_json_grammar_unsafe_fallback_token_visits"] += int(
+                    schedule_events.get("live_tool_json_grammar_unsafe_fallback_token_visits") or 0
+                )
                 totals["stop_boundary_guard_trimmed"] += int(bool(row.get("stop_boundary_guard_trimmed")))
                 totals["records_with_extra_calls"] += int((row["extra_call_count"] or 0) > 0)
                 totals["records_with_missing_calls"] += int((row["missing_call_count"] or 0) > 0)
@@ -2730,6 +2871,10 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
         "json_prefix_guard_topk": args.json_prefix_guard_topk,
         "json_prefix_guard_left_to_right": args.json_prefix_guard_left_to_right,
         "json_prefix_guard_target_fallback": args.json_prefix_guard_target_fallback,
+        "live_tool_json_grammar": args.live_tool_json_grammar,
+        "live_tool_json_topk": args.live_tool_json_topk,
+        "live_tool_json_mode": "hybrid_diffusion_nl_constrained_ar_json" if args.live_tool_json_grammar else "off",
+        "strip_gold_for_generation": args.strip_gold_for_generation,
         "argument_boundary_token_ids": args.argument_boundary_token_ids,
         "argument_newline_token_ids": args.argument_newline_token_ids,
         "force_tool_call_prefix": args.force_tool_call_prefix,
@@ -2911,6 +3056,29 @@ def main():
         "--no-json-prefix-guard-left-to-right",
         action="store_true",
         help="Disable left-to-right commit restriction inside JSON-prefix-guarded intervals.",
+    )
+    parser.add_argument(
+        "--live-tool-json-grammar",
+        action="store_true",
+        help=(
+            "Hybrid sampler mode: normal diffusion outside tool JSON spans, but inside an active "
+            "<tool_call> body commit the leftmost masked token using the highest-logit token that "
+            "keeps the JSON prefix grammar-completable. Label-free: uses no gold target tokens."
+        ),
+    )
+    parser.add_argument(
+        "--live-tool-json-topk",
+        type=int,
+        default=128,
+        help="Top-k logits scan width for --live-tool-json-grammar legality selection.",
+    )
+    parser.add_argument(
+        "--strip-gold-for-generation",
+        action="store_true",
+        help=(
+            "Leakage proof mode: remove gold_assistant/gold_tool_names/gold_tool_calls from the case "
+            "before prompt construction and sampling. Scoring still uses the original case."
+        ),
     )
     parser.add_argument(
         "--stop-after-tool-calls",

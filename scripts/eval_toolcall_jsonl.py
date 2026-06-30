@@ -159,6 +159,9 @@ def extract_tool_calls(text):
         return calls, invalid
 
     stripped = text.strip()
+    qwen_calls = extract_qwen_function_calls(stripped)
+    if qwen_calls:
+        return qwen_calls, 0
     if stripped.startswith("{") and stripped.endswith("}"):
         call = normalize_json_tool_call(parse_first_json_object(stripped))
         if call is None:

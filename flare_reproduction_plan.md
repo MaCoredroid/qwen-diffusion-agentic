@@ -641,3 +641,18 @@ is content not structure; GPU-util watch (token-by-token grammar risks the .item
 **GREEN-LIT both tracks:** build live decoder + filtered mix-v2 manifest in parallel. CHECKPOINTS before
 credit/launch: (a) live-decoder B@1000 eval (beats 9/28 label-free? + gold-stripped proof + util); (b) mix-v2
 manifest+design (verified-correct targets, retention rebalance, near-dup leak-check) before the 5h train.
+
+## TEACHER 37% DIAGNOSED — mostly genuine + a FORMAT CONFOUND (2026-06-30)
+Lead challenged the teacher pilot's 37% (temp? real 27B capability?). Web research: Qwen3 tool-call recommends
+temp~0.7/top_p0.8 (not greedy) + Hermes format; BFCL-V4 Qwen3.5-9B=66.1% (our STUDENT), Qwen3-Coder-Plus ~81%;
+but fine-tuned Qwen3-8B is ~95% single-turn vs 10-22% MULTI-turn (multicall is genuinely hard). flare diagnostic
+on the 13 right-seq/arg-fail cases: **0/13 pure-format, ~3/13 recoverable format/alias, ~10/13 GENUINE errors**
+(15->0.15 unit, regional/0->global/700, unique_*->content_001 placeholder IDs). So 37% is NOT mostly scorer
+strictness. **Temp 0.6/top_p0.8/top_k20 did NOT help (1/15 vs 2/15 at temp0)** -- but that subset was the already-
+failing cases (biased, N tiny -> inconclusive). **FORMAT CONFOUND found:** script asks for <tool_call> while Qwen
+emits NATIVE <function=...> -> can confuse the teacher AND mis-parse output; BFCL's 66% is in NATIVE format.
+**My over-optimistic "it's an artifact" read was partly wrong (owned to lead): the errors are mostly genuine on
+hard multicall.** NEXT (steered): (1) CLEAN native-format test -- SGLang native Qwen tool-call + native parser, drop
+the custom instruction, temp0.7, FRESH diverse scenarios -> the teacher's TRUE number (likely between 37% confounded
+and 66% easy); (2) SAFE mix-v2 path regardless: VERIFIED-CORRECT targets ONLY (gold or teacher-exact-match-gold),
+diversity from broader gold-labeled data + curricula + filtered teacher scenarios. No training on unverified calls.

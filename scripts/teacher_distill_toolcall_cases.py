@@ -6,7 +6,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from eval_toolcall_jsonl import score_tool_calls
+from eval_toolcall_jsonl import score_tool_call_objects, score_tool_calls
 
 
 ROOT = Path("/home/mark/qwen_diffusion")
@@ -41,26 +41,42 @@ def post_json(url, payload, timeout):
         raise RuntimeError(f"HTTP {exc.code}: {body}") from exc
 
 
-def ask_teacher(case, endpoint, model, timeout, temperature, max_tokens, enable_thinking):
+def ask_teacher(
+    case,
+    endpoint,
+    model,
+    timeout,
+    temperature,
+    top_p,
+    top_k,
+    presence_penalty,
+    max_tokens,
+    enable_thinking,
+    instruction_mode,
+):
     messages = list(case["prompt_messages"])
-    instruction = case.get("teacher_instruction") or (
-        "Return the necessary Qwen tool call or calls for the request above. "
-        "Use only this format and no prose:\n"
-        "<tool_call>\n"
-        "{\"name\": \"tool_name\", \"arguments\": {}}\n"
-        "</tool_call>"
-    )
-    messages.append(
-        {
-            "role": "user",
-            "content": instruction,
-        }
-    )
+    if instruction_mode == "canonical":
+        instruction = case.get("teacher_instruction") or (
+            "Return the necessary Qwen tool call or calls for the request above. "
+            "Use only this format and no prose:\n"
+            "<tool_call>\n"
+            "{\"name\": \"tool_name\", \"arguments\": {}}\n"
+            "</tool_call>"
+        )
+        messages.append(
+            {
+                "role": "user",
+                "content": instruction,
+            }
+        )
     payload = {
         "model": model,
         "messages": messages,
         "tools": case.get("tools") or None,
         "temperature": temperature,
+        "top_p": top_p,
+        "top_k": top_k,
+        "presence_penalty": presence_penalty,
         "max_tokens": max_tokens,
         "chat_template_kwargs": {"enable_thinking": enable_thinking},
     }
@@ -69,18 +85,8 @@ def ask_teacher(case, endpoint, model, timeout, temperature, max_tokens, enable_
     message = response["choices"][0]["message"]
     tool_calls = message.get("tool_calls") or []
     if tool_calls:
-        rendered = []
-        for call in tool_calls:
-            function = call.get("function") or {}
-            name = function.get("name")
-            arguments = function.get("arguments") or "{}"
-            rendered.append(
-                "<tool_call>\n"
-                + json.dumps({"name": name, "arguments": arguments}, ensure_ascii=False)
-                + "\n</tool_call>"
-            )
-        return "\n".join(rendered)
-    return message.get("content", "")
+        return {"content": message.get("content") or "", "tool_calls": tool_calls, "response_message": message}
+    return {"content": message.get("content", ""), "tool_calls": [], "response_message": message}
 
 
 def main():
@@ -92,8 +98,17 @@ def main():
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--timeout", type=float, default=30.0)
     parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--top-p", type=float, default=None)
+    parser.add_argument("--top-k", type=int, default=None)
+    parser.add_argument("--presence-penalty", type=float, default=None)
     parser.add_argument("--max-tokens", type=int, default=256)
     parser.add_argument("--enable-thinking", action="store_true")
+    parser.add_argument(
+        "--instruction-mode",
+        choices=["canonical", "native"],
+        default="canonical",
+        help="canonical appends the historical <tool_call> JSON instruction; native sends only prompt_messages+tools.",
+    )
     args = parser.parse_args()
 
     cases = load_cases(args.input_jsonl, args.limit)
@@ -129,21 +144,37 @@ def main():
                 "available_tool_names": case.get("available_tool_names") or [],
             }
             try:
-                text = ask_teacher(
+                teacher_response = ask_teacher(
                     case,
                     args.endpoint,
                     args.model,
                     args.timeout,
                     args.temperature,
+                    args.top_p,
+                    args.top_k,
+                    args.presence_penalty,
                     args.max_tokens,
                     args.enable_thinking,
+                    args.instruction_mode,
                 )
-                metrics = score_tool_calls(text, case.get("tools") or [], case.get("gold_assistant"))
+                text = teacher_response["content"]
+                tool_calls = teacher_response["tool_calls"]
+                if tool_calls:
+                    metrics = score_tool_call_objects(
+                        tool_calls,
+                        case.get("tools") or [],
+                        gold_text=case.get("gold_assistant"),
+                    )
+                else:
+                    metrics = score_tool_calls(text, case.get("tools") or [], case.get("gold_assistant"))
                 names = metrics["called_names"]
                 row.update(
                     {
                         "status": "ok",
                         "teacher_assistant": text,
+                        "teacher_response_tool_calls": tool_calls,
+                        "teacher_response_message": teacher_response["response_message"],
+                        "teacher_response_path": "tool_calls" if tool_calls else "content",
                         "teacher_tool_names": names,
                         "teacher_calls": metrics["calls"],
                         "invalid_tool_json_count": metrics["invalid_tool_call_count"],
@@ -194,6 +225,12 @@ def main():
         "out_jsonl": str(args.out_jsonl),
         "endpoint": args.endpoint,
         "model": args.model,
+        "temperature": args.temperature,
+        "top_p": args.top_p,
+        "top_k": args.top_k,
+        "presence_penalty": args.presence_penalty,
+        "enable_thinking": args.enable_thinking,
+        "instruction_mode": args.instruction_mode,
         "totals": totals,
         "elapsed_seconds": time.time() - start,
     }
