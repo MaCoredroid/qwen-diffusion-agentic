@@ -738,3 +738,18 @@ recovered ~24pts of teacher quality (user vindicated). **GREEN-LIT** the retrain
 native, ~1000 steps, systemd, ~5h. Post-train (autonomous, report-no-promote): native-trained RAW native (vs
 B@1000 0/8) + RAW+LIVE-DECODER (vs 19/28 transfer) + GSM8K retention (floor 0.65). SUCCESS = native-trained x live
 decoder > 19/28 AND GSM8K >= 0.65; if ~=19/28 the decoder is the dominant lever (honest either way).
+
+## GPU-UTIL FIX (per broadened rule) — 42% -> 63%, 3-4x faster, bit-exact (2026-06-30)
+Lead broadened the GPU-util rule: NO low util (42% failed, not just ~10%). Stopped the v2 run, profiled, fixed:
+- Profile: dominant idle = the NOISY GDN scan, **1728 GDN scan calls/step** (un-batched per-noisy-block loop;
+  same class as the .item() defect). Baseline 19.21s/step (5.38 fwd / 13.83 bwd).
+- Rejected (discipline): disable k-bit ckpt -> OOM 32004 MiB; clean-GDN single-pass -> loss changed 0.019 (NOT
+  bit-exact, rejected); torch.compile GDN -> stalled.
+- **PROMOTED (bit-exact): batch noisy GDN blocks by length -> 1728 -> 288 calls.** prod_vs_helper_logits=0 /
+  loss=0 / clean_vs_ar=0. Step 19.21 -> 6.45s (2.35 fwd / 4.09 bwd); 10-step smoke 4.71s/step, util mean 63.5%
+  p50 66.5% max 99%, peak ~29.9 GiB. Committed 7b64d09. v2 retrain RESTARTED at this config (now ~1.5h not ~5h).
+**HONEST CEILING: 63% is NOT 100%.** Cheap wins exhausted; residual = checkpointed QLoRA/GDN + pure-torch
+recurrence. Full util needs the FUSED GDN kernel (deferred multi-day Triton, the Route-II-kernel territory) or
+larger batch (OOM-blocked at block 1024). DECISION (escalated): finish the now-fast v2 retrain (~1.5h, gets the
+agentic endgame) THEN build the fused GDN kernel (the 100%-util path + speeds ALL future two-stream runs) -- don't
+pause a 1.5h run for a multi-day kernel. Task-boundary refresh of the heavy flare session available here.
