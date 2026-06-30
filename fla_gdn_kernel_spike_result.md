@@ -47,3 +47,6 @@ Selected full-block parity maxima:
 
 ## Verdict
 GREEN: parity holds and the FLA fwd+bwd path does not crash on `sm_120`. Ready for a separate integration step, pending monitor red-team.
+
+## Status: PARKED (2026-06-30, user directive)
+Monitor red-team: GREEN confirmed, no holes (#607 retired on triton 3.7.1; dh0 + all grads finite; parity within bf16 tol with margin). Caveat: this proves *kernel correctness* on one block/config, not end-to-end training parity or the util win — those belong to the (deferred) integration + validation gate. **Integration is PARKED, not abandoned** — it is ~0.5–1.5 days and only pays off if we run more training; resume per the STATUS block in `fla_kernel_feasibility.md` when further training is on the table.

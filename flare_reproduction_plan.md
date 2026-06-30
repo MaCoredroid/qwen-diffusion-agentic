@@ -811,3 +811,13 @@ grads finite for `dq/dk/dv/dbeta/dg/dh0`; parity vs local `_torch_chunk_gated_de
 `rtol=1e-2, atol=2e-2` for output/final_state and all listed grads. Full-block max abs diffs:
 output 2.44e-4, final_state 1.08e-3, dq 1.53e-5, dk 4.88e-4, dv 2.44e-4, dbeta 2.44e-4, dg 4.59e-4,
 dh0 7.63e-6. **VERDICT: GREEN** -- ready for monitor red-team and then a separate integration step if approved.
+
+## FLA fused-kernel util fix — PARKED (2026-06-30, user directive)
+Step-0 spike GREEN (commit 74b80f4, fla_gdn_kernel_spike_result.md): FLA chunk_gated_delta_rule fwd+bwd on sm_120 /
+triton 3.7.1 — no #607/#734 crash, all grads finite incl dh0, parity within bf16 tol. The cheap drop-in is PROVEN
+VIABLE; the #607 Blackwell risk is retired on our toolchain. Per user, **integration is PARKED (deferred, not
+abandoned)**: it is ~0.5–1.5 days + a validation gate and only pays off if we run more training; the live decision
+is on a capability lever (data exhausted, decoder = SOTA). RESUME when further training is on the table (e.g.
+large-scale 27B distillation) or we want faster two-stream training — no new gate needed, jump to the
+"Call-site swap"+"Validation gate" sections of fla_kernel_feasibility.md. Util status of record: two-stream training
+~63% (batched-noisy-GDN fix held; eval slices were GPU-bound 94–98%); the remaining gap is this parked kernel.

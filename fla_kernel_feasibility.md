@@ -1,5 +1,20 @@
 # FLA fused GDN kernel — feasibility (workflow ww7vf3mge, 2026-06-30)
 
+## ⏸ STATUS: PARKED (2026-06-30, by user directive) — GREEN spike, integration DEFERRED
+The Step-0 gate **PASSED GREEN** (see `fla_gdn_kernel_spike_result.md`, commit `74b80f4`): on this exact box
+(RTX 5090 sm_120, torch 2.12.1+cu130, triton 3.7.1, FLA 0.5.1 bare) the FLA `chunk_gated_delta_rule` fwd+bwd runs
+with **no #607 tmem_store / no #734 cumsum crash**, all grads finite **including dh0** (grad through the per-block
+initial_state our FLARE two-stream schedule needs), and **parity vs our torch reference holds** (max abs: output
+2.4e-4, final_state 1.1e-3, dk 4.9e-4, dg 4.6e-4, dh0 7.6e-6; allclose rtol=1e-2/atol=2e-2). So the cheap fused-kernel
+drop-in is **proven viable** — the single biggest risk (#607 on Blackwell) is retired on our toolchain.
+**The integration is PARKED, not abandoned.** Rationale: integration is ~0.5–1.5 days + a full validation gate, and
+its payoff (training util ~63% → ~90%) only matters if we run MORE training; the project's live decision is on a
+capability lever (data exhausted; decoder is SOTA), and if we go decoder-only / closeout the kernel isn't on the
+critical path. **Resume trigger:** decide to do further training runs (e.g. a large-scale 27B distillation), OR any
+time we want faster two-stream training. **To resume:** nothing to re-derive — the spike is banked and deps are
+installed; jump straight to the "Integration plan → Call-site swap" + "Validation gate" sections below. No new gate
+needed (Step 0 already GREEN); just re-confirm FLA still imports in `.venv-fastdllm` and run the call-site swap.
+
 **Decision-grade research (4 web agents + 2 codebase agents + adversarial synthesis). Banked.**
 
 ## Verdict: CONDITIONAL cheap drop-in — the whole bet rides on ONE 1–2h spike test
