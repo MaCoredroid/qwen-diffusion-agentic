@@ -539,3 +539,22 @@ strict 0/24; + corruption-type counts. (2) If content accuracy is materially hig
 DECODING (grammar/JSON-schema-constrained diffusion denoising; the project's CONSTRAINED lane; DINGO /
 constrained-diffusion) -> scope existing repo grammar/projection decoders, don't build yet. Retention (GSM8K vs
 0.70) pending. Do NOT promote on RAW.
+
+## CONTENT-VS-STRUCTURE diagnostic (2026-06-30) — grounding IS there; serialization is the wall
+Lenient scoring (JSON-repair/fuzzy-extract, ignore well-formedness) of the agentic v1 adapter:
+| slice | tool correct | arg-values recovered |
+| one-call | 6/8 | 58/67 (87%) |
+| multicall | 8/12 | 92/112 (82%) |
+| teacher | 4/8 | 40/57 (70%) |
+=> the strict 0/24 exact-args was ALMOST ENTIRELY JSON well-formedness failure, NOT missing grounding. Corruption
+dominated by JSON structure (invalid 25, missing-delimiter/unbalanced 25, dup-substrings 19, unbalanced braces 17,
+dropped-tool-chars 7, dup-key 6, missing-quotes 6; reasoning/no-tool-block dropped to 1). **Honest:** vs B@1000 the
+RECORD-level lenient content did NOT clearly improve (+12 values, multicall 7→8, no-tool-block dropped sharply) —
+the training's content gain is MODEST; the DOMINANT barrier is serialization (diffusion can't reliably render exact
+JSON token sequences). Confirms the project's original structure-wall thesis, diffusion-specific form.
+**Constrained-decoding scope:** repo HAS post-hoc repair / deterministic projection / prefix guards / schedule
+forcing / candidate masks (`eval_fastdllm_toolcall_repair_outputs.py`, `rescore_toolcall_sequence_planner_
+projection.py`, `eval_fastdllm_toolcall_cases.py`); does NOT have live DINGO-style schema-constrained diffusion
+denoising. **NEXT (steered):** (1) report retention (GSM8K vs 0.70); (2) run the EXISTING repair/projection as the
+CONSTRAINED lane on agentic v1 → exact-args vs strict 0/24, with the CRITICAL label-free check (grammar/schema-only
+= promotable CONSTRAINED; snaps-to-gold = PROTECTED oracle, NOT promotable); (3) defer the live grammar decoder.
