@@ -581,3 +581,26 @@ added value (iterate data: more retention + 27B-teacher traces); if CLOSE, the 8
 DECODER (works on base too) and mix-v1 wasn't worth the ~15pt GSM8K cost → invest in constrained decoding + the
 live grammar decoder, not this data mix. (Modest record-level content gain hints at the latter.) No promote until
 attribution.
+
+## ATTRIBUTION — mix-v1 NET NEGATIVE; constrained DECODER is the lever (2026-06-30)
+Same label-free constrained lane, B@1000 (pre-agentic-training) vs agentic-v1:
+| run | valid JSON | exact seq | exact args |
+| B@1000 raw | 5/28 | 3/28 | 1/28 |
+| **B@1000 + constrained** | 23/28 | 17/28 | **9/28** |
+| agentic v1 raw | 2/28 | 0/28 | 0/28 |
+| agentic v1 + constrained | 22/28 | 11/28 | 8/28 |
+**B@1000-constrained (9/28) >= agentic-v1-constrained (8/28).** Per slice delta: one-call -1, multicall +1,
+teacher -1 (total -1). Agentic v1 ALSO degraded structure (exact-seq 17->11, tool-name 17->11, call-count 20->12)
+AND cost ~15pt GSM8K (0.70->0.55). **So the 8-9/28 grounding was ALREADY in B@1000; the constrained DECODER
+unlocks it (1->9/28), NOT the agentic training. mix-v1 = NET NEGATIVE** (low-diversity tool-call data overfit/hurt
+structure + retention, no grounding gain). Label-free condition unchanged (projection uses model output + schema +
+prompt context; gold only post-projection for scoring).
+**DECISIONS:** (1) PROMOTABLE CONSTRAINED-lane SOTA = **B@1000 + sequence-constrained projection = 9/28 exact args**
+(on the BASE converted model). (2) STAND DOWN agentic-mix-v1 (not promoted, not iterated; keep B@1000 as best). If
+the data lever is revisited it must be the high-quality 27B-teacher diffusion-friendly traces + more retention, not
+naive low-diversity tool-call data. (3) ESCALATED roadmap fork to lead: constrained-decoding build (live
+grammar-constrained diffusion decoder to push past 9/28 by preventing corruption vs repairing it) vs better data
+mix (27B-teacher traces) vs both. flare scoping the live decoder (no build) while we decide.
+**Net project state:** conversion WORKS (GSM8K 0.70 diffusion-mode); tool-call grounding is PRESENT in the base
+converted model and the constrained DECODER renders it (9/28 exact-args, label-free, promotable). The structure
+wall is the diffusion serializer; constrained decoding is the proven lever.
