@@ -75,3 +75,16 @@ Full output: tasks/w9sldj0k3.output.
    verifier pack, which is HELD-OUT EVAL (training on it = train-on-test leakage). We use the flywheel INFRASTRUCTURE
    (Codex+vLLM+verifier-runner) to run PUBLIC tasks. Dataset selection delegated to an ultracode research workflow
    (user: "just use the research, no opinion"). Held-out eval = in-house Lumo pack + SWE-bench Verified + BFCL test.
+3. **The loss MUST also train RAW agentic generation (no decoder) — decoder = safety net, NOT a crutch (user).**
+   FAILURE MODE if we RL only the constrained policy: the decoder MASKS the model's structural errors during training,
+   so the raw distribution is never penalized for mass on invalid tokens → the model becomes DECODER-DEPENDENT and raw
+   capability (the promotable lane) stagnates = a handicapped model. FIX — **dual-term loss:**
+   `L = L_RL(model+decoder constrained policy; dense verifiable reward) + λ_raw · L_raw-internalize`, where
+   **L_raw-internalize is primarily ON-POLICY SELF-DISTILLATION**: the verified-CORRECT outputs produced by
+   (model+decoder) become CE/KL targets for the RAW model's own forward (teach raw to reproduce the decoder-corrected
+   behavior WITHOUT the decoder — dense, stable, OPDLM-flavored: the constrained policy is the on-policy "teacher,"
+   raw is the student). OPTIONALLY add **raw RL rollouts** (same verifiable reward, no decoder → penalizes raw's
+   unmasked structural+value errors directly; sparser, so add once raw is decent enough to earn non-zero reward).
+   **Schedule:** constrained-heavy first (dense/sample-efficient), ramp λ_raw as raw closes the gap. **METRIC (3-lane):**
+   track the RAW-vs-constrained exact-args GAP as first-class — success = RAW climbs toward the constrained number and
+   the decoder degrades to a pure safety net. (This is also the cleaner promotion story: we promote on RAW gains.)
