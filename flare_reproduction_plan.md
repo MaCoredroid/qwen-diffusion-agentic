@@ -699,3 +699,21 @@ re-running with STRICT enforcement; **accepted live-decoder numbers must have li
 label-free, which is on via --strip-gold-for-generation). Strict clean number pending. (Risk: strict may push
 valid-JSON up but exact-args could move either way if forced grammar-valid tokens aren't the right values.)
 Track B (native mix-v2 manifest) building in parallel with v1's leak discipline on native slices/pools.
+
+## LIVE GRAMMAR DECODER — CLEAN result: 9/28 -> 19/28 exact-args, 28/28 valid JSON (2026-06-30)
+strict3 (EOS-edge fixed, **live_unsafe=0** -- NO unconstrained fallbacks), B@1000 native eval (TRANSFER: Hermes-
+trained student on native), label-free (--strip-gold-for-generation; grammar uses schema+prefix only):
+| slice | valid JSON | exact-seq | exact-args |
+| one-call 8 | 8/8 | 7/8 | 5/8 |
+| multicall 12 | 12/12 | 11/12 | 10/12 |
+| teacher 8 | 8/8 | 7/8 | 4/8 |
+| **TOTAL** | **28/28** | 25/28 | **19/28** |
+**The live grammar decoder takes B@1000 from 9/28 (post-hoc) -> 19/28 exact-args (68%), VALID JSON 28/28, zero
+fallbacks, GPU-bound 96-98% (no host trap).** Preventing corruption during denoise >2x the post-hoc repair AND
+guarantees valid JSON. The structure wall is GONE (28/28 valid); residual 9 wrong = value-CONTENT errors (68% ~
+the lenient ceiling). This is the TRANSFER case -> native-TRAINED student should be higher.
+**Promotion gate (steered):** confirm gold-fully-stripped proof (=19/28?) before crediting as CONSTRAINED-lane
+SOTA. ENDGAME (autonomous): Track B native mix-v2 (verified-correct teacher rows) -> retrain native -> native-
+trained student x live decoder = the full native-everywhere number vs 9/28 (post-hoc) and 19/28 (transfer live).
+Net: the constrained-decoding lever DECISIVELY works -- the project's founding argument-grounding wall is a
+diffusion-SERIALIZATION problem, and a live grammar decoder solves it (valid JSON 100%, exact-args 32%->68%).
