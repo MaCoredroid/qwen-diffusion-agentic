@@ -1,11 +1,15 @@
 # FLA fused GDN kernel — feasibility (workflow ww7vf3mge, 2026-06-30)
 
-## ▶ STATUS: UN-PARKED → INTEGRATING (2026-06-30, user directive "switch to FLA before more work")
-User decided to land the kernel BEFORE any more training (so every future run — incl. the likely on-policy/RL
-agentic phase — benefits). Sequence: finish the in-flight AR-vs-diffusion baseline eval (frees the GPU) → flare
-executes the call-site swap below → validation gate. A monitor-side workflow is adversarially verifying the
-integration spec first (esp. that single-block spike parity EXTENDS to the multi-block two-stream schedule — a
-single-block test can pass while cross-block initial_state threading is wrong). Was: PARKED (below, kept for record).
+## ⛔ STATUS: spike GREEN, integration NOT BENEFICIAL at our scale (2026-06-30)
+FLA remains implemented behind `FASTDLLM_GDN_KERNEL=fla`, but **torch stays the default**. Correctness gates passed
+(fp32 tight kernel/schedule parity, detached seeds, real-weight NLL parity, loss overlay), but the required value
+gate failed: end-to-end two-stream training was slower and used more memory on this single-5090 / batch-1 QLoRA
+setup. Torch baseline: **4.76s/step**, peak **29149 MiB**, mean nonzero GPU util **65.3%**. Per-block FLA:
+**5.78s/step**, peak **30461 MiB**, util **61.4%**. Salvage packed `cu_seqlens` FLA noisy scan plus full-doc clean
+FLA pass: **7.25s/step** including compile (steady-state ~6.45s/step), peak **31529 MiB**, util **67.1%**. This is
+not the util fix; batch-1 + QLoRA/autocast + clean boundary-state extraction dominate enough that FLA's standard
+kernel does not beat the local torch path. Keep the adapter for future larger-batch/upstream-kernel experiments;
+do not flip default unless a future measurement is faster than torch and not higher memory.
 
 ## ⏸ (prior) PARKED (2026-06-30) — GREEN spike, integration DEFERRED
 The Step-0 gate **PASSED GREEN** (see `fla_gdn_kernel_spike_result.md`, commit `74b80f4`): on this exact box
@@ -37,10 +41,10 @@ needed (Step 0 already GREEN); just re-confirm FLA still imports in `.venv-fastd
   `torch.autograd.Function` with working backward, autocast bf16, and returns **`dh0`** (grad wrt initial_state).
   With `cu_seqlens` it treats initial_state as per-segment and resets at boundaries = EXACTLY our FLARE two-stream
   schedule (seed noisy block from clean boundary, reset per block; keep caller-side `.detach()` at modeling.py:1199).
-- **One real wrinkle (not a blocker):** FLA returns only `(o, final_state)`, no `output_chunk_states`. Fix: in
-  `clean_gdn_docwise_with_boundaries`, per-block loop calling FLA `output_final_state=True`, thread final→initial.
-  Noisy stream → pack the 288 per-block scans into one `cu_seqlens` call with per-segment initial_state (the direct
-  cure for the residual idle).
+- **One real wrinkle (now measured):** FLA returns only `(o, final_state)`, no `output_chunk_states`. The first
+  integration used a per-clean-block final-state loop and was slower. The salvage used full-doc clean FLA output
+  with torch fallback only for clean boundary states, plus a packed noisy `cu_seqlens` call with per-segment
+  initial_state. That was also slower and higher-memory at batch 1.
 - **SINGLE BIGGEST RISK:** the FLA GDN **backward** Triton kernel on **sm_120 Blackwell** — issue #607 (`tmem_store`
   bwd crash), #734 (cumsum crash). Those were on Triton 3.2–3.6/3.4; **we're on Triton 3.7.1 (newer than every
   report)** → may be fixed, UNVERIFIED → must test. #734 has a cheap `torch.cumsum` fallback; #607 has none → if it

@@ -540,6 +540,64 @@ def _fla_chunk_gated_delta_rule_adapter(
     return output, final_state
 
 
+def _fla_chunk_gated_delta_rule_packed_segments(
+    query,
+    key,
+    value,
+    g,
+    beta,
+    *,
+    initial_state,
+    cu_seqlens,
+    cu_seqlens_cpu=None,
+):
+    if not query.is_cuda:
+        raise RuntimeError("FASTDLLM_GDN_KERNEL=fla packed segments require CUDA tensors")
+    output_dtype = query.dtype
+    try:
+        autocast_enabled = torch.is_autocast_enabled(query.device.type)
+    except TypeError:
+        autocast_enabled = torch.is_autocast_enabled()
+    compute_dtype = torch.float32 if autocast_enabled and g.dtype == torch.float32 else value.dtype
+    if autocast_enabled and query.dtype != compute_dtype:
+        query = query.to(compute_dtype)
+    if autocast_enabled and key.dtype != compute_dtype:
+        key = key.to(compute_dtype)
+    if autocast_enabled and value.dtype != compute_dtype:
+        value = value.to(compute_dtype)
+    if autocast_enabled and beta.dtype != compute_dtype:
+        beta = beta.to(compute_dtype)
+    if autocast_enabled and g.dtype != compute_dtype:
+        g = g.to(compute_dtype)
+    if initial_state is not None and initial_state.dtype != compute_dtype:
+        initial_state = initial_state.to(compute_dtype)
+    try:
+        from fla.ops.gated_delta_rule import chunk_gated_delta_rule as fla_chunk_gated_delta_rule
+    except Exception as exc:
+        raise RuntimeError(
+            "FASTDLLM_GDN_KERNEL=fla requires flash-linear-attention to be installed"
+        ) from exc
+
+    output, final_state = fla_chunk_gated_delta_rule(
+        query,
+        key,
+        value,
+        g=g,
+        beta=beta,
+        scale=query.shape[-1] ** -0.5,
+        initial_state=initial_state,
+        output_final_state=False,
+        use_qk_l2norm_in_kernel=False,
+        use_beta_sigmoid_in_kernel=False,
+        allow_neg_eigval=False,
+        cu_seqlens=cu_seqlens,
+        cu_seqlens_cpu=cu_seqlens_cpu,
+    )
+    if output.dtype != output_dtype:
+        output = output.to(output_dtype)
+    return output, final_state
+
+
 def _torch_chunk_gated_delta_rule_impl(
     query,
     key,
@@ -793,42 +851,6 @@ def clean_gdn_docwise_with_boundaries(gdn_layer, clean_states: torch.Tensor, doc
         device=clean_states.device,
     )
     boundary_states = {}
-    if _fla_gdn_kernel_enabled():
-        conv_lag = int(gdn_layer.conv_kernel_size) - 1
-        for batch in range(batch_size):
-            for start, end, _ in contiguous_doc_segments(doc_ids[batch]):
-                running_state = None
-                zero_state = torch.zeros(
-                    1,
-                    gdn_layer.num_v_heads,
-                    gdn_layer.head_k_dim,
-                    gdn_layer.head_v_dim,
-                    dtype=clean_states.dtype,
-                    device=clean_states.device,
-                )
-                for block_start in range(start, end, block_size):
-                    block_end = min(block_start + block_size, end)
-                    boundary_states[(batch, block_start)] = zero_state if running_state is None else running_state
-                    if block_start == start or conv_lag <= 0:
-                        conv_tail = None
-                    else:
-                        conv_tail = _gdn_conv_tail_for_block(
-                            clean_raw_qkv=clean_raw_qkv,
-                            clean_batch=batch,
-                            doc_start=start,
-                            block_start=block_start,
-                            conv_lag=conv_lag,
-                        ).unsqueeze(0)
-                    block_output, running_state, _, raw_qkv = run_gdn_manual_route_i(
-                        gdn_layer,
-                        clean_states[batch : batch + 1, block_start:block_end],
-                        chunk_size=block_size,
-                        initial_state=running_state,
-                        conv_tail=conv_tail,
-                    )
-                    clean_output[batch : batch + 1, block_start:block_end] = block_output
-                    clean_raw_qkv[batch : batch + 1, block_start:block_end] = raw_qkv
-        return clean_output, boundary_states, clean_raw_qkv
 
     for batch in range(batch_size):
         for start, end, _ in contiguous_doc_segments(doc_ids[batch]):
@@ -945,6 +967,17 @@ def noisy_gdn_route_i_batched(
     clean_raw_qkv: torch.Tensor,
     block_size: int,
 ):
+    if _fla_gdn_kernel_enabled():
+        return noisy_gdn_route_i_fla_packed(
+            gdn_layer,
+            noisy_states,
+            noisy_doc_ids,
+            clean_doc_ids,
+            clean_boundary_states,
+            clean_raw_qkv,
+            block_size,
+        )
+
     batch_size = clean_doc_ids.shape[0]
     noisy_output = torch.zeros_like(noisy_states)
     conv_lag = int(gdn_layer.conv_kernel_size) - 1
@@ -1007,6 +1040,120 @@ def noisy_gdn_route_i_batched(
         )
         for idx, (noisy_batch, _, _, block_start, block_end) in enumerate(entries):
             noisy_output[noisy_batch : noisy_batch + 1, block_start:block_end] = block_outputs[idx : idx + 1]
+    return noisy_output
+
+
+def noisy_gdn_route_i_fla_packed(
+    gdn_layer,
+    noisy_states: torch.Tensor,
+    noisy_doc_ids: torch.Tensor,
+    clean_doc_ids: torch.Tensor,
+    clean_boundary_states,
+    clean_raw_qkv: torch.Tensor,
+    block_size: int,
+):
+    batch_size = clean_doc_ids.shape[0]
+    noisy_output = torch.zeros_like(noisy_states)
+    conv_lag = int(gdn_layer.conv_kernel_size) - 1
+    entries = []
+
+    for noisy_batch in range(noisy_states.shape[0]):
+        clean_batch = noisy_batch % batch_size
+        for doc_start, doc_end, _ in contiguous_doc_segments(noisy_doc_ids[noisy_batch]):
+            for block_start in range(doc_start, doc_end, block_size):
+                block_end = min(block_start + block_size, doc_end)
+                entries.append(
+                    (
+                        noisy_batch,
+                        clean_batch,
+                        int(doc_start),
+                        int(block_start),
+                        int(block_end),
+                    )
+                )
+
+    if not entries:
+        return noisy_output
+
+    query_parts = []
+    key_parts = []
+    value_parts = []
+    g_parts = []
+    beta_parts = []
+    z_parts = []
+    initial_states = []
+    lengths = []
+
+    for noisy_batch, clean_batch, doc_start, block_start, block_end in entries:
+        block_hidden = noisy_states[noisy_batch : noisy_batch + 1, block_start:block_end]
+        block_len = int(block_end - block_start)
+        if conv_lag > 0:
+            conv_tail = _gdn_conv_tail_for_block(
+                clean_raw_qkv=clean_raw_qkv,
+                clean_batch=clean_batch,
+                doc_start=doc_start,
+                block_start=block_start,
+                conv_lag=conv_lag,
+            ).unsqueeze(0)
+        else:
+            conv_tail = None
+
+        _, mixed_qkv = gdn_project_and_conv(gdn_layer, block_hidden, conv_tail=conv_tail)
+        query, key, value = torch.split(
+            mixed_qkv,
+            [gdn_layer.key_dim, gdn_layer.key_dim, gdn_layer.value_dim],
+            dim=-1,
+        )
+        query = query.reshape(1, block_len, -1, gdn_layer.head_k_dim)
+        key = key.reshape(1, block_len, -1, gdn_layer.head_k_dim)
+        value = value.reshape(1, block_len, -1, gdn_layer.head_v_dim)
+        z = gdn_layer.in_proj_z(block_hidden).reshape(1, block_len, -1, gdn_layer.head_v_dim)
+        beta = gdn_layer.in_proj_b(block_hidden).sigmoid()
+        g = -gdn_layer.A_log.float().exp() * F.softplus(
+            gdn_layer.in_proj_a(block_hidden).float() + gdn_layer.dt_bias
+        )
+
+        if gdn_layer.num_v_heads // gdn_layer.num_k_heads > 1:
+            repeat = gdn_layer.num_v_heads // gdn_layer.num_k_heads
+            query = query.repeat_interleave(repeat, dim=2)
+            key = key.repeat_interleave(repeat, dim=2)
+
+        query_parts.append(l2norm(query, dim=-1))
+        key_parts.append(l2norm(key, dim=-1))
+        value_parts.append(value)
+        g_parts.append(g)
+        beta_parts.append(beta)
+        z_parts.append(z)
+        initial_states.append(clean_boundary_states[(clean_batch, block_start)])
+        lengths.append(block_len)
+
+    cu = [0]
+    for length in lengths:
+        cu.append(cu[-1] + int(length))
+    cu_seqlens_cpu = torch.tensor(cu, dtype=torch.long, device="cpu")
+    cu_seqlens = cu_seqlens_cpu.to(noisy_states.device)
+
+    packed_output, _ = _fla_chunk_gated_delta_rule_packed_segments(
+        torch.cat(query_parts, dim=1),
+        torch.cat(key_parts, dim=1),
+        torch.cat(value_parts, dim=1),
+        torch.cat(g_parts, dim=1),
+        torch.cat(beta_parts, dim=1),
+        initial_state=torch.cat(initial_states, dim=0),
+        cu_seqlens=cu_seqlens,
+        cu_seqlens_cpu=cu_seqlens_cpu,
+    )
+    packed_z = torch.cat(z_parts, dim=1)
+    packed_core = gdn_layer.norm(
+        packed_output.reshape(-1, gdn_layer.head_v_dim),
+        packed_z.reshape(-1, gdn_layer.head_v_dim),
+    )
+    packed_hidden = gdn_layer.out_proj(packed_core.reshape(1, cu[-1], -1))
+
+    for idx, (noisy_batch, _, _, block_start, block_end) in enumerate(entries):
+        start = cu[idx]
+        end = cu[idx + 1]
+        noisy_output[noisy_batch : noisy_batch + 1, block_start:block_end] = packed_hidden[:, start:end]
     return noisy_output
 
 

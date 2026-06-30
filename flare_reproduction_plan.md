@@ -937,3 +937,25 @@ Raw/constrained eval regression was not run because the validation gate already 
 criterion; running eval cannot rescue a performance-failed kernel. If this is revisited, the next technical target
 is an FLA-compatible bf16 autocast path (or upstream FLA fix for mixed `A` fp32 / `v` bf16) that preserves real NLL
 without fp32 scan promotion.
+
+## FLA greenlight update + packed-call salvage — STILL DO NOT FLIP DEFAULT (2026-06-30)
+Monitor/user early-greenlit correctness (mainstream HF Qwen3-Next kernel; torch is documented fallback), reducing
+the remaining decision to VALUE: FLA must materially beat torch on two-stream training util/speed, then pass a cheap
+eval-regression sanity. The existing per-block FLA overlay already failed value: torch 4.76s/step / 29149 MiB /
+65.3% mean nonzero util vs per-block FLA 5.78s/step / 30461 MiB / 61.4% util. Per the update, tried the salvage:
+remove the per-block FLA clean-state loop, use full-document clean FLA output with torch fallback only for clean
+boundary states, and pack all noisy blocks for a GDN layer into one segmented FLA `cu_seqlens` call with per-segment
+initial states. Correctness still PASSed (`validate_fla_gdn_integration.py`: schedule logits 5.55e-3, loss_abs
+5.63e-4; detached seed clean_grad=0; fp32 kernel output 1.32e-4/final_state 3.80e-4).
+
+Packed-call measurement (same data/seed/block, `MAX_STEPS=60`, block 1024, seed 20260705):
+- packed FLA runtime 433.9s / 0.138 steps/s = 7.25s/step including compile; steady-state progress bar ~6.45s/step.
+- peak memory 31529 MiB; mean nonzero util 67.1%, p50 69%, max 100%.
+- This is **slower and higher-memory** than both torch (4.76s/step, 29149 MiB) and the previous per-block FLA path
+  (5.78s/step, 30461 MiB). The packed call did not rescue the value gate.
+
+Decision per greenlight instructions: **do not run eval-regression sanity, do not flip `FASTDLLM_GDN_KERNEL` default,
+do not promote.** Torch remains default; FLA remains available behind `FASTDLLM_GDN_KERNEL=fla` for future larger-
+batch/upstream-kernel experiments. Updated `fla_kernel_feasibility.md` status to "spike GREEN, integration NOT
+BENEFICIAL at our scale." Honest cause: batch-1 single-GPU QLoRA/autocast plus clean boundary-state extraction and
+packed-call overhead dominate; FLA correctness is fine, but the end-to-end training value is negative here.
