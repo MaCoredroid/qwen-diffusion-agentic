@@ -35,6 +35,7 @@ FASTDLLM_COMPILE_GDN_SCAN_ENV = "FASTDLLM_COMPILE_GDN_SCAN"
 FASTDLLM_COMPILE_GDN_SCAN_MODE_ENV = "FASTDLLM_COMPILE_GDN_SCAN_MODE"
 FASTDLLM_OPTIMIZE_FLARE_CLEAN_GDN_ENV = "FASTDLLM_OPTIMIZE_FLARE_CLEAN_GDN"
 FASTDLLM_BATCH_FLARE_NOISY_GDN_ENV = "FASTDLLM_BATCH_FLARE_NOISY_GDN"
+FASTDLLM_GDN_KERNEL_ENV = "FASTDLLM_GDN_KERNEL"
 IGNORE_INDEX = -100
 _FASTDLLM_GDN_PROFILE = None
 _FASTDLLM_FLARE_SECTION_PROFILE = None
@@ -325,6 +326,14 @@ def _gdn_compile_enabled():
     return env_flag_enabled(FASTDLLM_COMPILE_GDN_SCAN_ENV)
 
 
+def _gdn_kernel_backend():
+    return os.environ.get(FASTDLLM_GDN_KERNEL_ENV, "torch").strip().lower() or "torch"
+
+
+def _fla_gdn_kernel_enabled():
+    return _gdn_kernel_backend() in {"fla", "flash-linear-attention", "flash_linear_attention"}
+
+
 def _cuda_synchronize_for_profile(*tensors):
     if not torch.cuda.is_available():
         return
@@ -340,6 +349,7 @@ def _reset_gdn_profile():
         "scan_calls": 0,
         "scan_seconds": 0.0,
         "scan_shapes": {},
+        "kernel_backend": _gdn_kernel_backend(),
         "compile_enabled": _gdn_compile_enabled(),
         "compile_mode": os.environ.get(FASTDLLM_COMPILE_GDN_SCAN_MODE_ENV, "default").strip() or "default",
     }
@@ -437,7 +447,10 @@ def torch_chunk_gated_delta_rule(
     output_final_state=False,
     output_chunk_states=False,
 ):
-    fn = _compiled_gdn_rule() if _gdn_compile_enabled() else _torch_chunk_gated_delta_rule_impl
+    if _fla_gdn_kernel_enabled() and not output_chunk_states:
+        fn = _fla_chunk_gated_delta_rule_adapter
+    else:
+        fn = _compiled_gdn_rule() if _gdn_compile_enabled() else _torch_chunk_gated_delta_rule_impl
     if not _gdn_profile_enabled():
         return fn(
             query,
@@ -467,6 +480,44 @@ def torch_chunk_gated_delta_rule(
     _cuda_synchronize_for_profile(query, key, value, g, beta)
     _record_gdn_scan_profile(query, chunk_size, output_final_state, output_chunk_states, time.time() - start)
     return result
+
+
+def _fla_chunk_gated_delta_rule_adapter(
+    query,
+    key,
+    value,
+    g,
+    beta,
+    chunk_size=64,
+    initial_state=None,
+    output_final_state=False,
+    output_chunk_states=False,
+):
+    if output_chunk_states:
+        raise ValueError("FLA GDN adapter does not provide output_chunk_states")
+    if not query.is_cuda:
+        raise RuntimeError("FASTDLLM_GDN_KERNEL=fla requires CUDA tensors")
+    try:
+        from fla.ops.gated_delta_rule import chunk_gated_delta_rule as fla_chunk_gated_delta_rule
+    except Exception as exc:
+        raise RuntimeError(
+            "FASTDLLM_GDN_KERNEL=fla requires flash-linear-attention to be installed"
+        ) from exc
+
+    output, final_state = fla_chunk_gated_delta_rule(
+        query,
+        key,
+        value,
+        g=g,
+        beta=beta,
+        scale=query.shape[-1] ** -0.5,
+        initial_state=initial_state,
+        output_final_state=output_final_state,
+        use_qk_l2norm_in_kernel=False,
+        use_beta_sigmoid_in_kernel=False,
+        allow_neg_eigval=False,
+    )
+    return output, final_state
 
 
 def _torch_chunk_gated_delta_rule_impl(
