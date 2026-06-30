@@ -854,3 +854,18 @@ production path -- I should NOT have called it "no holes":
 STEER for flare's FLA integration: the flag map is safe to apply, but the validation gate MUST add (1)-(4) above
 before any promote -- the single-block spike is necessary-not-sufficient. (Good catch by the workflow; owning the
 over-claim.)
+
+## BASELINE COMPLETE — diffusion+decoder == AR+decoder (33/44); conversion is grounding-NEUTRAL (2026-06-30)
+Full ~44-pool (onecall 24 + multicall 12 + teacher 8), same B1000 weights, same live grammar decoder:
+| config | 28-subset | 44-pool exact-args | valid JSON |
+| AR raw | 18/28 | 29/44 (66%) | 39/44 |
+| AR + decoder | 19/28 | 33/44 (75%) | 44/44 |
+| diffusion + decoder | 19/28 | 33/44 (75%) | 44/44 |
+**diffusion+decoder EXACTLY = AR+decoder = 33/44, per-slice identical (onecall 19/24, multicall 10/12, teacher 4/8).**
+=> (1) the AR->block-diffusion CONVERSION is grounding-NEUTRAL: with the same decoder the diffusion model grounds
+exactly as well as AR; nothing lost. (2) The decoder is a MODEL-AGNOSTIC +4/44 lift (mostly validity 39->44), equal
+on AR and diffusion. (3) The 11/44 (25%) residual is the SHARED MODEL value-content ceiling (AR+decoder misses the
+same ones) -> the RL target, not a diffusion or decoder limit. n=44 > 28, more robust. (27B teacher skipped: SGLang
+not serving.) Identity = expected decoder-dominated convergence (same weights, greedy+grammar), consistent with the
+earlier verified 19/28 identity. CONFIRMS the roadmap (RL targets the shared value-content ceiling; decoder = safety
+net for both lanes). NEXT: refresh flare -> FLA integration with the STRENGTHENED gate.
