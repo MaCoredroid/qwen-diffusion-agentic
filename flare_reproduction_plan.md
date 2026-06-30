@@ -812,6 +812,20 @@ grads finite for `dq/dk/dv/dbeta/dg/dh0`; parity vs local `_torch_chunk_gated_de
 output 2.44e-4, final_state 1.08e-3, dq 1.53e-5, dk 4.88e-4, dv 2.44e-4, dbeta 2.44e-4, dg 4.59e-4,
 dh0 7.63e-6. **VERDICT: GREEN** -- ready for monitor red-team and then a separate integration step if approved.
 
+## AR-vs-diffusion native grounding baseline -- diagnostic complete (2026-06-30)
+No FLA integration; no promotion. Added `scripts/eval_fastdllm_ar_toolcall_cases.py` and result note
+`ar_vs_diffusion_native_grounding_baseline_result.md`. Checked for an existing apples-to-apples native AR run first;
+none existed. 27B teacher was skipped because SGLang was not already serving (`127.0.0.1:30000` refused) and no
+teacher process was running. Ran B@1000 in causal AR mode on the same native eval cases, gold stripped, same scorer:
+AR raw = 18/28 exact args on the comparable subset (25/28 valid, 22/28 seq) and 29/44 on the full pool
+(39/44 valid, 35/44 seq). AR + the same schema-only native grammar applied token-by-token with forced
+`<tool_call>\n`, topk=1024, and **unsafe=0** matched diffusion+live exactly: 19/28 exact args, 28/28 valid,
+25/28 seq; full pool 33/44 exact args, 44/44 valid, 41/44 seq. Extended diffusion+live to the onecall-24 full
+pool; it also matched AR+grammar exactly (onecall 19/24, multicall 10/12, teacher 4/8). **Interpretation:** the
+19/28 SOTA is not a large diffusion-vs-AR grounding deficit under the live decoder; constrained AR and constrained
+diffusion hit the same row set. The residual is the shared value-content ceiling of B@1000 + schema-only grammar,
+while AR raw is only slightly below due to remaining serialization/sequence failures.
+
 ## FLA fused-kernel util fix — PARKED (2026-06-30, user directive)
 Step-0 spike GREEN (commit 74b80f4, fla_gdn_kernel_spike_result.md): FLA chunk_gated_delta_rule fwd+bwd on sm_120 /
 triton 3.7.1 — no #607/#734 crash, all grads finite incl dh0, parity within bf16 tol. The cheap drop-in is PROVEN
