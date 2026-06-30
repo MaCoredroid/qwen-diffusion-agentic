@@ -406,13 +406,29 @@ def resolve_token_ids(model, tokenizer):
     if mask_id is None:
         mask_id = MASK_ID
 
-    stop_token_id = getattr(model.config, "eos_token_id", None) or tokenizer.eos_token_id
-    if isinstance(stop_token_id, (list, tuple)):
-        stop_token_id = stop_token_id[0] if stop_token_id else None
-    if stop_token_id is None:
-        stop_token_id = STOP_TOKEN_ID
+    stop_token_ids = []
 
-    return int(mask_id), int(stop_token_id)
+    def add_stop(value):
+        if value is None:
+            return
+        if isinstance(value, (list, tuple)):
+            for item in value:
+                add_stop(item)
+            return
+        item = int(value)
+        if item not in stop_token_ids:
+            stop_token_ids.append(item)
+
+    add_stop(tokenizer.eos_token_id)
+    add_stop(getattr(model.config, "eos_token_id", None))
+    for text in ("<|im_end|>", "<|im_start|>"):
+        token_ids = tokenizer(text, add_special_tokens=False).input_ids
+        if len(token_ids) == 1:
+            add_stop(token_ids[0])
+    if not stop_token_ids:
+        add_stop(STOP_TOKEN_ID)
+
+    return int(mask_id), int(stop_token_ids[0]), stop_token_ids
 
 
 def function_name(tool):
@@ -1622,6 +1638,25 @@ def scheduled_window_intervals(
 def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None, original_len_override=None):
     output_ids = input_ids
     original_len = int(original_len_override) if original_len_override is not None else input_ids.shape[1]
+    stop_token_ids = torch.tensor(
+        getattr(args, "stop_token_ids", [args.stop_token_id]),
+        dtype=torch.long,
+        device=input_ids.device,
+    )
+
+    def truncate_if_stopped(sequence):
+        generated = sequence[:, original_len:]
+        if generated.numel() == 0:
+            return None
+        stop_mask = torch.isin(generated, stop_token_ids)
+        if not bool(stop_mask.any().item()):
+            return None
+        first_stop = int(stop_mask.nonzero(as_tuple=False)[0, 1].item())
+        prefix = generated[:, :first_stop]
+        if bool((prefix == args.mask_id).any().item()):
+            return None
+        return sequence[:, : original_len + first_stop + 1]
+
     schedule_events = {
         "scheduled_interval_visits": 0,
         "default_interval_visits": 0,
@@ -2075,6 +2110,8 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                             logits[:, :, sorted(banned_ids)] = -torch.inf
                             schedule_events["argument_boundary_ban_interval_visits"] += 1
                             schedule_events["argument_boundary_ban_token_visits"] += int(current_mask.sum().item())
+                    logits = logits.clone()
+                    logits[..., int(args.mask_id)] = torch.finfo(logits.dtype).min
                     x_1, p_1t = sample_with_top_p(model, logits, args.top_p, args.temperature)
                     x1_p = torch.squeeze(torch.gather(p_1t, dim=-1, index=torch.unsqueeze(x_1, -1)), -1)
                     x1_p = torch.where(current_mask, x1_p, -torch.inf)
@@ -2107,6 +2144,10 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                     span[unmask_idx] = x_1[unmask_idx]
                     window[:, start:end] = span
                     x_t[:, -window_len:] = window
+                    stopped = truncate_if_stopped(x_t)
+                    if stopped is not None:
+                        args._last_sampler_schedule_events = schedule_events
+                        return stopped[0]
                     if interval.get("scheduled"):
                         schedule_events["scheduled_interval_visits"] += 1
                         schedule_events["scheduled_token_visits"] += int(current_mask.sum().item())
@@ -2116,12 +2157,10 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
             if (x_t[:, -block_pad:] == args.mask_id).all():
                 break
         output_ids = x_t
-        generated = output_ids[:, original_len:]
-        stop_positions = (generated == args.stop_token_id).nonzero(as_tuple=False)
-        if len(stop_positions):
-            stop_idx = int(stop_positions[0, 1].item()) + 1
+        stopped = truncate_if_stopped(output_ids)
+        if stopped is not None:
             args._last_sampler_schedule_events = schedule_events
-            return output_ids[:, : original_len + stop_idx][0]
+            return stopped[0]
     args._last_sampler_schedule_events = schedule_events
     return output_ids[0]
 
@@ -2945,7 +2984,12 @@ def main():
         merge_adapter=not args.no_merge_adapter,
         tokenizer_path=str(args.tokenizer_path) if args.tokenizer_path else None,
     )
-    args.mask_id, args.stop_token_id = resolve_token_ids(model, tokenizer)
+    args.mask_id, args.stop_token_id, args.stop_token_ids = resolve_token_ids(model, tokenizer)
+    print(
+        "[token_ids] "
+        + json.dumps({"mask_id": args.mask_id, "stop_token_ids": args.stop_token_ids}, sort_keys=True),
+        flush=True,
+    )
     eval_specs = args.eval_specs or [("default", args.input_jsonl, args.out_jsonl, args.limit)]
     summaries = [
         run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit)

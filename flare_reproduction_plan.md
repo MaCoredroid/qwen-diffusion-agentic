@@ -453,3 +453,20 @@ proving a small A-vs-B generation effect that needs ~9× scale.
   the retention battery. Immediate: scope what agentic/tool-call data + teacher we have, fix generation stop
   behavior (the leaked-role-text issue), stand up a minimal diffusion-mode tool-call eval baseline on the current
   best checkpoint.
+
+## AGENTIC PHASE — scoping done: stop-fix + inventory + tool-call baseline (2026-06-29)
+- **Stop fix DONE:** model leaked role text past EOS; fixed → clean termination (prereq for tool-call JSON).
+- **Asset inventory:** `train_toolcall.json` = **9644** tool-call train ex (+8645 no-multicall variant); eval
+  slices: public one-call 8, public multicall 12, teacher-heldout label-aware 8, +smoke; **Qwen3.6-27B teacher
+  servable** (`serve_sglang_qwen36_teacher.sh`; strong: one-call exact-args 18/24, multicall 10/12, synth 48/48);
+  curricula under `data/qwen35_9b_*_curriculum` (format/label-aware/argument/grounded-span/multicall/planner/
+  model-repair/candidate-ranking/route-delta/retention).
+- **TOOL-CALL BASELINE (B@1000, raw diffusion-mode, corrected sampler+stop-fix, GPU 96% util):** public one-call
+  valid-JSON 1/8 exact-args **0/8**; multicall 2/12 **0/12**; teacher-heldout 2/8 **1/8**. → valid JSON ~5/28,
+  **exact args ~1/24**. The original argument-grounding wall, cleanly measured on the WORKING conversion. EXPECTED
+  (B@1000 trained on the 256-sample GENERAL mix, not tool-calls). The phase tests whether two-stream training ON
+  tool-call data recovers grounding (as GSM8K recovered with scale).
+- **NEXT (steered, CHECKPOINT-before-launch — data = FLARE's #1 lever):** flare to propose the first agentic
+  two-stream mix (tool-call subset of 9644 balanced + RETENTION GSM8K/math/IF vs forgetting + optional 27B-teacher
+  traces), start-point (B@1000-continue vs init-fresh), eval = same tool-call slices vs the 0/24 baseline + a GSM8K
+  retention check. Review the mix before the ~5h run.

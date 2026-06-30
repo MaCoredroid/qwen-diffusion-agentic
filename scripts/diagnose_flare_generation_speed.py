@@ -360,7 +360,8 @@ def diagnose_sample(model, input_ids, tokenizer, args) -> dict[str, Any]:
                     metrics["total_selected_mask_token"] += selected_mask_token
                     metrics["total_natural_threshold_commits"] += natural_count
                     metrics["total_forced_argmax_commits"] += forced
-                    finished_flag = finished_flag | ((x_1 == args.stop_token_id) & unmask_idx).any(dim=1)
+                    stop_hits = torch.isin(x_1, torch.tensor(args.stop_token_ids, device=x_1.device))
+                    finished_flag = finished_flag | (stop_hits & unmask_idx).any(dim=1)
                     if args.max_denoise_steps is not None and metrics["denoise_forwards"] >= args.max_denoise_steps:
                         metrics["stopped_early"] = "max_denoise_steps"
                         break
@@ -476,7 +477,25 @@ def diagnose_full_context_sample(model, input_ids, tokenizer, args) -> dict[str,
         "total_natural_threshold_commits": 0,
         "total_forced_argmax_commits": 0,
         "blocks": [],
+        "stop_token_ids": list(args.stop_token_ids),
     }
+    stop_token_ids = torch.tensor(args.stop_token_ids, dtype=torch.long, device=output_ids.device)
+
+    def truncate_if_stopped(sequence: torch.Tensor) -> torch.Tensor | None:
+        generated = sequence[:, original_len:]
+        if generated.numel() == 0:
+            return None
+        stop_mask = torch.isin(generated, stop_token_ids)
+        if not bool(stop_mask.any().item()):
+            return None
+        first_stop = int(stop_mask.nonzero(as_tuple=False)[0, 1].item())
+        prefix = generated[:, :first_stop]
+        if bool((prefix == args.mask_id).any().item()):
+            return None
+        metrics["stop_token_hit"] = int(generated[:, first_stop].item())
+        metrics["stop_offset"] = first_stop
+        return sequence[:, : original_len + first_stop + 1]
+
     total_start = time.perf_counter()
     while output_ids.shape[1] - original_len < args.max_new_tokens:
         remaining_new = args.max_new_tokens - (output_ids.shape[1] - original_len)
@@ -597,6 +616,13 @@ def diagnose_full_context_sample(model, input_ids, tokenizer, args) -> dict[str,
                     metrics["total_selected_mask_token"] += selected_mask_token
                     metrics["total_natural_threshold_commits"] += natural_count
                     metrics["total_forced_argmax_commits"] += forced
+                    stopped = truncate_if_stopped(x_t)
+                    if stopped is not None:
+                        output_ids = stopped
+                        block_metrics["block_seconds"] = time.perf_counter() - block_start_time
+                        metrics["blocks"].append(block_metrics)
+                        metrics["stopped_early"] = "stop_token"
+                        break
                     if args.max_denoise_steps is not None and metrics["denoise_forwards"] >= args.max_denoise_steps:
                         metrics["stopped_early"] = "max_denoise_steps"
                         break
@@ -607,6 +633,8 @@ def diagnose_full_context_sample(model, input_ids, tokenizer, args) -> dict[str,
             if bool((x_t[:, -block_pad:] == args.mask_id).all().item()):
                 metrics["stopped_early"] = "no_progress_block"
                 break
+        if metrics.get("stopped_early") == "stop_token":
+            break
         output_ids = x_t
         block_metrics["block_seconds"] = time.perf_counter() - block_start_time
         if max_probs:
@@ -633,10 +661,9 @@ def diagnose_full_context_sample(model, input_ids, tokenizer, args) -> dict[str,
             ),
             flush=True,
         )
-        generated = output_ids[:, original_len:]
-        if bool((generated == args.stop_token_id).any().item()):
-            stop_idx = int((generated == args.stop_token_id).nonzero(as_tuple=False)[0, 1].item()) + 1
-            output_ids = output_ids[:, : original_len + stop_idx]
+        stopped = truncate_if_stopped(output_ids)
+        if stopped is not None:
+            output_ids = stopped
             break
         if metrics.get("stopped_early"):
             break
@@ -686,8 +713,8 @@ def parse_args():
     parser.add_argument("--threshold", type=float, default=0.9)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top-p", type=float, default=0.95)
-    parser.add_argument("--mask-id", type=int, default=MASK_ID)
-    parser.add_argument("--stop-token-id", type=int, default=STOP_TOKEN_ID)
+    parser.add_argument("--mask-id", type=int, default=None)
+    parser.add_argument("--stop-token-id", type=int, default=None)
     parser.add_argument("--four-bit", action="store_true", default=True)
     parser.add_argument("--no-four-bit", action="store_false", dest="four_bit")
     parser.add_argument("--max-blocks", type=int, default=None)
@@ -720,6 +747,15 @@ def main() -> int:
     rows = read_jsonl(Path(args.case_path))
     case = rows[args.case_index]
     model, tokenizer = load_model(Path(args.model), Path(args.adapter) if args.adapter else None, args.four_bit)
+    config = helper.get_model_config(model)
+    args.mask_id = helper.resolve_mask_id(config, tokenizer, args.mask_id)
+    args.stop_token_ids = helper.resolve_stop_token_ids(config, tokenizer, args.stop_token_id)
+    args.stop_token_id = int(args.stop_token_ids[0])
+    print(
+        "[diag-token-ids] "
+        + json.dumps({"mask_id": args.mask_id, "stop_token_ids": args.stop_token_ids}, sort_keys=True),
+        flush=True,
+    )
     fewshot = read_jsonl(ROOT / "data/phaseA_retention/gsm8k_main_train_first5.jsonl", 5)
     prompt = helper.build_gsm8k_prompt(tokenizer, case, fewshot)
     input_ids = tokenizer([prompt], return_tensors="pt").input_ids.to("cuda")

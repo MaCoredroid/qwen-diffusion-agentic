@@ -361,6 +361,44 @@ def load_model_and_tokenizer(model_path: Path, adapter_path: Path | None, four_b
     return model, tokenizer
 
 
+def resolve_mask_id(config, tokenizer, requested: int | None) -> int:
+    if requested is not None:
+        return int(requested)
+    value = getattr(config, "mask_token_id", None)
+    if value is not None:
+        return int(value)
+    token_ids = tokenizer("|<MASK>|", add_special_tokens=False).input_ids
+    if token_ids:
+        return int(token_ids[0])
+    return int(MASK_ID)
+
+
+def resolve_stop_token_ids(config, tokenizer, requested: int | None = None) -> list[int]:
+    ids: list[int] = []
+
+    def add(value):
+        if value is None:
+            return
+        if isinstance(value, (list, tuple)):
+            for item in value:
+                add(item)
+            return
+        item = int(value)
+        if item not in ids:
+            ids.append(item)
+
+    add(requested)
+    add(tokenizer.eos_token_id)
+    add(getattr(config, "eos_token_id", None))
+    for text in ("<|im_end|>", "<|im_start|>"):
+        token_ids = tokenizer(text, add_special_tokens=False).input_ids
+        if len(token_ids) == 1:
+            add(token_ids[0])
+    if not ids:
+        add(STOP_TOKEN_ID)
+    return ids
+
+
 def get_model_config(model):
     return getattr(model, "config", None) or getattr(getattr(model, "base_model", None), "config", None)
 
@@ -546,7 +584,25 @@ def full_context_sample_one(model, input_ids: torch.Tensor, args) -> tuple[torch
         "selected_mask_tokens": 0,
         "natural_commits": 0,
         "forced_commits": 0,
+        "stop_token_ids": list(args.stop_token_ids),
     }
+    stop_token_ids = torch.tensor(args.stop_token_ids, dtype=torch.long, device=output_ids.device)
+
+    def truncate_if_stopped(sequence: torch.Tensor) -> torch.Tensor | None:
+        generated = sequence[:, original_len:]
+        if generated.numel() == 0:
+            return None
+        stop_mask = torch.isin(generated, stop_token_ids)
+        if not bool(stop_mask.any().item()):
+            return None
+        first_stop = int(stop_mask.nonzero(as_tuple=False)[0, 1].item())
+        prefix = generated[:, :first_stop]
+        if bool((prefix == args.mask_id).any().item()):
+            return None
+        metrics["stop_token_hit"] = int(generated[:, first_stop].item())
+        metrics["stop_offset"] = first_stop
+        return sequence[:, : original_len + first_stop + 1]
+
     while output_ids.shape[1] - original_len < args.max_new_tokens:
         remaining = args.max_new_tokens - (output_ids.shape[1] - original_len)
         if args.fresh_generation_blocks:
@@ -606,15 +662,18 @@ def full_context_sample_one(model, input_ids: torch.Tensor, args) -> tuple[torch
                     metrics["selected_mask_tokens"] += selected_mask
                     metrics["natural_commits"] += natural_count
                     metrics["forced_commits"] += max(0, committed - natural_count)
+                    stopped = truncate_if_stopped(x_t)
+                    if stopped is not None:
+                        output_ids = stopped
+                        metrics["blocks"].append(block_metrics)
+                        return output_ids[0].detach().cpu(), metrics
             if bool((x_t[:, -block_pad:] == args.mask_id).all().item()):
                 break
         output_ids = x_t
         metrics["blocks"].append(block_metrics)
-        generated = output_ids[:, original_len:]
-        stop_positions = (generated == args.stop_token_id).nonzero(as_tuple=False)
-        if len(stop_positions):
-            stop_idx = int(stop_positions[0, 1].item()) + 1
-            output_ids = output_ids[:, : original_len + stop_idx]
+        stopped = truncate_if_stopped(output_ids)
+        if stopped is not None:
+            output_ids = stopped
             break
     return output_ids[0].detach().cpu(), metrics
 
@@ -667,18 +726,31 @@ def sample_batch(model, tokenizer, prompt_ids: list[torch.Tensor], args) -> tupl
 
 
 def evaluate_generation(model, tokenizer, args) -> dict[str, Any]:
-    gsm_rows = read_jsonl(Path(args.gsm8k_path), args.generation_limit)
-    mbpp_rows = read_jsonl(Path(args.mbpp_path), args.generation_limit)
-    fewshot_rows = read_jsonl(Path(args.gsm8k_fewshot_path), args.gsm8k_fewshot)
+    generation_tasks = {
+        task.strip().lower()
+        for task in str(args.generation_tasks).replace(",", " ").split()
+        if task.strip()
+    }
+    if not generation_tasks:
+        generation_tasks = {"gsm8k", "mbpp"}
+    unknown_tasks = generation_tasks - {"gsm8k", "mbpp"}
+    if unknown_tasks:
+        raise ValueError(f"unknown generation task(s): {sorted(unknown_tasks)}")
+
     items: list[dict[str, Any]] = []
-    for row in gsm_rows:
-        prompt = build_gsm8k_prompt(tokenizer, row, fewshot_rows)
-        input_ids = tokenizer([prompt], return_tensors="pt").input_ids[0].cpu()
-        items.append({"task": "gsm8k", "row": row, "prompt_ids": input_ids})
-    for row in mbpp_rows:
-        prompt = build_mbpp_prompt(tokenizer, row)
-        input_ids = tokenizer([prompt], return_tensors="pt").input_ids[0].cpu()
-        items.append({"task": "mbpp", "row": row, "prompt_ids": input_ids})
+    if "gsm8k" in generation_tasks:
+        gsm_rows = read_jsonl(Path(args.gsm8k_path), args.generation_limit)
+        fewshot_rows = read_jsonl(Path(args.gsm8k_fewshot_path), args.gsm8k_fewshot)
+        for row in gsm_rows:
+            prompt = build_gsm8k_prompt(tokenizer, row, fewshot_rows)
+            input_ids = tokenizer([prompt], return_tensors="pt").input_ids[0].cpu()
+            items.append({"task": "gsm8k", "row": row, "prompt_ids": input_ids})
+    if "mbpp" in generation_tasks:
+        mbpp_rows = read_jsonl(Path(args.mbpp_path), args.generation_limit)
+        for row in mbpp_rows:
+            prompt = build_mbpp_prompt(tokenizer, row)
+            input_ids = tokenizer([prompt], return_tensors="pt").input_ids[0].cpu()
+            items.append({"task": "mbpp", "row": row, "prompt_ids": input_ids})
 
     rows: list[dict[str, Any]] = []
     started = time.perf_counter()
@@ -776,11 +848,23 @@ def adapter_ready(path: Path | None) -> bool:
 
 
 def model_specs(args) -> list[dict[str, Any]]:
-    return [
+    specs = [
         {"name": "init", "adapter": None},
         {"name": "A_diffusion_only", "adapter": Path(args.adapter_a)},
         {"name": "B_two_stream", "adapter": Path(args.adapter_b)},
     ]
+    requested = {
+        item.strip()
+        for item in str(args.model_names).replace(",", " ").split()
+        if item.strip()
+    }
+    if not requested:
+        return specs
+    known = {spec["name"] for spec in specs}
+    unknown = requested - known
+    if unknown:
+        raise ValueError(f"unknown model name(s): {sorted(unknown)}; choices={sorted(known)}")
+    return [spec for spec in specs if spec["name"] in requested]
 
 
 def load_ar_reference(path: Path | None) -> dict[str, Any] | None:
@@ -817,6 +901,11 @@ def parse_args():
     parser.add_argument("--base-model", default=str(DEFAULT_BASE))
     parser.add_argument("--adapter-a", default=str(DEFAULT_A))
     parser.add_argument("--adapter-b", default=str(DEFAULT_B))
+    parser.add_argument(
+        "--model-names",
+        default="",
+        help="Comma/space separated subset of init, A_diffusion_only, B_two_stream. Empty runs all.",
+    )
     parser.add_argument("--train-path", default="data/flare_stage1_ab_pilot_train/train_agentic_mix.json")
     parser.add_argument("--heldout-nll", default="data/flare_stage1_ab_pilot/heldout_nll.jsonl")
     parser.add_argument("--gsm8k-path", default="data/phaseA_retention/gsm8k_main_test_first20.jsonl")
@@ -828,6 +917,11 @@ def parse_args():
     parser.add_argument("--nll-seed", type=int, default=20260702)
     parser.add_argument("--generation-limit", type=int, default=20)
     parser.add_argument("--generation-batch-size", type=int, default=1)
+    parser.add_argument(
+        "--generation-tasks",
+        default="gsm8k,mbpp",
+        help="Comma/space separated generation tasks to run: gsm8k, mbpp.",
+    )
     parser.add_argument(
         "--active-block-generation",
         action="store_false",
@@ -849,8 +943,8 @@ def parse_args():
     parser.add_argument("--threshold", type=float, default=0.9)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top-p", type=float, default=0.95)
-    parser.add_argument("--mask-id", type=int, default=MASK_ID)
-    parser.add_argument("--stop-token-id", type=int, default=STOP_TOKEN_ID)
+    parser.add_argument("--mask-id", type=int, default=None)
+    parser.add_argument("--stop-token-id", type=int, default=None)
     parser.add_argument("--mbpp-timeout", type=float, default=5.0)
     parser.add_argument("--gpu-index", type=int, default=0)
     parser.add_argument("--no-4bit", action="store_true")
@@ -877,10 +971,20 @@ def main() -> int:
             raise FileNotFoundError(f"Adapter missing/corrupt for {spec['name']}: {spec['adapter']}")
 
     from transformers import AutoTokenizer
+    from transformers import AutoConfig
 
     base_tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
     if base_tokenizer.pad_token_id is None:
         base_tokenizer.pad_token = base_tokenizer.eos_token
+    base_config = AutoConfig.from_pretrained(base_model, trust_remote_code=True)
+    args.mask_id = resolve_mask_id(base_config, base_tokenizer, args.mask_id)
+    args.stop_token_ids = resolve_stop_token_ids(base_config, base_tokenizer, args.stop_token_id)
+    args.stop_token_id = int(args.stop_token_ids[0])
+    print(
+        "[token_ids] "
+        + json.dumps({"mask_id": args.mask_id, "stop_token_ids": args.stop_token_ids}, sort_keys=True),
+        flush=True,
+    )
     heldout_rows = read_jsonl(Path(args.heldout_nll))
     nll_batches = build_fixed_nll_batches(
         base_tokenizer,
