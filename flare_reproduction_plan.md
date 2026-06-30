@@ -656,3 +656,15 @@ hard multicall.** NEXT (steered): (1) CLEAN native-format test -- SGLang native 
 the custom instruction, temp0.7, FRESH diverse scenarios -> the teacher's TRUE number (likely between 37% confounded
 and 66% easy); (2) SAFE mix-v2 path regardless: VERIFIED-CORRECT targets ONLY (gold or teacher-exact-match-gold),
 diversity from broader gold-labeled data + curricula + filtered teacher scenarios. No training on unverified calls.
+
+## LEAD DIRECTIVE: standardize Qwen NATIVE function format across the WHOLE pipeline (2026-06-30)
+Foundational consistency fix (lead): the format mismatch (teacher native <function=...> vs eval/train <tool_call>
+Hermes) confounds the teacher score, the 9/28 baseline, and would confound the decoder grammar. Use Qwen's NATIVE
+function-call format EVERYWHERE -- teacher-gen, student TRAINING targets, student EVAL parsing, constrained-decoding
+GRAMMAR. Steered: (1) DETERMINE canonical native format from the ACTUAL chat_template of Qwen3.5-9B (student) +
+Qwen3.6-27B (teacher) -- exact tags/JSON-shape/multi-call delimiter; (2) AUDIT each stage's current format
+(teacher-gen, training targets, eval slices+parser, decoder grammar) -- map mismatches; (3) STANDARDIZE all 4 on
+native; (4) RE-BASELINE B@1000 raw + constrained on NATIVE format (9/28 was <tool_call>; student may be better at
+its true native). Do this BEFORE more teacher-gen / mix-v2 / decoder eval -- one consistent format underneath
+everything. (Hypothesis: <tool_call> may have been an imposed format the student is worse at than its native; native
+could lift the raw + constrained numbers.)
