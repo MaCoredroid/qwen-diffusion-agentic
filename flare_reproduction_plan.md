@@ -726,3 +726,15 @@ artifact -- no reference, not a decoder failure) -> proves the live decoder uses
 project's CONSTRAINED-lane SOTA (transfer case).** Endgame (autonomous): fail-closed native-v2 mix builder
 (verified-correct native targets; leak/truncation/non-native fail-closed) -> retrain native -> native-trained x
 live decoder. Standing rules all holding (GPU-util, commit-each-step, native-format, retrain-freely).
+
+## NATIVE MIX-V2 verified + GREEN-LIT retrain (2026-06-30)
+`data/flare_agentic_mix_v2_native` (1024: 512 tool-call / 512 retention = 50/50). Gates PASS: leak-clean 0/0
+(exact+near same-tool+same-arg-values); verified-correct native targets (teacher filtered to exact-args=23
++truncation-rejected; bulk = existing gold data in native: onecall_argument 136, multicall_seq 164, grounded_span
+44, public_multicall_gold 28, raw_public 51, etc.); retention 50/50 (gsm8k 320 + mbpp 192) -- fixes mix-v1's 0.55
+forgetting; native format throughout; **fresh-from-init** (retrain-freely, no Hermes contamination). **FORMAT
+CONFOUND RESOLVED:** native-format teacher = 17/28 (61%) vs Hermes-confounded 11/30 (37%) -> native-everywhere
+recovered ~24pts of teacher quality (user vindicated). **GREEN-LIT** the retrain: fresh-from-init, two-stream,
+native, ~1000 steps, systemd, ~5h. Post-train (autonomous, report-no-promote): native-trained RAW native (vs
+B@1000 0/8) + RAW+LIVE-DECODER (vs 19/28 transfer) + GSM8K retention (floor 0.65). SUCCESS = native-trained x live
+decoder > 19/28 AND GSM8K >= 0.65; if ~=19/28 the decoder is the dominant lever (honest either way).
