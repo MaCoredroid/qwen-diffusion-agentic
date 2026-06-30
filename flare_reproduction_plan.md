@@ -821,3 +821,22 @@ is on a capability lever (data exhausted, decoder = SOTA). RESUME when further t
 large-scale 27B distillation) or we want faster two-stream training — no new gate needed, jump to the
 "Call-site swap"+"Validation gate" sections of fla_kernel_feasibility.md. Util status of record: two-stream training
 ~63% (batched-noisy-GDN fix held; eval slices were GPU-bound 94–98%); the remaining gap is this parked kernel.
+
+## FLA-verify workflow (w6hnbpe3f) — my "GREEN, no holes" was OVER-CLAIMED; strengthen the gate (2026-06-30)
+Adversarial verification of the FLA integration (spec:draft agent died mid-run -> verifiers reverse-engineered the
+real code instead). Flag/math map CONFIRMED correct on actual code (no double L2-norm/sigmoid/scale; raw-g handling
+right; allow_neg_eigval=False matches the UT-transform). BUT the GREEN single-block spike PROVABLY UNDER-COVERS the
+production path -- I should NOT have called it "no holes":
+  1. [HIGH] Spike is SELF-CONSISTENCY (FLA == our torch ref), NOT ground-truth. If our torch ref itself diverges from
+     canonical Qwen3-Next GDN, spike is green while real-weight logits are wrong. FIX: end-to-end logits/NLL parity
+     on REAL checkpoint weights vs upstream HF Qwen3Next (or FLA naive.py).
+  2. [HIGH] Multi-block / multi-doc two-stream SCHEDULE untested with FLA -- a single-block test passes while
+     caller-side cross-block initial_state threading is wrong. FIX: FASTDLLM_GDN_KERNEL=fla through the multi-doc
+     schedule vs torch (validate_flare_two_stream_forward / state-snapshot validators).
+  3. [HIGH/TRAP] The spike's dh0 GREEN tests the WRONG branch: production DETACHES the seed
+     (initial_states = cat([zero, clean_chunk_states[:,:-1].detach()]) at ~1250/1273, requires_grad=False), but the
+     spike set requires_grad=True to light up dh0. FIX: validate the DETACHED-seed path, not the dh0 branch.
+  4. [MED] Loose tol + tiny magnitudes can hide a sqrt(d)-vs-d scale bug. FIX: fp32 tight-tol + realistic magnitudes.
+STEER for flare's FLA integration: the flag map is safe to apply, but the validation gate MUST add (1)-(4) above
+before any promote -- the single-block spike is necessary-not-sufficient. (Good catch by the workflow; owning the
+over-claim.)
