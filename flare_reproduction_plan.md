@@ -558,3 +558,26 @@ projection.py`, `eval_fastdllm_toolcall_cases.py`); does NOT have live DINGO-sty
 denoising. **NEXT (steered):** (1) report retention (GSM8K vs 0.70); (2) run the EXISTING repair/projection as the
 CONSTRAINED lane on agentic v1 → exact-args vs strict 0/24, with the CRITICAL label-free check (grammar/schema-only
 = promotable CONSTRAINED; snaps-to-gold = PROTECTED oracle, NOT promotable); (3) defer the live grammar decoder.
+
+## CONSTRAINED LANE (label-free) + retention (2026-06-30) — 0/28 -> 8/28 exact args; attribution pending
+RETENTION: GSM8K 0.70 -> **0.55** strict (real ~15pt forgetting from the 75/25 mix; ABOVE the 0.5 hard floor),
+MBPP 0.05 raw. Iteration-2 signal: more retention / L_AR weighting.
+CONSTRAINED LANE (post-hoc projection over agentic v1 raw outputs):
+| path | valid JSON | exact seq | exact args |
+| raw strict | 2/28 | 0/28 | 0/28 |
+| schema repair only | 23/28 | 10/28 | 0/28 |
+| constrained projection | 20/28 | 12/28 | 7/28 |
+| **sequence-preserving constrained** | **22/28** | 11/28 | **8/28** |
+Per slice (best lane): one-call 7/8 valid, 3/8 args; multicall 10/12 valid, 3/12 args; teacher 5/8 valid, 2/8 args.
+**LABEL-FREE CONFIRMED** (promotable CONSTRAINED lane, not a protected oracle): projection uses model output +
+tool SCHEMA + prompt context only; gold_assistant used ONLY post-projection for scoring; gold_assistant_in_prompt=0
+and no <tool_call> tags in any prompt. The over-planning sequence-PLANNER sidecar (one-call 1/8, multicall 7/12,
+teacher 1/8 = 9/28) kept SEPARATE — needs routing/guarding before promotion.
+=> The reframe held: constrained decoding converts the latent grounding (70-87% lenient) into **8/28 exact-args
+valid tool calls (29%) from 0/28 raw** — the project's first real CONSTRAINED-lane agentic grounding number.
+**NEXT (steered) — ATTRIBUTION (decisive roadmap fork):** run B@1000 (pre-agentic-training) through the SAME
+label-free constrained lane → if agentic-v1-constrained (8/28) MATERIALLY beats B@1000-constrained, the training
+added value (iterate data: more retention + 27B-teacher traces); if CLOSE, the 8/28 is mostly the constrained
+DECODER (works on base too) and mix-v1 wasn't worth the ~15pt GSM8K cost → invest in constrained decoding + the
+live grammar decoder, not this data mix. (Modest record-level content gain hints at the latter.) No promote until
+attribution.
