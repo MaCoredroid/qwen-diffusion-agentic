@@ -336,7 +336,120 @@ def tool_json_live_prefix_active(text):
     if body is not None:
         return True
     stripped = str(text or "").lstrip()
-    return stripped == "" or TOOL_OPEN.startswith(stripped)
+    return stripped == "" or TOOL_OPEN.startswith(stripped) or TOOL_OPEN in stripped
+
+
+def native_tool_prefix_can_stop(text, schemas=None):
+    stripped = str(text or "").lstrip()
+    if TOOL_OPEN not in stripped:
+        return False
+    if active_tool_call_body(stripped) is not None:
+        return False
+    if not native_tool_prefix_completable(stripped, schemas=schemas):
+        return False
+    return stripped.rstrip().endswith(TOOL_CLOSE)
+
+
+def _schema_property_names(schema):
+    if not isinstance(schema, dict):
+        return []
+    properties = schema.get("properties") or {}
+    if not isinstance(properties, dict):
+        return []
+    return sorted(str(name) for name in properties)
+
+
+def _first_token_ids_for_continuations(tokenizer, continuations):
+    token_ids = []
+    seen = set()
+    for continuation in continuations:
+        if not continuation:
+            continue
+        ids = tokenizer.encode(str(continuation), add_special_tokens=False)
+        if not ids:
+            continue
+        token_id = int(ids[0])
+        if token_id in seen:
+            continue
+        seen.add(token_id)
+        token_ids.append(token_id)
+    return token_ids
+
+
+def native_tool_candidate_token_ids(tokenizer, text, schemas=None):
+    """Return a small schema-only candidate set for native grammar fallback.
+
+    The validator remains the source of truth. This function only proposes
+    likely legal continuations so the live decoder never has to scan the full
+    vocabulary from Python.
+    """
+    schemas = schemas or {}
+    names = sorted(str(name) for name in schemas)
+    raw = str(text or "")
+    s = raw.lstrip()
+
+    if s == "":
+        return _first_token_ids_for_continuations(tokenizer, [TOOL_OPEN + "\n"])
+
+    continuations = []
+
+    func_marker = "\n<function="
+    func_idx = s.rfind(func_marker)
+    if func_idx >= 0:
+        func_start = func_idx + len(func_marker)
+        func_close = s.find(">", func_start)
+        if func_close < 0:
+            fragment = s[func_start:]
+            for name in names:
+                if name.startswith(fragment):
+                    continuations.append(name[len(fragment) :] + ">\n")
+            return _first_token_ids_for_continuations(tokenizer, continuations)
+        current_name = s[func_start:func_close]
+    else:
+        current_name = None
+
+    param_marker = "\n<parameter="
+    param_idx = s.rfind(param_marker)
+    if param_idx >= 0 and (func_idx < 0 or param_idx > func_idx):
+        param_start = param_idx + len(param_marker)
+        param_close = s.find(">", param_start)
+        value_close = s.find("\n</parameter>", param_start)
+        if param_close < 0:
+            properties = _schema_property_names(schemas.get(current_name))
+            fragment = s[param_start:]
+            for name in properties:
+                if name.startswith(fragment):
+                    continuations.append(name[len(fragment) :] + ">\n")
+            return _first_token_ids_for_continuations(tokenizer, continuations)
+        if value_close < 0:
+            # Inside a value. Most vocabulary tokens are legal here; this
+            # fallback only needs to provide a guaranteed legal structural exit.
+            return _first_token_ids_for_continuations(tokenizer, ["\n</parameter>"])
+
+    structural_pieces = [
+        TOOL_OPEN + "\n",
+        "\n<function=",
+        "\n<parameter=",
+        "\n</parameter>",
+        "\n</function>\n" + TOOL_CLOSE,
+        "\n" + TOOL_CLOSE,
+        "\n" + TOOL_OPEN,
+    ]
+    if current_name:
+        for prop in _schema_property_names(schemas.get(current_name)):
+            structural_pieces.append(f"\n<parameter={prop}>\n")
+    for name in names:
+        structural_pieces.append(f"\n<function={name}>\n")
+
+    # If the current text ends with a partial literal/tag, propose the suffix.
+    for piece in structural_pieces:
+        max_overlap = min(len(s), len(piece))
+        for overlap in range(max_overlap, -1, -1):
+            if s.endswith(piece[:overlap]):
+                continuations.append(piece[overlap:])
+                break
+
+    return _first_token_ids_for_continuations(tokenizer, continuations)
 
 
 def live_tool_json_top_token(
@@ -357,10 +470,16 @@ def live_tool_json_top_token(
         checked.add(token_id)
         if proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id, schemas=schemas):
             return token_id, True
-    for token_id in torch.argsort(logits, descending=True).detach().tolist():
+    generated = sequence[original_len:].detach().tolist()
+    text = contiguous_decoded_prefix(tokenizer, generated, mask_id)
+    fallback_ids = native_tool_candidate_token_ids(tokenizer, text, schemas=schemas)
+    fallback_ids = sorted(
+        (int(token_id) for token_id in fallback_ids if int(token_id) not in checked),
+        key=lambda token_id: float(logits[token_id].detach().cpu()),
+        reverse=True,
+    )
+    for token_id in fallback_ids:
         token_id = int(token_id)
-        if token_id in checked:
-            continue
         if proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id, schemas=schemas):
             return token_id, True
     return int(torch.argmax(logits).item()), False
@@ -403,19 +522,23 @@ def apply_live_tool_json_grammar(
         active_rows += 1
         local_pos = int(current_mask[row_idx].nonzero(as_tuple=False)[0, 0].item())
         abs_idx = window_abs_start + span_start + local_pos
-        token_id, safe = live_tool_json_top_token(
-            tokenizer,
-            x_t[row_idx].clone(),
-            logits[row_idx, local_pos],
-            original_len,
-            abs_idx,
-            args.mask_id,
-            args.live_tool_json_topk,
-            schemas=schemas,
-        )
+        original_top = int(torch.argmax(logits[row_idx, local_pos]).item())
+        stop_ids = set(int(token_id) for token_id in getattr(args, "stop_token_ids", [args.stop_token_id]))
+        if original_top in stop_ids and native_tool_prefix_can_stop(text, schemas=schemas):
+            token_id, safe = original_top, True
+        else:
+            token_id, safe = live_tool_json_top_token(
+                tokenizer,
+                x_t[row_idx].clone(),
+                logits[row_idx, local_pos],
+                original_len,
+                abs_idx,
+                args.mask_id,
+                args.live_tool_json_topk,
+                schemas=schemas,
+            )
         if not safe:
             unsafe += 1
-        original_top = int(torch.argmax(logits[row_idx, local_pos]).item())
         if token_id != original_top:
             rejected += 1
         x_1[row_idx, local_pos] = token_id
