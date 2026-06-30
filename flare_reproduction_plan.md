@@ -500,3 +500,11 @@ systemd. Post-train eval = exact baseline tool-call slices vs 0/24 + GSM8K(0.70 
 bar: valid JSON 5→15+/28, exact args 1→8+/24 (1→3 = noise); flag GSM8K post <0.5. CAVEATS for interpretation +
 iteration 2: limited tool-call diversity (52 unique raw) → 27B-teacher diffusion-friendly traces are the next
 lever if generalization caps; mostly 1-call (multicall coverage lighter).
+
+## Agentic run LAUNCHED + training (2026-06-29)
+`qwen-flare-agentic-v1-twostream-s1024-step1000-v3.service` active, two-stream continuation from B@1000 on
+`data/flare_agentic_mix_v1`, GPU 40% util (rule satisfied), ~5h. Logs under
+`runs/flare_agentic_phase1/two_stream_agentic_v1_from_B1000_s1024_step1000/`. flare caught 2 pre-training launch
+bugs (systemd inline var expansion; LMFlow trying to load manifest.json as data — would've corrupted training) —
+both failed BEFORE training, no wasted compute; v3 is the real run. Post-train: tool-call eval vs 0/24 baseline +
+GSM8K(0.70)/MBPP/NLL retention.
