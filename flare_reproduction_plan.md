@@ -682,3 +682,20 @@ flare's call: continue-from-B@1000 is Hermes-contaminated, so fresh-from-init on
 cleaner) -> native eval -> native constrained decoder grammar. That is the apples-to-apples vs the old 9/28.
 flare proceeding autonomously; holds 2 checkpoints (mix manifest before ~5h train; promotable numbers before
 crediting); commits each step. Standing rules now: GPU-util, commit-each-step, native-format, retrain-freely.
+
+## LIVE GRAMMAR DECODER (Track A) — strong signal 9/28 -> 15/28, but NOT yet clean (2026-06-30)
+flare built the live native-grammar decoder + evaluated B@1000 (Hermes-trained, NATIVE eval = TRANSFER number):
+| slice | valid | exact_seq | exact_args |
+| one-call 8 | 7/8 | 8/8 | 6/8 |
+| multicall 12 | 5/12 | 4/12 | 4/12 |
+| teacher 8 | 7/8 | 8/8 | 5/8 |
+| **TOTAL** | 19/28 | 20/28 | **15/28** |
+vs post-hoc constrained **9/28** -> the LIVE decoder (prevent corruption during denoise) beats post-hoc repair
+(9->15/28, 32->54%). GPU util mean **97%** (token-by-token grammar is GPU-bound, NOT the .item() host trap). And
+this is the TRANSFER case (Hermes-trained student on native) -> native-trained should be higher.
+**NOT CREDITED YET (flare's own discipline):** the 15/28 had **425 unsafe fallback commits** (grammar couldn't
+find a valid top-k token -> fell back to unconstrained argmax) -> confounded by unconstrained model. flare
+re-running with STRICT enforcement; **accepted live-decoder numbers must have live_unsafe=0** (+ gold-stripped
+label-free, which is on via --strip-gold-for-generation). Strict clean number pending. (Risk: strict may push
+valid-JSON up but exact-args could move either way if forced grammar-valid tokens aren't the right values.)
+Track B (native mix-v2 manifest) building in parallel with v1's leak discipline on native slices/pools.

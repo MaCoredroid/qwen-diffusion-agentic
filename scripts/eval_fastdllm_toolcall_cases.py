@@ -350,8 +350,17 @@ def live_tool_json_top_token(
     schemas=None,
 ):
     topk = max(1, min(int(topk), logits.shape[-1]))
-    for token_id in torch.topk(logits, k=topk).indices.detach().tolist():
+    top_ids = torch.topk(logits, k=topk).indices.detach().tolist()
+    checked = set()
+    for token_id in top_ids:
         token_id = int(token_id)
+        checked.add(token_id)
+        if proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id, schemas=schemas):
+            return token_id, True
+    for token_id in torch.argsort(logits, descending=True).detach().tolist():
+        token_id = int(token_id)
+        if token_id in checked:
+            continue
         if proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id, schemas=schemas):
             return token_id, True
     return int(torch.argmax(logits).item()), False
