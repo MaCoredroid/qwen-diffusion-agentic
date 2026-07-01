@@ -406,11 +406,22 @@ def tool_call_mode_force_mask(
     return force_mask
 
 
-def proposal_keeps_tool_json_prefix(tokenizer, sequence, original_len, abs_idx, token_id, mask_id, schemas=None):
+def proposal_keeps_tool_json_prefix(
+    tokenizer,
+    sequence,
+    original_len,
+    abs_idx,
+    token_id,
+    mask_id,
+    schemas=None,
+    mode="qwen_native",
+):
     proposal = sequence.clone()
     proposal[abs_idx] = int(token_id)
     generated = proposal[original_len:].detach().tolist()
     text = contiguous_decoded_prefix(tokenizer, generated, mask_id)
+    if mode == "hermes_json":
+        return tool_json_prefix_completable(text)
     return native_tool_prefix_completable(text, schemas=schemas)
 
 
@@ -680,6 +691,7 @@ def apply_tool_json_prefix_guard(
             abs_idx,
             original_token,
             args.mask_id,
+            mode=getattr(args, "tool_prefix_guard_mode", "qwen_native"),
         ):
             schedule_events["json_prefix_guard_accepted_token_visits"] += 1
             continue
@@ -697,6 +709,7 @@ def apply_tool_json_prefix_guard(
                     abs_idx,
                     token_id,
                     args.mask_id,
+                    mode=getattr(args, "tool_prefix_guard_mode", "qwen_native"),
                 ):
                     replacement = token_id
                     break
@@ -709,6 +722,7 @@ def apply_tool_json_prefix_guard(
                 abs_idx,
                 target_token,
                 args.mask_id,
+                mode=getattr(args, "tool_prefix_guard_mode", "qwen_native"),
             ):
                 replacement = target_token
                 schedule_events["json_prefix_guard_target_fallback_token_visits"] += 1
@@ -722,6 +736,227 @@ def apply_tool_json_prefix_guard(
         x_1[row_idx, pos_idx] = replacement
 
     return x_1, unmask_idx
+
+
+def interval_for_local_pos(intervals, local_pos):
+    for interval in intervals:
+        if int(interval["start"]) <= int(local_pos) < int(interval["end"]):
+            return interval
+    return None
+
+
+def _event_increment(schedule_events, key, amount=1):
+    schedule_events[key] = int(schedule_events.get(key) or 0) + int(amount)
+
+
+def _parallel_commit_token_choice(
+    tokenizer,
+    x_t,
+    logits_window,
+    row_idx,
+    local_pos,
+    interval,
+    window_abs_start,
+    window_len,
+    original_len,
+    args,
+    schedule_events,
+):
+    kind = interval.get("kind") or "default"
+    span_start = int(interval["start"])
+    span_end = int(interval["end"])
+    pos_idx = int(local_pos) - span_start
+    target_token_ids = interval.get("target_token_ids") or []
+    if (
+        interval.get("scheduled")
+        and kind == "tool_tag"
+        and args.guard_tool_call_mode
+        and len(target_token_ids) == span_end - span_start
+    ):
+        current_mask = torch.zeros((x_t.shape[0], span_end - span_start), dtype=torch.bool, device=x_t.device)
+        current_mask[row_idx, pos_idx] = True
+        force_mask = tool_call_mode_force_mask(
+            tokenizer,
+            x_t,
+            current_mask,
+            original_len,
+            args,
+            schedule_events,
+        )
+        if bool(force_mask[row_idx, pos_idx].item()):
+            _event_increment(schedule_events, "tool_call_mode_force_interval_visits")
+            _event_increment(schedule_events, "tool_call_mode_force_token_visits")
+            return int(target_token_ids[pos_idx]), 1.0, True, "tool_call_mode_force", True
+
+    row_logits = logits_window[row_idx, local_pos].float().clone()
+    row_logits[int(args.mask_id)] = torch.finfo(row_logits.dtype).min
+    probs = torch.softmax(row_logits, dim=-1)
+    original_token = int(torch.argmax(row_logits).item())
+    token_id = original_token
+    source = "argmax"
+    safe = True
+
+    if (
+        args.guard_tool_json_prefix
+        and interval.get("scheduled")
+        and kind in args.json_prefix_guard_kinds
+    ):
+        abs_idx = int(window_abs_start) + int(local_pos)
+        if proposal_keeps_tool_json_prefix(
+            tokenizer,
+            x_t[row_idx].clone(),
+            original_len,
+            abs_idx,
+            original_token,
+            args.mask_id,
+            mode=getattr(args, "tool_prefix_guard_mode", "qwen_native"),
+        ):
+            _event_increment(schedule_events, "json_prefix_guard_accepted_token_visits")
+        else:
+            _event_increment(schedule_events, "json_prefix_guard_rejected_token_visits")
+            replacement = None
+            topk = min(int(args.json_prefix_guard_topk), row_logits.shape[-1])
+            if topk > 0:
+                for candidate in torch.topk(row_logits, k=topk).indices.detach().tolist():
+                    candidate = int(candidate)
+                    if proposal_keeps_tool_json_prefix(
+                        tokenizer,
+                        x_t[row_idx].clone(),
+                        original_len,
+                        abs_idx,
+                        candidate,
+                        args.mask_id,
+                        mode=getattr(args, "tool_prefix_guard_mode", "qwen_native"),
+                    ):
+                        replacement = candidate
+                        break
+            if (
+                replacement is None
+                and args.json_prefix_guard_target_fallback
+                and len(target_token_ids) == span_end - span_start
+            ):
+                target_token = int(target_token_ids[pos_idx])
+                if proposal_keeps_tool_json_prefix(
+                    tokenizer,
+                    x_t[row_idx].clone(),
+                    original_len,
+                    abs_idx,
+                    target_token,
+                    args.mask_id,
+                    mode=getattr(args, "tool_prefix_guard_mode", "qwen_native"),
+                ):
+                    replacement = target_token
+                    _event_increment(schedule_events, "json_prefix_guard_target_fallback_token_visits")
+            if replacement is None:
+                _event_increment(schedule_events, "json_prefix_guard_unsafe_fallback_token_visits")
+                source = "unsafe_argmax"
+                safe = False
+            else:
+                token_id = int(replacement)
+                source = "json_prefix_replacement"
+                if token_id != original_token:
+                    _event_increment(schedule_events, "json_prefix_guard_replacement_token_visits")
+
+    confidence = float(probs[int(token_id)].detach().item())
+    return int(token_id), confidence, False, source, safe
+
+
+def apply_toolcall_parallel_commit_run(
+    model,
+    tokenizer,
+    x_t,
+    intervals,
+    window_abs_start,
+    window_len,
+    original_len,
+    args,
+    schedule_events,
+):
+    logits_window = denoise_logits_for_mode(model, x_t, args)[:, -window_len:].clone()
+    logits_window[..., int(args.mask_id)] = torch.finfo(logits_window.dtype).min
+    tau = float(args.parallel_commit_threshold)
+    stop_ids = set(int(token_id) for token_id in getattr(args, "stop_token_ids", [args.stop_token_id]))
+    per_row_commits = [0 for _ in range(x_t.shape[0])]
+    stopped_rows = set()
+    committed = 0
+    value_tokens = 0
+    structural_tokens = 0
+    forced_tokens = 0
+    value_seen = False
+    structural_seen = False
+
+    while True:
+        made_progress = False
+        for row_idx in range(x_t.shape[0]):
+            if row_idx in stopped_rows:
+                continue
+            mask_idx = x_t[row_idx, -window_len:] == args.mask_id
+            if not bool(mask_idx.any().item()):
+                stopped_rows.add(row_idx)
+                continue
+            local_pos = int(mask_idx.nonzero(as_tuple=False)[0, 0].item())
+            interval = interval_for_local_pos(intervals, local_pos)
+            if interval is None:
+                stopped_rows.add(row_idx)
+                continue
+            token_id, confidence, forced, source, safe = _parallel_commit_token_choice(
+                tokenizer,
+                x_t,
+                logits_window,
+                row_idx,
+                local_pos,
+                interval,
+                window_abs_start,
+                window_len,
+                original_len,
+                args,
+                schedule_events,
+            )
+            if not safe:
+                _event_increment(schedule_events, "parallel_commit_blocked_unsafe_tokens")
+                stopped_rows.add(row_idx)
+                continue
+            if per_row_commits[row_idx] > 0 and confidence <= tau:
+                stopped_rows.add(row_idx)
+                continue
+
+            abs_idx = int(window_abs_start) + int(local_pos)
+            x_t[row_idx, abs_idx] = int(token_id)
+            kind = interval.get("kind") or "default"
+            committed += 1
+            per_row_commits[row_idx] += 1
+            made_progress = True
+            if forced:
+                forced_tokens += 1
+            if interval.get("scheduled"):
+                _event_increment(schedule_events, "scheduled_token_visits")
+            else:
+                _event_increment(schedule_events, "default_token_visits")
+            if kind == "argument_value":
+                value_tokens += 1
+                value_seen = True
+            else:
+                structural_tokens += 1
+                structural_seen = True
+            _event_increment(schedule_events, f"parallel_commit_kind_tokens:{kind}")
+            _event_increment(schedule_events, f"parallel_commit_source_tokens:{source}")
+            if int(token_id) in stop_ids:
+                stopped_rows.add(row_idx)
+        if not made_progress:
+            break
+
+    _event_increment(schedule_events, "parallel_commit_denoise_forwards")
+    _event_increment(schedule_events, "parallel_commit_committed_tokens", committed)
+    _event_increment(schedule_events, "parallel_commit_value_tokens", value_tokens)
+    _event_increment(schedule_events, "parallel_commit_structural_tokens", structural_tokens)
+    _event_increment(schedule_events, "parallel_commit_forced_tokens", forced_tokens)
+    if value_seen:
+        _event_increment(schedule_events, "parallel_commit_value_forward_visits")
+    if structural_seen:
+        _event_increment(schedule_events, "parallel_commit_structural_forward_visits")
+    if committed > 0:
+        _event_increment(schedule_events, "parallel_commit_nonempty_forwards")
+    return x_t, committed
 
 
 def generation_instruction(case):
@@ -2158,6 +2393,16 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         "live_tool_json_grammar_left_to_right_dropped_token_visits": 0,
         "live_tool_json_grammar_replacement_token_visits": 0,
         "live_tool_json_grammar_unsafe_fallback_token_visits": 0,
+        "parallel_commit_denoise_forwards": 0,
+        "parallel_commit_nonempty_forwards": 0,
+        "parallel_commit_committed_tokens": 0,
+        "parallel_commit_structural_tokens": 0,
+        "parallel_commit_value_tokens": 0,
+        "parallel_commit_structural_forward_visits": 0,
+        "parallel_commit_value_forward_visits": 0,
+        "parallel_commit_forced_tokens": 0,
+        "parallel_commit_blocked_unsafe_tokens": 0,
+        "parallel_commit_zero_commit_fallbacks": 0,
     }
     candidate_group_choices = {}
     candidate_group_allowed_indices = {}
@@ -2204,6 +2449,26 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                 sampler_schedule,
                 args.small_block_size,
             )
+            if args.parallel_commit_threshold is not None:
+                x_t, committed = apply_toolcall_parallel_commit_run(
+                    model,
+                    tokenizer,
+                    x_t,
+                    intervals,
+                    window_abs_start,
+                    window_len,
+                    original_len,
+                    args,
+                    schedule_events,
+                )
+                stopped = truncate_if_stopped(x_t)
+                if stopped is not None:
+                    args._last_sampler_schedule_events = schedule_events
+                    finish_cache(stopped)
+                    return stopped[0]
+                if committed > 0:
+                    continue
+                _event_increment(schedule_events, "parallel_commit_zero_commit_fallbacks")
             for interval in intervals:
                 start = interval["start"]
                 end = interval["end"]
@@ -2749,6 +3014,16 @@ def empty_totals():
         "sampler_live_tool_json_grammar_left_to_right_dropped_token_visits": 0,
         "sampler_live_tool_json_grammar_replacement_token_visits": 0,
         "sampler_live_tool_json_grammar_unsafe_fallback_token_visits": 0,
+        "sampler_parallel_commit_denoise_forwards": 0,
+        "sampler_parallel_commit_nonempty_forwards": 0,
+        "sampler_parallel_commit_committed_tokens": 0,
+        "sampler_parallel_commit_structural_tokens": 0,
+        "sampler_parallel_commit_value_tokens": 0,
+        "sampler_parallel_commit_structural_forward_visits": 0,
+        "sampler_parallel_commit_value_forward_visits": 0,
+        "sampler_parallel_commit_forced_tokens": 0,
+        "sampler_parallel_commit_blocked_unsafe_tokens": 0,
+        "sampler_parallel_commit_zero_commit_fallbacks": 0,
         "stop_boundary_guard_trimmed": 0,
         "errors": 0,
     }
@@ -3178,6 +3453,36 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
                 totals["sampler_live_tool_json_grammar_unsafe_fallback_token_visits"] += int(
                     schedule_events.get("live_tool_json_grammar_unsafe_fallback_token_visits") or 0
                 )
+                totals["sampler_parallel_commit_denoise_forwards"] += int(
+                    schedule_events.get("parallel_commit_denoise_forwards") or 0
+                )
+                totals["sampler_parallel_commit_nonempty_forwards"] += int(
+                    schedule_events.get("parallel_commit_nonempty_forwards") or 0
+                )
+                totals["sampler_parallel_commit_committed_tokens"] += int(
+                    schedule_events.get("parallel_commit_committed_tokens") or 0
+                )
+                totals["sampler_parallel_commit_structural_tokens"] += int(
+                    schedule_events.get("parallel_commit_structural_tokens") or 0
+                )
+                totals["sampler_parallel_commit_value_tokens"] += int(
+                    schedule_events.get("parallel_commit_value_tokens") or 0
+                )
+                totals["sampler_parallel_commit_structural_forward_visits"] += int(
+                    schedule_events.get("parallel_commit_structural_forward_visits") or 0
+                )
+                totals["sampler_parallel_commit_value_forward_visits"] += int(
+                    schedule_events.get("parallel_commit_value_forward_visits") or 0
+                )
+                totals["sampler_parallel_commit_forced_tokens"] += int(
+                    schedule_events.get("parallel_commit_forced_tokens") or 0
+                )
+                totals["sampler_parallel_commit_blocked_unsafe_tokens"] += int(
+                    schedule_events.get("parallel_commit_blocked_unsafe_tokens") or 0
+                )
+                totals["sampler_parallel_commit_zero_commit_fallbacks"] += int(
+                    schedule_events.get("parallel_commit_zero_commit_fallbacks") or 0
+                )
                 totals["stop_boundary_guard_trimmed"] += int(bool(row.get("stop_boundary_guard_trimmed")))
                 totals["records_with_extra_calls"] += int((row["extra_call_count"] or 0) > 0)
                 totals["records_with_missing_calls"] += int((row["missing_call_count"] or 0) > 0)
@@ -3267,9 +3572,12 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
         "json_prefix_guard_topk": args.json_prefix_guard_topk,
         "json_prefix_guard_left_to_right": args.json_prefix_guard_left_to_right,
         "json_prefix_guard_target_fallback": args.json_prefix_guard_target_fallback,
+        "tool_prefix_guard_mode": args.tool_prefix_guard_mode,
         "live_tool_json_grammar": args.live_tool_json_grammar,
         "live_tool_json_topk": args.live_tool_json_topk,
         "live_tool_json_mode": "hybrid_diffusion_nl_constrained_ar_qwen_native" if args.live_tool_json_grammar else "off",
+        "parallel_commit_threshold": args.parallel_commit_threshold,
+        "parallel_commit_mode": "confident_run_same_forward" if args.parallel_commit_threshold is not None else "off",
         "strip_gold_for_generation": args.strip_gold_for_generation,
         "argument_boundary_token_ids": args.argument_boundary_token_ids,
         "argument_newline_token_ids": args.argument_newline_token_ids,
@@ -3461,6 +3769,15 @@ def main():
         help="If top-k has no safe token, try the schedule target token before allowing the original unsafe token.",
     )
     parser.add_argument(
+        "--tool-prefix-guard-mode",
+        choices=["qwen_native", "hermes_json"],
+        default="qwen_native",
+        help=(
+            "Prefix grammar used by --guard-tool-json-prefix. qwen_native protects "
+            "<function>/<parameter> tool calls; hermes_json protects JSON bodies inside <tool_call>."
+        ),
+    )
+    parser.add_argument(
         "--no-json-prefix-guard-left-to-right",
         action="store_true",
         help="Disable left-to-right commit restriction inside JSON-prefix-guarded intervals.",
@@ -3488,6 +3805,16 @@ def main():
         type=int,
         default=128,
         help="Top-k logits scan width for --live-tool-json-grammar legality selection.",
+    )
+    parser.add_argument(
+        "--parallel-commit-threshold",
+        type=float,
+        default=None,
+        help=(
+            "Opt-in target-distribution speed probe for --full-context-sampling: compute one logits "
+            "window, commit the first grammar-safe token, then continue left-to-right within the same "
+            "forward while the selected safe token probability is above this tau."
+        ),
     )
     parser.add_argument(
         "--strip-gold-for-generation",
