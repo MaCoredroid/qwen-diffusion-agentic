@@ -21,6 +21,7 @@ from eval_toolcall_jsonl import (
     score_tool_calls,
     tool_schema_by_name,
 )
+from flare_hf_cache import RequestDiffusionState
 
 
 ROOT = Path("/home/mark/qwen_diffusion")
@@ -91,6 +92,13 @@ def flare_two_stream_noisy_logits(model, clean_input_ids, noisy_input_ids, *, bl
 
 
 def denoise_logits_for_mode(model, x_t, args):
+    cache_state = getattr(args, "_flare_cache_state", None)
+    if getattr(args, "_flare_cache_required", False):
+        if cache_state is None:
+            raise RuntimeError("FLARE cache mode is active but no RequestDiffusionState is attached")
+        if args.denoise_logit_mode != "flare_shift":
+            raise ValueError("FLARE cache mode only supports denoise_logit_mode='flare_shift'")
+        return cache_state.shifted_active_logits(model, x_t)
     if args.denoise_logit_mode == "causal_shift":
         logits = model(input_ids=x_t, use_cache=False).logits
         return torch.cat([logits[:, :1, :], logits[:, :-1, :]], dim=1)
@@ -2055,6 +2063,27 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         dtype=torch.long,
         device=input_ids.device,
     )
+    cache_enabled = bool(getattr(args, "use_block_cache", False))
+    cache_state = None
+    if cache_enabled:
+        if args.denoise_logit_mode != "flare_shift":
+            raise ValueError("--use-block-cache with --full-context-sampling requires --denoise-logit-mode flare_shift")
+        cache_state = RequestDiffusionState.reset(model, input_ids, args.block_size)
+        args._flare_cache_state = cache_state
+        args._flare_cache_required = True
+        args._last_flare_cache_stats = cache_state.stats()
+
+    def finish_cache():
+        if not cache_enabled:
+            return
+        if cache_state.residual_full_context_model_calls != 0:
+            raise RuntimeError(
+                "FLARE cache residual full-context calls per committed block must be zero; "
+                f"got {cache_state.residual_full_context_model_calls}"
+            )
+        args._last_flare_cache_stats = cache_state.stats()
+        args._flare_cache_state = None
+        args._flare_cache_required = False
 
     def truncate_if_stopped(sequence):
         generated = sequence[:, original_len:]
@@ -2125,7 +2154,15 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
     candidate_group_allowed_indices = {}
     while output_ids.shape[1] - original_len < args.max_new_tokens:
         remaining = args.max_new_tokens - (output_ids.shape[1] - original_len)
-        if getattr(args, "fresh_generation_blocks", False):
+        if cache_enabled:
+            active_len = output_ids.shape[1] - cache_state.block_start
+            if active_len < 0 or active_len >= args.block_size:
+                raise RuntimeError(
+                    f"invalid FLARE cache active_len={active_len} "
+                    f"for output_len={output_ids.shape[1]} block_start={cache_state.block_start}"
+                )
+            block_pad = args.block_size - active_len
+        elif getattr(args, "fresh_generation_blocks", False):
             block_pad = args.block_size
         else:
             block_pad = args.block_size - (output_ids.shape[1] % args.block_size)
@@ -2140,7 +2177,15 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         )
         x_t = torch.cat([output_ids, masks], dim=1)
         while (x_t[:, -block_pad:] == args.mask_id).any():
-            window_len = min(args.block_size, x_t.shape[1])
+            if cache_enabled:
+                window_len = x_t.shape[1] - cache_state.block_start
+                if window_len <= 0 or window_len > args.block_size:
+                    raise RuntimeError(
+                        f"invalid FLARE cache window_len={window_len} "
+                        f"for x_t_len={x_t.shape[1]} block_start={cache_state.block_start}"
+                    )
+            else:
+                window_len = min(args.block_size, x_t.shape[1])
             window_abs_start = x_t.shape[1] - window_len
             intervals = scheduled_window_intervals(
                 window_len,
@@ -2577,6 +2622,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                     stopped = truncate_if_stopped(x_t)
                     if stopped is not None:
                         args._last_sampler_schedule_events = schedule_events
+                        finish_cache()
                         return stopped[0]
                     if interval.get("scheduled"):
                         schedule_events["scheduled_interval_visits"] += 1
@@ -2586,12 +2632,23 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         schedule_events["default_token_visits"] += int(current_mask.sum().item())
             if (x_t[:, -block_pad:] == args.mask_id).all():
                 break
+        if cache_enabled:
+            active_block = x_t[:, cache_state.block_start :]
+            if active_block.shape[1] == args.block_size and not bool((active_block == args.mask_id).any().item()):
+                cache_state.advance(model, active_block)
+                if cache_state.residual_full_context_model_calls != 0:
+                    raise RuntimeError(
+                        "FLARE cache residual full-context calls per committed block must be zero; "
+                        f"got {cache_state.residual_full_context_model_calls}"
+                    )
         output_ids = x_t
         stopped = truncate_if_stopped(output_ids)
         if stopped is not None:
             args._last_sampler_schedule_events = schedule_events
+            finish_cache()
             return stopped[0]
     args._last_sampler_schedule_events = schedule_events
+    finish_cache()
     return output_ids[0]
 
 
@@ -3223,6 +3280,8 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
         "stop_token_id": args.stop_token_id,
         "conversation_template": args.conversation_template,
     }
+    if getattr(args, "_last_flare_cache_stats", None) is not None:
+        summary["flare_cache_stats_last"] = args._last_flare_cache_stats
     if torch.cuda.is_available():
         summary["cuda_max_memory_allocated_gib"] = torch.cuda.max_memory_allocated() / (1024**3)
         summary["cuda_max_memory_reserved_gib"] = torch.cuda.max_memory_reserved() / (1024**3)
