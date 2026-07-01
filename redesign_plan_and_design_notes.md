@@ -109,3 +109,45 @@ copy-from-context value spans:
 GDN linear-attention + diffusion is EMPTY literature. Whether GDN's bidirectional-within-block copy-circuit disruption
 blocks even C≈0 parallel-copy is UNTESTED (our causal-value-span test was INERT). Run 1's gate resolves exactly this —
 it is the cheapest experiment that discriminates "undertrained C≈0 (fixable)" from "GDN copy-circuit wall (architectural)".
+
+## 9. Why BLOCK diffusion, not PURE (full-sequence) diffusion — and why images differ
+
+**Block vs pure diffusion.** Pure/full-sequence diffusion (mask the whole output, denoise all positions jointly over K
+steps, bidirectional) does NOT "solve all issues":
+- It does NOT beat the factorization barrier — it AMPLIFIES it (each step commits across the WHOLE sequence in
+  parallel = more C>0 pairs to corrupt at once).
+- **Cache is the killer, and it's about EXACT vs LOSSY** (correction to an earlier overstatement): you CAN cache pure
+  diffusion (Fast-dLLM caches committed-token KV) but it's LOSSY — bidirectionality means a committed token's rep
+  technically should update as later tokens denoise, so cached KV is stale/approximate. Block diffusion's cache is
+  EXACT because across-block is causal (committed blocks don't depend on the future). Per-step cost: block = O(block),
+  pure = O(L) recomputed K times = O(L·K).
+- Pure diffusion is WORST on long-range deps; block diffusion hands ALL cross-block (long-range) deps to the EXACT
+  chain rule for free.
+- Fixed-length canvas (pure) vs stop-when-done (block, like AR).
+- **GDN-specific (decisive for us):** GDN is a CAUSAL RECURRENCE (running state Sₜ). A cache needs a causal boundary to
+  snapshot a well-defined state. Pure bidirectional-over-the-whole-sequence has NO clean GDN state to cache at all;
+  block boundaries are what make the GDN state cache EXIST (the FR13/mamba snapshot). Pure diffusion FIGHTS the
+  backbone. So for GDN, block diffusion isn't a compromise — it's the only fit.
+- **Block size is the AR↔diffusion dial:** block=1 = pure AR (exact, slow); block=∞ = pure diffusion (bidirectional,
+  slow, barrier-bound); the useful regime = small blocks tuned PER SPAN (Sec 3). Blocks are what make a fast-diffusion
+  goal coherent at all — the speed lever only exists because of the causal decomposition + exact cache + local
+  parallelism.
+
+**Why image/video gen "just denoises" (pure) but text needs blocks.** The barrier EXISTS in image diffusion too — it's
+just INVISIBLE there, for four reasons:
+1. **Continuous (gradual) vs discrete (commit-freeze):** images update every pixel a small continuous amount over many
+   steps, so early independent errors get CORRECTED later; text COMMITS discrete tokens and freezes them → the error
+   can't be walked back. (Few-step image diffusion DOES show artifacts — the barrier appears the moment you cut steps.)
+2. **Perceptual tolerance vs exact-correctness:** a slightly-off pixel / mildly inconsistent regions are imperceptible;
+   one wrong token (INV-302, start>end) is a flat-out wrong answer. Same errors, invisible in pixels, fatal in tokens.
+3. **No causal order in images (AR unnatural → pure diffusion is the natural fit) vs strong causal order in text (AR is
+   very strong → block LEVERAGES it).** You'd only throw away a strong causal prior if you had a reason; images have
+   that reason, text doesn't.
+4. **Speed bar:** images aren't racing a hyper-efficient AR baseline (seconds/image is fine, many steps OK); text
+   diffusion competes against optimized AR at ~1 tok/forward, needing every efficiency trick (blocks + exact cache).
+
+**Punchline (the real pattern):** it is NOT "images use pure diffusion, text needs blocks." It is **spatial data (no
+causal axis) → pure diffusion; sequential data with a causal axis (text, AND long/streaming video) → block/causal
+diffusion.** Video generation is itself MOVING toward frame-causal / "diffusion-forcing" structure for temporal
+causality + streaming (D2F, direction #3, is literally named after it). Images are the special case (no causal
+structure), not the norm. Text and long video are the same regime and both converge on causal/block diffusion.
