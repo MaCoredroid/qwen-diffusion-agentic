@@ -578,6 +578,8 @@ def manifest(args: argparse.Namespace, backend_meta: dict, tasks: list) -> dict:
         "max_new_tokens": int(args.max_new_tokens),
         "serving_context_length": args.serving_context_length,
         "temperature": float(args.temperature),
+        "threshold": float(args.threshold),
+        "top_p": float(args.top_p),
         "lanes": split_csv(args.lanes),
         "parser_version": "eval_toolcall_jsonl.extract_tool_calls:qwen_native",
         "scoring": "official tau2 run_simulation/evaluate_simulation, EvaluationType.ALL",

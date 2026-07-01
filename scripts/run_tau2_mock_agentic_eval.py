@@ -409,6 +409,8 @@ class DiffusionBackend:
             "pytorch_cuda_alloc_conf": os.environ.get("PYTORCH_CUDA_ALLOC_CONF"),
             "block_size": int(self.gen_args.block_size),
             "small_block_size": int(self.gen_args.small_block_size),
+            "threshold": float(self.gen_args.threshold),
+            "top_p": float(self.gen_args.top_p),
             "denoise_logit_mode": self.gen_args.denoise_logit_mode,
             "use_block_cache": bool(self.gen_args.use_block_cache),
             "mask_id": int(self.mask_id),
@@ -994,6 +996,8 @@ def manifest_for(args: argparse.Namespace, backend_meta: dict, policy: str, base
         "max_agent_turns": int(args.max_agent_turns),
         "max_new_tokens": int(args.max_new_tokens),
         "temperature": float(args.temperature),
+        "threshold": float(args.threshold),
+        "top_p": float(args.top_p),
         "lanes": split_csv(args.lanes),
         "parser_version": "eval_toolcall_jsonl.extract_tool_calls:qwen_native",
         "constrained_lane": {
