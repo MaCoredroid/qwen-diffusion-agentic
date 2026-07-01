@@ -992,3 +992,16 @@ subset first (signal, not full benchmark), long background job, GDN-state-cache 
 blocking. Slow serving does NOT bias the accuracy comparison (we measure agentic SCORE, not speed). SGLang = DEFERRED
 optimization (only if eval too slow OR we productionize OR want a diffusion SPEED claim); scoping spike (can SGLang's
 block-diffusion path host a GDN backbone?) is the gate to revisit it.
+
+## Fast diffusion serving — two paths + payoff reframe (user 2026-06-30, DEFERRED)
+When/if we need fast diffusion serving (eval too slow, productionize, OR to claim a speed advantage): two paths,
+effort-dependent. **The HARD part is SHARED by both** = fast GDN serving across bidirectional denoising (the
+recurrent-state cache; we got ~2x before vs ~10x KV-for-AR) — the novel systems work, written either way. Only the
+surrounding infra differs: (A) **Patch SGLang** — likely LESS total effort: SGLang already has mature serving infra
+(batching/scheduling/OpenAI API/block-diffusion caching) AND serves our GDN/Qwen3-Next backbone for the teacher (AR);
+we GLUE its block-diffusion pipeline + GDN backbone + our grammar decoder. Contingent on its diffusion path accepting
+a GDN backbone (scoping spike). (B) **DIY fast torch** — full control / exact model guaranteed, but rebuild all
+serving infra ourselves; the fallback if SGLang's diffusion path is standard-attention-coupled.
+**PAYOFF REFRAME:** fast diffusion serving may be part of the RESULT, not just eval convenience — if diffusion-9B
+serves FASTER than AR-9B at EQUAL agentic accuracy, that's the unproven 'why diffusion' test-time-compute payoff.
+SEQUENCE: accuracy parity FIRST (slow torch is fine) -> speed as a bonus axis SECOND.
