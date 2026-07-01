@@ -32,6 +32,11 @@ DEFAULT_BASE = ROOT / "models/qwen3.5-9b-fastdllm-init"
 DEFAULT_ADAPTER = ROOT / "runs/flare_stage1_ab_pilot/two_stream_B_s1024_step1000"
 DEFAULT_OUT = ROOT / "runs/rl_pilot_countdown"
 
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
+
+from flare_hf_cache import RequestDiffusionState
+
 
 def configure_cuda_env() -> None:
     venv_root = Path(sys.executable).resolve().parents[1]
@@ -54,8 +59,9 @@ def configure_cuda_env() -> None:
     os.environ.setdefault("WANDB_MODE", "disabled")
     os.environ.setdefault("WANDB_DISABLED", "true")
     os.environ["FASTDLLM_GDN_KERNEL"] = "torch"
-    os.environ.pop("FASTDLLM_FLARE_TWO_STREAM", None)
-    os.environ.pop("FLARE_TWO_STREAM", None)
+    os.environ["FASTDLLM_FLARE_GDN_ROUTE"] = "route_i"
+    os.environ["FASTDLLM_FLARE_TWO_STREAM"] = "1"
+    os.environ["FLARE_TWO_STREAM"] = "1"
 
 
 class GpuMonitor:
@@ -323,10 +329,13 @@ class RolloutResult:
     expressions: list[str]
     token_ids: list[list[int]]
     rg_scores: list[float]
+    strict_rewards: list[float]
     rewards: list[float]
     steps: list[RolloutStep]
     seconds: float
     denoise_forwards: int
+    cache_read_calls: int = 0
+    cache_advance_calls: int = 0
 
 
 def masked_allowed_logprob(
@@ -369,6 +378,38 @@ def strict_countdown_score(dataset, expression: str, entry: dict[str, Any]) -> t
     return rg_score, strict
 
 
+def graded_countdown_reward(dataset, expression: str, entry: dict[str, Any]) -> tuple[float, float, float]:
+    """Return reasoning-gym score, strict success, and dense Countdown reward.
+
+    reasoning-gym gives useful partial credit for parseable all-number answers,
+    but most wrong all-number expressions tie at 0.05.  This Stage-1 reward
+    keeps exact success at 1.0 and adds bounded inverse-distance credit for
+    parseable expressions that use exactly the required number multiset.
+    """
+    rg_score, strict = strict_countdown_score(dataset, expression, entry)
+    reward = float(rg_score)
+    if strict:
+        return rg_score, strict, 1.0
+
+    if expression is None or not str(expression).strip():
+        return rg_score, strict, reward
+
+    try:
+        from reasoning_gym.games.countdown import _extract_ints, parse_expr
+
+        value = float(parse_expr(expression))
+        used_numbers = _extract_ints(expression)
+        target_numbers = entry["metadata"]["numbers"]
+        if sorted(used_numbers) != sorted(target_numbers):
+            return rg_score, strict, max(reward, 0.02)
+        distance = abs(value - float(entry["metadata"]["target"]))
+        shaped = 0.05 + 0.45 / (1.0 + distance)
+        reward = max(reward, min(0.5, shaped))
+    except Exception:
+        pass
+    return rg_score, strict, float(reward)
+
+
 def constrained_countdown_rollout(
     model,
     tokenizer,
@@ -381,73 +422,113 @@ def constrained_countdown_rollout(
     max_new_tokens: int,
     temperature: float,
     record_steps: bool,
+    use_fast_cache: bool,
+    block_size: int,
     generator: torch.Generator,
 ) -> RolloutResult:
     prompt = make_countdown_prompt(tokenizer, entry)
     prompt_ids = tokenizer([prompt], return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
     original_len = int(prompt_ids.shape[1])
     input_ids = prompt_ids.repeat(group_size, 1)
-    masks = torch.full(
-        (group_size, max_new_tokens),
-        grammar.mask_id,
-        dtype=torch.long,
-        device=input_ids.device,
-    )
-    x_t = torch.cat([input_ids, masks], dim=1)
+    output_ids = input_ids
     states = [CountdownGrammarState(list(entry["metadata"]["numbers"])) for _ in range(group_size)]
     steps: list[RolloutStep] = []
     denoise_forwards = 0
+    cache_state = RequestDiffusionState.reset(model, output_ids, block_size) if use_fast_cache else None
+    stop_fill_id = int(grammar.stop_ids[0]) if grammar.stop_ids else int(grammar.mask_id)
 
     sync_cuda()
     started = time.perf_counter()
     model.eval()
     with torch.no_grad():
-        for _ in range(max_new_tokens):
+        while output_ids.shape[1] - original_len < max_new_tokens:
             active_rows = [row for row, state in enumerate(states) if not state.stopped]
             if not active_rows:
                 break
-
-            output = model(input_ids=x_t, use_cache=False)
-            logits = shift_logits(output.logits)
-            denoise_forwards += 1
-            before = x_t.detach().cpu() if record_steps else None
-
-            positions: list[int] = []
-            selected_token_ids: list[int] = []
-            allowed_lists: list[list[int]] = []
-            for row in active_rows:
-                state = states[row]
-                pos = original_len + state.emitted_count
-                if pos >= x_t.shape[1]:
-                    continue
-                allowed = state.allowed_token_ids(grammar)
-                if not allowed:
-                    continue
-                token_id = sample_from_allowed(logits[row, pos], allowed, temperature, generator)
-                positions.append(pos)
-                selected_token_ids.append(token_id)
-                allowed_lists.append(allowed)
-
-            if record_steps and before is not None and positions:
-                steps.append(
-                    RolloutStep(
-                        input_ids=before,
-                        row_indices=list(active_rows[: len(positions)]),
-                        positions=positions,
-                        selected_token_ids=selected_token_ids,
-                        allowed_token_ids=allowed_lists,
+            if use_fast_cache:
+                active_len = output_ids.shape[1] - cache_state.block_start
+                if active_len < 0 or active_len >= block_size:
+                    raise RuntimeError(
+                        f"invalid Countdown cache active_len={active_len} "
+                        f"output_len={output_ids.shape[1]} block_start={cache_state.block_start}"
                     )
-                )
-
-            if not positions:
+                block_pad = int(block_size) - int(active_len)
+            else:
+                block_pad = int(block_size) - (output_ids.shape[1] % int(block_size))
+                if block_pad == 0:
+                    block_pad = int(block_size)
+            remaining = int(max_new_tokens) - (output_ids.shape[1] - original_len)
+            block_pad = min(block_pad, remaining)
+            if block_pad <= 0:
                 break
+            masks = torch.full(
+                (group_size, block_pad),
+                grammar.mask_id,
+                dtype=torch.long,
+                device=output_ids.device,
+            )
+            x_t = torch.cat([output_ids, masks], dim=1)
 
-            for row, pos, token_id in zip(active_rows, positions, selected_token_ids):
-                try:
-                    states[row].advance(token_id, grammar)
-                except ValueError:
-                    states[row].stopped = True
-                x_t[row, pos] = int(token_id)
+            while bool((x_t[:, -block_pad:] == grammar.mask_id).any().item()):
+                active_rows = [row for row, state in enumerate(states) if not state.stopped]
+                if not active_rows:
+                    break
+                if use_fast_cache:
+                    logits = cache_state.shifted_active_logits(model, x_t)
+                    logit_offset = int(cache_state.block_start)
+                else:
+                    output = model(input_ids=x_t, use_cache=False)
+                    logits = shift_logits(output.logits)
+                    logit_offset = 0
+                denoise_forwards += 1
+                before = x_t.detach().cpu() if record_steps else None
+
+                row_indices: list[int] = []
+                positions: list[int] = []
+                selected_token_ids: list[int] = []
+                allowed_lists: list[list[int]] = []
+                for row in active_rows:
+                    state = states[row]
+                    pos = original_len + state.emitted_count
+                    if pos >= x_t.shape[1]:
+                        continue
+                    allowed = state.allowed_token_ids(grammar)
+                    if not allowed:
+                        continue
+                    token_id = sample_from_allowed(logits[row, pos - logit_offset], allowed, temperature, generator)
+                    row_indices.append(row)
+                    positions.append(pos)
+                    selected_token_ids.append(token_id)
+                    allowed_lists.append(allowed)
+
+                if record_steps and before is not None and positions:
+                    steps.append(
+                        RolloutStep(
+                            input_ids=before,
+                            row_indices=row_indices,
+                            positions=positions,
+                            selected_token_ids=selected_token_ids,
+                            allowed_token_ids=allowed_lists,
+                        )
+                    )
+
+                if not positions:
+                    break
+
+                for row, pos, token_id in zip(row_indices, positions, selected_token_ids):
+                    try:
+                        states[row].advance(token_id, grammar)
+                    except ValueError:
+                        states[row].stopped = True
+                    x_t[row, pos] = int(token_id)
+                    if states[row].stopped and pos + 1 < x_t.shape[1]:
+                        x_t[row, pos + 1 :] = stop_fill_id
+
+            if use_fast_cache:
+                active_block = x_t[:, cache_state.block_start :]
+                if active_block.shape[1] == block_size and not bool((active_block == grammar.mask_id).any().item()):
+                    cache_state.advance(model, active_block)
+            output_ids = x_t
 
     sync_cuda()
     seconds = time.perf_counter() - started
@@ -455,22 +536,29 @@ def constrained_countdown_rollout(
     expressions = [state.expression for state in states]
     token_ids = [state.token_ids for state in states]
     rg_scores: list[float] = []
+    strict_rewards: list[float] = []
     rewards: list[float] = []
     for expression in expressions:
-        rg_score, reward = strict_countdown_score(dataset, expression, entry)
+        rg_score, strict, reward = graded_countdown_reward(dataset, expression, entry)
         rg_scores.append(rg_score)
+        strict_rewards.append(strict)
         rewards.append(reward)
 
+    cache_read_calls = 0 if cache_state is None else int(cache_state.read_calls)
+    cache_advance_calls = 0 if cache_state is None else int(cache_state.advance_calls)
     return RolloutResult(
         prompt_idx=prompt_idx,
         prompt_entry=entry,
         expressions=expressions,
         token_ids=token_ids,
         rg_scores=rg_scores,
+        strict_rewards=strict_rewards,
         rewards=rewards,
         steps=steps,
         seconds=seconds,
         denoise_forwards=denoise_forwards,
+        cache_read_calls=cache_read_calls,
+        cache_advance_calls=cache_advance_calls,
     )
 
 
@@ -484,19 +572,21 @@ def raw_diffusion_generate_one(
     threshold: float,
     temperature: float,
     top_p: float,
+    use_fast_cache: bool,
+    block_size: int,
     generator: torch.Generator,
 ) -> tuple[str, dict[str, Any]]:
     prompt = make_countdown_prompt(tokenizer, entry)
     prompt_ids = tokenizer([prompt], return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
     original_len = int(prompt_ids.shape[1])
-    masks = torch.full((1, max_new_tokens), grammar.mask_id, dtype=torch.long, device=prompt_ids.device)
-    x_t = torch.cat([prompt_ids, masks], dim=1)
-    stop_ids = torch.tensor(grammar.stop_ids, dtype=torch.long, device=x_t.device)
+    output_ids = prompt_ids
+    stop_ids = torch.tensor(grammar.stop_ids, dtype=torch.long, device=prompt_ids.device)
     denoise_forwards = 0
     selected_mask_tokens = 0
+    cache_state = RequestDiffusionState.reset(model, output_ids, block_size) if use_fast_cache else None
 
-    def stopped_prefix() -> torch.Tensor | None:
-        generated = x_t[:, original_len:]
+    def stopped_prefix(sequence: torch.Tensor) -> torch.Tensor | None:
+        generated = sequence[:, original_len:]
         stop_mask = torch.isin(generated, stop_ids)
         if not bool(stop_mask.any().item()):
             return None
@@ -507,8 +597,8 @@ def raw_diffusion_generate_one(
 
     model.eval()
     with torch.no_grad():
-        for _ in range(max_new_tokens * 2):
-            stopped = stopped_prefix()
+        while output_ids.shape[1] - original_len < max_new_tokens:
+            stopped = stopped_prefix(output_ids)
             if stopped is not None:
                 new_ids = stopped[0]
                 text = tokenizer.decode(new_ids, skip_special_tokens=True).strip()
@@ -517,49 +607,96 @@ def raw_diffusion_generate_one(
                     "selected_mask_tokens": selected_mask_tokens,
                     "generated_tokens": int(new_ids.numel()),
                     "stopped": True,
+                    "cache_read_calls": 0 if cache_state is None else int(cache_state.read_calls),
+                    "cache_advance_calls": 0 if cache_state is None else int(cache_state.advance_calls),
                 }
-            current_mask = x_t[:, original_len:] == grammar.mask_id
-            if not bool(current_mask.any().item()):
-                break
-            output = model(input_ids=x_t, use_cache=False)
-            logits = shift_logits(output.logits)[:, original_len:]
-            logits = logits.clone()
-            logits[..., grammar.mask_id] = torch.finfo(logits.dtype).min
-            if temperature <= 0:
-                probs = torch.softmax(logits.float(), dim=-1)
-                x_1 = probs.argmax(dim=-1)
+            if use_fast_cache:
+                active_len = output_ids.shape[1] - cache_state.block_start
+                if active_len < 0 or active_len >= block_size:
+                    raise RuntimeError(
+                        f"invalid raw cache active_len={active_len} "
+                        f"output_len={output_ids.shape[1]} block_start={cache_state.block_start}"
+                    )
+                block_pad = int(block_size) - int(active_len)
             else:
-                probs = torch.softmax(logits.float() / float(temperature), dim=-1)
-                if top_p < 1.0:
-                    sorted_probs, sorted_indices = torch.sort(probs, descending=True)
-                    cumulative = torch.cumsum(sorted_probs, dim=-1)
-                    remove = cumulative > top_p
-                    remove[..., 1:] = remove[..., :-1].clone()
-                    remove[..., 0] = False
-                    full_remove = torch.zeros_like(probs, dtype=torch.bool).scatter(-1, sorted_indices, remove)
-                    probs = probs.masked_fill(full_remove, 0.0)
-                    probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-12)
-                x_1 = torch.multinomial(probs.reshape(-1, probs.shape[-1]), 1, generator=generator).view(probs.shape[:-1])
-            x1_p = torch.squeeze(torch.gather(probs, dim=-1, index=x_1.unsqueeze(-1)), -1)
-            active_probs = torch.where(current_mask, x1_p, torch.full_like(x1_p, -torch.inf))
-            unmask_idx = active_probs > threshold
-            max_prob_idx = active_probs.argmax(dim=-1)
-            unmask_idx[torch.arange(x_1.shape[0], device=x_1.device), max_prob_idx] = True
-            unmask_idx = unmask_idx & current_mask
-            selected_mask_tokens += int(((x_1 == grammar.mask_id) & unmask_idx).sum().item())
-            span = x_t[:, original_len:].clone()
-            span[unmask_idx] = x_1[unmask_idx]
-            x_t[:, original_len:] = span
-            denoise_forwards += 1
+                block_pad = int(block_size) - (output_ids.shape[1] % int(block_size))
+                if block_pad == 0:
+                    block_pad = int(block_size)
+            remaining = int(max_new_tokens) - (output_ids.shape[1] - original_len)
+            block_pad = min(block_pad, remaining)
+            if block_pad <= 0:
+                break
+            masks = torch.full((1, block_pad), grammar.mask_id, dtype=torch.long, device=prompt_ids.device)
+            x_t = torch.cat([output_ids, masks], dim=1)
 
-    new_ids = x_t[0, original_len:]
+            while bool((x_t[:, -block_pad:] == grammar.mask_id).any().item()):
+                if use_fast_cache:
+                    logits = cache_state.shifted_active_logits(model, x_t)
+                    logit_offset = int(cache_state.block_start)
+                    current_mask = x_t[:, cache_state.block_start :] == grammar.mask_id
+                else:
+                    output = model(input_ids=x_t, use_cache=False)
+                    logits = shift_logits(output.logits)
+                    logit_offset = 0
+                    current_mask = x_t == grammar.mask_id
+                logits = logits.clone()
+                logits[..., grammar.mask_id] = torch.finfo(logits.dtype).min
+                if temperature <= 0:
+                    probs = torch.softmax(logits.float(), dim=-1)
+                    x_1 = probs.argmax(dim=-1)
+                else:
+                    probs = torch.softmax(logits.float() / float(temperature), dim=-1)
+                    if top_p < 1.0:
+                        sorted_probs, sorted_indices = torch.sort(probs, descending=True)
+                        cumulative = torch.cumsum(sorted_probs, dim=-1)
+                        remove = cumulative > top_p
+                        remove[..., 1:] = remove[..., :-1].clone()
+                        remove[..., 0] = False
+                        full_remove = torch.zeros_like(probs, dtype=torch.bool).scatter(-1, sorted_indices, remove)
+                        probs = probs.masked_fill(full_remove, 0.0)
+                        probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-12)
+                    x_1 = torch.multinomial(
+                        probs.reshape(-1, probs.shape[-1]),
+                        1,
+                        generator=generator,
+                    ).view(probs.shape[:-1])
+                x1_p = torch.squeeze(torch.gather(probs, dim=-1, index=x_1.unsqueeze(-1)), -1)
+                active_probs = torch.where(current_mask, x1_p, torch.full_like(x1_p, -torch.inf))
+                if not bool(torch.isfinite(active_probs).any().item()):
+                    break
+                unmask_idx = active_probs > threshold
+                max_prob_idx = active_probs.argmax(dim=-1)
+                unmask_idx[torch.arange(x_1.shape[0], device=x_1.device), max_prob_idx] = True
+                unmask_idx = unmask_idx & current_mask
+                selected_mask_tokens += int(((x_1 == grammar.mask_id) & unmask_idx).sum().item())
+                span = x_t[:, logit_offset:].clone()
+                span[unmask_idx] = x_1[unmask_idx]
+                x_t[:, logit_offset:] = span
+                denoise_forwards += 1
+                stopped = stopped_prefix(x_t)
+                if stopped is not None:
+                    output_ids = x_t
+                    break
+
+            if use_fast_cache:
+                active_block = x_t[:, cache_state.block_start :]
+                if active_block.shape[1] == block_size and not bool((active_block == grammar.mask_id).any().item()):
+                    cache_state.advance(model, active_block)
+            output_ids = x_t
+            if stopped_prefix(output_ids) is not None:
+                break
+
+    stopped = stopped_prefix(output_ids)
+    new_ids = stopped[0] if stopped is not None else output_ids[0, original_len:]
     new_ids = new_ids[new_ids != grammar.mask_id]
     text = tokenizer.decode(new_ids, skip_special_tokens=True).strip()
     return text, {
         "denoise_forwards": denoise_forwards,
         "selected_mask_tokens": selected_mask_tokens,
         "generated_tokens": int(new_ids.numel()),
-        "stopped": False,
+        "stopped": stopped is not None,
+        "cache_read_calls": 0 if cache_state is None else int(cache_state.read_calls),
+        "cache_advance_calls": 0 if cache_state is None else int(cache_state.advance_calls),
     }
 
 
@@ -576,37 +713,107 @@ def rollout_policy_token_count(rollout: RolloutResult) -> int:
     return sum(len(step.positions) for step in rollout.steps)
 
 
-def backward_constrained_policy_loss(model, rollout: RolloutResult, advantages: torch.Tensor, temperature: float) -> dict[str, Any]:
-    """Backprop token likelihoods one at a time to keep the 9B QLoRA path in memory."""
+def strict_correct_mask(rollout: RolloutResult) -> torch.Tensor:
+    return torch.tensor(
+        [float(item) >= 1.0 - 1e-9 for item in rollout.strict_rewards],
+        dtype=torch.bool,
+        device="cuda",
+    )
+
+
+def backward_dual_term_loss(
+    model,
+    rollout: RolloutResult,
+    advantages: torch.Tensor,
+    temperature: float,
+    *,
+    lambda_raw: float,
+    rescore_micro_batch_size: int,
+) -> dict[str, Any]:
+    """Backprop constrained GRPO plus raw CE self-distillation.
+
+    The rollout was sampled by the cached serving path, but every differentiated
+    logprob is replayed through the training forward.  The policy term masks the
+    distribution to the live grammar.  The raw-internalization term uses the
+    same verified-correct decoder trajectory tokens with the full vocabulary.
+    """
     token_count = rollout_policy_token_count(rollout)
+    correct = strict_correct_mask(rollout)
+    raw_token_count = 0
+    for step in rollout.steps:
+        raw_token_count += sum(1 for row in step.row_indices if bool(correct[row].item()))
     if token_count <= 0:
-        return {"loss": 0.0, "policy_tokens": 0, "mean_logprob": None}
+        return {
+            "loss": 0.0,
+            "policy_loss": 0.0,
+            "raw_internalize_loss": 0.0,
+            "policy_tokens": 0,
+            "raw_internalize_tokens": 0,
+            "raw_internalize_samples": int(correct.sum().item()),
+            "mean_logprob": None,
+            "mean_raw_logprob": None,
+        }
 
     per_sample_tokens = torch.zeros_like(advantages)
     logp_sum = torch.zeros_like(advantages)
-    loss_sum = 0.0
+    raw_logp_sum = torch.tensor(0.0, dtype=torch.float32, device="cuda")
+    policy_loss_sum = 0.0
+    raw_loss_sum = 0.0
+    micro_batch_size = max(1, int(rescore_micro_batch_size))
     for step in rollout.steps:
-        for row, pos, selected, allowed in zip(
-            step.row_indices,
-            step.positions,
-            step.selected_token_ids,
-            step.allowed_token_ids,
-        ):
-            x = step.input_ids[row : row + 1].to("cuda", non_blocking=True)
+        items = list(
+            zip(
+                step.row_indices,
+                step.positions,
+                step.selected_token_ids,
+                step.allowed_token_ids,
+            )
+        )
+        for offset in range(0, len(items), micro_batch_size):
+            chunk = items[offset : offset + micro_batch_size]
+            rows = [item[0] for item in chunk]
+            positions = [item[1] for item in chunk]
+            selected = [item[2] for item in chunk]
+            allowed_lists = [item[3] for item in chunk]
+            x = step.input_ids[rows].to("cuda", non_blocking=True)
             output = model(input_ids=x, use_cache=False)
             logits = shift_logits(output.logits)
-            logp = masked_allowed_logprob(logits[0, pos], selected, allowed, temperature)
-            term = -advantages[row] * logp / float(token_count)
-            term.backward()
-            loss_sum += float((-advantages[row] * logp).detach().float().cpu().item())
-            per_sample_tokens[row] += 1
-            logp_sum[row] += logp.detach()
-            del output, logits, x, logp, term
+            terms = []
+            for local_idx, (row, pos, token_id, allowed) in enumerate(
+                zip(rows, positions, selected, allowed_lists)
+            ):
+                row_logits = logits[local_idx, pos]
+                logp = masked_allowed_logprob(row_logits, token_id, allowed, temperature)
+                policy_term = -advantages[row] * logp / float(token_count)
+                terms.append(policy_term)
+                policy_loss_sum += float((-advantages[row] * logp).detach().float().cpu().item())
+                per_sample_tokens[row] += 1
+                logp_sum[row] += logp.detach()
+
+                if lambda_raw > 0 and raw_token_count > 0 and bool(correct[row].item()):
+                    raw_logp = torch.log_softmax(row_logits.float(), dim=-1)[int(token_id)]
+                    raw_term = float(lambda_raw) * (-raw_logp) / float(raw_token_count)
+                    terms.append(raw_term)
+                    raw_loss_sum += float((-raw_logp).detach().float().cpu().item())
+                    raw_logp_sum = raw_logp_sum + raw_logp.detach()
+            if terms:
+                sum(terms).backward()
+            del output, logits, x, terms
     mean_logprob = float((logp_sum.sum() / per_sample_tokens.sum().clamp_min(1)).item())
+    mean_raw_logprob = (
+        float((raw_logp_sum / max(1, raw_token_count)).item())
+        if raw_token_count > 0
+        else None
+    )
     return {
-        "loss": loss_sum / float(token_count),
+        "loss": (policy_loss_sum / float(token_count)) + float(lambda_raw) * (raw_loss_sum / max(1, raw_token_count)),
+        "policy_loss": policy_loss_sum / float(token_count),
+        "raw_internalize_loss": raw_loss_sum / max(1, raw_token_count) if raw_token_count > 0 else 0.0,
         "policy_tokens": token_count,
+        "raw_internalize_tokens": raw_token_count,
+        "raw_internalize_samples": int(correct.sum().item()),
         "mean_logprob": mean_logprob,
+        "mean_raw_logprob": mean_raw_logprob,
     }
 
 
@@ -625,6 +832,8 @@ def evaluate_lanes(
     constrained_correct = 0
     raw_rg_sum = 0.0
     constrained_rg_sum = 0.0
+    raw_graded_sum = 0.0
+    constrained_graded_sum = 0.0
     started = time.perf_counter()
     model.eval()
     for idx, entry in enumerate(entries):
@@ -637,11 +846,14 @@ def evaluate_lanes(
             threshold=args.raw_threshold,
             temperature=args.raw_temperature,
             top_p=args.raw_top_p,
+            use_fast_cache=args.use_fast_serving_cache,
+            block_size=args.block_size,
             generator=generator,
         )
-        raw_rg, raw_reward = strict_countdown_score(dataset, raw_text, entry)
-        raw_correct += int(raw_reward)
+        raw_rg, raw_strict, raw_reward = graded_countdown_reward(dataset, raw_text, entry)
+        raw_correct += int(raw_strict)
         raw_rg_sum += raw_rg
+        raw_graded_sum += raw_reward
         raw_rows.append(
             {
                 "idx": idx,
@@ -650,7 +862,8 @@ def evaluate_lanes(
                 "gold": entry["answer"],
                 "raw": raw_text,
                 "rg_score": raw_rg,
-                "strict": raw_reward,
+                "strict": raw_strict,
+                "graded_reward": raw_reward,
                 "sampler": raw_metrics,
             }
         )
@@ -666,13 +879,17 @@ def evaluate_lanes(
             max_new_tokens=args.eval_max_new_tokens,
             temperature=args.eval_constrained_temperature,
             record_steps=False,
+            use_fast_cache=args.use_fast_serving_cache,
+            block_size=args.block_size,
             generator=generator,
         )
         con_text = constrained.expressions[0]
         con_rg = constrained.rg_scores[0]
+        con_strict = constrained.strict_rewards[0]
         con_reward = constrained.rewards[0]
-        constrained_correct += int(con_reward)
+        constrained_correct += int(con_strict)
         constrained_rg_sum += con_rg
+        constrained_graded_sum += con_reward
         constrained_rows.append(
             {
                 "idx": idx,
@@ -681,8 +898,11 @@ def evaluate_lanes(
                 "gold": entry["answer"],
                 "constrained": con_text,
                 "rg_score": con_rg,
-                "strict": con_reward,
+                "strict": con_strict,
+                "graded_reward": con_reward,
                 "denoise_forwards": constrained.denoise_forwards,
+                "cache_read_calls": constrained.cache_read_calls,
+                "cache_advance_calls": constrained.cache_advance_calls,
             }
         )
 
@@ -695,12 +915,14 @@ def evaluate_lanes(
             "strict_correct": raw_correct,
             "strict_accuracy": raw_correct / n if n else 0.0,
             "mean_reasoning_gym_score": raw_rg_sum / n if n else 0.0,
+            "mean_graded_reward": raw_graded_sum / n if n else 0.0,
             "rows": raw_rows,
         },
         "constrained": {
             "strict_correct": constrained_correct,
             "strict_accuracy": constrained_correct / n if n else 0.0,
             "mean_reasoning_gym_score": constrained_rg_sum / n if n else 0.0,
+            "mean_graded_reward": constrained_graded_sum / n if n else 0.0,
             "rows": constrained_rows,
         },
         "protected": {
@@ -843,8 +1065,13 @@ def train(args) -> dict[str, Any]:
         "token_grammar": grammar.char_to_id,
         "trainable_params": trainable_params,
         "total_params": total_params,
-        "reasoning_gym_reward": "strict_binary_score_answer_eq_1.0",
+        "reward": "graded_countdown_exact_1_inverse_distance_partial",
         "policy_distribution": "model logits masked to Countdown grammar allowed token ids",
+        "serving_forward": "RequestDiffusionState cached route_i FLARE noisy forward"
+        if args.use_fast_serving_cache
+        else "cache_off_full_context_model_forward",
+        "logprob_forward": "training forward exact re-score; serving logits are not differentiated",
+        "lambda_raw": args.lambda_raw,
     }
     write_json(out_dir / "config.json", config_payload)
 
@@ -884,18 +1111,28 @@ def train(args) -> dict[str, Any]:
                 max_new_tokens=args.max_new_tokens,
                 temperature=args.train_temperature,
                 record_steps=True,
+                use_fast_cache=args.use_fast_serving_cache,
+                block_size=args.block_size,
                 generator=generator,
             )
             rewards = rollout.rewards
             advantages = grpo_advantages(rewards)
             zero_advantage = bool(torch.count_nonzero(advantages).item() == 0)
+            has_raw_internalization = bool(args.lambda_raw > 0 and any(item >= 1.0 - 1e-9 for item in rollout.strict_rewards))
 
             sync_cuda()
             update_start = time.perf_counter()
             optimizer.zero_grad(set_to_none=True)
             model.train()
-            if not zero_advantage and rollout_policy_token_count(rollout):
-                loss_metrics = backward_constrained_policy_loss(model, rollout, advantages, args.train_temperature)
+            if rollout_policy_token_count(rollout) and (not zero_advantage or has_raw_internalization):
+                loss_metrics = backward_dual_term_loss(
+                    model,
+                    rollout,
+                    advantages,
+                    args.train_temperature,
+                    lambda_raw=args.lambda_raw,
+                    rescore_micro_batch_size=args.rescore_micro_batch_size,
+                )
                 grad_norm = torch.nn.utils.clip_grad_norm_(
                     [parameter for parameter in model.parameters() if parameter.requires_grad],
                     args.max_grad_norm,
@@ -905,8 +1142,13 @@ def train(args) -> dict[str, Any]:
             else:
                 loss_metrics = {
                     "loss": 0.0,
+                    "policy_loss": 0.0,
+                    "raw_internalize_loss": 0.0,
                     "policy_tokens": rollout_policy_token_count(rollout),
+                    "raw_internalize_tokens": 0,
+                    "raw_internalize_samples": 0,
                     "mean_logprob": None,
+                    "mean_raw_logprob": None,
                 }
                 grad_norm_value = 0.0
             optimizer.zero_grad(set_to_none=True)
@@ -921,15 +1163,19 @@ def train(args) -> dict[str, Any]:
                 "gold": entry["answer"],
                 "expressions": rollout.expressions,
                 "reasoning_gym_scores": rollout.rg_scores,
-                "strict_rewards": rewards,
+                "strict_rewards": rollout.strict_rewards,
+                "graded_rewards": rewards,
                 "reward_mean": float(sum(rewards) / len(rewards)) if rewards else 0.0,
                 "reward_std": float(torch.tensor(rewards).std(unbiased=False).item()) if rewards else 0.0,
                 "advantages": [float(item) for item in advantages.detach().cpu().tolist()],
                 "zero_advantage": zero_advantage,
+                "raw_internalization_active": has_raw_internalization,
                 "rollout_seconds": rollout.seconds,
                 "update_seconds": update_seconds,
                 "step_seconds": rollout.seconds + update_seconds,
                 "denoise_forwards": rollout.denoise_forwards,
+                "cache_read_calls": rollout.cache_read_calls,
+                "cache_advance_calls": rollout.cache_advance_calls,
                 "grad_norm": grad_norm_value,
                 **loss_metrics,
             }
@@ -939,8 +1185,9 @@ def train(args) -> dict[str, Any]:
                 print(
                     "[train] "
                     f"step={step} reward={row['reward_mean']:.3f} "
-                    f"loss={row['loss']:.4g} rollout_s={row['rollout_seconds']:.2f} "
-                    f"update_s={row['update_seconds']:.2f} zero_adv={zero_advantage}",
+                    f"loss={row['loss']:.4g} raw_ce_tok={row['raw_internalize_tokens']} "
+                    f"rollout_s={row['rollout_seconds']:.2f} update_s={row['update_seconds']:.2f} "
+                    f"zero_adv={zero_advantage}",
                     flush=True,
                 )
 
@@ -988,6 +1235,12 @@ def train(args) -> dict[str, Any]:
         if step_rows
         else None
     )
+    total_policy_tokens = sum(int(row["policy_tokens"]) for row in step_rows)
+    total_rollout_seconds = sum(float(row["rollout_seconds"]) for row in step_rows)
+    total_step_seconds = sum(float(row["step_seconds"]) for row in step_rows)
+    total_raw_internalize_tokens = sum(int(row["raw_internalize_tokens"]) for row in step_rows)
+    nonzero_advantage_steps = sum(int(not row["zero_advantage"]) for row in step_rows)
+    raw_internalization_steps = sum(int(row["raw_internalization_active"]) for row in step_rows)
     summary = {
         "output_dir": str(out_dir),
         "adapter_out": str(adapter_out),
@@ -996,11 +1249,22 @@ def train(args) -> dict[str, Any]:
         "avg_step_seconds": avg_step_seconds,
         "avg_rollout_seconds": avg_rollout_seconds,
         "avg_update_seconds": avg_update_seconds,
+        "total_policy_tokens": total_policy_tokens,
+        "train_tokens_per_second": total_policy_tokens / total_step_seconds if total_step_seconds > 0 else None,
+        "rollout_tokens_per_second": total_policy_tokens / total_rollout_seconds if total_rollout_seconds > 0 else None,
+        "total_raw_internalize_tokens": total_raw_internalize_tokens,
+        "raw_internalization_steps": raw_internalization_steps,
         "cuda_peak_allocated_gb": cuda_peak_allocated_gb,
         "cuda_peak_reserved_gb": cuda_peak_reserved_gb,
         "gpu": gpu_summary,
         "train_reward_mean_last": step_rows[-1]["reward_mean"] if step_rows else None,
         "zero_advantage_steps": sum(int(row["zero_advantage"]) for row in step_rows),
+        "zero_advantage_rate": (sum(int(row["zero_advantage"]) for row in step_rows) / len(step_rows)) if step_rows else None,
+        "nonzero_advantage_steps": nonzero_advantage_steps,
+        "use_fast_serving_cache": bool(args.use_fast_serving_cache),
+        "block_size": int(args.block_size),
+        "lambda_raw": float(args.lambda_raw),
+        "rescore_micro_batch_size": int(args.rescore_micro_batch_size),
         "eval_history": [
             {
                 "step": item["step"],
@@ -1009,6 +1273,8 @@ def train(args) -> dict[str, Any]:
                 "raw_constrained_gap": item["raw_constrained_gap"],
                 "raw_mean_reasoning_gym_score": item["raw"]["mean_reasoning_gym_score"],
                 "constrained_mean_reasoning_gym_score": item["constrained"]["mean_reasoning_gym_score"],
+                "raw_mean_graded_reward": item["raw"]["mean_graded_reward"],
+                "constrained_mean_graded_reward": item["constrained"]["mean_graded_reward"],
             }
             for item in eval_history
         ],
@@ -1041,16 +1307,19 @@ def parse_args():
     parser.add_argument("--max-target", type=int, default=100)
     parser.add_argument("--max-steps", type=int, default=200)
     parser.add_argument("--group-size", type=int, default=4)
+    parser.add_argument("--block-size", type=int, default=32)
     parser.add_argument("--max-new-tokens", type=int, default=32)
     parser.add_argument("--eval-max-new-tokens", type=int, default=32)
     parser.add_argument("--train-temperature", type=float, default=1.0)
     parser.add_argument("--eval-constrained-temperature", type=float, default=0.0)
     parser.add_argument("--raw-temperature", type=float, default=0.0)
     parser.add_argument("--raw-top-p", type=float, default=0.95)
-    parser.add_argument("--raw-threshold", type=float, default=0.9)
+    parser.add_argument("--raw-threshold", type=float, default=0.3)
     parser.add_argument("--learning-rate", type=float, default=1e-5)
     parser.add_argument("--weight-decay", type=float, default=0.0)
     parser.add_argument("--max-grad-norm", type=float, default=1.0)
+    parser.add_argument("--lambda-raw", type=float, default=0.5)
+    parser.add_argument("--rescore-micro-batch-size", type=int, default=4)
     parser.add_argument("--lora-r", type=int, default=8)
     parser.add_argument("--lora-alpha", type=int, default=16)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
@@ -1058,6 +1327,7 @@ def parse_args():
     parser.add_argument("--eval-every", type=int, default=50)
     parser.add_argument("--log-every", type=int, default=5)
     parser.add_argument("--skip-initial-eval", action="store_true")
+    parser.add_argument("--use-fast-serving-cache", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--gpu-monitor-interval", type=float, default=1.0)
     return parser.parse_args()
 
