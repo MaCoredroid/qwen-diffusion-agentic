@@ -399,6 +399,19 @@ def sample_from_allowed(
     return int(allowed[int(sampled.item())].item())
 
 
+def top_allowed_token_with_confidence(
+    row_logits: torch.Tensor,
+    allowed_token_ids: list[int],
+) -> tuple[int, float]:
+    allowed = torch.tensor(allowed_token_ids, dtype=torch.long, device=row_logits.device)
+    logits = row_logits.float().index_select(0, allowed)
+    probs = torch.softmax(logits, dim=-1)
+    best_idx = int(torch.argmax(probs).item())
+    token_id = int(allowed[best_idx].item())
+    confidence = float(probs[best_idx].item())
+    return token_id, confidence
+
+
 def shift_logits(logits: torch.Tensor) -> torch.Tensor:
     return torch.cat([logits[:, :1, :], logits[:, :-1, :]], dim=1)
 
@@ -455,6 +468,8 @@ def constrained_countdown_rollout(
     record_steps: bool,
     use_fast_cache: bool,
     block_size: int,
+    multi_commit: bool = False,
+    commit_threshold: float = 1.0,
     generator: torch.Generator,
 ) -> RolloutResult:
     prompt = make_countdown_prompt(tokenizer, entry)
@@ -520,17 +535,45 @@ def constrained_countdown_rollout(
                 allowed_lists: list[list[int]] = []
                 for row in active_rows:
                     state = states[row]
-                    pos = original_len + state.emitted_count
-                    if pos >= x_t.shape[1]:
-                        continue
-                    allowed = state.allowed_token_ids(grammar)
-                    if not allowed:
-                        continue
-                    token_id = sample_from_allowed(logits[row, pos - logit_offset], allowed, temperature, generator)
-                    row_indices.append(row)
-                    positions.append(pos)
-                    selected_token_ids.append(token_id)
-                    allowed_lists.append(allowed)
+                    run_commits = 0
+                    while not state.stopped:
+                        pos = original_len + state.emitted_count
+                        if pos >= x_t.shape[1]:
+                            break
+                        allowed = state.allowed_token_ids(grammar)
+                        if not allowed:
+                            break
+
+                        if multi_commit:
+                            token_id, confidence = top_allowed_token_with_confidence(
+                                logits[row, pos - logit_offset],
+                                allowed,
+                            )
+                            if run_commits > 0 and confidence <= float(commit_threshold):
+                                break
+                        else:
+                            token_id = sample_from_allowed(
+                                logits[row, pos - logit_offset],
+                                allowed,
+                                temperature,
+                                generator,
+                            )
+
+                        row_indices.append(row)
+                        positions.append(pos)
+                        selected_token_ids.append(token_id)
+                        allowed_lists.append(allowed)
+                        try:
+                            state.advance(token_id, grammar)
+                        except ValueError:
+                            state.stopped = True
+                        x_t[row, pos] = int(token_id)
+                        if state.stopped and pos + 1 < x_t.shape[1]:
+                            x_t[row, pos + 1 :] = stop_fill_id
+                        run_commits += 1
+
+                        if not multi_commit:
+                            break
 
                 if record_steps and before is not None and positions:
                     steps.append(
@@ -545,15 +588,6 @@ def constrained_countdown_rollout(
 
                 if not positions:
                     break
-
-                for row, pos, token_id in zip(row_indices, positions, selected_token_ids):
-                    try:
-                        states[row].advance(token_id, grammar)
-                    except ValueError:
-                        states[row].stopped = True
-                    x_t[row, pos] = int(token_id)
-                    if states[row].stopped and pos + 1 < x_t.shape[1]:
-                        x_t[row, pos + 1 :] = stop_fill_id
 
             if use_fast_cache:
                 active_block = x_t[:, cache_state.block_start :]
