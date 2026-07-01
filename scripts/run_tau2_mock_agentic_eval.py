@@ -671,6 +671,19 @@ def parse_calls_from_text(text: str) -> tuple[list[dict], int]:
     return calls, invalid
 
 
+def calls_are_schema_valid(calls: list[dict], invalid: int, tools: list[dict]) -> bool:
+    if invalid or not calls:
+        return False
+    schemas = tool_schema_by_name(tools)
+    for call in calls:
+        schema = schemas.get(call.get("name"))
+        if not schema:
+            return False
+        if schema_errors(call.get("arguments") or {}, schema):
+            return False
+    return True
+
+
 def projected_text(raw_text: str, messages: list[dict], tools: list[dict], max_calls: int) -> str:
     return sequence_preserving_constrained_tool_call_text(
         raw_text or "",
@@ -747,12 +760,13 @@ def run_episode(
         projection_invalid = 0
 
         if lane in {"constrained", "protected"}:
-            projection = projected_text(generation.text, messages, tools, args.constrained_max_calls)
-            projected_calls, projection_invalid = parse_calls_from_text(projection)
-            selected_calls = projected_calls
-            if projection.strip():
-                selected_text = projection
-                assistant_for_context = projection
+            if not calls_are_schema_valid(raw_calls, raw_invalid, tools):
+                projection = projected_text(generation.text, messages, tools, args.constrained_max_calls)
+                projected_calls, projection_invalid = parse_calls_from_text(projection)
+                selected_calls = projected_calls
+                if projection.strip():
+                    selected_text = projection
+                    assistant_for_context = projection
 
         if lane == "protected":
             guarded = []
