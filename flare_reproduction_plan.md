@@ -1119,3 +1119,28 @@ effective (16 useful samples cost only ~1.42x N=1 wall time). But the current 9B
 the final 100x useful-throughput magnitude: at N=16 the AR-normalized useful expression-token throughput is only
 ~1.0-1.2x the 89 tok/s AR reference, even though sample throughput vs sequential N=1 is ~11.25x. This validates
 sample-and-decode as the right direction, not as the completed 100x result. No promotion.
+
+### MONITOR RED-TEAM (2026-07-01): why it's ~1x AR, and the honest speed reckoning
+I traced the constrained rollout (`rl_pilot_countdown.py:521`, `constrained_countdown_rollout`). The decoder commits
+**exactly one token per forward, strictly left-to-right**: `pos = original_len + state.emitted_count`, advance grammar
+by 1, one `denoise_forwards += 1` per committed token. Confirmed by the metrics: `denoise_forwards == total_expression
+_tokens` EXACTLY (117 == 117 on easy3). So the constrained lane is **AR decoding with a grammar mask** — NOT parallel
+diffusion. `block_size=32` is only a masking scaffold; the actual commit schedule is 1 token/forward. This is why the
+throughput lands at ~1x AR: it IS AR-equivalent per-token work, and the ~11.25x "batched speedup vs sequential N=1" is
+just batch parallelism over the N samples — a lever AR has too (AR can batch best-of-N identically).
+
+**The decisive coupling: SPEED and RAW-QUALITY are the same wall.** The only throughput lever that beats AR is
+committing >1 token per forward (true parallel decode). That requires reliable multi-position joint prediction from the
+raw model. The decisive RL finding (raw is structurally corrupt, un-trainable-away) is exactly why the decoder is
+forced to commit one-at-a-time. So: constrained decoder → 1 token/forward → AR-equivalent throughput → no 10x/100x.
+best-of-N gives a real QUALITY lift (o1-style test-time compute works: pass@16 = 13/16 easy, 9/16 std) but at
+throughput PARITY, and that same lift is available to AR. **From measured data, diffusion has NO throughput advantage
+over the same-architecture AR.** The 100x goal's premise ("diffusion must be >=10x faster to make sense") is currently
+unmet — it reads ~1x.
+
+**This is NOT yet a final verdict — one decisive experiment is still owed:** the parallel-decode ceiling UNDER the
+decoder. Modify the decoder to commit ALL grammar-valid positions whose top-token confidence exceeds a threshold in a
+single forward (multi-token commit), sweep the threshold, and measure tokens/forward vs quality. If tokens/forward can
+reach ~4-8 at held quality → the 10x path is alive. If it collapses to ~1 at held quality (as the raw-corruption
+finding predicts) → 10x/100x is structurally dead and the economic rationale for the conversion needs an honest
+reckoning with the user. This is the crux test for the ultimate goal; it is no-regret and next. (Steered to flare.)
