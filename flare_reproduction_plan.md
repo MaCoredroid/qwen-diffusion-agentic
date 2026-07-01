@@ -1087,3 +1087,35 @@ SAMPLE-AND-DECODE best-of-N (N parallel diffusion samples -> decoder -> verify-s
 test the sample-and-decode best-of-N (the core 100x thesis) -- does N-parallel + decoder + verify lift the score, and
 at what throughput. Alt (user option): push on raw via self-correction/re-denoising (Loopholing/self-correcting MDMs)
 before conceding -- monitor rec = accept, evidence is strong.
+
+## Sample-and-decode best-of-N test — PAYOFF YES, 100x MAGNITUDE NOT YET (2026-07-01)
+Implemented `scripts/eval_countdown_sample_decode_bestofn.py` (commits `5fcf372`, `9cc08da`) to test the core
+throughput thesis directly: generate N constrained Countdown samples per prompt with the HF route-I fast cache, verify
+each expression against the known Countdown target, and pass@N when any sample in the prefix hits. Public
+`reasoning-gym` only; no gold expression in selection; no protected sidecar; no promotion. Final artifacts:
+`runs/countdown_sample_decode_bestofn_final_t1/` (stochastic temperature 1.0) and
+`runs/countdown_sample_decode_bestofn_greedy_anchor_aligned/` (greedy N=1 anchor); tracked result:
+`countdown_sample_decode_bestofn_result.md`.
+
+Score curve, stochastic sample-and-decode (`eval_seed=2000`, 16 prompts, nested N=16 prefixes):
+
+| dataset | N=1 | N=2 | N=4 | N=8 | N=16 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| easy 3-number | 2/16 | 3/16 | 7/16 | 9/16 | **13/16** |
+| standard 4-number | 1/16 | 2/16 | 3/16 | 5/16 | **9/16** |
+
+Greedy constrained N=1 anchors on the same split: easy `7/16` (the known ~0.44 single-sample baseline), standard
+`2/16`. So best-of-N clearly harvests independent successes: easy N=16 beats greedy by +6/16 and standard by +7/16.
+
+Throughput, separate batched N sweeps on the same 16 prompts:
+
+| dataset | N=16 samples/sec | N=16 expr tok/sec | vs AR 89 tok/s | wall x N=1 | speedup vs sequential N=1 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| easy 3-number | 13.20 | 90.7 | 1.02x | 1.42x | 11.26x |
+| standard 4-number | 9.75 | 104.5 | 1.17x | 1.42x | 11.25x |
+
+Interpretation: the test-time-compute payoff is REAL (pass@N climbs hard, especially at N=16), and batching is
+effective (16 useful samples cost only ~1.42x N=1 wall time). But the current 9B torch/HF stack does **NOT** establish
+the final 100x useful-throughput magnitude: at N=16 the AR-normalized useful expression-token throughput is only
+~1.0-1.2x the 89 tok/s AR reference, even though sample throughput vs sequential N=1 is ~11.25x. This validates
+sample-and-decode as the right direction, not as the completed 100x result. No promotion.
