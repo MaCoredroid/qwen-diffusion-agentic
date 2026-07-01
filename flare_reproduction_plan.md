@@ -1187,3 +1187,32 @@ tool-call constrained decode path (raw lane, forcing OFF, guards ON), sweep tau 
 held-quality tokens/forward (baseline exact-args 7/12 heldout, 10/12 public) plus a boilerplate-vs-value tpf split.
 Interpretation: ~4-8x at held quality → 10x path revives (a structural-output advantage AR cannot match); still ~1.7-2x
 → speed decisively dead across distributions → escalate the economic reckoning on the 10x premise.
+
+### DECISIVE RESULT (2026-07-01): boilerplate hypothesis REFUTED — held-quality tpf ≈ 1.0-1.1x on tool calls
+Tool-call parallel-commit sweep (`runs/toolcall_parallel_commit_sweep_final/`, harness `eval_fastdllm_toolcall_cases.py`,
+raw lane forcing-OFF guards-ON, confident-run-same-forward = Fast-dLLM confidence-threshold parallel decode, iterative
+re-conditioning forwards). Baseline (1 tok/fwd) = 7/12 heldout, 10/12 public exact-args.
+
+| tau | slice | exact_args | tok/fwd | struct_tpf | value_tpf | forced% |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| 0.99 | heldout | 6/12 (−1) | 1.092 | 1.132 | 1.007 | 3.6% |
+| 0.99 | public | 10/12 (held) | 1.126 | 1.175 | 1.016 | 6.0% |
+| 0.95 | heldout | 3/12 (collapse) | 1.109 | 1.135 | 1.031 | 2.5% |
+
+The boilerplate hypothesis is REFUTED. I predicted grammar-forced structure would bulk-commit (6-8 tpf); it commits at
+**1.13 tpf** — barely parallel. Value tokens = **1.01 tpf** (pure sequential, factorization barrier as predicted). Only
+2.5-6% of tokens are grammar-forced (so "commit-all-forced-free" can't help). Root cause: a single forward's factorized
+marginals can't confidently predict position k+1 without position k committed — this bites STRUCTURE too, not just
+values. Even the near-minimal parallelism at tau 0.99 (tpf 1.09) drops heldout 7→6/12; holding quality needs tau→1.0
+(no speedup).
+
+**CONVERGENT VERDICT — the 10x/100x SPEED premise is REFUTED at 9B on the target distribution.** Four independent
+measurements + theory agree: (1) RL cannot close raw (raw structurally corrupt); (2) best-of-N = quality-lift at
+throughput PARITY; (3) Countdown parallel-commit ceiling 1.7x held-quality; (4) tool-call parallel-commit ceiling
+~1.0-1.1x held-quality (boilerplate refuted); (theory) masked-diffusion factorization barrier. Diffusion+decoder runs
+at ~AR speed, not 10x. It is NOT worse than AR (quality parity 33/44 stands) — but "not worse and not faster" gives no
+reason to prefer diffusion for the test-time-compute goal, whose whole rationale was the ≥10x speedup.
+ONE unexplored variable: model SCALE. Raw multi-token joint prediction plausibly improves at 27B (more capacity), so
+the held-quality tpf ceiling could be higher — speculative, expensive to test, and the 9B evidence + theory make it a
+long shot. ESCALATED to user (strategic fork: stop diffusion-for-speed at 9B / test 27B ceiling / reframe diffusion's
+value away from speed).
