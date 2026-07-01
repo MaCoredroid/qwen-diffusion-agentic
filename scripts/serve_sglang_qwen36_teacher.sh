@@ -54,6 +54,7 @@ case "${PROFILE}" in
 esac
 
 CONTEXT_LENGTH="${CONTEXT_LENGTH:-8192}"
+LOAD_FORMAT="${LOAD_FORMAT:-}"
 MEM_FRACTION_STATIC="${MEM_FRACTION_STATIC:-0.84}"
 MAX_RUNNING_REQUESTS="${MAX_RUNNING_REQUESTS:-4}"
 MAX_TOTAL_TOKENS="${MAX_TOTAL_TOKENS:-}"
@@ -226,6 +227,10 @@ cmd=(
 
 if [[ -n "${QUANTIZATION}" ]]; then
   cmd+=(--quantization "${QUANTIZATION}")
+fi
+
+if [[ -n "${LOAD_FORMAT}" ]]; then
+  cmd+=(--load-format "${LOAD_FORMAT}")
 fi
 
 if [[ -n "${KV_CACHE_DTYPE}" && "${KV_CACHE_DTYPE}" != "auto" ]]; then
