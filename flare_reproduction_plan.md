@@ -1167,3 +1167,23 @@ unmet — it reads ~1x.
 quality, not 4-8. So the exact red-team prediction mostly holds: constrained decoding can extract a modest real
 diffusion-specific commit multiplier, but aggressive multi-position prediction breaks quality before it reaches the
 range needed for a 10x/100x economic story. The honest current number for constrained parallel commit is ~1.7x.
+
+### MONITOR RED-TEAM (2026-07-01): verified the ceiling; but Countdown is the WORST case — one decisive test owed
+Independently reproduced the sweep from `runs/countdown_parallel_commit_sweep_final/{easy3,standard4}_sweep.json`.
+The tradeoff is clean/monotonic: easy3 holds baseline quality (7/16, RG 0.466) from tau 0.99→0.70 while tokens/forward
+climbs 1.60→1.75; at tau 0.50 tpf=2.60 but quality collapses 7→3/16. standard4 holds (2/16) tau 0.99→0.70 with tpf
+1.46→1.70; tau 0.50 tpf=2.56 collapses 2→1/16. So held-quality ceiling = **1.75x / 1.70x**, sharp cliff just past it.
+Verified sound.
+
+**BUT this is the pessimal distribution for parallel commit.** Countdown expressions are ~8 tokens that are ALL hard
+(operands/operators/target-arithmetic, low-confidence, must be sequential) with ZERO structural boilerplate. A real
+tool call is the opposite: mostly grammar-forced JSON scaffolding (`<tool_call><function=...><parameter=...>` — high
+-confidence, trivially parallel-committable) punctuated by a few hard value spans. Under confident-run multi-commit the
+boilerplate should commit in bulk (high tpf) and only the value spans throttle to ~1 tpf. So the BLENDED held-quality
+tpf on the real tool-call distribution could be materially higher than 1.7x (a 80:20 boilerplate:value split at, say,
+6-8 tpf boilerplate / 1 tpf values blends to ~3-4x). **This is the decisive speed test on the TARGET distribution and
+it is owed before any "speed is dead" verdict.** Steered to flare: port the confident-run multi-commit into the
+tool-call constrained decode path (raw lane, forcing OFF, guards ON), sweep tau on heldout-12 + public-12, report
+held-quality tokens/forward (baseline exact-args 7/12 heldout, 10/12 public) plus a boilerplate-vs-value tpf split.
+Interpretation: ~4-8x at held quality → 10x path revives (a structural-output advantage AR cannot match); still ~1.7-2x
+→ speed decisively dead across distributions → escalate the economic reckoning on the 10x premise.

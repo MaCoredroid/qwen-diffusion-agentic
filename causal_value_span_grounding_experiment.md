@@ -159,3 +159,20 @@ wrong failure mode for these misses. Right levers: (a) candidate SELECTION from 
 AR-teacher reasoning for policy/convention; (c) a cross-call placeholder convention; (d) an eval that
 separates arguably-correct-but-nonmatching from wrong (gold penalizes plausible answers, e.g. 0.15 vs 15).
 N is small (5 heldout + 2 public misses) — confirm on more rows before committing. Status: DRAMATIC, escalated.
+
+## Iteration 1 INDEPENDENT RE-VERIFICATION — 2026-07-01 (monitor)
+
+Re-audited the six summary JSONs directly (foundational result; the whole downstream strategy pivots on it).
+CONFIRMED sound:
+- Non-leakage: for RAW and CAUSAL every forcing flag is False (`guard_tool_value_candidates`,
+  `force_best_candidate_sequence`, `force_selected_candidate_tokens`, `constrain_argument_candidate_tokens`,
+  `force_argument_boundary_target_tokens`, `force_best_tool_name_sequence`, `guard_tool_name_candidates`,
+  `json_prefix_guard_target_fallback`, `stop_after_gold_tool_calls`), temp 0.0. Only FORCED-CEILING sets
+  `guard_tool_value_candidates`/`guard_tool_name_candidates`=True (correctly the protected lane).
+  `full_context_sampling`=True in all three — the plan-sanctioned prompt-only exposure.
+- Causal-inert: RAW vs CAUSAL generations are 12/12 byte-identical on BOTH slices (heldout + public). The
+  causal-within-span hypothesis remains UNtested (not refuted) — inert at temp 0, as recorded.
+- Headline numbers reproduce: RAW exact-args 7/12 heldout, 10/12 public; FORCED ceiling 11/12 both slices.
+No discrepancy. The pivot (structure was the wall; residual = reasoning/convention/selection/cross-call, not
+diffusion parallel-copy) stands on verified data. Experiment CLOSED; superseded by the downstream 100x/parallel-decode
+track (see flare_reproduction_plan.md). No new causal run needed.
