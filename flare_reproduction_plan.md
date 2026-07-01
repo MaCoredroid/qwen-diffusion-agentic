@@ -1041,3 +1041,17 @@ serving_architecture.md. SGLang spike confirmed: SGLang RUNS on sm_120 (+ GDN pa
 FLARE arch needs config-shims to even load -> SGLang = DEFERRED throughput play (sample-generator, parity re-scored
 on HF), not the foundation. NEXT: flare wraps the SGLang spike -> builds the HF foundation (Stage 0 FLARE-vs-causal
 A/B first).
+
+## ★ SERVING FOUNDATION DONE + VALIDATED (2026-07-01) — the milestone that unblocks RL + agentic eval
+HF-own-forward fast serving built (scripts/flare_hf_cache.py: RequestDiffusionState[B,...] + clean-causal advance() +
+train-matched +1-shift head; commits 7718336, f6bf682). VALIDATION:
+- T1 (argmax cache-ON==cache-OFF): PASS. T3 (byte-identical multi-block canary): PASS. => cache is LOSSLESS.
+- T2 (serving-vs-training parity): near-exact, drift = bf16 NOISE not a defect (max top-1 logprob delta 0.089, 0
+  argmax flips, fp32 near-exact 2.8e-6, drift present at block 0 with no state + non-growing). ACCEPTABLE for the
+  exact-re-score RL spine (log-probs come from the training forward). NOT claimed bit-exact (correct).
+- 0 residual full-context model() calls per committed block (the speedup is real, not capped ~3x).
+- Throughput (HF-lockstep, CONFIRMS + exceeds the 0b projection): B=1 ~20 tok/s; prefix256 B=16 224 tok/s; prefix1024
+  B=12 199 tok/s (B=16 OOMs at 1024 = memory-bound at long context). => HF-lockstep-suffices for the RL foundation;
+  no SGLang needed (SGLang stays the deferred continuous-batching/async-eval play).
+NEXT PHASE (north-star): agentic eval (diffusion-9B vs AR-9B, multi-turn+SWE) to measure the gap, then RL to close
+it. Single-turn was already parity (diffusion+decoder==AR+decoder 33/44), so the eval may show we're near the goal.
