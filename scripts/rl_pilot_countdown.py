@@ -338,6 +338,22 @@ class RolloutResult:
     cache_advance_calls: int = 0
 
 
+@dataclass
+class RawRolloutResult:
+    prompt_idx: int
+    prompt_entry: dict[str, Any]
+    texts: list[str]
+    token_ids: list[list[int]]
+    rg_scores: list[float]
+    strict_rewards: list[float]
+    rewards: list[float]
+    steps: list[RolloutStep]
+    seconds: float
+    denoise_forwards: int
+    cache_read_calls: int = 0
+    cache_advance_calls: int = 0
+
+
 def masked_allowed_logprob(
     row_logits: torch.Tensor,
     selected_token_id: int,
@@ -351,6 +367,21 @@ def masked_allowed_logprob(
     selected = torch.tensor(int(selected_token_id), dtype=torch.long, device=row_logits.device)
     denom = torch.logsumexp(logits.index_select(0, allowed), dim=0)
     return logits.index_select(0, selected.view(1))[0] - denom
+
+
+def raw_full_vocab_logprob(
+    row_logits: torch.Tensor,
+    selected_token_id: int,
+    *,
+    temperature: float,
+    mask_id: int,
+) -> torch.Tensor:
+    logits = row_logits.float().clone()
+    logits[int(mask_id)] = -torch.inf
+    if temperature > 0:
+        logits = logits / float(temperature)
+    selected = torch.tensor(int(selected_token_id), dtype=torch.long, device=row_logits.device)
+    return logits.index_select(0, selected.view(1))[0] - torch.logsumexp(logits, dim=0)
 
 
 def sample_from_allowed(
@@ -700,6 +731,209 @@ def raw_diffusion_generate_one(
     }
 
 
+def raw_diffusion_rollout(
+    model,
+    tokenizer,
+    dataset,
+    entry: dict[str, Any],
+    prompt_idx: int,
+    grammar: TokenGrammar,
+    *,
+    group_size: int,
+    max_new_tokens: int,
+    threshold: float,
+    temperature: float,
+    top_p: float,
+    record_steps: bool,
+    use_fast_cache: bool,
+    block_size: int,
+    generator: torch.Generator,
+) -> RawRolloutResult:
+    prompt = make_countdown_prompt(tokenizer, entry)
+    prompt_ids = tokenizer([prompt], return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
+    original_len = int(prompt_ids.shape[1])
+    output_ids = prompt_ids.repeat(group_size, 1)
+    stop_ids = torch.tensor(grammar.stop_ids, dtype=torch.long, device=prompt_ids.device)
+    stop_fill_id = int(grammar.stop_ids[0]) if grammar.stop_ids else int(grammar.mask_id)
+    stopped_rows = torch.zeros(group_size, dtype=torch.bool, device=prompt_ids.device)
+    steps: list[RolloutStep] = []
+    denoise_forwards = 0
+    cache_state = RequestDiffusionState.reset(model, output_ids, block_size) if use_fast_cache else None
+
+    def complete_stop_positions(sequence: torch.Tensor) -> list[int | None]:
+        generated = sequence[:, original_len:]
+        stop_mask = torch.isin(generated, stop_ids)
+        out: list[int | None] = []
+        for row in range(sequence.shape[0]):
+            row_stops = stop_mask[row].nonzero(as_tuple=False)
+            found = None
+            for item in row_stops:
+                rel = int(item.item())
+                if not bool((generated[row, :rel] == grammar.mask_id).any().item()):
+                    found = rel
+                    break
+            out.append(found)
+        return out
+
+    def mark_stopped(sequence: torch.Tensor) -> torch.Tensor:
+        stop_positions = complete_stop_positions(sequence)
+        for row, rel in enumerate(stop_positions):
+            if rel is None:
+                continue
+            stopped_rows[row] = True
+            abs_after = original_len + rel + 1
+            if abs_after < sequence.shape[1]:
+                sequence[row, abs_after:] = stop_fill_id
+        return sequence
+
+    sync_cuda()
+    started = time.perf_counter()
+    model.eval()
+    with torch.no_grad():
+        while output_ids.shape[1] - original_len < max_new_tokens:
+            output_ids = mark_stopped(output_ids)
+            if bool(stopped_rows.all().item()):
+                break
+            if use_fast_cache:
+                active_len = output_ids.shape[1] - cache_state.block_start
+                if active_len < 0 or active_len >= block_size:
+                    raise RuntimeError(
+                        f"invalid raw rollout cache active_len={active_len} "
+                        f"output_len={output_ids.shape[1]} block_start={cache_state.block_start}"
+                    )
+                block_pad = int(block_size) - int(active_len)
+            else:
+                block_pad = int(block_size) - (output_ids.shape[1] % int(block_size))
+                if block_pad == 0:
+                    block_pad = int(block_size)
+            remaining = int(max_new_tokens) - (output_ids.shape[1] - original_len)
+            block_pad = min(block_pad, remaining)
+            if block_pad <= 0:
+                break
+            masks = torch.full(
+                (group_size, block_pad),
+                grammar.mask_id,
+                dtype=torch.long,
+                device=output_ids.device,
+            )
+            masks[stopped_rows] = stop_fill_id
+            x_t = torch.cat([output_ids, masks], dim=1)
+
+            while bool(((x_t[:, -block_pad:] == grammar.mask_id) & ~stopped_rows[:, None]).any().item()):
+                if use_fast_cache:
+                    logits = cache_state.shifted_active_logits(model, x_t)
+                    logit_offset = int(cache_state.block_start)
+                    current_mask = x_t[:, cache_state.block_start :] == grammar.mask_id
+                else:
+                    output = model(input_ids=x_t, use_cache=False)
+                    logits = shift_logits(output.logits)
+                    logit_offset = 0
+                    current_mask = x_t == grammar.mask_id
+                current_mask = current_mask & ~stopped_rows[:, None]
+                logits = logits.clone()
+                logits[..., grammar.mask_id] = torch.finfo(logits.dtype).min
+                if temperature <= 0:
+                    probs = torch.softmax(logits.float(), dim=-1)
+                    x_1 = probs.argmax(dim=-1)
+                else:
+                    probs = torch.softmax(logits.float() / float(temperature), dim=-1)
+                    if top_p < 1.0:
+                        sorted_probs, sorted_indices = torch.sort(probs, descending=True)
+                        cumulative = torch.cumsum(sorted_probs, dim=-1)
+                        remove = cumulative > top_p
+                        remove[..., 1:] = remove[..., :-1].clone()
+                        remove[..., 0] = False
+                        full_remove = torch.zeros_like(probs, dtype=torch.bool).scatter(-1, sorted_indices, remove)
+                        probs = probs.masked_fill(full_remove, 0.0)
+                        probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-12)
+                    x_1 = torch.multinomial(
+                        probs.reshape(-1, probs.shape[-1]),
+                        1,
+                        generator=generator,
+                    ).view(probs.shape[:-1])
+                x1_p = torch.squeeze(torch.gather(probs, dim=-1, index=x_1.unsqueeze(-1)), -1)
+                active_probs = torch.where(current_mask, x1_p, torch.full_like(x1_p, -torch.inf))
+                if not bool(torch.isfinite(active_probs).any().item()):
+                    break
+                unmask_idx = active_probs > threshold
+                for row in range(group_size):
+                    if bool(stopped_rows[row].item()) or not bool(current_mask[row].any().item()):
+                        continue
+                    max_prob_idx = int(active_probs[row].argmax().item())
+                    unmask_idx[row, max_prob_idx] = True
+                unmask_idx = unmask_idx & current_mask
+
+                before = x_t.detach().cpu() if record_steps else None
+                if record_steps and before is not None and bool(unmask_idx.any().item()):
+                    row_indices: list[int] = []
+                    positions: list[int] = []
+                    selected_token_ids: list[int] = []
+                    for row, local_pos in unmask_idx.nonzero(as_tuple=False).tolist():
+                        row_indices.append(int(row))
+                        positions.append(int(logit_offset + local_pos))
+                        selected_token_ids.append(int(x_1[row, local_pos].item()))
+                    steps.append(
+                        RolloutStep(
+                            input_ids=before,
+                            row_indices=row_indices,
+                            positions=positions,
+                            selected_token_ids=selected_token_ids,
+                            allowed_token_ids=[[] for _ in selected_token_ids],
+                        )
+                    )
+
+                span = x_t[:, logit_offset:].clone()
+                span[unmask_idx] = x_1[unmask_idx]
+                x_t[:, logit_offset:] = span
+                denoise_forwards += 1
+                x_t = mark_stopped(x_t)
+
+            if use_fast_cache:
+                active_block = x_t[:, cache_state.block_start :]
+                if active_block.shape[1] == block_size and not bool((active_block == grammar.mask_id).any().item()):
+                    cache_state.advance(model, active_block)
+            output_ids = x_t
+
+    sync_cuda()
+    seconds = time.perf_counter() - started
+    stop_positions = complete_stop_positions(output_ids)
+    texts: list[str] = []
+    token_ids: list[list[int]] = []
+    rg_scores: list[float] = []
+    strict_rewards: list[float] = []
+    rewards: list[float] = []
+    for row, rel_stop in enumerate(stop_positions):
+        generated = output_ids[row, original_len:]
+        if rel_stop is not None:
+            generated = generated[:rel_stop]
+        generated = generated[generated != grammar.mask_id]
+        row_token_ids = [int(item) for item in generated.detach().cpu().tolist()]
+        text = tokenizer.decode(generated, skip_special_tokens=True).strip()
+        rg_score, strict, reward = graded_countdown_reward(dataset, text, entry)
+        texts.append(text)
+        token_ids.append(row_token_ids)
+        rg_scores.append(rg_score)
+        strict_rewards.append(strict)
+        rewards.append(reward)
+
+    cache_read_calls = 0 if cache_state is None else int(cache_state.read_calls)
+    cache_advance_calls = 0 if cache_state is None else int(cache_state.advance_calls)
+    return RawRolloutResult(
+        prompt_idx=prompt_idx,
+        prompt_entry=entry,
+        texts=texts,
+        token_ids=token_ids,
+        rg_scores=rg_scores,
+        strict_rewards=strict_rewards,
+        rewards=rewards,
+        steps=steps,
+        seconds=seconds,
+        denoise_forwards=denoise_forwards,
+        cache_read_calls=cache_read_calls,
+        cache_advance_calls=cache_advance_calls,
+    )
+
+
 def grpo_advantages(rewards: list[float]) -> torch.Tensor:
     values = torch.tensor(rewards, dtype=torch.float32, device="cuda")
     mean = values.mean()
@@ -710,6 +944,10 @@ def grpo_advantages(rewards: list[float]) -> torch.Tensor:
 
 
 def rollout_policy_token_count(rollout: RolloutResult) -> int:
+    return sum(len(step.positions) for step in rollout.steps)
+
+
+def raw_rollout_policy_token_count(rollout: RawRolloutResult) -> int:
     return sum(len(step.positions) for step in rollout.steps)
 
 
@@ -826,6 +1064,78 @@ def backward_dual_term_loss(
         "raw_internalize_samples": sum(int(item) for item in correct),
         "mean_logprob": mean_logprob,
         "mean_raw_logprob": mean_raw_logprob,
+    }
+
+
+def backward_raw_rollout_policy_loss(
+    model,
+    rollout: RawRolloutResult,
+    advantages: torch.Tensor,
+    *,
+    temperature: float,
+    mask_id: int,
+    raw_rl_weight: float,
+    rescore_micro_batch_size: int,
+) -> dict[str, Any]:
+    """Backprop raw no-decoder GRPO tokens through the training forward."""
+    token_count = raw_rollout_policy_token_count(rollout)
+    if token_count <= 0 or raw_rl_weight <= 0:
+        return {
+            "raw_rl_loss": 0.0,
+            "raw_rl_tokens": token_count,
+            "raw_rl_mean_logprob": None,
+        }
+
+    per_sample_tokens = torch.zeros_like(advantages)
+    logp_sum = torch.zeros_like(advantages)
+    loss_sum_t = torch.tensor(0.0, dtype=torch.float32, device="cuda")
+    micro_batch_size = max(1, int(rescore_micro_batch_size))
+    pending: list[tuple[torch.Tensor, int, int, int]] = []
+
+    def flush_pending() -> None:
+        nonlocal loss_sum_t, pending
+        if not pending:
+            return
+        x = torch.cat([item[0] for item in pending], dim=0).to("cuda", non_blocking=True)
+        rows = [item[1] for item in pending]
+        positions = [item[2] for item in pending]
+        selected = [item[3] for item in pending]
+        output = model(input_ids=x, use_cache=False)
+        logits = shift_logits(output.logits)
+        terms = []
+        for local_idx, (row, pos, token_id) in enumerate(zip(rows, positions, selected)):
+            logp = raw_full_vocab_logprob(
+                logits[local_idx, pos],
+                token_id,
+                temperature=temperature,
+                mask_id=mask_id,
+            )
+            unscaled = -advantages[row] * logp
+            terms.append(float(raw_rl_weight) * unscaled / float(token_count))
+            loss_sum_t = loss_sum_t + unscaled.detach().float()
+            per_sample_tokens[row] += 1
+            logp_sum[row] += logp.detach()
+        if terms:
+            sum(terms).backward()
+        del output, logits, x, terms
+        pending = []
+
+    for step in rollout.steps:
+        for row, pos, token_id in zip(step.row_indices, step.positions, step.selected_token_ids):
+            row_input = step.input_ids[row : row + 1]
+            if pending and (
+                pending[0][0].shape[1] != row_input.shape[1] or len(pending) >= micro_batch_size
+            ):
+                flush_pending()
+            pending.append((row_input, row, pos, token_id))
+    flush_pending()
+
+    mean_logprob = float((logp_sum.sum() / per_sample_tokens.sum().clamp_min(1)).item())
+    raw_rl_loss = float(loss_sum_t.detach().cpu().item()) / float(token_count)
+    return {
+        "raw_rl_loss": raw_rl_loss,
+        "raw_rl_tokens": token_count,
+        "raw_rl_mean_logprob": mean_logprob,
     }
 
 
@@ -1079,11 +1389,14 @@ def train(args) -> dict[str, Any]:
         "total_params": total_params,
         "reward": "graded_countdown_exact_1_inverse_distance_partial",
         "policy_distribution": "model logits masked to Countdown grammar allowed token ids",
+        "raw_rl_distribution": "raw full-vocab diffusion distribution with mask token banned",
         "serving_forward": "RequestDiffusionState cached route_i FLARE noisy forward"
         if args.use_fast_serving_cache
         else "cache_off_full_context_model_forward",
         "logprob_forward": "training forward exact re-score; serving logits are not differentiated",
         "lambda_raw": args.lambda_raw,
+        "raw_rl_weight": args.raw_rl_weight,
+        "raw_rl_group_size": args.raw_rl_group_size or args.group_size,
     }
     write_json(out_dir / "config.json", config_payload)
 
@@ -1131,11 +1444,35 @@ def train(args) -> dict[str, Any]:
             advantages = grpo_advantages(rewards)
             zero_advantage = bool(torch.count_nonzero(advantages).item() == 0)
             has_raw_internalization = bool(args.lambda_raw > 0 and any(item >= 1.0 - 1e-9 for item in rollout.strict_rewards))
+            raw_rollout = None
+            raw_advantages = None
+            raw_zero_advantage = None
+            if args.raw_rl_weight > 0:
+                raw_rollout = raw_diffusion_rollout(
+                    model,
+                    tokenizer,
+                    train_ds,
+                    entry,
+                    prompt_idx,
+                    grammar,
+                    group_size=args.raw_rl_group_size or args.group_size,
+                    max_new_tokens=args.raw_rl_max_new_tokens or args.max_new_tokens,
+                    threshold=args.raw_rl_threshold,
+                    temperature=args.raw_rl_temperature,
+                    top_p=args.raw_rl_top_p,
+                    record_steps=True,
+                    use_fast_cache=args.use_fast_serving_cache,
+                    block_size=args.block_size,
+                    generator=generator,
+                )
+                raw_advantages = grpo_advantages(raw_rollout.rewards)
+                raw_zero_advantage = bool(torch.count_nonzero(raw_advantages).item() == 0)
 
             sync_cuda()
             update_start = time.perf_counter()
             optimizer.zero_grad(set_to_none=True)
             model.train()
+            did_backward = False
             if rollout_policy_token_count(rollout) and (not zero_advantage or has_raw_internalization):
                 loss_metrics = backward_dual_term_loss(
                     model,
@@ -1145,12 +1482,7 @@ def train(args) -> dict[str, Any]:
                     lambda_raw=args.lambda_raw,
                     rescore_micro_batch_size=args.rescore_micro_batch_size,
                 )
-                grad_norm = torch.nn.utils.clip_grad_norm_(
-                    [parameter for parameter in model.parameters() if parameter.requires_grad],
-                    args.max_grad_norm,
-                )
-                optimizer.step()
-                grad_norm_value = float(grad_norm.detach().float().cpu().item())
+                did_backward = True
             else:
                 loss_metrics = {
                     "loss": 0.0,
@@ -1162,10 +1494,44 @@ def train(args) -> dict[str, Any]:
                     "mean_logprob": None,
                     "mean_raw_logprob": None,
                 }
+            if raw_rollout is not None and raw_advantages is not None and raw_rollout_policy_token_count(raw_rollout):
+                if not raw_zero_advantage:
+                    raw_loss_metrics = backward_raw_rollout_policy_loss(
+                        model,
+                        raw_rollout,
+                        raw_advantages,
+                        temperature=args.raw_rl_temperature,
+                        mask_id=mask_id,
+                        raw_rl_weight=args.raw_rl_weight,
+                        rescore_micro_batch_size=args.rescore_micro_batch_size,
+                    )
+                    did_backward = True
+                else:
+                    raw_loss_metrics = {
+                        "raw_rl_loss": 0.0,
+                        "raw_rl_tokens": raw_rollout_policy_token_count(raw_rollout),
+                        "raw_rl_mean_logprob": None,
+                    }
+            else:
+                raw_loss_metrics = {
+                    "raw_rl_loss": 0.0,
+                    "raw_rl_tokens": 0,
+                    "raw_rl_mean_logprob": None,
+                }
+            if did_backward:
+                grad_norm = torch.nn.utils.clip_grad_norm_(
+                    [parameter for parameter in model.parameters() if parameter.requires_grad],
+                    args.max_grad_norm,
+                )
+                optimizer.step()
+                grad_norm_value = float(grad_norm.detach().float().cpu().item())
+            else:
                 grad_norm_value = 0.0
             optimizer.zero_grad(set_to_none=True)
             sync_cuda()
             update_seconds = time.perf_counter() - update_start
+            total_loss = float(loss_metrics["loss"]) + float(args.raw_rl_weight) * float(raw_loss_metrics["raw_rl_loss"])
+            raw_rollout_seconds = 0.0 if raw_rollout is None else float(raw_rollout.seconds)
 
             row = {
                 "step": step,
@@ -1183,13 +1549,34 @@ def train(args) -> dict[str, Any]:
                 "zero_advantage": zero_advantage,
                 "raw_internalization_active": has_raw_internalization,
                 "rollout_seconds": rollout.seconds,
+                "raw_rl_rollout_seconds": raw_rollout_seconds,
                 "update_seconds": update_seconds,
-                "step_seconds": rollout.seconds + update_seconds,
+                "step_seconds": rollout.seconds + raw_rollout_seconds + update_seconds,
                 "denoise_forwards": rollout.denoise_forwards,
                 "cache_read_calls": rollout.cache_read_calls,
                 "cache_advance_calls": rollout.cache_advance_calls,
                 "grad_norm": grad_norm_value,
                 **loss_metrics,
+                "loss_total": total_loss,
+                "raw_rl_enabled": raw_rollout is not None,
+                "raw_rl_texts": [] if raw_rollout is None else raw_rollout.texts,
+                "raw_rl_reasoning_gym_scores": [] if raw_rollout is None else raw_rollout.rg_scores,
+                "raw_rl_strict_rewards": [] if raw_rollout is None else raw_rollout.strict_rewards,
+                "raw_rl_graded_rewards": [] if raw_rollout is None else raw_rollout.rewards,
+                "raw_rl_reward_mean": 0.0
+                if raw_rollout is None or not raw_rollout.rewards
+                else float(sum(raw_rollout.rewards) / len(raw_rollout.rewards)),
+                "raw_rl_reward_std": None
+                if raw_rollout is None
+                else float(torch.tensor(raw_rollout.rewards).std(unbiased=False).item()),
+                "raw_rl_advantages": []
+                if raw_advantages is None
+                else [float(item) for item in raw_advantages.detach().cpu().tolist()],
+                "raw_rl_zero_advantage": raw_zero_advantage,
+                "raw_rl_denoise_forwards": 0 if raw_rollout is None else raw_rollout.denoise_forwards,
+                "raw_rl_cache_read_calls": 0 if raw_rollout is None else raw_rollout.cache_read_calls,
+                "raw_rl_cache_advance_calls": 0 if raw_rollout is None else raw_rollout.cache_advance_calls,
+                **raw_loss_metrics,
             }
             step_rows.append(row)
             append_jsonl(metrics_path, row)
@@ -1197,9 +1584,11 @@ def train(args) -> dict[str, Any]:
                 print(
                     "[train] "
                     f"step={step} reward={row['reward_mean']:.3f} "
-                    f"loss={row['loss']:.4g} raw_ce_tok={row['raw_internalize_tokens']} "
+                    f"raw_reward={row['raw_rl_reward_mean']:.3f} "
+                    f"loss={row['loss_total']:.4g} raw_ce_tok={row['raw_internalize_tokens']} "
+                    f"raw_rl_tok={row['raw_rl_tokens']} "
                     f"rollout_s={row['rollout_seconds']:.2f} update_s={row['update_seconds']:.2f} "
-                    f"zero_adv={zero_advantage}",
+                    f"zero_adv={zero_advantage} raw_zero_adv={raw_zero_advantage}",
                     flush=True,
                 )
 
@@ -1249,10 +1638,14 @@ def train(args) -> dict[str, Any]:
     )
     total_policy_tokens = sum(int(row["policy_tokens"]) for row in step_rows)
     total_rollout_seconds = sum(float(row["rollout_seconds"]) for row in step_rows)
+    total_raw_rl_tokens = sum(int(row["raw_rl_tokens"]) for row in step_rows)
+    total_raw_rl_rollout_seconds = sum(float(row["raw_rl_rollout_seconds"]) for row in step_rows)
     total_step_seconds = sum(float(row["step_seconds"]) for row in step_rows)
     total_raw_internalize_tokens = sum(int(row["raw_internalize_tokens"]) for row in step_rows)
     nonzero_advantage_steps = sum(int(not row["zero_advantage"]) for row in step_rows)
     raw_internalization_steps = sum(int(row["raw_internalization_active"]) for row in step_rows)
+    raw_rl_rows = [row for row in step_rows if row["raw_rl_enabled"]]
+    raw_rl_zero_advantage_steps = sum(int(bool(row["raw_rl_zero_advantage"])) for row in raw_rl_rows)
     summary = {
         "output_dir": str(out_dir),
         "adapter_out": str(adapter_out),
@@ -1262,8 +1655,13 @@ def train(args) -> dict[str, Any]:
         "avg_rollout_seconds": avg_rollout_seconds,
         "avg_update_seconds": avg_update_seconds,
         "total_policy_tokens": total_policy_tokens,
+        "total_raw_rl_tokens": total_raw_rl_tokens,
+        "total_all_policy_tokens": total_policy_tokens + total_raw_rl_tokens,
         "train_tokens_per_second": total_policy_tokens / total_step_seconds if total_step_seconds > 0 else None,
+        "train_all_policy_tokens_per_second": (total_policy_tokens + total_raw_rl_tokens) / total_step_seconds if total_step_seconds > 0 else None,
         "rollout_tokens_per_second": total_policy_tokens / total_rollout_seconds if total_rollout_seconds > 0 else None,
+        "raw_rl_rollout_tokens_per_second": total_raw_rl_tokens / total_raw_rl_rollout_seconds if total_raw_rl_rollout_seconds > 0 else None,
+        "avg_raw_rl_rollout_seconds": total_raw_rl_rollout_seconds / len(raw_rl_rows) if raw_rl_rows else 0.0,
         "total_raw_internalize_tokens": total_raw_internalize_tokens,
         "raw_internalization_steps": raw_internalization_steps,
         "cuda_peak_allocated_gb": cuda_peak_allocated_gb,
@@ -1276,6 +1674,11 @@ def train(args) -> dict[str, Any]:
         "use_fast_serving_cache": bool(args.use_fast_serving_cache),
         "block_size": int(args.block_size),
         "lambda_raw": float(args.lambda_raw),
+        "raw_rl_weight": float(args.raw_rl_weight),
+        "raw_rl_zero_advantage_steps": raw_rl_zero_advantage_steps,
+        "raw_rl_zero_advantage_rate": raw_rl_zero_advantage_steps / len(raw_rl_rows) if raw_rl_rows else None,
+        "raw_rl_nonzero_advantage_steps": len(raw_rl_rows) - raw_rl_zero_advantage_steps,
+        "raw_rl_group_size": int(args.raw_rl_group_size or args.group_size),
         "rescore_micro_batch_size": int(args.rescore_micro_batch_size),
         "eval_history": [
             {
@@ -1331,6 +1734,12 @@ def parse_args():
     parser.add_argument("--weight-decay", type=float, default=0.0)
     parser.add_argument("--max-grad-norm", type=float, default=1.0)
     parser.add_argument("--lambda-raw", type=float, default=0.5)
+    parser.add_argument("--raw-rl-weight", type=float, default=0.0)
+    parser.add_argument("--raw-rl-group-size", type=int, default=0)
+    parser.add_argument("--raw-rl-max-new-tokens", type=int, default=0)
+    parser.add_argument("--raw-rl-temperature", type=float, default=1.0)
+    parser.add_argument("--raw-rl-top-p", type=float, default=1.0)
+    parser.add_argument("--raw-rl-threshold", type=float, default=0.3)
     parser.add_argument("--rescore-micro-batch-size", type=int, default=4)
     parser.add_argument("--lora-r", type=int, default=8)
     parser.add_argument("--lora-alpha", type=int, default=16)
