@@ -189,3 +189,73 @@ Stage 1 verdict:
 - NOT GREEN: dual-term raw internalization is active and causes transient RAW movement, but final RAW strict is not
   durable. Do **not** proceed to Stage 2 or promote. The next red-team question is whether raw needs a verified-success
   replay buffer / stronger raw schedule, or whether this Countdown raw lane is too noisy at 16 rows for the current term.
+
+## Raw-rollout disambiguator (2026-07-01)
+
+Red-team directive: self-distillation did not move RAW, so test the other raw lever before calling the gap structural:
+direct RAW RL rollouts. Keep constrained-policy RL and graded reward; add no-decoder raw diffusion rollouts scored by
+the same graded Countdown reward, then policy-gradient the raw tokens directly through the training-forward exact
+re-score. Self-distillation is disabled for the direct raw-rollout runs (`lambda_raw=0`) so the raw update is isolated.
+
+Code checkpoint:
+- `7ce4bed` — add raw rollout GRPO to Countdown pilot.
+
+Standard 4-number Countdown raw-rollout bound:
+- Run: `runs/rl_pilot_countdown/raw_rollout_g4_micro2_step200_eval16`
+- Config: standard 4-number Countdown, `G_constrained=4`, `G_raw=4`, `lambda_raw=0`, `raw_rl_weight=1.0`,
+  exact re-score micro-batch 2.
+- Bounded at step ~190 after the user redirected to the easier disambiguator. Held-out RAW was still zero at step 150.
+
+| step | RAW strict | CONSTRAINED strict | RAW graded | CONSTRAINED graded |
+| ---: | ---: | ---: | ---: | ---: |
+| 0 | 0/16 | 2/16 | 0.0413 | 0.2136 |
+| 50 | 0/16 | 2/16 | 0.0817 | 0.2304 |
+| 100 | 0/16 | 0/16 | 0.0600 | 0.1391 |
+| 150 | 0/16 | 1/16 | 0.0444 | 0.1882 |
+
+Raw rollout signal was active but did not transfer to held-out RAW: raw-rollout zero-advantage was `33/192 = 17.2%`,
+so `159/192` raw groups had nonzero raw advantage and trained `10,456` raw tokens before the bound.
+
+### Easier Countdown control
+
+Config used for both easy runs:
+- 3 numbers, values `1..10`, targets `3..30`, 24 generated tokens.
+- Same public `reasoning-gym` generator; train/eval seeds unchanged.
+- Bounded at step 150 once RAW remained pinned.
+
+This control cleanly separates "task too hard / too few constrained-correct samples" from "raw lever fails": constrained
+baseline is high at `7/16` on the held-out easy split, while RAW baseline is `0/16`.
+
+Self-distillation on easy Countdown (`lambda_raw=2.0`, no raw rollouts):
+
+| step | RAW strict | CONSTRAINED strict | RAW graded | CONSTRAINED graded |
+| ---: | ---: | ---: | ---: | ---: |
+| 0 | 0/16 | 7/16 | 0.0375 | 0.5278 |
+| 50 | 0/16 | 4/16 | 0.0546 | 0.3636 |
+| 100 | 0/16 | 4/16 | 0.0540 | 0.3724 |
+| 150 | 0/16 | 6/16 | 0.0475 | 0.4950 |
+
+Self-distillation had ample correct constrained samples on this easier task: raw-internalization was active on `86/165`
+logged steps and replayed `1,026` raw CE tokens. RAW strict still stayed `0/16`.
+
+Direct raw rollouts on easy Countdown (`lambda_raw=0`, `raw_rl_weight=1.0`):
+
+| step | RAW strict | CONSTRAINED strict | RAW graded | CONSTRAINED graded |
+| ---: | ---: | ---: | ---: | ---: |
+| 0 | 0/16 | 7/16 | 0.0375 | 0.5278 |
+| 50 | 0/16 | 6/16 | 0.0500 | 0.4736 |
+| 100 | 0/16 | 4/16 | 0.0475 | 0.3802 |
+| 150 | 0/16 | 4/16 | 0.0538 | 0.3896 |
+
+Raw rollout was also genuinely active on the easy task: raw-rollout zero-advantage was `67/153 = 43.8%`, so `86/153`
+raw groups had nonzero raw advantage and trained `7,689` raw tokens. RAW strict still stayed `0/16`.
+
+Verdict:
+- Easy Countdown proves the issue is not simply "Countdown was too hard for constrained learning": constrained starts
+  high (`7/16`) and remains nonzero.
+- Self-distillation fails to move RAW even when verified constrained outputs are abundant.
+- Direct raw rollouts also fail to move RAW even when raw rollout groups frequently have nonzero graded advantages.
+- Therefore, for this FLARE diffusion sampler, the RAW structural gap is behaving like a fundamental parallel-decode
+  structural corruption issue, not a missing-logit-training issue. The decoder remains structurally essential for the
+  deployable lane. Do **not** proceed to Tier-B as a raw-lane-green Stage 1; escalate the promotion story around the
+  constrained model-only lane and treat RAW as not currently trainable by either tested raw lever.
