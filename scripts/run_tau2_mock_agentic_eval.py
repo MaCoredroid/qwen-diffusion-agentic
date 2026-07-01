@@ -870,14 +870,59 @@ def build_backend(args: argparse.Namespace):
     raise ValueError(args.backend)
 
 
+def turn_speed_stats(row: dict) -> dict[str, float | int | None]:
+    tokens = 0
+    generation_seconds = 0.0
+    denoise_forwards = 0
+    cache_advance_calls = 0
+    has_cache_stats = False
+    for turn in row.get("turns") or []:
+        tokens += int(turn.get("tokens") or 0)
+        generation_seconds += float(turn.get("seconds") or 0.0)
+        cache_stats = ((turn.get("backend_meta") or {}).get("flare_cache_stats") or {})
+        if cache_stats:
+            has_cache_stats = True
+            denoise_forwards += int(cache_stats.get("read_calls") or 0)
+            cache_advance_calls += int(cache_stats.get("advance_calls") or 0)
+    return {
+        "generated_tokens": tokens,
+        "backend_generation_seconds": generation_seconds,
+        "backend_tokens_per_second": (tokens / generation_seconds) if generation_seconds > 0 else None,
+        "denoise_forwards": denoise_forwards if has_cache_stats else None,
+        "denoise_forwards_per_token": (denoise_forwards / tokens) if has_cache_stats and tokens > 0 else None,
+        "cache_advance_calls": cache_advance_calls if has_cache_stats else None,
+        "cache_advance_calls_per_token": (cache_advance_calls / tokens) if has_cache_stats and tokens > 0 else None,
+    }
+
+
 def summarize(rows: list[dict], manifest: dict) -> dict:
-    lanes = defaultdict(lambda: {"records": 0, "reward": 0, "action_reward": 0, "db_reward": 0, "env_assertion_reward": 0})
+    lanes = defaultdict(
+        lambda: {
+            "records": 0,
+            "reward": 0,
+            "action_reward": 0,
+            "db_reward": 0,
+            "env_assertion_reward": 0,
+            "generated_tokens": 0,
+            "backend_generation_seconds": 0.0,
+            "denoise_forwards": 0,
+            "denoise_records": 0,
+            "cache_advance_calls": 0,
+        }
+    )
     failures = defaultdict(Counter)
     for row in rows:
         lane = row["lane"]
         lanes[lane]["records"] += 1
         for key in ("reward", "action_reward", "db_reward", "env_assertion_reward"):
             lanes[lane][key] += int(bool(row.get(key)))
+        speed = turn_speed_stats(row)
+        lanes[lane]["generated_tokens"] += int(speed["generated_tokens"] or 0)
+        lanes[lane]["backend_generation_seconds"] += float(speed["backend_generation_seconds"] or 0.0)
+        if speed["denoise_forwards"] is not None:
+            lanes[lane]["denoise_records"] += 1
+            lanes[lane]["denoise_forwards"] += int(speed["denoise_forwards"] or 0)
+            lanes[lane]["cache_advance_calls"] += int(speed["cache_advance_calls"] or 0)
         failures[lane].update(row.get("failures") or [])
     lane_summary = {}
     for lane, totals in lanes.items():
@@ -888,9 +933,49 @@ def summarize(rows: list[dict], manifest: dict) -> dict:
             "action_score": totals["action_reward"] / records,
             "db_score": totals["db_reward"] / records,
             "env_assertion_score": totals["env_assertion_reward"] / records,
+            "backend_tokens_per_second": (
+                totals["generated_tokens"] / totals["backend_generation_seconds"]
+                if totals["backend_generation_seconds"] > 0
+                else None
+            ),
+            "denoise_forwards_per_token": (
+                totals["denoise_forwards"] / totals["generated_tokens"]
+                if totals["denoise_records"] and totals["generated_tokens"] > 0
+                else None
+            ),
+            "cache_advance_calls_per_token": (
+                totals["cache_advance_calls"] / totals["generated_tokens"]
+                if totals["denoise_records"] and totals["generated_tokens"] > 0
+                else None
+            ),
             "failures": dict(failures[lane]),
         }
-    return {"manifest": manifest, "lanes": lane_summary, "records": len(rows)}
+    speed_totals = {
+        "generated_tokens": sum(int(lane.get("generated_tokens") or 0) for lane in lane_summary.values()),
+        "backend_generation_seconds": sum(float(lane.get("backend_generation_seconds") or 0.0) for lane in lane_summary.values()),
+        "denoise_forwards": sum(int(lane.get("denoise_forwards") or 0) for lane in lane_summary.values()),
+        "denoise_records": sum(int(lane.get("denoise_records") or 0) for lane in lane_summary.values()),
+        "cache_advance_calls": sum(int(lane.get("cache_advance_calls") or 0) for lane in lane_summary.values()),
+    }
+    speed = {
+        **speed_totals,
+        "backend_tokens_per_second": (
+            speed_totals["generated_tokens"] / speed_totals["backend_generation_seconds"]
+            if speed_totals["backend_generation_seconds"] > 0
+            else None
+        ),
+        "denoise_forwards_per_token": (
+            speed_totals["denoise_forwards"] / speed_totals["generated_tokens"]
+            if speed_totals["denoise_records"] and speed_totals["generated_tokens"] > 0
+            else None
+        ),
+        "cache_advance_calls_per_token": (
+            speed_totals["cache_advance_calls"] / speed_totals["generated_tokens"]
+            if speed_totals["denoise_records"] and speed_totals["generated_tokens"] > 0
+            else None
+        ),
+    }
+    return {"manifest": manifest, "lanes": lane_summary, "speed": speed, "records": len(rows)}
 
 
 def manifest_for(args: argparse.Namespace, backend_meta: dict, policy: str, base_db: dict, tasks: list[dict], tools: list[dict]) -> dict:

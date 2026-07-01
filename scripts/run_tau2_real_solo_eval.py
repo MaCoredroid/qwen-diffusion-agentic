@@ -411,6 +411,18 @@ def action_reward(result) -> float | None:
     return 1.0 if all(check.action_match for check in checks) else 0.0
 
 
+def partial_action_reward(result) -> float | None:
+    checks = (result.reward_info.action_checks if result.reward_info else None) or []
+    if not checks:
+        return None
+    return sum(1.0 for check in checks if check.action_match) / len(checks)
+
+
+def action_checks_dicts(result) -> list[dict]:
+    checks = (result.reward_info.action_checks if result.reward_info else None) or []
+    return [check.model_dump() for check in checks]
+
+
 def env_assertion_reward(result) -> float | None:
     checks = (result.reward_info.env_assertions if result.reward_info else None) or []
     if not checks:
@@ -463,6 +475,34 @@ def cuda_memory_peaks(row: dict) -> tuple[float | None, float | None]:
     return max_allocated, max_reserved
 
 
+def event_speed_stats(row: dict) -> dict[str, float | int | None]:
+    tokens = 0
+    generation_seconds = 0.0
+    denoise_forwards = 0
+    cache_advance_calls = 0
+    has_cache_stats = False
+    for event in row.get("events") or []:
+        tokens += int(event.get("tokens") or 0)
+        generation_seconds += float(event.get("seconds") or 0.0)
+        cache_stats = ((event.get("backend_meta") or {}).get("flare_cache_stats") or {})
+        if cache_stats:
+            has_cache_stats = True
+            denoise_forwards += int(cache_stats.get("read_calls") or 0)
+            cache_advance_calls += int(cache_stats.get("advance_calls") or 0)
+    row_seconds = float(row.get("seconds") or 0.0)
+    return {
+        "generated_tokens": tokens,
+        "backend_generation_seconds": generation_seconds,
+        "backend_tokens_per_second": (tokens / generation_seconds) if generation_seconds > 0 else None,
+        "end_to_end_seconds": row_seconds,
+        "end_to_end_tokens_per_second": (tokens / row_seconds) if row_seconds > 0 else None,
+        "denoise_forwards": denoise_forwards if has_cache_stats else None,
+        "denoise_forwards_per_token": (denoise_forwards / tokens) if has_cache_stats and tokens > 0 else None,
+        "cache_advance_calls": cache_advance_calls if has_cache_stats else None,
+        "cache_advance_calls_per_token": (cache_advance_calls / tokens) if has_cache_stats and tokens > 0 else None,
+    }
+
+
 def run_one(args: argparse.Namespace, backend, task, lane: str) -> dict:
     env = registry.get_env_constructor(args.domain)(solo_mode=True)
     tools = env.get_tools()
@@ -499,6 +539,8 @@ def run_one(args: argparse.Namespace, backend, task, lane: str) -> dict:
         "reward": float(result.reward_info.reward if result.reward_info else 0.0),
         "reward_breakdown": reward_breakdown_dict(result),
         "action_reward": action_reward(result),
+        "partial_action_reward": partial_action_reward(result),
+        "action_checks": action_checks_dicts(result),
         "env_assertion_reward": env_assertion_reward(result),
         "termination_reason": result.termination_reason,
         "tool_calls": tool_call_rows(messages),
@@ -549,8 +591,16 @@ def summarize(rows: list[dict], manifest_obj: dict) -> dict:
             "reward": 0.0,
             "action_reward": 0.0,
             "action_records": 0,
+            "partial_action_reward": 0.0,
+            "partial_action_records": 0,
             "env_assertion_reward": 0.0,
             "env_records": 0,
+            "generated_tokens": 0,
+            "backend_generation_seconds": 0.0,
+            "end_to_end_seconds": 0.0,
+            "denoise_forwards": 0,
+            "denoise_records": 0,
+            "cache_advance_calls": 0,
             "max_prompt_tokens": None,
             "cuda_max_memory_allocated_gib": None,
             "cuda_max_memory_reserved_gib": None,
@@ -564,9 +614,20 @@ def summarize(rows: list[dict], manifest_obj: dict) -> dict:
         if row.get("action_reward") is not None:
             lanes[lane]["action_records"] += 1
             lanes[lane]["action_reward"] += float(row["action_reward"])
+        if row.get("partial_action_reward") is not None:
+            lanes[lane]["partial_action_records"] += 1
+            lanes[lane]["partial_action_reward"] += float(row["partial_action_reward"])
         if row.get("env_assertion_reward") is not None:
             lanes[lane]["env_records"] += 1
             lanes[lane]["env_assertion_reward"] += float(row["env_assertion_reward"])
+        speed = event_speed_stats(row)
+        lanes[lane]["generated_tokens"] += int(speed["generated_tokens"] or 0)
+        lanes[lane]["backend_generation_seconds"] += float(speed["backend_generation_seconds"] or 0.0)
+        lanes[lane]["end_to_end_seconds"] += float(speed["end_to_end_seconds"] or 0.0)
+        if speed["denoise_forwards"] is not None:
+            lanes[lane]["denoise_records"] += 1
+            lanes[lane]["denoise_forwards"] += int(speed["denoise_forwards"] or 0)
+            lanes[lane]["cache_advance_calls"] += int(speed["cache_advance_calls"] or 0)
         for event in row.get("events") or []:
             prompt_tokens = (event.get("backend_meta") or {}).get("prompt_tokens")
             if prompt_tokens is not None:
@@ -587,10 +648,60 @@ def summarize(rows: list[dict], manifest_obj: dict) -> dict:
             **totals,
             "score": totals["reward"] / records,
             "action_score": totals["action_reward"] / max(1, totals["action_records"]),
+            "partial_action_score": totals["partial_action_reward"] / max(1, totals["partial_action_records"]),
             "env_assertion_score": totals["env_assertion_reward"] / max(1, totals["env_records"]),
+            "backend_tokens_per_second": (
+                totals["generated_tokens"] / totals["backend_generation_seconds"]
+                if totals["backend_generation_seconds"] > 0
+                else None
+            ),
+            "end_to_end_tokens_per_second": (
+                totals["generated_tokens"] / totals["end_to_end_seconds"] if totals["end_to_end_seconds"] > 0 else None
+            ),
+            "denoise_forwards_per_token": (
+                totals["denoise_forwards"] / totals["generated_tokens"]
+                if totals["denoise_records"] and totals["generated_tokens"] > 0
+                else None
+            ),
+            "cache_advance_calls_per_token": (
+                totals["cache_advance_calls"] / totals["generated_tokens"]
+                if totals["denoise_records"] and totals["generated_tokens"] > 0
+                else None
+            ),
             "failures": dict(failures[lane]),
         }
-    return {"manifest": manifest_obj, "lanes": lane_summary, "records": len(rows)}
+    speed_totals = {
+        "generated_tokens": sum(int(lane.get("generated_tokens") or 0) for lane in lane_summary.values()),
+        "backend_generation_seconds": sum(float(lane.get("backend_generation_seconds") or 0.0) for lane in lane_summary.values()),
+        "end_to_end_seconds": sum(float(lane.get("end_to_end_seconds") or 0.0) for lane in lane_summary.values()),
+        "denoise_forwards": sum(int(lane.get("denoise_forwards") or 0) for lane in lane_summary.values()),
+        "denoise_records": sum(int(lane.get("denoise_records") or 0) for lane in lane_summary.values()),
+        "cache_advance_calls": sum(int(lane.get("cache_advance_calls") or 0) for lane in lane_summary.values()),
+    }
+    speed = {
+        **speed_totals,
+        "backend_tokens_per_second": (
+            speed_totals["generated_tokens"] / speed_totals["backend_generation_seconds"]
+            if speed_totals["backend_generation_seconds"] > 0
+            else None
+        ),
+        "end_to_end_tokens_per_second": (
+            speed_totals["generated_tokens"] / speed_totals["end_to_end_seconds"]
+            if speed_totals["end_to_end_seconds"] > 0
+            else None
+        ),
+        "denoise_forwards_per_token": (
+            speed_totals["denoise_forwards"] / speed_totals["generated_tokens"]
+            if speed_totals["denoise_records"] and speed_totals["generated_tokens"] > 0
+            else None
+        ),
+        "cache_advance_calls_per_token": (
+            speed_totals["cache_advance_calls"] / speed_totals["generated_tokens"]
+            if speed_totals["denoise_records"] and speed_totals["generated_tokens"] > 0
+            else None
+        ),
+    }
+    return {"manifest": manifest_obj, "lanes": lane_summary, "speed": speed, "records": len(rows)}
 
 
 def main() -> None:
