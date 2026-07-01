@@ -713,12 +713,8 @@ def rollout_policy_token_count(rollout: RolloutResult) -> int:
     return sum(len(step.positions) for step in rollout.steps)
 
 
-def strict_correct_mask(rollout: RolloutResult) -> torch.Tensor:
-    return torch.tensor(
-        [float(item) >= 1.0 - 1e-9 for item in rollout.strict_rewards],
-        dtype=torch.bool,
-        device="cuda",
-    )
+def strict_correct_list(rollout: RolloutResult) -> list[bool]:
+    return [float(item) >= 1.0 - 1e-9 for item in rollout.strict_rewards]
 
 
 def backward_dual_term_loss(
@@ -738,10 +734,10 @@ def backward_dual_term_loss(
     same verified-correct decoder trajectory tokens with the full vocabulary.
     """
     token_count = rollout_policy_token_count(rollout)
-    correct = strict_correct_mask(rollout)
+    correct = strict_correct_list(rollout)
     raw_token_count = 0
     for step in rollout.steps:
-        raw_token_count += sum(1 for row in step.row_indices if bool(correct[row].item()))
+        raw_token_count += sum(1 for row in step.row_indices if correct[row])
     if token_count <= 0:
         return {
             "loss": 0.0,
@@ -749,7 +745,7 @@ def backward_dual_term_loss(
             "raw_internalize_loss": 0.0,
             "policy_tokens": 0,
             "raw_internalize_tokens": 0,
-            "raw_internalize_samples": int(correct.sum().item()),
+            "raw_internalize_samples": sum(int(item) for item in correct),
             "mean_logprob": None,
             "mean_raw_logprob": None,
         }
@@ -757,9 +753,45 @@ def backward_dual_term_loss(
     per_sample_tokens = torch.zeros_like(advantages)
     logp_sum = torch.zeros_like(advantages)
     raw_logp_sum = torch.tensor(0.0, dtype=torch.float32, device="cuda")
-    policy_loss_sum = 0.0
-    raw_loss_sum = 0.0
+    policy_loss_sum_t = torch.tensor(0.0, dtype=torch.float32, device="cuda")
+    raw_loss_sum_t = torch.tensor(0.0, dtype=torch.float32, device="cuda")
     micro_batch_size = max(1, int(rescore_micro_batch_size))
+    pending: list[tuple[torch.Tensor, int, int, int, list[int]]] = []
+
+    def flush_pending() -> None:
+        nonlocal raw_logp_sum, policy_loss_sum_t, raw_loss_sum_t, pending
+        if not pending:
+            return
+        x = torch.cat([item[0] for item in pending], dim=0).to("cuda", non_blocking=True)
+        rows = [item[1] for item in pending]
+        positions = [item[2] for item in pending]
+        selected = [item[3] for item in pending]
+        allowed_lists = [item[4] for item in pending]
+        output = model(input_ids=x, use_cache=False)
+        logits = shift_logits(output.logits)
+        terms = []
+        for local_idx, (row, pos, token_id, allowed) in enumerate(
+            zip(rows, positions, selected, allowed_lists)
+        ):
+            row_logits = logits[local_idx, pos]
+            logp = masked_allowed_logprob(row_logits, token_id, allowed, temperature)
+            policy_unscaled = -advantages[row] * logp
+            terms.append(policy_unscaled / float(token_count))
+            policy_loss_sum_t = policy_loss_sum_t + policy_unscaled.detach().float()
+            per_sample_tokens[row] += 1
+            logp_sum[row] += logp.detach()
+
+            if lambda_raw > 0 and raw_token_count > 0 and correct[row]:
+                raw_logp = torch.log_softmax(row_logits.float(), dim=-1)[int(token_id)]
+                raw_unscaled = -raw_logp
+                terms.append(float(lambda_raw) * raw_unscaled / float(raw_token_count))
+                raw_loss_sum_t = raw_loss_sum_t + raw_unscaled.detach().float()
+                raw_logp_sum = raw_logp_sum + raw_logp.detach()
+        if terms:
+            sum(terms).backward()
+        del output, logits, x, terms
+        pending = []
+
     for step in rollout.steps:
         items = list(
             zip(
@@ -769,49 +801,29 @@ def backward_dual_term_loss(
                 step.allowed_token_ids,
             )
         )
-        for offset in range(0, len(items), micro_batch_size):
-            chunk = items[offset : offset + micro_batch_size]
-            rows = [item[0] for item in chunk]
-            positions = [item[1] for item in chunk]
-            selected = [item[2] for item in chunk]
-            allowed_lists = [item[3] for item in chunk]
-            x = step.input_ids[rows].to("cuda", non_blocking=True)
-            output = model(input_ids=x, use_cache=False)
-            logits = shift_logits(output.logits)
-            terms = []
-            for local_idx, (row, pos, token_id, allowed) in enumerate(
-                zip(rows, positions, selected, allowed_lists)
+        for row, pos, token_id, allowed in items:
+            row_input = step.input_ids[row : row + 1]
+            if pending and (
+                pending[0][0].shape[1] != row_input.shape[1] or len(pending) >= micro_batch_size
             ):
-                row_logits = logits[local_idx, pos]
-                logp = masked_allowed_logprob(row_logits, token_id, allowed, temperature)
-                policy_term = -advantages[row] * logp / float(token_count)
-                terms.append(policy_term)
-                policy_loss_sum += float((-advantages[row] * logp).detach().float().cpu().item())
-                per_sample_tokens[row] += 1
-                logp_sum[row] += logp.detach()
-
-                if lambda_raw > 0 and raw_token_count > 0 and bool(correct[row].item()):
-                    raw_logp = torch.log_softmax(row_logits.float(), dim=-1)[int(token_id)]
-                    raw_term = float(lambda_raw) * (-raw_logp) / float(raw_token_count)
-                    terms.append(raw_term)
-                    raw_loss_sum += float((-raw_logp).detach().float().cpu().item())
-                    raw_logp_sum = raw_logp_sum + raw_logp.detach()
-            if terms:
-                sum(terms).backward()
-            del output, logits, x, terms
+                flush_pending()
+            pending.append((row_input, row, pos, token_id, allowed))
+    flush_pending()
     mean_logprob = float((logp_sum.sum() / per_sample_tokens.sum().clamp_min(1)).item())
     mean_raw_logprob = (
         float((raw_logp_sum / max(1, raw_token_count)).item())
         if raw_token_count > 0
         else None
     )
+    policy_loss_sum = float(policy_loss_sum_t.detach().cpu().item())
+    raw_loss_sum = float(raw_loss_sum_t.detach().cpu().item())
     return {
         "loss": (policy_loss_sum / float(token_count)) + float(lambda_raw) * (raw_loss_sum / max(1, raw_token_count)),
         "policy_loss": policy_loss_sum / float(token_count),
         "raw_internalize_loss": raw_loss_sum / max(1, raw_token_count) if raw_token_count > 0 else 0.0,
         "policy_tokens": token_count,
         "raw_internalize_tokens": raw_token_count,
-        "raw_internalize_samples": int(correct.sum().item()),
+        "raw_internalize_samples": sum(int(item) for item in correct),
         "mean_logprob": mean_logprob,
         "mean_raw_logprob": mean_raw_logprob,
     }
