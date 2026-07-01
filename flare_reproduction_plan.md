@@ -1120,6 +1120,31 @@ the final 100x useful-throughput magnitude: at N=16 the AR-normalized useful exp
 ~1.0-1.2x the 89 tok/s AR reference, even though sample throughput vs sequential N=1 is ~11.25x. This validates
 sample-and-decode as the right direction, not as the completed 100x result. No promotion.
 
+## Parallel-commit constrained decode sweep — HELD-QUALITY CEILING ~1.7 TOKENS/FORWARD (2026-07-01)
+Implemented `scripts/eval_countdown_parallel_commit_sweep.py` (commit `aa3ee98`) to measure the diffusion-specific
+speed lever directly under the constrained Countdown decoder. Default one-token behavior remains unchanged; opt-in
+multi-commit keeps the grammar mask ON, uses greedy decode, commits the first token in a forward to preserve baseline
+progress, then commits additional same-forward tokens only while the top grammar-allowed confidence exceeds `tau`.
+This is the direct answer to "can constrained diffusion commit >1 valid token per forward without losing quality?"
+Final artifact: `runs/countdown_parallel_commit_sweep_final/`; tracked result:
+`countdown_parallel_commit_sweep_result.md`.
+
+Sweep (`eval_seed=2000`, 16 public prompts/dataset, `tau={0.99,0.95,0.90,0.80,0.70,0.50}`):
+
+| dataset | baseline strict/RG | best held-quality tau | held-quality tokens/forward | break point |
+| --- | ---: | ---: | ---: | --- |
+| easy 3-number | 7/16 / 0.4656 | 0.70 | **1.746** | tau=0.50 -> 2.600 tpf but 3/16 / 0.2281 |
+| standard 4-number | 2/16 / 0.1688 | 0.70 | **1.701** | tau=0.50 -> 2.563 tpf but 1/16 / 0.1094 |
+
+Full held-quality rows: easy holds exact baseline quality from tau 0.99 through 0.70 while rising from 1.603 ->
+1.746 tokens/forward; standard holds exact baseline quality from tau 0.99 through 0.70 while rising from 1.456 ->
+1.701 tokens/forward. At tau 0.50 both datasets immediately lose quality.
+
+Interpretation frame: this is NOT the 4-8 tokens/forward result that would keep a 10x path alive from constrained
+parallel commit alone, and nowhere near 100x. It is also not literally dead at 1.0: there is a real but modest
+diffusion-specific held-quality commit multiplier of ~1.7x. This aligns with the raw-corruption finding: aggressive
+multi-position joint prediction is unreliable even when the grammar keeps structure valid. No promotion.
+
 ### MONITOR RED-TEAM (2026-07-01): why it's ~1x AR, and the honest speed reckoning
 I traced the constrained rollout (`rl_pilot_countdown.py:521`, `constrained_countdown_rollout`). The decoder commits
 **exactly one token per forward, strictly left-to-right**: `pos = original_len + state.emitted_count`, advance grammar
@@ -1138,9 +1163,7 @@ throughput PARITY, and that same lift is available to AR. **From measured data, 
 over the same-architecture AR.** The 100x goal's premise ("diffusion must be >=10x faster to make sense") is currently
 unmet — it reads ~1x.
 
-**This is NOT yet a final verdict — one decisive experiment is still owed:** the parallel-decode ceiling UNDER the
-decoder. Modify the decoder to commit ALL grammar-valid positions whose top-token confidence exceeds a threshold in a
-single forward (multi-token commit), sweep the threshold, and measure tokens/forward vs quality. If tokens/forward can
-reach ~4-8 at held quality → the 10x path is alive. If it collapses to ~1 at held quality (as the raw-corruption
-finding predicts) → 10x/100x is structurally dead and the economic rationale for the conversion needs an honest
-reckoning with the user. This is the crux test for the ultimate goal; it is no-regret and next. (Steered to flare.)
+**RESOLVED by the parallel-commit sweep above:** the owed experiment now measures ~1.7 tokens/forward at held
+quality, not 4-8. So the exact red-team prediction mostly holds: constrained decoding can extract a modest real
+diffusion-specific commit multiplier, but aggressive multi-position prediction breaks quality before it reaches the
+range needed for a 10x/100x economic story. The honest current number for constrained parallel commit is ~1.7x.
