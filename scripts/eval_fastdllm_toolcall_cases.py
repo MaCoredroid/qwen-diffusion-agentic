@@ -21,7 +21,7 @@ from eval_toolcall_jsonl import (
     score_tool_calls,
     tool_schema_by_name,
 )
-from flare_hf_cache import RequestDiffusionState
+from flare_hf_cache import FlarePrefixCache, RequestDiffusionState
 
 
 ROOT = Path("/home/mark/qwen_diffusion")
@@ -2065,15 +2065,20 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
     )
     cache_enabled = bool(getattr(args, "use_block_cache", False))
     cache_state = None
+    prefix_cache = getattr(args, "_flare_prefix_cache", None)
+    if prefix_cache is not None and not isinstance(prefix_cache, FlarePrefixCache):
+        raise TypeError(f"_flare_prefix_cache must be FlarePrefixCache, got {type(prefix_cache).__name__}")
     if cache_enabled:
         if args.denoise_logit_mode != "flare_shift":
             raise ValueError("--use-block-cache with --full-context-sampling requires --denoise-logit-mode flare_shift")
-        cache_state = RequestDiffusionState.reset(model, input_ids, args.block_size)
+        cache_state = RequestDiffusionState.reset(model, input_ids, args.block_size, prefix_cache=prefix_cache)
         args._flare_cache_state = cache_state
         args._flare_cache_required = True
         args._last_flare_cache_stats = cache_state.stats()
+        if prefix_cache is not None:
+            args._last_flare_prefix_cache_stats = prefix_cache.stats()
 
-    def finish_cache():
+    def finish_cache(sequence=None):
         if not cache_enabled:
             return
         if cache_state.residual_full_context_model_calls != 0:
@@ -2081,7 +2086,11 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                 "FLARE cache residual full-context calls per committed block must be zero; "
                 f"got {cache_state.residual_full_context_model_calls}"
             )
+        if prefix_cache is not None and sequence is not None:
+            prefix_cache.store(sequence, cache_state)
         args._last_flare_cache_stats = cache_state.stats()
+        if prefix_cache is not None:
+            args._last_flare_prefix_cache_stats = prefix_cache.stats()
         args._flare_cache_state = None
         args._flare_cache_required = False
 
@@ -2622,7 +2631,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                     stopped = truncate_if_stopped(x_t)
                     if stopped is not None:
                         args._last_sampler_schedule_events = schedule_events
-                        finish_cache()
+                        finish_cache(stopped)
                         return stopped[0]
                     if interval.get("scheduled"):
                         schedule_events["scheduled_interval_visits"] += 1
@@ -2645,10 +2654,10 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         stopped = truncate_if_stopped(output_ids)
         if stopped is not None:
             args._last_sampler_schedule_events = schedule_events
-            finish_cache()
+            finish_cache(stopped)
             return stopped[0]
     args._last_sampler_schedule_events = schedule_events
-    finish_cache()
+    finish_cache(output_ids)
     return output_ids[0]
 
 

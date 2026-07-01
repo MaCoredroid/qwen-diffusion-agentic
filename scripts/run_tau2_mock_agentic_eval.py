@@ -37,6 +37,7 @@ from eval_toolcall_jsonl import (
     schema_errors,
     tool_schema_by_name,
 )
+from flare_hf_cache import FlarePrefixCache
 
 
 DEFAULT_TAU2_ROOT = Path("/tmp/qwen_diffusion_external/tau2-bench")
@@ -390,6 +391,7 @@ class DiffusionBackend:
             argument_boundary_token_ids=[],
             argument_newline_token_ids=[],
             _argument_boundary_target_cache={},
+            _flare_prefix_cache=FlarePrefixCache(),
         )
         if hasattr(self.model, "config"):
             setattr(self.model.config, "bd_size", int(args.block_size))
@@ -413,6 +415,7 @@ class DiffusionBackend:
             "top_p": float(self.gen_args.top_p),
             "denoise_logit_mode": self.gen_args.denoise_logit_mode,
             "use_block_cache": bool(self.gen_args.use_block_cache),
+            "prefix_cache": True,
             "mask_id": int(self.mask_id),
             "stop_token_ids": [int(item) for item in self.stop_token_ids],
             "live_tool_native_grammar": bool(self.gen_args.live_tool_json_grammar),
@@ -451,6 +454,7 @@ class DiffusionBackend:
             "prompt_tokens": int(prompt_input_ids.shape[1]),
             "sampler_schedule_events": getattr(self.gen_args, "_last_sampler_schedule_events", {}),
             "flare_cache_stats": getattr(self.gen_args, "_last_flare_cache_stats", {}),
+            "flare_prefix_cache_stats": getattr(self.gen_args, "_last_flare_prefix_cache_stats", {}),
         }
         if torch.cuda.is_available():
             meta["cuda_memory"] = {

@@ -49,6 +49,15 @@ class FlareLayerCache:
     key: torch.Tensor | None = None
     value: torch.Tensor | None = None
 
+    def clone(self) -> "FlareLayerCache":
+        return FlareLayerCache(
+            kind=self.kind,
+            gdn_state=None if self.gdn_state is None else self.gdn_state.detach().clone(),
+            conv_tail=None if self.conv_tail is None else self.conv_tail.detach().clone(),
+            key=None if self.key is None else self.key.detach().clone(),
+            value=None if self.value is None else self.value.detach().clone(),
+        )
+
 
 @dataclass
 class RequestDiffusionState:
@@ -62,25 +71,50 @@ class RequestDiffusionState:
     read_calls: int = 0
     advance_calls: int = 0
     residual_full_context_model_calls: int = 0
+    reset_skipped_noisy_reads: int = 0
+    prefix_cache_hit: bool = False
+    prefix_cache_reused_blocks: int = 0
+    prefix_cache_reused_tokens: int = 0
+    prefix_cache_appended_blocks: int = 0
 
     @classmethod
     @torch.no_grad()
-    def reset(cls, model, input_ids: torch.Tensor, block_size: int) -> "RequestDiffusionState":
+    def reset(
+        cls,
+        model,
+        input_ids: torch.Tensor,
+        block_size: int,
+        prefix_cache: "FlarePrefixCache | None" = None,
+    ) -> "RequestDiffusionState":
         lm_model = unwrap_lm_model(model)
         modeling_module = modeling_module_for(lm_model)
         _assert_route_i(lm_model, modeling_module)
         _set_block_size(lm_model, block_size)
-        state = cls(
-            block_start=0,
-            block_size=int(block_size),
-            batch_size=int(input_ids.shape[0]),
-            layer_caches=_empty_layer_caches(lm_model, input_ids),
-            last_token_logits=None,
-        )
-        prompt_full_blocks = input_ids.shape[1] // int(block_size)
-        for block_idx in range(prompt_full_blocks):
-            start = block_idx * int(block_size)
-            state.advance(model, input_ids[:, start : start + int(block_size)])
+        block_size = int(block_size)
+        prompt_full_blocks = int(input_ids.shape[1]) // block_size
+        state = None
+        if prefix_cache is not None:
+            state = prefix_cache.restore(input_ids, block_size)
+        if state is None:
+            state = cls(
+                block_start=0,
+                block_size=block_size,
+                batch_size=int(input_ids.shape[0]),
+                layer_caches=_empty_layer_caches(lm_model, input_ids),
+                last_token_logits=None,
+            )
+
+        start_block = int(state.block_start) // block_size
+        appended_blocks = max(0, prompt_full_blocks - start_block)
+        for block_idx in range(start_block, prompt_full_blocks):
+            start = block_idx * block_size
+            block = input_ids[:, start : start + block_size]
+            if block_idx == prompt_full_blocks - 1:
+                state.advance(model, block)
+            else:
+                state.advance_clean_only(model, block)
+        if state.prefix_cache_hit:
+            state.prefix_cache_appended_blocks += appended_blocks
         return state
 
     @torch.no_grad()
@@ -129,6 +163,36 @@ class RequestDiffusionState:
         self.block_start += int(block_ids.shape[1])
         self.advance_calls += 1
 
+    @torch.no_grad()
+    def advance_clean_only(self, model, block_ids: torch.Tensor) -> None:
+        self._check_batch(block_ids)
+        if block_ids.shape[1] != self.block_size:
+            raise ValueError(
+                f"advance_clean_only() requires a full committed block of {self.block_size} tokens, "
+                f"got {block_ids.shape[1]}"
+            )
+        clean_advance_block(model, block_ids, self)
+        self.block_start += int(block_ids.shape[1])
+        self.advance_calls += 1
+        self.reset_skipped_noisy_reads += 1
+
+    def clone(self) -> "RequestDiffusionState":
+        return RequestDiffusionState(
+            block_start=int(self.block_start),
+            block_size=int(self.block_size),
+            batch_size=int(self.batch_size),
+            layer_caches=[layer_cache.clone() for layer_cache in self.layer_caches],
+            last_token_logits=None if self.last_token_logits is None else self.last_token_logits.detach().clone(),
+            read_calls=0,
+            advance_calls=0,
+            residual_full_context_model_calls=0,
+            reset_skipped_noisy_reads=0,
+            prefix_cache_hit=bool(self.prefix_cache_hit),
+            prefix_cache_reused_blocks=int(self.prefix_cache_reused_blocks),
+            prefix_cache_reused_tokens=int(self.prefix_cache_reused_tokens),
+            prefix_cache_appended_blocks=int(self.prefix_cache_appended_blocks),
+        )
+
     def free(self) -> None:
         self.layer_caches.clear()
         self.last_token_logits = None
@@ -141,11 +205,100 @@ class RequestDiffusionState:
             "read_calls": int(self.read_calls),
             "advance_calls": int(self.advance_calls),
             "residual_full_context_model_calls": int(self.residual_full_context_model_calls),
+            "reset_skipped_noisy_reads": int(self.reset_skipped_noisy_reads),
+            "prefix_cache_hit": bool(self.prefix_cache_hit),
+            "prefix_cache_reused_blocks": int(self.prefix_cache_reused_blocks),
+            "prefix_cache_reused_tokens": int(self.prefix_cache_reused_tokens),
+            "prefix_cache_appended_blocks": int(self.prefix_cache_appended_blocks),
         }
 
     def _check_batch(self, tensor: torch.Tensor) -> None:
         if int(tensor.shape[0]) != self.batch_size:
             raise ValueError(f"batch mismatch: cache B={self.batch_size}, tensor B={tensor.shape[0]}")
+
+
+@dataclass
+class FlarePrefixCache:
+    """Single-request persistent clean-boundary prefix cache.
+
+    A hit is allowed only when the cached committed tokens are an exact prefix
+    of the next prompt. The active generation receives a clone, so failed or
+    interrupted generations cannot mutate the durable entry.
+    """
+
+    prefix_ids_cpu: torch.Tensor | None = None
+    state: RequestDiffusionState | None = None
+    hits: int = 0
+    misses: int = 0
+    stores: int = 0
+    reused_blocks: int = 0
+    reused_tokens: int = 0
+
+    @torch.no_grad()
+    def restore(self, input_ids: torch.Tensor, block_size: int) -> RequestDiffusionState | None:
+        if self.prefix_ids_cpu is None or self.state is None:
+            self.misses += 1
+            return None
+        if int(block_size) != int(self.state.block_size):
+            self.misses += 1
+            return None
+        if int(input_ids.shape[0]) != int(self.state.batch_size):
+            self.misses += 1
+            return None
+        prefix_len = int(self.prefix_ids_cpu.shape[1])
+        if prefix_len <= 0 or int(input_ids.shape[1]) < prefix_len:
+            self.misses += 1
+            return None
+        candidate = input_ids[:, :prefix_len].detach().to("cpu")
+        if not torch.equal(candidate, self.prefix_ids_cpu):
+            self.misses += 1
+            return None
+
+        restored = self.state.clone()
+        restored.prefix_cache_hit = True
+        restored.prefix_cache_reused_blocks = prefix_len // int(block_size)
+        restored.prefix_cache_reused_tokens = prefix_len
+        self.hits += 1
+        self.reused_blocks += restored.prefix_cache_reused_blocks
+        self.reused_tokens += prefix_len
+        return restored
+
+    @torch.no_grad()
+    def store(self, input_ids: torch.Tensor, state: RequestDiffusionState) -> None:
+        prefix_len = int(state.block_start)
+        if prefix_len <= 0:
+            return
+        if int(input_ids.shape[1]) < prefix_len:
+            raise ValueError(
+                f"cannot store prefix cache with state block_start={prefix_len} "
+                f"from sequence length {input_ids.shape[1]}"
+            )
+        self.prefix_ids_cpu = input_ids[:, :prefix_len].detach().to("cpu").clone()
+        self.state = state.clone()
+        self.state.prefix_cache_hit = False
+        self.state.prefix_cache_reused_blocks = 0
+        self.state.prefix_cache_reused_tokens = 0
+        self.state.prefix_cache_appended_blocks = 0
+        self.stores += 1
+
+    def clear(self) -> None:
+        if self.state is not None:
+            self.state.free()
+        self.prefix_ids_cpu = None
+        self.state = None
+
+    def stats(self) -> dict[str, int | bool]:
+        prefix_tokens = 0 if self.prefix_ids_cpu is None else int(self.prefix_ids_cpu.shape[1])
+        return {
+            "enabled": True,
+            "cached_prefix_tokens": prefix_tokens,
+            "cached_prefix_blocks": 0 if self.state is None else int(self.state.block_start) // int(self.state.block_size),
+            "hits": int(self.hits),
+            "misses": int(self.misses),
+            "stores": int(self.stores),
+            "reused_blocks": int(self.reused_blocks),
+            "reused_tokens": int(self.reused_tokens),
+        }
 
 
 def _empty_layer_caches(lm_model, input_ids: torch.Tensor) -> list[FlareLayerCache]:
