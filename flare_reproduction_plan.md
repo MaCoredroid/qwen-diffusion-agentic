@@ -1071,3 +1071,19 @@ criterion, NOT a bonus. Capability parity is necessary-but-NOT-sufficient. Every
 useful-compute throughput ALONGSIDE capability, tracking the 10x gap. PHASES: 9B now = capability parity + speed
 baseline (distance to 10x); 27B later = the real vehicle + RL-closes-parity unlocking aggressive-fast serving + o1
 test-time compute.
+
+## ★ DECISIVE: RL CANNOT close RAW; the decoder is structurally PERMANENT (2026-07-01)
+Countdown RL de-risk (Stage 1 + lambda sweep + raw-rollout + easier-task disambiguator) verdict: **RL does NOT move
+RAW strict, via EITHER lever (self-distillation OR direct raw rollouts), even on an EASY 3-number task where the
+model clearly can solve it (constrained 0.44 strict)**. Raw stays pinned at 0/16 strict + ~0.045 partial; raw
+rollouts trained ACTIVELY (86/153 nonzero-advantage groups, 7689 raw tokens) yet raw didn't move. => NOT starvation,
+NOT task-difficulty: the raw parallel-diffusion STRUCTURAL corruption is a fundamental SAMPLING artifact (theory
+2602.00286), not trainable-away. Self-distillation also HURT constrained (over-distillation). What DID work: graded
+reward killed the zero-advantage starvation (73%->6%); constrained MOVED under RL (0.125->0.25). REVISED STRATEGY
+(monitor recommendation, escalated to user): (1) the DECODER is structurally PERMANENT (formalizes that SOTA was
+always diffusion+decoder). (2) RL targets the CONSTRAINED lane VALUE-CONTENT (constrained moves under RL) -- promote
+on CONSTRAINED (within discipline: constrained model-only, decoder is a label-free method). (3) 100x throughput =
+SAMPLE-AND-DECODE best-of-N (N parallel diffusion samples -> decoder -> verify-select), NOT best-of-N over raw. NEXT:
+test the sample-and-decode best-of-N (the core 100x thesis) -- does N-parallel + decoder + verify lift the score, and
+at what throughput. Alt (user option): push on raw via self-correction/re-denoising (Loopholing/self-correcting MDMs)
+before conceding -- monitor rec = accept, evidence is strong.
