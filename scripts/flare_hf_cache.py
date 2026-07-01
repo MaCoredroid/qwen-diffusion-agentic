@@ -188,8 +188,6 @@ def _tail_after_append(old_tail: torch.Tensor | None, raw_qkv: torch.Tensor, tai
 
 def attention_project(layer, hidden_states, position_embeddings, modeling_module):
     q, k, v, gate = layer._project(hidden_states, position_embeddings)
-    k = modeling_module.repeat_kv(k, layer.num_key_value_groups)
-    v = modeling_module.repeat_kv(v, layer.num_key_value_groups)
     return q, k, v, gate
 
 
@@ -212,6 +210,8 @@ def run_attention_from_kv(
     has_prefix = prefix_key is not None and prefix_key.numel() > 0
     key = active_key if not has_prefix else torch.cat([prefix_key, active_key], dim=2)
     value = active_value if not has_prefix else torch.cat([prefix_value, active_value], dim=2)
+    key = modeling_module.repeat_kv(key, layer.num_key_value_groups)
+    value = modeling_module.repeat_kv(value, layer.num_key_value_groups)
     weights = torch.matmul(query, key.transpose(2, 3)) * layer.scaling
     if mask is not None:
         if mask.dtype == torch.bool:
@@ -224,6 +224,18 @@ def run_attention_from_kv(
     output = output.transpose(1, 2).reshape(*input_shape, -1).contiguous()
     output = output * torch.sigmoid(gate)
     return layer.o_proj(output), active_key.detach(), active_value.detach()
+
+
+def append_kv_cache(prefix: torch.Tensor | None, active: torch.Tensor) -> torch.Tensor:
+    active = active.detach()
+    if prefix is None or prefix.numel() == 0:
+        return active.clone()
+    prefix_len = int(prefix.shape[2])
+    active_len = int(active.shape[2])
+    out = prefix.new_empty(prefix.shape[0], prefix.shape[1], prefix_len + active_len, prefix.shape[3])
+    out[:, :, :prefix_len, :].copy_(prefix)
+    out[:, :, prefix_len:, :].copy_(active)
+    return out
 
 
 def clean_active_attention_mask(batch_size: int, block_len: int, prefix_len: int, device) -> torch.Tensor:
@@ -301,12 +313,8 @@ def clean_advance_block(model, block_ids: torch.Tensor, state: RequestDiffusionS
                 mask,
                 modeling_module,
             )
-            if prefix_key is None or prefix_key.numel() == 0:
-                key = active_key.clone()
-                value = active_value.clone()
-            else:
-                key = torch.cat([prefix_key, active_key], dim=2).clone()
-                value = torch.cat([prefix_value, active_value], dim=2).clone()
+            key = append_kv_cache(prefix_key, active_key)
+            value = append_kv_cache(prefix_value, active_value)
             new_caches.append(FlareLayerCache(kind="full_attention", key=key, value=value))
         hidden = residual + output
         residual = hidden

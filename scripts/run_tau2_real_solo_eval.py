@@ -449,6 +449,20 @@ def failure_taxonomy(row: dict) -> list[str]:
     return failures or ["pass"]
 
 
+def cuda_memory_peaks(row: dict) -> tuple[float | None, float | None]:
+    max_allocated = None
+    max_reserved = None
+    for event in row.get("events") or []:
+        memory = ((event.get("backend_meta") or {}).get("cuda_memory") or {})
+        allocated = memory.get("max_allocated_gib")
+        reserved = memory.get("max_reserved_gib")
+        if allocated is not None:
+            max_allocated = float(allocated) if max_allocated is None else max(max_allocated, float(allocated))
+        if reserved is not None:
+            max_reserved = float(reserved) if max_reserved is None else max(max_reserved, float(reserved))
+    return max_allocated, max_reserved
+
+
 def run_one(args: argparse.Namespace, backend, task, lane: str) -> dict:
     env = registry.get_env_constructor(args.domain)(solo_mode=True)
     tools = env.get_tools()
@@ -529,7 +543,19 @@ def manifest(args: argparse.Namespace, backend_meta: dict, tasks: list) -> dict:
 
 
 def summarize(rows: list[dict], manifest_obj: dict) -> dict:
-    lanes = defaultdict(lambda: {"records": 0, "reward": 0.0, "action_reward": 0.0, "action_records": 0, "env_assertion_reward": 0.0, "env_records": 0})
+    lanes = defaultdict(
+        lambda: {
+            "records": 0,
+            "reward": 0.0,
+            "action_reward": 0.0,
+            "action_records": 0,
+            "env_assertion_reward": 0.0,
+            "env_records": 0,
+            "max_prompt_tokens": None,
+            "cuda_max_memory_allocated_gib": None,
+            "cuda_max_memory_reserved_gib": None,
+        }
+    )
     failures = defaultdict(Counter)
     for row in rows:
         lane = row["lane"]
@@ -541,6 +567,18 @@ def summarize(rows: list[dict], manifest_obj: dict) -> dict:
         if row.get("env_assertion_reward") is not None:
             lanes[lane]["env_records"] += 1
             lanes[lane]["env_assertion_reward"] += float(row["env_assertion_reward"])
+        for event in row.get("events") or []:
+            prompt_tokens = (event.get("backend_meta") or {}).get("prompt_tokens")
+            if prompt_tokens is not None:
+                previous = lanes[lane]["max_prompt_tokens"]
+                lanes[lane]["max_prompt_tokens"] = int(prompt_tokens) if previous is None else max(previous, int(prompt_tokens))
+        max_allocated, max_reserved = cuda_memory_peaks(row)
+        if max_allocated is not None:
+            previous = lanes[lane]["cuda_max_memory_allocated_gib"]
+            lanes[lane]["cuda_max_memory_allocated_gib"] = max_allocated if previous is None else max(previous, max_allocated)
+        if max_reserved is not None:
+            previous = lanes[lane]["cuda_max_memory_reserved_gib"]
+            lanes[lane]["cuda_max_memory_reserved_gib"] = max_reserved if previous is None else max(previous, max_reserved)
         failures[lane].update(row.get("failures") or [])
     lane_summary = {}
     for lane, totals in lanes.items():

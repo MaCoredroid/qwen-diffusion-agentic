@@ -1055,3 +1055,19 @@ train-matched +1-shift head; commits 7718336, f6bf682). VALIDATION:
   no SGLang needed (SGLang stays the deferred continuous-batching/async-eval play).
 NEXT PHASE (north-star): agentic eval (diffusion-9B vs AR-9B, multi-turn+SWE) to measure the gap, then RL to close
 it. Single-turn was already parity (diffusion+decoder==AR+decoder 33/44), so the eval may show we're near the goal.
+
+## ★★ ULTIMATE GOAL (user 2026-07-01) — 27B diffusion as a test-time-compute vehicle, >=10x faster than AR
+The endgame: convert Qwen 27B AR -> Qwen 27B DIFFUSION; use RL loss to MITIGATE the TRAIN-SERVE PARITY gap (so the
+fast/aggressive serving stays trainable-consistent); leverage the diffusion for o1-style TEST-TIME COMPUTE (RL +
+inference-time compute). **HARD CRITERION: diffusion must be >=10x FASTER than AR to make sense** (else just use AR).
+HONEST RED-TEAM: we are currently SLOWER than AR (~20 tok/s B=1), i.e. NEGATIVE on the axis that must hit 10x. Both
+AR-27B and diffusion-27B are the SAME GDN-hybrid arch -> the only diffusion lever over AR is PARALLEL DECODING (SOTA
+block-diffusion ~2.5x, NOT 10x). Paths to 10x (the frontier): (1) AGGRESSIVE parallel decoding (big blocks,
+confident-commit, few denoise steps) = the LOSSY knob -> RL-closes-parity LICENSES it (RL trains accuracy UNDER the
+fast serving); (2) PARALLEL SAMPLING for test-time compute (N trajectories in ~1 AR gen -> best-of-N/self-consistency/
+verify = o1 move; "10x" may be useful-compute THROUGHPUT not single-stream latency); (3) the lossy-knob Pareto
+(speed x accuracy x gradient-bias, RL lifts the accuracy curve). REFRAME: SPEED is now a CO-EQUAL, load-bearing
+criterion, NOT a bonus. Capability parity is necessary-but-NOT-sufficient. Every eval reports diffusion-vs-AR tok/s +
+useful-compute throughput ALONGSIDE capability, tracking the 10x gap. PHASES: 9B now = capability parity + speed
+baseline (distance to 10x); 27B later = the real vehicle + RL-closes-parity unlocking aggressive-fast serving + o1
+test-time compute.

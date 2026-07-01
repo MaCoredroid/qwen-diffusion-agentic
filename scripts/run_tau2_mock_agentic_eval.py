@@ -406,6 +406,7 @@ class DiffusionBackend:
             "merge_adapter": self.merge_adapter,
             "dtype": "bf16",
             "quant": "none",
+            "pytorch_cuda_alloc_conf": os.environ.get("PYTORCH_CUDA_ALLOC_CONF"),
             "block_size": int(self.gen_args.block_size),
             "small_block_size": int(self.gen_args.small_block_size),
             "denoise_logit_mode": self.gen_args.denoise_logit_mode,
@@ -445,9 +446,17 @@ class DiffusionBackend:
         new_ids = generated[prompt_input_ids.shape[1] :]
         text = self.tokenizer.decode(new_ids, skip_special_tokens=True).strip()
         meta = {
+            "prompt_tokens": int(prompt_input_ids.shape[1]),
             "sampler_schedule_events": getattr(self.gen_args, "_last_sampler_schedule_events", {}),
             "flare_cache_stats": getattr(self.gen_args, "_last_flare_cache_stats", {}),
         }
+        if torch.cuda.is_available():
+            meta["cuda_memory"] = {
+                "allocated_gib": torch.cuda.memory_allocated() / (1024**3),
+                "reserved_gib": torch.cuda.memory_reserved() / (1024**3),
+                "max_allocated_gib": torch.cuda.max_memory_allocated() / (1024**3),
+                "max_reserved_gib": torch.cuda.max_memory_reserved() / (1024**3),
+            }
         return Generation(text=text, seconds=elapsed, tokens=int(new_ids.shape[0]), backend_meta=meta)
 
 
