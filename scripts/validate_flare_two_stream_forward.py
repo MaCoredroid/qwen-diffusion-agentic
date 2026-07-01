@@ -781,6 +781,58 @@ def test_noisy_loss_finite(config_module, modeling_module, *, seed: int, block_s
     return TestResult("noisy finite/complementary loss", passed, detail)
 
 
+def test_flare_mask_rate_schedule(config_module, modeling_module, *, seed: int, block_size: int) -> TestResult:
+    model = make_tiny_model(config_module, modeling_module, seed=seed + 41, block_size=block_size)
+    labels = torch.tensor([[5, 6, 7, 8]], dtype=torch.long)
+    forced_value_mask = torch.tensor([[True, False, False, False]], dtype=torch.bool)
+    env_keys = [
+        "FASTDLLM_FLARE_MASK_RATE_MIN",
+        "FASTDLLM_FLARE_MASK_RATE_MAX",
+        "FASTDLLM_FLARE_ADAPTIVE_COPY_SCHEDULE",
+        "FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE_MIN",
+        "FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE_MAX",
+    ]
+    saved = {key: os.environ.get(key) for key in env_keys}
+    try:
+        os.environ["FASTDLLM_FLARE_MASK_RATE_MIN"] = "1.0"
+        os.environ["FASTDLLM_FLARE_MASK_RATE_MAX"] = "1.0"
+        os.environ.pop("FASTDLLM_FLARE_ADAPTIVE_COPY_SCHEDULE", None)
+        all_mask, all_visible = model._build_flare_mask_views(labels, block_size=block_size)
+
+        os.environ["FASTDLLM_FLARE_MASK_RATE_MIN"] = "0.0"
+        os.environ["FASTDLLM_FLARE_MASK_RATE_MAX"] = "0.0"
+        no_mask, no_visible = model._build_flare_mask_views(labels, block_size=block_size)
+
+        os.environ["FASTDLLM_FLARE_MASK_RATE_MIN"] = "1.0"
+        os.environ["FASTDLLM_FLARE_MASK_RATE_MAX"] = "1.0"
+        os.environ["FASTDLLM_FLARE_ADAPTIVE_COPY_SCHEDULE"] = "1"
+        os.environ["FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE_MIN"] = "0.0"
+        os.environ["FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE_MAX"] = "0.0"
+        adaptive_mask, adaptive_visible = model._build_flare_mask_views(
+            labels,
+            block_size=block_size,
+            forced_value_mask=forced_value_mask,
+        )
+    finally:
+        restore_env(saved)
+
+    expected_adaptive = torch.tensor([[True, True, False, False]], dtype=torch.bool)
+    passed = (
+        bool(torch.equal(all_mask, torch.ones_like(labels, dtype=torch.bool)))
+        and bool(torch.equal(all_visible, torch.zeros_like(labels, dtype=torch.bool)))
+        and bool(torch.equal(no_mask, torch.zeros_like(labels, dtype=torch.bool)))
+        and bool(torch.equal(no_visible, torch.ones_like(labels, dtype=torch.bool)))
+        and bool(torch.equal(adaptive_mask, expected_adaptive))
+        and bool(torch.equal(adaptive_visible, ~expected_adaptive))
+    )
+    detail = (
+        f"all_mask={int(all_mask.sum().item())}/{labels.numel()} "
+        f"no_mask={int(no_mask.sum().item())}/{labels.numel()} "
+        f"adaptive={adaptive_mask.int().tolist()}"
+    )
+    return TestResult("FLARE clipped/adaptive mask schedule", passed, detail)
+
+
 def restore_env(saved: dict[str, str | None]):
     for key, value in saved.items():
         if value is None:
@@ -1122,6 +1174,12 @@ def main() -> int:
         ),
         test_loss_logit_shift_indexing(),
         test_noisy_loss_finite(
+            config_module,
+            modeling_module,
+            seed=args.seed,
+            block_size=block_size,
+        ),
+        test_flare_mask_rate_schedule(
             config_module,
             modeling_module,
             seed=args.seed,

@@ -8,6 +8,7 @@ from transformers import AutoTokenizer
 
 
 TOOL_CALL_RE = re.compile(r"<tool_call>\s*(.*?)\s*</tool_call>", re.DOTALL)
+NATIVE_PARAMETER_RE = re.compile(r"<parameter=([^>\n]+)>\s*(.*?)\s*</parameter>", re.DOTALL)
 
 
 def parse_args():
@@ -57,9 +58,40 @@ def iter_tool_payloads(text):
             continue
 
 
+def parse_native_parameter_value(raw):
+    text = str(raw or "").strip()
+    if not text:
+        return text
+    if text[0] in "[{\"" or text.lower() in {"true", "false", "null"}:
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            return text
+    try:
+        if any(ch in text for ch in ".eE"):
+            return float(text)
+        return int(text)
+    except ValueError:
+        return text
+
+
+def iter_native_tool_call_argument_objects(text):
+    for match in TOOL_CALL_RE.finditer(text or ""):
+        body = match.group(1)
+        params = {}
+        for param_match in NATIVE_PARAMETER_RE.finditer(body):
+            name = param_match.group(1).strip()
+            if not name:
+                continue
+            params[name] = parse_native_parameter_value(param_match.group(2))
+        if params:
+            yield params
+
+
 def iter_tool_call_argument_objects(message):
     for payload in iter_tool_payloads(message.get("content", "")):
         yield payload.get("arguments", {})
+    yield from iter_native_tool_call_argument_objects(message.get("content", ""))
 
     for tool_call in message.get("tool_calls") or []:
         if not isinstance(tool_call, dict):

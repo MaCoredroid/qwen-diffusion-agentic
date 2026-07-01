@@ -25,6 +25,11 @@ FAST_DLLM_TRAIN_BD_SIZE_ENV = "FASTDLLM_TRAIN_BD_SIZE"
 FAST_DLLM_TRAIN_BD_SIZE_CHOICES_ENV = "FASTDLLM_TRAIN_BD_SIZE_CHOICES"
 FAST_DLLM_FLARE_TWO_STREAM_ENV = "FASTDLLM_FLARE_TWO_STREAM"
 FLARE_TWO_STREAM_ENV = "FLARE_TWO_STREAM"
+FASTDLLM_FLARE_MASK_RATE_MIN_ENV = "FASTDLLM_FLARE_MASK_RATE_MIN"
+FASTDLLM_FLARE_MASK_RATE_MAX_ENV = "FASTDLLM_FLARE_MASK_RATE_MAX"
+FASTDLLM_FLARE_ADAPTIVE_COPY_SCHEDULE_ENV = "FASTDLLM_FLARE_ADAPTIVE_COPY_SCHEDULE"
+FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE_MIN_ENV = "FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE_MIN"
+FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE_MAX_ENV = "FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE_MAX"
 FASTDLLM_FLARE_GDN_ROUTE_ENV = "FASTDLLM_FLARE_GDN_ROUTE"
 FASTDLLM_FLARE_ROUTE_II_STRIDE_BLOCKS_ENV = "FASTDLLM_FLARE_ROUTE_II_STRIDE_BLOCKS"
 FASTDLLM_FLARE_ROUTE_II_CHECKPOINT_ENV = "FASTDLLM_FLARE_ROUTE_II_CHECKPOINT"
@@ -2020,6 +2025,37 @@ class Fast_dLLM_Qwen3_5ForCausalLM(Fast_dLLM_Qwen3_5PreTrainedModel, GenerationM
     def _flare_two_stream_enabled(self):
         return env_flag_enabled(FAST_DLLM_FLARE_TWO_STREAM_ENV, FLARE_TWO_STREAM_ENV)
 
+    def _flare_mask_rate_bounds(self, *, prefix="", default_min=0.3, default_max=0.8):
+        min_env = f"{prefix}_MIN" if prefix else FASTDLLM_FLARE_MASK_RATE_MIN_ENV
+        max_env = f"{prefix}_MAX" if prefix else FASTDLLM_FLARE_MASK_RATE_MAX_ENV
+        min_raw = os.environ.get(min_env, str(default_min)).strip()
+        max_raw = os.environ.get(max_env, str(default_max)).strip()
+        cache_key = (min_env, max_env, min_raw, max_raw, default_min, default_max)
+        cache_attr = "_flare_mask_rate_bounds_cache" if not prefix else f"_flare_mask_rate_bounds_cache_{prefix}"
+        if getattr(self, cache_attr + "_key", None) == cache_key:
+            return getattr(self, cache_attr)
+
+        try:
+            min_value = float(min_raw)
+            max_value = float(max_raw)
+        except ValueError as exc:
+            raise ValueError(f"{min_env}/{max_env} must be numeric") from exc
+        if min_value < 0.0 or max_value > 1.0 or min_value > max_value:
+            raise ValueError(f"{min_env}/{max_env} must satisfy 0 <= min <= max <= 1")
+        bounds = (min_value, max_value)
+        setattr(self, cache_attr + "_key", cache_key)
+        setattr(self, cache_attr, bounds)
+        return bounds
+
+    def _sample_flare_mask_rates(self, block_shape, device, *, min_value, max_value):
+        if min_value == max_value:
+            return torch.full(block_shape, min_value, device=device)
+        t = torch.rand(block_shape, device=device)
+        return ((max_value - min_value) * t) + min_value
+
+    def _adaptive_copy_schedule_enabled(self):
+        return env_flag_enabled(FASTDLLM_FLARE_ADAPTIVE_COPY_SCHEDULE_ENV)
+
     def _prepare_flare_doc_ids(self, input_ids, labels, attention_mask=None, doc_ids=None):
         if doc_ids is not None:
             doc_ids = doc_ids.to(device=input_ids.device, dtype=torch.long)
@@ -2055,8 +2091,28 @@ class Fast_dLLM_Qwen3_5ForCausalLM(Fast_dLLM_Qwen3_5PreTrainedModel, GenerationM
                 )
             batch_size, seq_len = labels.shape
             block_labels = labels.reshape(batch_size, seq_len // block_size, block_size)
-            t = torch.rand(block_labels.shape[:2], device=labels.device)
-            p_mask = ((1 - 1e-3) * t + 1e-3).unsqueeze(-1).expand_as(block_labels)
+            min_rate, max_rate = self._flare_mask_rate_bounds()
+            block_rates = self._sample_flare_mask_rates(
+                block_labels.shape[:2],
+                labels.device,
+                min_value=min_rate,
+                max_value=max_rate,
+            )
+            if forced_value_mask is not None and self._adaptive_copy_schedule_enabled():
+                low_min, low_max = self._flare_mask_rate_bounds(
+                    prefix="FASTDLLM_FLARE_HIGH_ENTROPY_MASK_RATE",
+                    default_min=0.02,
+                    default_max=0.12,
+                )
+                low_rates = self._sample_flare_mask_rates(
+                    block_labels.shape[:2],
+                    labels.device,
+                    min_value=low_min,
+                    max_value=low_max,
+                )
+                value_blocks = forced_value_mask.to(device=labels.device, dtype=torch.bool).reshape_as(block_labels)
+                block_rates = torch.where(value_blocks.any(dim=-1), block_rates, low_rates)
+            p_mask = block_rates.unsqueeze(-1).expand_as(block_labels)
             mask_indices = torch.rand(block_labels.shape, device=labels.device) < p_mask
             mask_indices = mask_indices.reshape_as(labels)
         else:
@@ -2073,7 +2129,16 @@ class Fast_dLLM_Qwen3_5ForCausalLM(Fast_dLLM_Qwen3_5PreTrainedModel, GenerationM
         mask_view1 = (~mask_indices) & label_valid
         return mask_view0, mask_view1
 
-    def _compute_flare_losses(self, clean_logits, noisy_logits, labels, doc_ids, mask_view0, mask_view1):
+    def _compute_flare_losses(
+        self,
+        clean_logits,
+        noisy_logits,
+        labels,
+        doc_ids,
+        mask_view0,
+        mask_view1,
+        loss_weights=None,
+    ):
         vocab_size = clean_logits.shape[-1]
         target_valid = (
             (doc_ids[:, :-1] >= 0)
@@ -2083,33 +2148,44 @@ class Fast_dLLM_Qwen3_5ForCausalLM(Fast_dLLM_Qwen3_5PreTrainedModel, GenerationM
         )
         targets = labels[:, 1:].contiguous()
         ar_labels = torch.where(target_valid, targets, torch.full_like(targets, IGNORE_INDEX))
-        ar_loss_sum = F.cross_entropy(
+        ar_per_token = F.cross_entropy(
             clean_logits[:, :-1].contiguous().view(-1, vocab_size).float(),
             ar_labels.view(-1),
             ignore_index=IGNORE_INDEX,
-            reduction="sum",
-        )
-        ar_count = target_valid.sum().clamp_min(1)
-        ar_loss = ar_loss_sum / ar_count
+            reduction="none",
+        ).view_as(targets)
+        if loss_weights is None:
+            shift_weights = torch.ones_like(ar_per_token)
+        else:
+            shift_weights = loss_weights[:, 1:].to(device=ar_per_token.device, dtype=ar_per_token.dtype)
+        valid_weights = torch.where(target_valid, shift_weights, torch.zeros_like(shift_weights))
+        loss_denom = valid_weights.sum().clamp_min(1.0)
+        ar_loss_sum = (ar_per_token * valid_weights).sum()
+        ar_loss = ar_loss_sum / loss_denom
 
         batch_size = labels.shape[0]
         diff_mask0 = mask_view0[:, 1:] & target_valid
         diff_mask1 = mask_view1[:, 1:] & target_valid
         labels0 = torch.where(diff_mask0, targets, torch.full_like(targets, IGNORE_INDEX))
         labels1 = torch.where(diff_mask1, targets, torch.full_like(targets, IGNORE_INDEX))
-        diff_loss0 = F.cross_entropy(
+        diff_per_token0 = F.cross_entropy(
             noisy_logits[:batch_size, :-1].contiguous().view(-1, vocab_size).float(),
             labels0.view(-1),
             ignore_index=IGNORE_INDEX,
-            reduction="sum",
-        )
-        diff_loss1 = F.cross_entropy(
+            reduction="none",
+        ).view_as(targets)
+        diff_per_token1 = F.cross_entropy(
             noisy_logits[batch_size:, :-1].contiguous().view(-1, vocab_size).float(),
             labels1.view(-1),
             ignore_index=IGNORE_INDEX,
-            reduction="sum",
-        )
-        diff_loss = (diff_loss0 + diff_loss1) / ar_count
+            reduction="none",
+        ).view_as(targets)
+        diff_weights0 = torch.where(diff_mask0, shift_weights, torch.zeros_like(shift_weights))
+        diff_weights1 = torch.where(diff_mask1, shift_weights, torch.zeros_like(shift_weights))
+        diff_loss0 = (diff_per_token0 * diff_weights0).sum()
+        diff_loss1 = (diff_per_token1 * diff_weights1).sum()
+        diff_loss = (diff_loss0 + diff_loss1) / loss_denom
+        ar_count = target_valid.sum().clamp_min(1)
         return ar_loss + diff_loss, ar_loss, diff_loss, int(ar_count.detach().item())
 
     def _flare_two_stream_layer_forward(
@@ -2244,6 +2320,7 @@ class Fast_dLLM_Qwen3_5ForCausalLM(Fast_dLLM_Qwen3_5PreTrainedModel, GenerationM
             labels[~value_label_only_mask] = IGNORE_INDEX
         forced_argument_mask = self._argument_span_force_mask(full_original_labels)
         forced_value_mask = self._value_span_force_mask(full_original_labels)
+        loss_weights = self._argument_span_loss_weights(full_original_labels)
         train_bd_size = self._resolve_train_bd_size(input_ids.shape[1], input_ids.device)
         self._set_active_train_bd_size(train_bd_size)
         block_size = int(self.model.bd_size)
@@ -2341,6 +2418,7 @@ class Fast_dLLM_Qwen3_5ForCausalLM(Fast_dLLM_Qwen3_5PreTrainedModel, GenerationM
                 doc_ids,
                 mask_view0,
                 mask_view1,
+                loss_weights=loss_weights,
             ),
             clean_logits_full,
             noisy_logits,

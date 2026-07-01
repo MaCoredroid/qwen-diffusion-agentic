@@ -11,6 +11,7 @@ HF_MODEL="${HF_MODEL:-Qwen/Qwen3.5-9B}"
 MODEL_PATH="${MODEL_PATH:-${ROOT}/models/qwen3.5-9b-fastdllm-init}"
 DATASET_DIR="${DATASET_DIR:-${ROOT}/data/qwen35_9b_diffusion_curriculum}"
 OUTPUT_DIR="${OUTPUT_DIR:-${ROOT}/runs/fastdllm_qwen35_9b_agentic_qlora_pilot}"
+CONVERSATION_TEMPLATE="${CONVERSATION_TEMPLATE:-fast_dllm_v2}"
 
 MAX_STEPS="${MAX_STEPS:-50}"
 MAX_TRAIN_SAMPLES="${MAX_TRAIN_SAMPLES:-64}"
@@ -211,7 +212,7 @@ exec "${ENV_PY}" train_scripts/finetune.py \
     --dataset_path "${DATASET_DIR}" \
     --output_dir "${OUTPUT_DIR}" \
     --overwrite_output_dir \
-    --conversation_template fast_dllm_v2 \
+    --conversation_template "${CONVERSATION_TEMPLATE}" \
     --num_train_epochs 1 \
     --max_steps "${MAX_STEPS}" \
     --max_train_samples "${MAX_TRAIN_SAMPLES}" \

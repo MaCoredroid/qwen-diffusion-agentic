@@ -1,0 +1,407 @@
+{
+  "verdict": null,
+  "note": "No PASS/FAIL verdict by instruction; this report resolves the requested confounds.",
+  "matched_baseline_control": [
+    {
+      "tau": "0.00",
+      "base_heldout": {
+        "exact_args": 0,
+        "valid": 0,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 15.406976744186046,
+        "value_tokens": 1325,
+        "value_forward_visits": 86
+      },
+      "copygrounded_heldout": {
+        "exact_args": 0,
+        "valid": 0,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 15.9375,
+        "value_tokens": 510,
+        "value_forward_visits": 32
+      },
+      "base_public": {
+        "exact_args": 0,
+        "valid": 0,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 10.209677419354838,
+        "value_tokens": 633,
+        "value_forward_visits": 62
+      },
+      "copygrounded_public": {
+        "exact_args": 0,
+        "valid": 0,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 15.214285714285714,
+        "value_tokens": 426,
+        "value_forward_visits": 28
+      }
+    },
+    {
+      "tau": "0.50",
+      "base_heldout": {
+        "exact_args": 0,
+        "valid": 0,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.5069124423963134,
+        "value_tokens": 1308,
+        "value_forward_visits": 868
+      },
+      "copygrounded_heldout": {
+        "exact_args": 0,
+        "valid": 1,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.2204351939451277,
+        "value_tokens": 1290,
+        "value_forward_visits": 1057
+      },
+      "base_public": {
+        "exact_args": 0,
+        "valid": 0,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.4419134396355353,
+        "value_tokens": 633,
+        "value_forward_visits": 439
+      },
+      "copygrounded_public": {
+        "exact_args": 0,
+        "valid": 1,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.1693548387096775,
+        "value_tokens": 580,
+        "value_forward_visits": 496
+      }
+    },
+    {
+      "tau": "0.70",
+      "base_heldout": {
+        "exact_args": 0,
+        "valid": 2,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.2034830430797434,
+        "value_tokens": 1313,
+        "value_forward_visits": 1091
+      },
+      "copygrounded_heldout": {
+        "exact_args": 0,
+        "valid": 2,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.066447908121411,
+        "value_tokens": 1300,
+        "value_forward_visits": 1219
+      },
+      "base_public": {
+        "exact_args": 0,
+        "valid": 3,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.1928166351606806,
+        "value_tokens": 631,
+        "value_forward_visits": 529
+      },
+      "copygrounded_public": {
+        "exact_args": 0,
+        "valid": 3,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.0708117443868739,
+        "value_tokens": 620,
+        "value_forward_visits": 579
+      }
+    },
+    {
+      "tau": "0.80",
+      "base_heldout": {
+        "exact_args": 0,
+        "valid": 1,
+        "exact_seq": 1,
+        "value_tokens_per_forward": 1.1106454316848282,
+        "value_tokens": 1325,
+        "value_forward_visits": 1193
+      },
+      "copygrounded_heldout": {
+        "exact_args": 0,
+        "valid": 7,
+        "exact_seq": 0,
+        "value_tokens_per_forward": 1.0368589743589745,
+        "value_tokens": 1294,
+        "value_forward_visits": 1248
+      },
+      "base_public": {
+        "exact_args": 0,
+        "valid": 5,
+        "exact_seq": 1,
+        "value_tokens_per_forward": 1.0932642487046633,
+        "value_tokens": 633,
+        "value_forward_visits": 579
+      },
+      "copygrounded_public": {
+        "exact_args": 0,
+        "valid": 9,
+        "exact_seq": 5,
+        "value_tokens_per_forward": 1.054421768707483,
+        "value_tokens": 620,
+        "value_forward_visits": 588
+      }
+    },
+    {
+      "tau": "0.90",
+      "base_heldout": {
+        "exact_args": 0,
+        "valid": 2,
+        "exact_seq": 2,
+        "value_tokens_per_forward": 1.049089469517023,
+        "value_tokens": 1325,
+        "value_forward_visits": 1263
+      },
+      "copygrounded_heldout": {
+        "exact_args": 0,
+        "valid": 9,
+        "exact_seq": 6,
+        "value_tokens_per_forward": 1.0141176470588236,
+        "value_tokens": 1293,
+        "value_forward_visits": 1275
+      },
+      "base_public": {
+        "exact_args": 3,
+        "valid": 6,
+        "exact_seq": 6,
+        "value_tokens_per_forward": 1.0567612687813022,
+        "value_tokens": 633,
+        "value_forward_visits": 599
+      },
+      "copygrounded_public": {
+        "exact_args": 3,
+        "valid": 10,
+        "exact_seq": 8,
+        "value_tokens_per_forward": 1.0079617834394905,
+        "value_tokens": 633,
+        "value_forward_visits": 628
+      }
+    },
+    {
+      "tau": "0.95",
+      "base_heldout": {
+        "exact_args": 2,
+        "valid": 4,
+        "exact_seq": 3,
+        "value_tokens_per_forward": 1.0209302325581395,
+        "value_tokens": 1317,
+        "value_forward_visits": 1290
+      },
+      "copygrounded_heldout": {
+        "exact_args": 3,
+        "valid": 10,
+        "exact_seq": 8,
+        "value_tokens_per_forward": 1.0038850038850038,
+        "value_tokens": 1292,
+        "value_forward_visits": 1287
+      },
+      "base_public": {
+        "exact_args": 3,
+        "valid": 7,
+        "exact_seq": 5,
+        "value_tokens_per_forward": 1.0292682926829269,
+        "value_tokens": 633,
+        "value_forward_visits": 615
+      },
+      "copygrounded_public": {
+        "exact_args": 8,
+        "valid": 11,
+        "exact_seq": 10,
+        "value_tokens_per_forward": 1.0015822784810127,
+        "value_tokens": 633,
+        "value_forward_visits": 632
+      }
+    },
+    {
+      "tau": "0.99",
+      "base_heldout": {
+        "exact_args": 3,
+        "valid": 6,
+        "exact_seq": 4,
+        "value_tokens_per_forward": 1.0038940809968848,
+        "value_tokens": 1289,
+        "value_forward_visits": 1284
+      },
+      "copygrounded_heldout": {
+        "exact_args": 4,
+        "valid": 10,
+        "exact_seq": 8,
+        "value_tokens_per_forward": 1.0007733952049498,
+        "value_tokens": 1294,
+        "value_forward_visits": 1293
+      },
+      "base_public": {
+        "exact_args": 8,
+        "valid": 9,
+        "exact_seq": 8,
+        "value_tokens_per_forward": 1.0015822784810127,
+        "value_tokens": 633,
+        "value_forward_visits": 632
+      },
+      "copygrounded_public": {
+        "exact_args": 8,
+        "valid": 11,
+        "exact_seq": 10,
+        "value_tokens_per_forward": 1.0,
+        "value_tokens": 633,
+        "value_forward_visits": 633
+      }
+    }
+  ],
+  "gsm8k_retention_validated_config": {
+    "copygrounded": {
+      "examples": 20,
+      "strict_correct": 15,
+      "strict_accuracy": 0.75,
+      "flex_correct": 15,
+      "flex_accuracy": 0.75
+    },
+    "prior_validated_b1000_summary": {
+      "examples": 20,
+      "strict_correct": 13,
+      "strict_accuracy": 0.65,
+      "flex_correct": 11,
+      "flex_accuracy": 0.55
+    },
+    "config": {
+      "full_context_generation": true,
+      "fresh_generation_blocks": true,
+      "generation_tasks": "gsm8k",
+      "gsm8k_fewshot": 5,
+      "block_size": 32,
+      "small_block_size": 32,
+      "max_new_tokens": 256,
+      "threshold": 0.9,
+      "temperature": 0.0,
+      "top_p": 0.95,
+      "mask_id": 248077,
+      "stop_token_id": 248046
+    },
+    "discarded_broken_retention_artifact": "runs/flare_redesign_run1_eval/gsm8k_first20.summary.json used prompt_mode=phasea_fewshot/decode_mode=fastdllm_anywhere and is not used here."
+  },
+  "copyspan_isolation": {
+    "slice": "runs/flare_redesign_run1_redteam/copyspan_isolation/copyspan_eval_12.jsonl",
+    "copy_spans": 41,
+    "curve": [
+      {
+        "cell": "arg32_tau000",
+        "record_exact": 0,
+        "record_valid": 0,
+        "copy_args_exact": 0,
+        "copy_args_total": 41,
+        "copy_arg_accuracy": 0.0,
+        "value_tokens_per_forward": 13.486486486486486,
+        "value_tokens": 499,
+        "value_forward_visits": 37
+      },
+      {
+        "cell": "arg32_tau050",
+        "record_exact": 0,
+        "record_valid": 0,
+        "copy_args_exact": 0,
+        "copy_args_total": 41,
+        "copy_arg_accuracy": 0.0,
+        "value_tokens_per_forward": 1.2331460674157304,
+        "value_tokens": 439,
+        "value_forward_visits": 356
+      },
+      {
+        "cell": "arg8_tau099",
+        "record_exact": 12,
+        "record_valid": 12,
+        "copy_args_exact": 41,
+        "copy_args_total": 41,
+        "copy_arg_accuracy": 1.0,
+        "value_tokens_per_forward": 1.0,
+        "value_tokens": 499,
+        "value_forward_visits": 499
+      }
+    ],
+    "schedule_metadata": {
+      "arg8_value_tokens": 499,
+      "arg8_value_blocks": 82,
+      "arg8_denoise_step_tokens_8": 499,
+      "arg32_value_tokens": 499,
+      "arg32_value_blocks": 42,
+      "arg32_denoise_step_tokens_8": 499,
+      "parallel_path_note": "Schedule denoise_steps metadata remains 8 for argument_value blocks; the active parallel-commit path reports actual value-forward visits in sampler events."
+    }
+  },
+  "native_proxy_copy_vs_derived_tau099": {
+    "run1_heldout": {
+      "record_exact": 4,
+      "record_valid": 10,
+      "groups": {
+        "copy": {
+          "arguments": 52,
+          "exact": 41,
+          "accuracy": 0.7884615384615384
+        },
+        "derived": {
+          "arguments": 32,
+          "exact": 18,
+          "accuracy": 0.5625
+        }
+      },
+      "value_tokens_per_forward": 1.0007733952049498
+    },
+    "run1_public": {
+      "record_exact": 8,
+      "record_valid": 11,
+      "groups": {
+        "copy": {
+          "arguments": 60,
+          "exact": 55,
+          "accuracy": 0.9166666666666666
+        },
+        "derived": {
+          "arguments": 11,
+          "exact": 5,
+          "accuracy": 0.45454545454545453
+        }
+      },
+      "value_tokens_per_forward": 1.0
+    },
+    "base_heldout": {
+      "record_exact": 3,
+      "record_valid": 6,
+      "groups": {
+        "copy": {
+          "arguments": 52,
+          "exact": 19,
+          "accuracy": 0.36538461538461536
+        },
+        "derived": {
+          "arguments": 32,
+          "exact": 14,
+          "accuracy": 0.4375
+        }
+      },
+      "value_tokens_per_forward": 1.0038940809968848
+    },
+    "base_public": {
+      "record_exact": 8,
+      "record_valid": 9,
+      "groups": {
+        "copy": {
+          "arguments": 60,
+          "exact": 49,
+          "accuracy": 0.8166666666666667
+        },
+        "derived": {
+          "arguments": 11,
+          "exact": 5,
+          "accuracy": 0.45454545454545453
+        }
+      },
+      "value_tokens_per_forward": 1.0015822784810127
+    }
+  },
+  "artifacts": {
+    "matched_baseline_root": "runs/flare_redesign_run1_redteam/matched_ckpt275_native_tau",
+    "gsm8k_summary": "runs/flare_redesign_run1_redteam/gsm8k_validated_fullctx_fresh_maskban/summary.json",
+    "copyspan_analysis": "runs/flare_redesign_run1_redteam/copyspan_isolation/copyspan_analysis.json",
+    "run1_proxy_heldout": "runs/flare_redesign_run1_redteam/native_proxy_heldout_copyderived_run1.json",
+    "run1_proxy_public": "runs/flare_redesign_run1_redteam/native_proxy_public_copyderived_run1.json"
+  }
+}
