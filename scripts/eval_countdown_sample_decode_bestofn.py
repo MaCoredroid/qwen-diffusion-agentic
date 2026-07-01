@@ -582,7 +582,7 @@ def parse_args():
     parser.add_argument("--gpu-index", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20260707)
     parser.add_argument("--eval-seed", type=int, default=2000)
-    parser.add_argument("--dataset-seed-stride", type=int, default=10000)
+    parser.add_argument("--dataset-seed-stride", type=int, default=0)
     parser.add_argument("--datasets", default="easy3,standard4")
     parser.add_argument("--score-size", type=int, default=16)
     parser.add_argument("--throughput-size", type=int, default=16)
