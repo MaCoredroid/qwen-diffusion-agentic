@@ -1017,3 +1017,15 @@ lossy parallel-commit is a separate knob pinned lossless for the foundation, swe
 layers, NOT our 24 GDN layers (recurrent state, the unsolved gap). Architecture being designed by ultracode workflow.
 NEXT: RL pilot wraps (done its job: feasible, reward-sparsity is the knob) -> flare BUILDS the speed infra (not more
 RL) -> RL rollouts run on the fast consistent serving.
+
+## SERVING BASE DECISION — GREENLIT: build on SGLang (user 2026-06-30)
+Research settled it: the flywheel FR13 APC is a PORT of SGLang's Mamba/GDN radix cache TO vLLM, and "the tree gap is
+the ONE SGLang piece that does not port" -> SGLang has the COMPLETE native lossless GDN prefix cache (incl. the
+tree/branching the flywheel is still fighting on vLLM); SGLang also serves Qwen3-Next/GDN natively (v0.5.8+). But
+SGLang does NOT serve GDN+block-DIFFUSION out of the box (the novel core). DECISION: **build the fast
+train-serve-consistent GDN-block-diffusion serving ON SGLANG** (its native GDN radix cache = the hard lossless part),
+ADD the novel block-diffusion-denoise-over-GDN layer + our grammar decoder; flywheel FR13 APC + DiffusionGemma
+ModelState = references. Constraints unchanged: TRAIN-SERVE PARITY (rollouts=serving; SGLang forward must match our
+FLARE forward or exact re-score) + LOSSLESS-FIRST. NEXT: flare SGLang foundational spike (load our model / parity /
+radix-cache-for-diffusion probe) in parallel with the design workflow wqav45xfp -> then the full build -> then RL
+rollouts on the fast consistent serving.
