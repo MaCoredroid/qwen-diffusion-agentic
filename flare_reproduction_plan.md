@@ -978,3 +978,17 @@ Roadmap reorder: (1) finish the Countdown RL-feasibility pilot (cheap; tells us 
 gap with the training levers (RL / self-distill / decoder-in-the-loop) + diffusion knobs (re-denoise). Honest
 reality: 9B on SWE-Verified solves little -> AR-9B baseline itself will be LOW, so the goal is RELATIVE (>=AR);
 tau-bench multi-turn is more tractable at 9B. Measure BOTH.
+
+## Agentic-eval SERVING decision (user 2026-06-30): torch backend, SGLang deferred
+Researched the diffusion-serving landscape (web): SGLang has native block-diffusion serving (day-0 LLaDA 2.0, ~1.9x
+over AR) and vLLM added a dllm-plugin + DiffusionGemma — BUT all target STANDARD-attention diffusion; NONE serves our
+GDN-hybrid (Qwen3-Next) block-diffusion off-the-shelf (the novel core), and fast GDN-diffusion serving needs a
+recurrent-state cache we already found gives only ~2x. **DECISION (user "worst case just use our torch backend"):**
+serve diffusion-9B for the agentic eval via a thin OpenAI/Responses wrapper around our EXISTING torch/fastdllm
+generation + grammar decoder — guaranteed to support our exact model, zero new integration risk, small build.
+AR-9B baseline via vLLM/SGLang (AR, fast). Both through the SAME Codex harness (tau-bench + SWE-Verified). HONEST
+COST: torch backend = slow full-context path; multi-turn agentic = many gens -> SLOW eval. Mitigate: small task
+subset first (signal, not full benchmark), long background job, GDN-state-cache (~2x) / fewer denoise steps only if
+blocking. Slow serving does NOT bias the accuracy comparison (we measure agentic SCORE, not speed). SGLang = DEFERRED
+optimization (only if eval too slow OR we productionize OR want a diffusion SPEED claim); scoping spike (can SGLang's
+block-diffusion path host a GDN backbone?) is the gate to revisit it.
