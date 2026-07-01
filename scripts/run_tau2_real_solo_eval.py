@@ -58,6 +58,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout", type=float, default=120.0)
     parser.add_argument("--endpoint", default="http://127.0.0.1:30000/v1")
     parser.add_argument("--served-model", default="qwen3.5-9b-ar")
+    parser.add_argument("--serving-context-length", type=int, default=None)
     parser.add_argument("--base-model", type=Path, default=DEFAULT_BASE)
     parser.add_argument("--adapter", type=Path, default=DEFAULT_ADAPTER)
     parser.add_argument("--tokenizer-path", type=Path, default=None)
@@ -519,6 +520,7 @@ def manifest(args: argparse.Namespace, backend_meta: dict, tasks: list) -> dict:
         "max_steps": int(args.max_steps),
         "max_errors": int(args.max_errors),
         "max_new_tokens": int(args.max_new_tokens),
+        "serving_context_length": args.serving_context_length,
         "temperature": float(args.temperature),
         "lanes": split_csv(args.lanes),
         "parser_version": "eval_toolcall_jsonl.extract_tool_calls:qwen_native",
