@@ -12,6 +12,8 @@ Instrumentation: commit `5f5c900` adds `--denoise-logit-mode` to
 - `causal_shift`: existing full-context path, `model(input_ids=x_t, use_cache=False)`,
   right-shifted logits.
 - `flare_no_shift`: route_i two-stream noisy forward, cache-off, no right shift.
+- `flare_shift` was added after this falsifier as the corrected route_i two-stream mode:
+  noisy FLARE logits with the same +1/right shift as training.
 - Both arms use the same Qwen-native live grammar decoder, gold stripped from generation,
   `fresh_generation_blocks`, `block_size=32`, `small_block_size=32`, `max_new_tokens=192`,
   greedy temp 0.
@@ -38,9 +40,29 @@ Per-row: causal exact args = `[1, 1, 0, 1, 0, 1]`; FLARE no-shift exact args =
 `[0, 0, 0, 0, 0, 0]`. FLARE also produced zero valid tool-call JSON rows despite zero
 unsafe grammar fallbacks.
 
-Verdict: **FAIL. FLARE no-shift serving is not >= causal-shift serving on task score.**
-Per the serving architecture gate, this checkpoint is not FLARE-serving-ready. This is a
-train/serve semantics blocker; a cache cannot fix it. Stop before cache build.
+Verdict: **FAIL for no-shift.** FLARE no-shift serving is not >= causal-shift serving on
+task score. This does **not** mean the checkpoint is unusable for FLARE serving; it means
+the original serving architecture head-alignment claim was wrong.
+
+## 0a resolution: true train-matched head alignment
+
+The true train-matched serving alignment is **route_i FLARE noisy forward plus the existing
++1/right shift**.
+
+Code evidence in `models/qwen3.5-9b-fastdllm-init/modeling.py`:
+
+- `_flare_two_stream_training_forward` computes `noisy_logits = self.lm_head(noisy_hidden)`.
+- `_compute_flare_losses` sets `targets = labels[:, 1:]`.
+- Diffusion masks are also shifted: `diff_mask0 = mask_view0[:, 1:]` and
+  `diff_mask1 = mask_view1[:, 1:]`.
+- The diffusion CE consumes `noisy_logits[:batch_size, :-1]` and
+  `noisy_logits[batch_size:, :-1]` against those shifted labels.
+
+So noisy hidden/logit position `i` is trained to predict token `i+1`, exactly like the clean
+AR stream. The within-block bidirectional mask changes the context available to the noisy
+stream; it does not change the head's target index. The correct cached serving method must
+therefore produce route_i FLARE noisy logits and then apply the same shift before sampling or
+logprob scoring. The no-shift branch is retained only as the Stage-0 falsifier.
 
 ## 0b. Throughput projection
 
@@ -85,13 +107,15 @@ Needed B and throughput:
   about `30 tok/s` to finish in one day, but heterogeneous tasks/turns can collapse active
   batch size. This is the deferred continuous-batching case, not the RL foundation case.
 
-Throughput-only verdict: **HF-LOCKSTEP-SUFFICES** for the RL serving foundation if the
-model is FLARE-serving-ready. Concrete trigger to layer SGLang generation on the HF spine:
+Throughput-only verdict after the 0a alignment resolution: **HF-LOCKSTEP-SUFFICES** for the
+RL serving foundation if the cached shifted-FLARE forward measures near this projection.
+Concrete trigger to layer SGLang generation on the HF spine:
 measured cached HF lockstep at B=16 falls below `80 policy tok/s`, B=32 cannot fit due
 to memory, adaptive per-sequence commit breaks lockstep, or the agentic eval harness shows
 p50 active batch `<8` with projected wall-clock `>24h` for the target eval.
 
 ## Overall gate
 
-Do not build the cache now. Stage 0a failed decisively, so the next step is train/serve
-semantics triage or retraining, not `RequestDiffusionState`.
+Do not build the cache until this corrected alignment is carried into the foundation:
+`RequestDiffusionState` architecture stays the same, but T2 must compare shifted FLARE
+serving logits/logprobs against the shifted training-loss alignment.

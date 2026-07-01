@@ -2,6 +2,8 @@
 
 > Decision-grade output of an 11-agent design workflow (3 designs x 4 adversarial lenses + synthesis), code-verified on the box. Monitor-red-teamed. The SERVING-BASE recommendation (HF own-forward vs SGLang) reverses the prior SGLang greenlight -- escalated to user.
 
+**2026-07-01 Stage-0a correction:** the original workflow's "no `+1` shift" head recommendation was empirically and code-wise wrong. The FLARE training loss aligns both clean and noisy logits as next-token predictors (`noisy_logits[:, :-1]` vs `labels[:, 1:]`), so the train-matched serving head is **route_i FLARE noisy forward + the existing +1/right-shifted logits**. The clean-causal cache/advance architecture below is unchanged; only the head alignment is corrected.
+
 Both load-bearing facts confirmed. The F1 correction is real and decisive: modeling.py:2197 shows the noisy stream attends `torch.cat([clean_norm.repeat(2,1,1), noisy_norm])` — clean-stream KV, and GDN is seeded from `clean_gdn_docwise_with_boundaries` (causal clean scan, line 2160-2182). The boundary carriers are **clean-stream causal quantities**, so `advance()` must be a separate clean-causal forward, not a reuse of the noisy block. And the regime is settled: `gdn_mode` is read only in `_linear_attn_mdm` (line 1489, reachable only via the non-FLARE `mdm_split_size` path); the trained checkpoint ran `FASTDLLM_FLARE_TWO_STREAM=1` + `route_i`. Synthesizing now.
 
 ---
@@ -30,7 +32,7 @@ For the single in-flight block `b` at `block_start = b·32`, run the **route_i F
 
 - **24 GDN layers:** `run_gdn_manual_route_i(gdn_layer, block_hidden, chunk_size=32, initial_state=S_cache[layer], conv_tail=tail_cache[layer])` (`modeling.py:787`). O(32), independent of prefix length. Final state **discarded** every step (block still noisy).
 - **8 attention layers:** block Q (≤32 rows) attends `[clean-prefix K,V] ++ [block K,V]` under `flare_two_stream_bool_mask` restricted to one block = all-ones over clean prefix ⊕ 32×32 bidirectional block. One SDPA call. The clean-prefix KV is the **clean-stream causal** KV (from `clean_norm`), cached.
-- **Head:** `lm_head(model.norm(noisy_hidden))` per position — **no `+1` right-shift** (the shift at `eval:2416` is a causal-AR artifact; the FLARE mask token at position `i` predicts `i` directly — `block_diff_mask:88` confirms within-block bidirectionality).
+- **Head:** `lm_head(model.norm(noisy_hidden))`, then apply the **train-matched +1/right shift** used by the current sampler. Code evidence: `_compute_flare_losses` uses `targets = labels[:, 1:]`, `diff_mask* = mask_view*[:, 1:]`, and `noisy_logits[:, :-1]` for the diffusion CE. Within-block bidirectional visibility changes context, not the head's target index.
 
 ### The cache lifecycle — one genuinely new piece (`RequestDiffusionState`)
 
@@ -66,12 +68,12 @@ RequestDiffusionState (per request, pinned — NOT a cross-request content-hash 
 ## 2. Staged build plan (each stage gated on the prior)
 
 ### Stage 0 — Prerequisite decision A/B (cheap, decisive, do FIRST)
-Before any caching work, answer "is FLARE serving even the right target for this checkpoint?"
-- **FLARE-vs-causal task-accuracy A/B** on banked tool-call cases: serve today's causal `+1`-shift path vs the FLARE no-shift path (both cache-OFF) on the trained adapter. If FLARE-serving is not ≥ causal-serving on task score, the checkpoint isn't FLARE-serving-ready and this is a **train-side blocker** no cache can fix. (The adapter *was* trained two-stream/route_i, so this should pass — but it is the cheapest possible falsifier and must gate the rest.)
+Before any caching work, resolve the serving head alignment.
+- **FLARE-no-shift-vs-causal task-accuracy A/B** on banked tool-call cases: serve today's causal `+1`-shift path vs the FLARE no-shift path (both cache-OFF) on the trained adapter. This falsifier ran on 2026-07-01 and failed no-shift decisively (`0/6` exact args, `0/6` valid JSON vs causal `4/6` exact args, `6/6` valid JSON). Re-reading training loss confirmed the reason: FLARE noisy logits are trained shifted. Therefore the foundation must use **route_i FLARE noisy forward with +1/right-shifted logits**, not no-shift.
 
 ### Stage 1 — LOSSLESS FOUNDATION FIRST (no new kernel, no vLLM, HF path)
-1. Add a serving method to `Fast_dLLM_Qwen3_5Model`: single-block route_i FLARE noisy forward from a passed-in checkpoint (GDN seeded scan + prefix-KV/32×32 SDPA), returning **un-shifted** per-position logits.
-2. Wire `RequestDiffusionState` into `full_context_sample` (`eval:1975`): replace `model(input_ids=x_t, use_cache=False)` at `eval:2415` **and the two candidate-scoring recomputes at `eval:2168` and `eval:2302`** with the cached block forward. **Assert 0 residual full-context `model()` calls per committed block** (else speedup caps at ~3× — red-team F2/X5). Delete the `+1` shift (`eval:2416`).
+1. Add a serving method to `Fast_dLLM_Qwen3_5Model`: single-block route_i FLARE noisy forward from a passed-in checkpoint (GDN seeded scan + prefix-KV/32×32 SDPA), returning logits compatible with the existing **+1/right-shifted** sampler alignment.
+2. Wire `RequestDiffusionState` into `full_context_sample` (`eval:1975`): replace `model(input_ids=x_t, use_cache=False)` at `eval:2415` **and the two candidate-scoring recomputes at `eval:2168` and `eval:2302`** with the cached block forward. **Assert 0 residual full-context `model()` calls per committed block** (else speedup caps at ~3× — red-team F2/X5). Preserve the train-matched `+1` shift (`eval:2416` equivalent).
 3. Implement `advance()` as the **clean-causal** incremental forward (F1 fix). Hook at block-fill loop exit (~`eval:2067`).
 
 ### Stage 2 — BIT-EXACT + PARITY VERIFICATION PROTOCOL (the gate; must BUILD a new instrument)
@@ -107,7 +109,7 @@ RL is unbiased **iff** the token that gets sampled and the log-prob that gets di
 
 | # | Clause | Enforcement |
 |---|---|---|
-| C1 | **Forward semantics** = route_i FLARE two-stream noisy forward; **no `+1` shift**; bidirectional-within-block attention; GDN clean-boundary-seeded | Hard guard at serve init: assert `flare_gdn_route()=="route_i"` and two-stream enabled; any route change invalidates the cache |
+| C1 | **Forward semantics** = route_i FLARE two-stream noisy forward; **+1/right-shifted logits**; bidirectional-within-block attention; GDN clean-boundary-seeded | Hard guard at serve init: assert `flare_gdn_route()=="route_i"` and two-stream enabled; T2 checks shifted serving logits/logprobs against `_compute_flare_losses` alignment; any route change invalidates the cache |
 | C2 | **Boundary carriers are CLEAN-stream** (causal); `advance()` is a separate clean-causal forward | T1 |
 | C3 | **One GDN kernel realization** — and replicate training's *internal* torch-boundary/FLA-block split exactly. `torch_chunk_gated_delta_rule:450` forces torch when `output_chunk_states=True` (boundary capture) and may use FLA when False (block scan). "Pin one kernel" is impossible verbatim; the contract is "replicate the exact split." | T4(b); dtype assert on cache tensors |
 | C4 | `chunk_size == block_size == bd_size == 32`; boundary lands on a chunk boundary via **doc-anchored** grid (not prompt-anchored) | T4(a) |
@@ -155,7 +157,7 @@ On the **current box this gate FAILS**: the on-box FLA benchmark already shows f
 
 ## 6. One-paragraph bottom line
 
-Build the **HF-path seeded-block route_i FLARE serving foundation** (`RequestDiffusionState` + seeded `run_gdn_manual_route_i` + clean-prefix-KV SDPA, no `+1` shift, all three recompute call-sites rerouted), with the **clean-stream `advance()`** as the load-bearing correction to every prior design. Reuse the flywheel **checkpoint object, fp32/raw-conv discipline, and verification methodology verbatim**; drop its tree CUDA and its vLLM fork. Gate "lossless" on a **new full-stack real-weight multi-block A/B (T1) + serving-vs-training-forward parity (T2) + byte-identical canary (T3)** — the existing single-layer validator cannot see the F1/parity defects. Ship diffu-GRPO on an **exact-re-score parity spine** verified on the **NF4** path with the mean-field commit-set replayed. Pin the lossy dial lossless for the foundation and sweep it later as a 3-D (speed × accuracy × gradient-bias) Pareto. Keep the in-house recurrent kernel and forked-vLLM strictly behind measurement gates that the current single-5090 batch-1 box does not pass.
+Build the **HF-path seeded-block route_i FLARE serving foundation** (`RequestDiffusionState` + seeded `run_gdn_manual_route_i` + clean-prefix-KV SDPA, train-matched `+1` shift, all three recompute call-sites rerouted), with the **clean-stream `advance()`** as the load-bearing correction to every prior design. Reuse the flywheel **checkpoint object, fp32/raw-conv discipline, and verification methodology verbatim**; drop its tree CUDA and its vLLM fork. Gate "lossless" on a **new full-stack real-weight multi-block A/B (T1) + serving-vs-training-forward parity (T2) + byte-identical canary (T3)** — the existing single-layer validator cannot see the F1/parity defects. Ship diffu-GRPO on an **exact-re-score parity spine** verified on the **NF4** path with the mean-field commit-set replayed. Pin the lossy dial lossless for the foundation and sweep it later as a 3-D (speed × task accuracy × gradient-bias) Pareto. Keep the in-house recurrent kernel and forked-vLLM strictly behind measurement gates that the current single-5090 batch-1 box does not pass.
 
 Key files: `/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init/modeling.py` (`:2142` layer forward, `:2160-2182` clean-seeded GDN, `:2197` clean-KV read, `:2266` clean_mask, `:787` `run_gdn_manual_route_i`, `:450` torch/FLA seam, `:1489` dead gdn_mode path), `/home/mark/qwen_diffusion/scripts/eval_fastdllm_toolcall_cases.py` (`:2168/:2302/:2415` three recomputes, `:2416` shift, `:2476` commit), `/home/mark/qwen_diffusion/scripts/validate_gdn_state_snapshot.py` (insufficient as-is), `/home/mark/qwen_diffusion/fla_kernel_feasibility.md` (batch-1 kernel loss, sm_120), `/home/mark/qwen_diffusion/machine_notes.md` (flywheel = vLLM 0.19.0 container on GB10).
 

@@ -94,7 +94,7 @@ def denoise_logits_for_mode(model, x_t, args):
     if args.denoise_logit_mode == "causal_shift":
         logits = model(input_ids=x_t, use_cache=False).logits
         return torch.cat([logits[:, :1, :], logits[:, :-1, :]], dim=1)
-    if args.denoise_logit_mode == "flare_no_shift":
+    if args.denoise_logit_mode in {"flare_shift", "flare_no_shift"}:
         noisy_logits = flare_two_stream_noisy_logits(
             model,
             x_t,
@@ -102,6 +102,8 @@ def denoise_logits_for_mode(model, x_t, args):
             block_size=args.block_size,
             mask_id=args.mask_id,
         )
+        if args.denoise_logit_mode == "flare_shift":
+            noisy_logits = torch.cat([noisy_logits[:, :1, :], noisy_logits[:, :-1, :]], dim=1)
         return noisy_logits[: x_t.shape[0]]
     raise ValueError(f"unknown denoise_logit_mode={args.denoise_logit_mode!r}")
 
@@ -3273,11 +3275,12 @@ def main():
     parser.add_argument("--full-context-sampling", action="store_true")
     parser.add_argument(
         "--denoise-logit-mode",
-        choices=("causal_shift", "flare_no_shift"),
+        choices=("causal_shift", "flare_shift", "flare_no_shift"),
         default="causal_shift",
         help=(
             "Cache-off full-context denoise logits. causal_shift is the existing AR-style path; "
-            "flare_no_shift uses route_i FLARE noisy-stream logits without the causal right shift."
+            "flare_shift uses route_i FLARE noisy-stream logits with the train-matched +1 shift; "
+            "flare_no_shift is retained only as the Stage-0 falsifier."
         ),
     )
     parser.add_argument(
