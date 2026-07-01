@@ -1005,3 +1005,15 @@ serving infra ourselves; the fallback if SGLang's diffusion path is standard-att
 **PAYOFF REFRAME:** fast diffusion serving may be part of the RESULT, not just eval convenience — if diffusion-9B
 serves FASTER than AR-9B at EQUAL agentic accuracy, that's the unproven 'why diffusion' test-time-compute payoff.
 SEQUENCE: accuracy parity FIRST (slow torch is fine) -> speed as a bonus axis SECOND.
+
+## REORDER (user 2026-06-30): build fast train-serve-consistent serving infra BEFORE RL rollouts
+Rationale: RL (diffu-GRPO) rollouts ARE serving. If the fast serving/rollout path diverges from the TRAINING forward,
+the policy-gradient log-probs are inconsistent with the sampled distribution -> biased gradients (the train-inference
+mismatch on-policy RL is meant to KILL). So the fast serving path must be train-serve PARITY (same forward as
+training, or exact re-score). Build it FIRST so RL rollouts are fast AND consistent from step one. Two first-class
+constraints: (1) TRAIN-SERVE PARITY (RL log-prob consistency), (2) LOSSLESS-FIRST (verify bit-exact vs slow path;
+lossy parallel-commit is a separate knob pinned lossless for the foundation, swept later = the speed-accuracy Pareto
+= the diffusion payoff). Field ref (DiffusionGemma/SGLang) is ALL KV-cache/standard-attention -> covers our 8 attn
+layers, NOT our 24 GDN layers (recurrent state, the unsolved gap). Architecture being designed by ultracode workflow.
+NEXT: RL pilot wraps (done its job: feasible, reward-sparsity is the knob) -> flare BUILDS the speed infra (not more
+RL) -> RL rollouts run on the fast consistent serving.
