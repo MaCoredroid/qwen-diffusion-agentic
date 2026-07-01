@@ -1029,3 +1029,15 @@ ModelState = references. Constraints unchanged: TRAIN-SERVE PARITY (rollouts=ser
 FLARE forward or exact re-score) + LOSSLESS-FIRST. NEXT: flare SGLang foundational spike (load our model / parity /
 radix-cache-for-diffusion probe) in parallel with the design workflow wqav45xfp -> then the full build -> then RL
 rollouts on the fast consistent serving.
+
+## SERVING FOUNDATION — CONFIRMED (user agreed 2026-06-30): HF-own-forward, SGLang DEFERRED
+The design workflow wqav45xfp (code-verified) + user agree: build the fast serving FOUNDATION on our OWN HF route_i
+FLARE forward + a per-request RequestDiffusionState cache (24 GDN states + conv tails + 8 clean-stream KV) + a
+CLEAN-CAUSAL advance() (load-bearing correction: boundary carriers are clean-stream causal, not noisy-block) + an
+O(32) per-denoise-step block forward. TRAIN-SERVE PARITY BY CONSTRUCTION. Reuse flywheel checkpoint-object +
+fp32/raw-conv discipline + verification methodology; DROP its tree CUDA + vLLM fork. diffu-GRPO on an exact-re-score
+parity spine (NF4). Lossy dial pinned lossless for the foundation, swept later as a 3-D Pareto. Full spec:
+serving_architecture.md. SGLang spike confirmed: SGLang RUNS on sm_120 (+ GDN path + MambaRadixCache) but our custom
+FLARE arch needs config-shims to even load -> SGLang = DEFERRED throughput play (sample-generator, parity re-scored
+on HF), not the foundation. NEXT: flare wraps the SGLang spike -> builds the HF foundation (Stage 0 FLARE-vs-causal
+A/B first).
