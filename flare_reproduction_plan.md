@@ -959,3 +959,22 @@ do not promote.** Torch remains default; FLA remains available behind `FASTDLLM_
 batch/upstream-kernel experiments. Updated `fla_kernel_feasibility.md` status to "spike GREEN, integration NOT
 BENEFICIAL at our scale." Honest cause: batch-1 single-GPU QLoRA/autocast plus clean boundary-state extraction and
 packed-call overhead dominate; FLA correctness is fine, but the end-to-end training value is negative here.
+
+## ★ NORTH STAR (near-term goal, user 2026-06-30)
+**block-diffusion Qwen-9B agentic score (MULTI-TURN tool-use + SWE-Verified) >= AR Qwen-9B — same base model,
+same quant, everything else identical.** Only variable = AR vs block-diffusion. diffusion>=AR => conversion is a win
+(diffusion test-time knobs at no agentic cost). This SUPERSEDES the single-turn 33/44 grounding framing as the
+success metric.
+
+CRITICAL PATH = the matched AGENTIC EVAL (measure the gap before optimizing it):
+- AR-9B baseline = REAL AR Qwen3.5-9B via vLLM + Codex (flywheel native path; vLLM supports Qwen3-Next).
+- diffusion-9B = our converted model via a fastdllm-backed Responses server behind the SAME Codex harness.
+- Both on the SAME public tasks: tau-bench (multi-turn) + SWE-Verified; same quant, prompting, tool-format, stop.
+- => the flywheel (vLLM+Codex) is the matched EVAL harness (NOT the RL trainer, which stays in-process fastdllm).
+- Main build = the fastdllm-Responses shim (drive our diffusion model through Codex/round_driver).
+
+Roadmap reorder: (1) finish the Countdown RL-feasibility pilot (cheap; tells us if the training lever is viable).
+(2) BUILD the agentic eval harness + get the AR-9B baseline + first diffusion-vs-AR agentic scores. (3) close any
+gap with the training levers (RL / self-distill / decoder-in-the-loop) + diffusion knobs (re-denoise). Honest
+reality: 9B on SWE-Verified solves little -> AR-9B baseline itself will be LOW, so the goal is RELATIVE (>=AR);
+tau-bench multi-turn is more tractable at 9B. Measure BOTH.
