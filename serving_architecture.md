@@ -158,3 +158,16 @@ On the **current box this gate FAILS**: the on-box FLA benchmark already shows f
 Build the **HF-path seeded-block route_i FLARE serving foundation** (`RequestDiffusionState` + seeded `run_gdn_manual_route_i` + clean-prefix-KV SDPA, no `+1` shift, all three recompute call-sites rerouted), with the **clean-stream `advance()`** as the load-bearing correction to every prior design. Reuse the flywheel **checkpoint object, fp32/raw-conv discipline, and verification methodology verbatim**; drop its tree CUDA and its vLLM fork. Gate "lossless" on a **new full-stack real-weight multi-block A/B (T1) + serving-vs-training-forward parity (T2) + byte-identical canary (T3)** — the existing single-layer validator cannot see the F1/parity defects. Ship diffu-GRPO on an **exact-re-score parity spine** verified on the **NF4** path with the mean-field commit-set replayed. Pin the lossy dial lossless for the foundation and sweep it later as a 3-D (speed × accuracy × gradient-bias) Pareto. Keep the in-house recurrent kernel and forked-vLLM strictly behind measurement gates that the current single-5090 batch-1 box does not pass.
 
 Key files: `/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init/modeling.py` (`:2142` layer forward, `:2160-2182` clean-seeded GDN, `:2197` clean-KV read, `:2266` clean_mask, `:787` `run_gdn_manual_route_i`, `:450` torch/FLA seam, `:1489` dead gdn_mode path), `/home/mark/qwen_diffusion/scripts/eval_fastdllm_toolcall_cases.py` (`:2168/:2302/:2415` three recomputes, `:2416` shift, `:2476` commit), `/home/mark/qwen_diffusion/scripts/validate_gdn_state_snapshot.py` (insufficient as-is), `/home/mark/qwen_diffusion/fla_kernel_feasibility.md` (batch-1 kernel loss, sm_120), `/home/mark/qwen_diffusion/machine_notes.md` (flywheel = vLLM 0.19.0 container on GB10).
+
+
+## MONITOR ADDENDUM — B>1 LOCKSTEP BATCHING is REQUIRED in the foundation (user 2026-06-30)
+Correction to any "batch-1" framing: B=1 is NOT forced and is NOT a KV-cache constraint. Per-request cache is small
+(~100-150 MB: 24 GDN states ~50MB + conv tails + 8 attn KV ~34MB@1k-prefix), so 32GB holds B~=16-32 (context-length
+dependent). RL rollouts are LOCKSTEP-batchable (all B sequences at the same block+denoise step), which the HF forward
+handles with a plain batch dim: RequestDiffusionState -> [B,...], the O(32) block forward on [B,32,hidden], batched
+advance(). **Build the foundation for B>1 lockstep from the start (not B=1)** -- the pilot at G=4/1-prompt was
+under-batched (65% util); throughput needs B=(prompts x G) in flight. SGLang's edge = CONTINUOUS batching
+(heterogeneous async requests at different stages/lengths) = the AGENTIC-EVAL serving pattern = the DEFERRED
+throughput play, NOT the lockstep RL-rollout foundation. NB: lockstep assumes fixed denoise-steps-per-block (all
+commit together); adaptive per-sequence commit (entropy/confidence) diverges toward continuous batching and is the
+LOSSY-knob/deferred optimization, not the foundation.
