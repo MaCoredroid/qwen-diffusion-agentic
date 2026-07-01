@@ -53,6 +53,31 @@ def max_abs_diff(left: torch.Tensor, right: torch.Tensor) -> float:
     return float((left.float() - right.float()).abs().max().item())
 
 
+def diff_distribution(diff: torch.Tensor) -> dict[str, float]:
+    flat = diff.detach().float().reshape(-1).abs()
+    if flat.numel() == 0:
+        return {"mean": 0.0, "p50": 0.0, "p90": 0.0, "p99": 0.0, "p999": 0.0, "max": 0.0}
+    quantiles = torch.quantile(flat, torch.tensor([0.5, 0.9, 0.99, 0.999], device=flat.device))
+    return {
+        "mean": float(flat.mean().item()),
+        "p50": float(quantiles[0].item()),
+        "p90": float(quantiles[1].item()),
+        "p99": float(quantiles[2].item()),
+        "p999": float(quantiles[3].item()),
+        "max": float(flat.max().item()),
+    }
+
+
+def signed_diff_summary(diff: torch.Tensor) -> dict[str, float]:
+    flat = diff.detach().float().reshape(-1)
+    if flat.numel() == 0:
+        return {"mean": 0.0, "positive_fraction": 0.0}
+    return {
+        "mean": float(flat.mean().item()),
+        "positive_fraction": float((flat > 0).float().mean().item()),
+    }
+
+
 def load_validation_model(args):
     os.environ["FASTDLLM_FLARE_GDN_ROUTE"] = "route_i"
     os.environ.setdefault("FASTDLLM_FLARE_TWO_STREAM", "1")
@@ -116,6 +141,11 @@ def run_t1_t2(model, *, batch_size: int, blocks: int, block_size: int, mask_id: 
     argmax_flips = 0
     max_logit_diff = 0.0
     max_logprob_diff = 0.0
+    weighted_logit_abs_mean = 0.0
+    weighted_logprob_abs_mean = 0.0
+    weighted_kl_mean = 0.0
+    max_top1_logprob_abs_delta = 0.0
+    min_ref_top1_margin = float("inf")
     per_block = []
 
     for block_idx in range(blocks):
@@ -125,20 +155,49 @@ def run_t1_t2(model, *, batch_size: int, blocks: int, block_size: int, mask_id: 
         x_t = torch.cat([clean_ids[:, :start], noisy_block], dim=1)
         cached = state.shifted_active_logits(model, x_t)
         reference = shifted_reference(model, x_t, block_size, mask_id, active_start=start)
+        logit_delta = cached.float() - reference.float()
         logit_diff = max_abs_diff(cached, reference)
         cached_logp = torch.log_softmax(cached.float(), dim=-1)
         reference_logp = torch.log_softmax(reference.float(), dim=-1)
+        logprob_delta = cached_logp - reference_logp
         logprob_diff = max_abs_diff(cached_logp, reference_logp)
-        flips = int((cached.argmax(dim=-1) != reference.argmax(dim=-1)).sum().item())
+        cached_argmax = cached.argmax(dim=-1)
+        reference_argmax = reference.argmax(dim=-1)
+        flips = int((cached_argmax != reference_argmax).sum().item())
+        reference_top2 = torch.topk(reference_logp, k=2, dim=-1).values
+        ref_margin = reference_top2[..., 0] - reference_top2[..., 1]
+        ref_top_logprob_delta = torch.gather(logprob_delta, dim=-1, index=reference_argmax.unsqueeze(-1)).squeeze(-1)
+        kl_ref_cached = (reference_logp.exp() * (reference_logp - cached_logp)).sum(dim=-1)
+        elements = int(cached.numel())
+        positions = int(cached.shape[0] * cached.shape[1])
         total_positions += int(cached.shape[0] * cached.shape[1])
         argmax_flips += flips
         max_logit_diff = max(max_logit_diff, logit_diff)
         max_logprob_diff = max(max_logprob_diff, logprob_diff)
+        logit_distribution = diff_distribution(logit_delta)
+        logprob_distribution = diff_distribution(logprob_delta)
+        weighted_logit_abs_mean += logit_distribution["mean"] * elements
+        weighted_logprob_abs_mean += logprob_distribution["mean"] * elements
+        weighted_kl_mean += float(kl_ref_cached.mean().item()) * positions
+        max_top1_logprob_abs_delta = max(
+            max_top1_logprob_abs_delta,
+            float(ref_top_logprob_delta.abs().max().item()),
+        )
+        min_ref_top1_margin = min(min_ref_top1_margin, float(ref_margin.min().item()))
         per_block.append(
             {
                 "block": block_idx,
                 "logit_max_abs_diff": logit_diff,
                 "logprob_max_abs_diff": logprob_diff,
+                "logit_abs_diff": logit_distribution,
+                "logprob_abs_diff": logprob_distribution,
+                "logit_signed_diff": signed_diff_summary(logit_delta),
+                "logprob_signed_diff": signed_diff_summary(logprob_delta),
+                "ref_top1_logprob_abs_delta": diff_distribution(ref_top_logprob_delta),
+                "ref_top1_margin_min": float(ref_margin.min().item()),
+                "ref_top1_margin_p50": float(torch.quantile(ref_margin.float().reshape(-1), 0.5).item()),
+                "kl_ref_cached_mean": float(kl_ref_cached.mean().item()),
+                "kl_ref_cached_max": float(kl_ref_cached.max().item()),
                 "argmax_flips": flips,
             }
         )
@@ -153,6 +212,11 @@ def run_t1_t2(model, *, batch_size: int, blocks: int, block_size: int, mask_id: 
         "positions": int(total_positions),
         "logit_max_abs_diff": max_logit_diff,
         "logprob_max_abs_diff": max_logprob_diff,
+        "logit_abs_diff_mean": weighted_logit_abs_mean / max(1, total_positions * int(model.config.vocab_size)),
+        "logprob_abs_diff_mean": weighted_logprob_abs_mean / max(1, total_positions * int(model.config.vocab_size)),
+        "kl_ref_cached_mean": weighted_kl_mean / max(1, total_positions),
+        "ref_top1_logprob_abs_delta_max": max_top1_logprob_abs_delta,
+        "ref_top1_margin_min": 0.0 if min_ref_top1_margin == float("inf") else min_ref_top1_margin,
         "argmax_flips": int(argmax_flips),
         "t1_argmax_pass": bool(t1_pass),
         "t2_logit_logprob_pass": bool(t2_pass),
