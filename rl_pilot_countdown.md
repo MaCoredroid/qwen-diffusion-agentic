@@ -95,3 +95,97 @@ Systems feasibility: PASS. Online constrained diffu-GRPO fits comfortably in 32G
 Learning signal: PARTIAL. The constrained policy moved on Countdown (`1/32 -> 5/32` strict), so reward/rollout/update plumbing is not inert. RAW did not move durably (`0/32 -> 0/32`; transient `1/16` at step 150 only). The RAW-vs-constrained gap widened, exactly the decoder-dependence risk called out in the RL design doc.
 
 Decision: do not promote and do not claim the full gate is green. The pilot says online RL is practical, but constrained-only RL is insufficient for the promotable RAW lane. The next decision belongs to the monitor: either proceed to the fuller build specifically because it adds RAW internalization/self-distillation, or pivot lighter if the widened raw gap is unacceptable.
+
+## Stage 1 redo — fast serving + graded reward + dual-term (2026-07-01)
+
+Directive: re-run Countdown RL de-risk before Stage 2, now using the fast HF serving foundation, graded reward, and
+dual-term loss. Public data only (`reasoning-gym` Countdown). Protected lane unused.
+
+Code checkpoints:
+- `c0607c3` — FLARE prefix reuse cache checkpoint.
+- `5cf7010` — cached graded dual-term Countdown RL pilot.
+- `5d910a3` — batched exact re-score cleanup without per-token CPU syncs.
+
+Implementation changes:
+- Rollouts/eval sample through `RequestDiffusionState` cached route-I FLARE serving.
+- Policy logprobs are still differentiated only by the training forward exact re-score, with the Countdown grammar mask
+  re-applied before normalization.
+- Reward is graded: exact success = `1.0`; parseable all-number wrong expressions get bounded inverse-distance credit
+  instead of tying as strict zero.
+- Dual term: `L = L_RL(constrained policy) + lambda_raw * L_raw_internalize`, where raw internalization is full-vocab CE
+  over verified-correct constrained rollout tokens. No gold answer CE, no private data.
+
+Primary run (`lambda_raw=2.0`):
+
+```bash
+.venv-fastdllm/bin/python scripts/rl_pilot_countdown.py \
+  --out-dir runs/rl_pilot_countdown/stage1_cached_graded_dual_lam2_g4_step200_eval16 \
+  --max-steps 200 \
+  --train-size 256 \
+  --eval-size 16 \
+  --group-size 4 \
+  --max-new-tokens 32 \
+  --eval-max-new-tokens 32 \
+  --eval-every 50 \
+  --log-every 10 \
+  --rescore-micro-batch-size 4 \
+  --lambda-raw 2.0
+```
+
+Efficiency:
+
+| run | avg s/step | nonzero-update s/step | rollout s/step | train tok/s | rollout tok/s | GPU mean | peak alloc |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| old strict/cache-off pilot | 4.96 | 14.68 | 1.37 | n/a | n/a | 65.9% | 14.61 GiB |
+| Stage 1 `lambda_raw=0.5` | 4.34 | 4.50 | 0.92 | 9.55 | 45.16 | 69.7% | 22.37 GiB |
+| Stage 1 `lambda_raw=2.0` | 4.07 | 4.17 | 0.90 | 10.08 | 45.84 | 73.0% | 22.37 GiB |
+
+Read: average wall-clock is only moderately faster than the old headline average because graded reward makes almost every
+step a real update; the fair nonzero-update comparison is much better (`14.68s -> 4.17s`). Cached rollout itself is
+`1.37s -> 0.90s`. Exact re-score/update is now the dominant cost, not serving rollout.
+
+Zero-advantage starvation:
+
+| run | zero-advantage steps | rate |
+| --- | ---: | ---: |
+| old strict/cache-off pilot | 146/200 | 73.0% |
+| Stage 1 `lambda_raw=0.5` | 13/200 | 6.5% |
+| Stage 1 `lambda_raw=2.0` | 9/200 | 4.5% |
+
+Graded reward fixes the starvation failure decisively.
+
+Held-out 16-row trajectory (`lambda_raw=2.0`):
+
+| step | RAW strict | CONSTRAINED strict | gap | RAW graded | CONSTRAINED graded |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 | 0/16 | 2/16 | +2/16 | 0.0413 | 0.2136 |
+| 50 | 1/16 | 4/16 | +3/16 | 0.1099 | 0.3509 |
+| 100 | 0/16 | 3/16 | +3/16 | 0.0469 | 0.3012 |
+| 150 | 0/16 | 3/16 | +3/16 | 0.0450 | 0.2900 |
+| 200 | 0/16 | 4/16 | +4/16 | 0.0475 | 0.3454 |
+
+Secondary `lambda_raw=0.5` run:
+
+| step | RAW strict | CONSTRAINED strict | gap | RAW graded | CONSTRAINED graded |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 | 0/16 | 2/16 | +2/16 | 0.0413 | 0.2136 |
+| 50 | 1/16 | 2/16 | +1/16 | 0.1184 | 0.2391 |
+| 100 | 1/16 | 3/16 | +2/16 | 0.1088 | 0.2948 |
+| 150 | 0/16 | 4/16 | +4/16 | 0.0450 | 0.3472 |
+| 200 | 0/16 | 4/16 | +4/16 | 0.0475 | 0.3404 |
+
+Dual-term read:
+- Raw internalization was active, not dead: `lambda_raw=2.0` used 69/200 raw-internalization steps and 1145 raw CE
+  tokens; `lambda_raw=0.5` used 64/200 and 1080 tokens.
+- RAW moved transiently (`0/16 -> 1/16` at step 50, and for `lambda_raw=0.5` also step 100), and RAW graded reward
+  improved transiently.
+- RAW strict did **not** move durably by final step (`0/16` final in both Stage 1 runs). The final raw-vs-constrained
+  gap widened to `+4/16`.
+
+Stage 1 verdict:
+- PASS: fast serving is wired into rollouts/eval, and exact training-forward re-score remains the parity spine.
+- PASS: graded reward fixes zero-advantage starvation (`73% -> 4.5-6.5%`).
+- PARTIAL: constrained Countdown improves (`2/16 -> 4/16`).
+- NOT GREEN: dual-term raw internalization is active and causes transient RAW movement, but final RAW strict is not
+  durable. Do **not** proceed to Stage 2 or promote. The next red-team question is whether raw needs a verified-success
+  replay buffer / stronger raw schedule, or whether this Countdown raw lane is too noisy at 16 rows for the current term.
