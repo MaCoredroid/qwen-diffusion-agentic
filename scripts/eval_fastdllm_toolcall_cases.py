@@ -33,6 +33,79 @@ TOOL_OPEN = "<tool_call>"
 TOOL_CLOSE = "</tool_call>"
 
 
+def unwrap_lm_model(model):
+    if hasattr(model, "get_base_model"):
+        try:
+            return model.get_base_model()
+        except Exception:
+            pass
+    return model
+
+
+@torch.no_grad()
+def flare_two_stream_noisy_logits(model, clean_input_ids, noisy_input_ids, *, block_size: int, mask_id: int):
+    """Cache-off route_i FLARE noisy-stream logits for Stage-0 serving A/B.
+
+    This deliberately mirrors the validated generation diagnostic helper, but accepts
+    arbitrary live prompt lengths because tool-call prompts are not block aligned.
+    """
+    lm_model = unwrap_lm_model(model)
+    if clean_input_ids.shape != noisy_input_ids.shape:
+        raise ValueError(
+            f"clean/noisy shape mismatch: {tuple(clean_input_ids.shape)} vs {tuple(noisy_input_ids.shape)}"
+        )
+    if hasattr(lm_model, "_set_active_train_bd_size"):
+        lm_model._set_active_train_bd_size(block_size)
+    modeling_module = sys.modules[lm_model.__class__.__module__]
+    route = getattr(modeling_module, "flare_gdn_route", lambda: "route_i")()
+    if route != "route_i":
+        raise ValueError(f"FLARE serving A/B requires route_i, got {route!r}")
+
+    doc_ids = torch.zeros_like(clean_input_ids, dtype=torch.long)
+    noisy_pair_ids = noisy_input_ids.repeat(2, 1)
+    noisy_doc_ids = doc_ids.repeat(2, 1)
+
+    clean_hidden = lm_model.model.embed_tokens(clean_input_ids)
+    noisy_hidden = lm_model.model.embed_tokens(noisy_pair_ids)
+    clean_mask = modeling_module.doc_causal_bool_mask(doc_ids)
+    two_stream_mask = modeling_module.flare_two_stream_bool_mask(noisy_doc_ids, block_size)
+    clean_position_ids = modeling_module.local_position_ids_from_doc_ids(doc_ids)
+    noisy_position_ids = modeling_module.local_position_ids_from_doc_ids(noisy_doc_ids)
+
+    for layer in lm_model.model.layers:
+        clean_hidden, noisy_hidden = lm_model._flare_two_stream_layer_forward(
+            layer,
+            clean_hidden,
+            noisy_hidden,
+            doc_ids=doc_ids,
+            noisy_doc_ids=noisy_doc_ids,
+            clean_mask=clean_mask,
+            two_stream_mask=two_stream_mask,
+            clean_position_ids=clean_position_ids,
+            noisy_position_ids=noisy_position_ids,
+            block_size=block_size,
+        )
+
+    noisy_hidden = lm_model.model.norm(noisy_hidden)
+    return lm_model.lm_head(noisy_hidden)
+
+
+def denoise_logits_for_mode(model, x_t, args):
+    if args.denoise_logit_mode == "causal_shift":
+        logits = model(input_ids=x_t, use_cache=False).logits
+        return torch.cat([logits[:, :1, :], logits[:, :-1, :]], dim=1)
+    if args.denoise_logit_mode == "flare_no_shift":
+        noisy_logits = flare_two_stream_noisy_logits(
+            model,
+            x_t,
+            x_t,
+            block_size=args.block_size,
+            mask_id=args.mask_id,
+        )
+        return noisy_logits[: x_t.shape[0]]
+    raise ValueError(f"unknown denoise_logit_mode={args.denoise_logit_mode!r}")
+
+
 def load_cases(path, limit):
     cases = []
     with path.open("r", encoding="utf-8") as f:
@@ -2165,8 +2238,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         else:
                             target_sequence = None
                             if chosen_idx is None:
-                                logits = model(input_ids=x_t, use_cache=False).logits
-                                logits = torch.cat([logits[:, :1, :], logits[:, :-1, :]], dim=1)
+                                logits = denoise_logits_for_mode(model, x_t, args)
                                 logits = logits[:, -window_len:][:, start:end]
                                 log_probs = torch.log_softmax(logits, dim=-1)
                                 scores = []
@@ -2299,8 +2371,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         else:
                             target_sequence = None
                             if chosen_idx is None:
-                                logits = model(input_ids=x_t, use_cache=False).logits
-                                logits = torch.cat([logits[:, :1, :], logits[:, :-1, :]], dim=1)
+                                logits = denoise_logits_for_mode(model, x_t, args)
                                 logits = logits[:, -window_len:][:, start:end]
                                 log_probs = torch.log_softmax(logits, dim=-1)
                                 scores = []
@@ -2412,8 +2483,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         schedule_events["scheduled_interval_visits"] += 1
                         schedule_events["scheduled_token_visits"] += forced_count
                         break
-                    logits = model(input_ids=x_t, use_cache=False).logits
-                    logits = torch.cat([logits[:, :1, :], logits[:, :-1, :]], dim=1)
+                    logits = denoise_logits_for_mode(model, x_t, args)
                     logits = logits[:, -window_len:][:, start:end]
                     candidate_allowed = interval.get("candidate_allowed_token_ids_by_offset") or []
                     if (
@@ -3109,6 +3179,7 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
         "top_p": args.top_p,
         "use_block_cache": args.use_block_cache,
         "full_context_sampling": args.full_context_sampling,
+        "denoise_logit_mode": args.denoise_logit_mode,
         "sampler_schedule_jsonl": str(args.sampler_schedule_jsonl) if args.sampler_schedule_jsonl else None,
         "sampler_schedule_count": len(args.sampler_schedules),
         "force_schedule_token_kinds": sorted(args.force_schedule_token_kinds),
@@ -3200,6 +3271,15 @@ def main():
     parser.add_argument("--conversation-template", default=None)
     parser.add_argument("--use-block-cache", action="store_true")
     parser.add_argument("--full-context-sampling", action="store_true")
+    parser.add_argument(
+        "--denoise-logit-mode",
+        choices=("causal_shift", "flare_no_shift"),
+        default="causal_shift",
+        help=(
+            "Cache-off full-context denoise logits. causal_shift is the existing AR-style path; "
+            "flare_no_shift uses route_i FLARE noisy-stream logits without the causal right shift."
+        ),
+    )
     parser.add_argument(
         "--fresh-generation-blocks",
         action="store_true",
