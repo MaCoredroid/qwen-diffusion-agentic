@@ -4,6 +4,177 @@
     "path": "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
     "selected_count": 20
   },
+  "leak_redteam": {
+    "audit_json": "/home/mark/qwen_diffusion/runs/agentic_eval/northstar_broaden_toolace60/leak_redteam/toolace40_leak_redteam.json",
+    "audit_md": "/home/mark/qwen_diffusion/runs/agentic_eval/northstar_broaden_toolace60/leak_redteam/toolace40_leak_redteam.md",
+    "difficulty_jsonl": "/home/mark/qwen_diffusion/runs/agentic_eval/northstar_broaden_toolace60/leak_redteam/toolace40_difficulty_rows.jsonl",
+    "difficulty_summary_by_source": {
+      "ToolACE-derived": {
+        "args": 179,
+        "args_per_call": 1.3984375,
+        "argument_type_counts": {
+          "copy_from_context": 104,
+          "derived_or_constant": 77
+        },
+        "avg_value_length_per_episode_mean": 11.060902777777777,
+        "calls": 128,
+        "calls_per_turn": 1.0,
+        "episodes": 40,
+        "schema_type_counts": {
+          "array": 1,
+          "boolean": 1,
+          "integer": 17,
+          "number": 11,
+          "string": 149
+        },
+        "turns": 128
+      },
+      "our-synthetic": {
+        "args": 157,
+        "args_per_call": 2.492063492063492,
+        "argument_type_counts": {
+          "copy_from_context": 222,
+          "derived_or_constant": 54
+        },
+        "avg_value_length_per_episode_mean": 13.132610947200197,
+        "calls": 63,
+        "calls_per_turn": 1.0,
+        "episodes": 20,
+        "schema_type_counts": {
+          "array": 22,
+          "boolean": 2,
+          "integer": 5,
+          "number": 6,
+          "object": 12,
+          "string": 110
+        },
+        "turns": 63
+      }
+    },
+    "leak_check": {
+      "counts": {
+        "canonical_text_overlap_count": 0,
+        "full_tool_signature_overlap_count": 0,
+        "same_tool_all_arg_values_overlap_count": 0,
+        "tool_name_overlap_count": 0,
+        "user_prompt_overlap_count": 0
+      },
+      "eval_episode_count": 40,
+      "eval_episodes_with_any_hard_overlap": 0,
+      "eval_ids": [
+        "toolace_train_000000",
+        "toolace_train_000003",
+        "toolace_train_000013",
+        "toolace_train_000022",
+        "toolace_train_000028",
+        "toolace_train_000029",
+        "toolace_train_000039",
+        "toolace_train_000044",
+        "toolace_train_000047",
+        "toolace_train_000052",
+        "toolace_train_000057",
+        "toolace_train_000059",
+        "toolace_train_000061",
+        "toolace_train_000073",
+        "toolace_train_000074",
+        "toolace_train_000077",
+        "toolace_train_000082",
+        "toolace_train_000087",
+        "toolace_train_000093",
+        "toolace_train_000096",
+        "toolace_train_000112",
+        "toolace_train_000119",
+        "toolace_train_000120",
+        "toolace_train_000126",
+        "toolace_train_000136",
+        "toolace_train_000142",
+        "toolace_train_000143",
+        "toolace_train_000146",
+        "toolace_train_000147",
+        "toolace_train_000148",
+        "toolace_train_000151",
+        "toolace_train_000162",
+        "toolace_train_000166",
+        "toolace_train_000169",
+        "toolace_train_000171",
+        "toolace_train_000177",
+        "toolace_train_000184",
+        "toolace_train_000191",
+        "toolace_train_000194",
+        "toolace_train_000199"
+      ],
+      "key_training_paths": [
+        "/home/mark/qwen_diffusion/data/flare_redesign_run1_copy_retention_mix/train_agentic_mix.json",
+        "/home/mark/qwen_diffusion/data/flare_stage1_ab_pilot_train/train_agentic_mix.json",
+        "/home/mark/qwen_diffusion/data/flare_stage1_ab_pilot/train_agentic_mix.json",
+        "/home/mark/qwen_diffusion/data/flare_agentic_mix_v1/train_agentic_mix.json",
+        "/home/mark/qwen_diffusion/data/flare_agentic_mix_v1_native/train_agentic_mix.json",
+        "/home/mark/qwen_diffusion/data/flare_agentic_mix_v2_native/train_agentic_mix.json",
+        "/home/mark/qwen_diffusion/data/fastdllm_toolcall_train/train_toolcall.json",
+        "/home/mark/qwen_diffusion/data/fastdllm_toolcall_train/train_toolcall_no_public_multicall_smoke.json"
+      ],
+      "method": {
+        "canonical_text": "sha256(normalized concatenated user text + normalized assistant/gold tool-call text)",
+        "full_tool_signature": "sha256(safe tool name + sorted argument keys + normalized scalar leaf values)",
+        "same_tool_all_arg_values": "near check: same safe tool name and every eval scalar leaf value appears in one train call",
+        "tool_name_overlap": "descriptive only; same tool name appears anywhere in train calls, not treated as leakage by itself",
+        "user_prompt": "sha256(normalized concatenated user turns including ToolACE follow-up user messages)"
+      },
+      "skipped_train_files": [],
+      "train_files_checked": 92,
+      "train_rows_checked": 24505,
+      "train_tool_calls_indexed": 14276
+    },
+    "overlap_jsonl": "/home/mark/qwen_diffusion/runs/agentic_eval/northstar_broaden_toolace60/leak_redteam/toolace40_overlap_rows.jsonl",
+    "provenance_chain": [
+      {
+        "artifact": "data/toolcall_seed/qwen_toolcall_seed.jsonl",
+        "node": "toolcall_seed",
+        "script": "scripts/prepare_toolcall_seed_data.py",
+        "upstream": {
+          "glaive": "glaiveai/glaive-function-calling-v2 train streaming",
+          "hermes": "NousResearch/hermes-function-calling-v1 train streaming",
+          "toolace": "Team-ACE/ToolACE train streaming"
+        }
+      },
+      {
+        "artifact": "data/fastdllm_toolcall_train/train_toolcall.json",
+        "node": "fastdllm_toolcall_train",
+        "upstream": "data/toolcall_seed/qwen_toolcall_seed.jsonl; manifest shows selected train_source_counts hermes=96"
+      },
+      {
+        "artifact": "data/toolcall_eval/public_train_multicall_gold_cases.jsonl",
+        "node": "public_train_multicall_gold_cases",
+        "upstream": "data/fastdllm_toolcall_train/train_toolcall.json via materialize_conversation_toolcall_cases.py"
+      },
+      {
+        "artifact": "data/toolcall_eval/public_train_multicall_no_public_smoke_cases.jsonl",
+        "node": "public_train_multicall_no_public_smoke_cases",
+        "upstream": "train_toolcall.json after removing public_multicall_hermes_smoke overlaps"
+      },
+      {
+        "artifact": "data/flare_agentic_mix_v2_native/train_agentic_mix.json",
+        "node": "flare_agentic_mix_v2_native",
+        "upstream": "includes 28 public_multicall_gold_native and 28 public_multicall_no_public_native records"
+      },
+      {
+        "artifact": "data/flare_redesign_run1_copy_retention_mix/train_agentic_mix.json",
+        "node": "run1_copy_retention_mix",
+        "upstream": "uses flare_agentic_mix_v2_native as native pool and lists both public-train multicall JSONLs in pool/exclude-eval lists"
+      },
+      {
+        "artifact": "runs/flare_stage1_ab_pilot/two_stream_B_s1024_step1000",
+        "node": "B@1000 two-stream adapter",
+        "upstream": "scripts/run_flare_stage1_ab_pilot_job.sh with DATASET_DIR=data/flare_stage1_ab_pilot_train, GSM8K/MBPP retention only"
+      },
+      {
+        "artifact": "data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl rows 20-59",
+        "node": "ToolACE-40 broaden eval",
+        "upstream": "Team-ACE/ToolACE train split, first accepted 40 rows from scripts/build_flare_broaden_public_eval.py"
+      }
+    ],
+    "verdict": "no-leak-but-easy"
+  },
   "out_jsonl": "data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl",
   "public_sources": {
     "ToolACE": {
