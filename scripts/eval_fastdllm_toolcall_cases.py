@@ -2587,6 +2587,29 @@ def scheduled_window_intervals(
 
 
 def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None, original_len_override=None):
+    sample_start = time.time()
+    timing_stats = {
+        "cache_reset_seconds": 0.0,
+        "decode_loop_seconds": 0.0,
+        "cache_advance_seconds": 0.0,
+        "cache_finish_seconds": 0.0,
+        "grammar_projection_seconds": 0.0,
+        "total_sample_seconds": 0.0,
+    }
+    decode_loop_start = None
+    decode_loop_finalized = False
+
+    def finalize_decode_loop():
+        nonlocal decode_loop_finalized
+        if decode_loop_start is not None and not decode_loop_finalized:
+            timing_stats["decode_loop_seconds"] += time.time() - decode_loop_start
+            decode_loop_finalized = True
+
+    def finalize_timing():
+        finalize_decode_loop()
+        timing_stats["total_sample_seconds"] = time.time() - sample_start
+        args._last_flare_timing_stats = dict(timing_stats)
+
     output_ids = input_ids
     original_len = int(original_len_override) if original_len_override is not None else input_ids.shape[1]
     stop_token_ids = torch.tensor(
@@ -2602,7 +2625,9 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
     if cache_enabled:
         if args.denoise_logit_mode != "flare_shift":
             raise ValueError("--use-block-cache with --full-context-sampling requires --denoise-logit-mode flare_shift")
+        reset_start = time.time()
         cache_state = RequestDiffusionState.reset(model, input_ids, args.block_size, prefix_cache=prefix_cache)
+        timing_stats["cache_reset_seconds"] += time.time() - reset_start
         args._flare_cache_state = cache_state
         args._flare_cache_required = True
         args._last_flare_cache_stats = cache_state.stats()
@@ -2612,6 +2637,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
     def finish_cache(sequence=None):
         if not cache_enabled:
             return
+        finish_start = time.time()
         if cache_state.residual_full_context_model_calls != 0:
             raise RuntimeError(
                 "FLARE cache residual full-context calls per committed block must be zero; "
@@ -2624,6 +2650,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
             args._last_flare_prefix_cache_stats = prefix_cache.stats()
         args._flare_cache_state = None
         args._flare_cache_required = False
+        timing_stats["cache_finish_seconds"] += time.time() - finish_start
 
     def truncate_if_stopped(sequence):
         generated = sequence[:, original_len:]
@@ -2725,6 +2752,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
     }
     candidate_group_choices = {}
     candidate_group_allowed_indices = {}
+    decode_loop_start = time.time()
     while output_ids.shape[1] - original_len < args.max_new_tokens:
         remaining = args.max_new_tokens - (output_ids.shape[1] - original_len)
         if cache_enabled:
@@ -2790,7 +2818,9 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         stopped = truncate_if_stopped(x_t)
                         if stopped is not None:
                             args._last_sampler_schedule_events = schedule_events
+                            finalize_decode_loop()
                             finish_cache(stopped)
+                            finalize_timing()
                             return stopped[0]
                         if committed > 0:
                             continue
@@ -2813,7 +2843,9 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         stopped = truncate_if_stopped(x_t)
                         if stopped is not None:
                             args._last_sampler_schedule_events = schedule_events
+                            finalize_decode_loop()
                             finish_cache(stopped)
+                            finalize_timing()
                             return stopped[0]
                         if committed > 0:
                             continue
@@ -2849,6 +2881,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                     restricted_wave1_interval = wave1_intervals[0] if wave1_intervals else None
                     if restricted_wave1_interval is not None:
                         if args.two_wave_wave1_mode == "grammar_projected":
+                            projection_start = time.time()
                             x_t, committed = apply_two_wave_grammar_projected_scaffold(
                                 tokenizer,
                                 x_t,
@@ -2860,10 +2893,18 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                                 schedule_events,
                                 tool_call_index=active_call_index if args.two_wave_per_call else None,
                             )
+                            projection_seconds = time.time() - projection_start
+                            timing_stats["grammar_projection_seconds"] += projection_seconds
+                            schedule_events["two_wave_wave1_projection_seconds"] = (
+                                float(schedule_events.get("two_wave_wave1_projection_seconds") or 0.0)
+                                + projection_seconds
+                            )
                             stopped = truncate_if_stopped(x_t)
                             if stopped is not None:
                                 args._last_sampler_schedule_events = schedule_events
+                                finalize_decode_loop()
                                 finish_cache(stopped)
+                                finalize_timing()
                                 return stopped[0]
                             if committed > 0:
                                 continue
@@ -2910,7 +2951,9 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                             stopped = truncate_if_stopped(x_t)
                             if stopped is not None:
                                 args._last_sampler_schedule_events = schedule_events
+                                finalize_decode_loop()
                                 finish_cache(stopped)
+                                finalize_timing()
                                 return stopped[0]
                             if committed > 0:
                                 continue
@@ -2930,7 +2973,9 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                 stopped = truncate_if_stopped(x_t)
                 if stopped is not None:
                     args._last_sampler_schedule_events = schedule_events
+                    finalize_decode_loop()
                     finish_cache(stopped)
+                    finalize_timing()
                     return stopped[0]
                 if committed > 0:
                     continue
@@ -3388,7 +3433,9 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                     stopped = truncate_if_stopped(x_t)
                     if stopped is not None:
                         args._last_sampler_schedule_events = schedule_events
+                        finalize_decode_loop()
                         finish_cache(stopped)
+                        finalize_timing()
                         return stopped[0]
                     if interval.get("scheduled"):
                         schedule_events["scheduled_interval_visits"] += 1
@@ -3403,7 +3450,9 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         if cache_enabled:
             active_block = x_t[:, cache_state.block_start :]
             if active_block.shape[1] == args.block_size and not bool((active_block == args.mask_id).any().item()):
+                advance_start = time.time()
                 cache_state.advance(model, active_block)
+                timing_stats["cache_advance_seconds"] += time.time() - advance_start
                 if cache_state.residual_full_context_model_calls != 0:
                     raise RuntimeError(
                         "FLARE cache residual full-context calls per committed block must be zero; "
@@ -3413,10 +3462,14 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         stopped = truncate_if_stopped(output_ids)
         if stopped is not None:
             args._last_sampler_schedule_events = schedule_events
+            finalize_decode_loop()
             finish_cache(stopped)
+            finalize_timing()
             return stopped[0]
     args._last_sampler_schedule_events = schedule_events
+    finalize_decode_loop()
     finish_cache(output_ids)
+    finalize_timing()
     return output_ids[0]
 
 
