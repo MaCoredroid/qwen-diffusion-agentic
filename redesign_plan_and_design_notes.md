@@ -151,3 +151,18 @@ causal axis) → pure diffusion; sequential data with a causal axis (text, AND l
 diffusion.** Video generation is itself MOVING toward frame-causal / "diffusion-forcing" structure for temporal
 causality + streaming (D2F, direction #3, is literally named after it). Images are the special case (no causal
 structure), not the norm. Text and long video are the same regime and both converge on causal/block diffusion.
+
+## 10. SPEED-VIA-TRAINING program (2026-07-02, user-driven reframe — banked)
+
+Epistemic correction: every measured speed ceiling (~1x tok/fwd at held quality) was on a checkpoint that FAILS its own
+block-mode anchor (0.55 vs 0.65 at K=B) and was trained at 2-11% of FLARE's budget — checkpoint ceilings, NOT method
+ceilings. What stays dead: 10x at strict quality (information-theoretic). New target: the published 2.5-5x band at held
+quality (existence proof: CD4LM 5.18x GSM8K, consistency-distilled). Principle: TRAIN for few steps instead of asking a
+many-step-trained model to survive few steps.
+
+- S1 foundation: real conversion budget (LoRA r=64-128, 5-10x steps, WSD). GATE: block anchor passes (0.65 @ K=B).
+- S2 consistency distillation (CD4LM/SDTT): teacher = own careful many-step decode; student matches at K/4, K/8.
+- S3 joint for C>0 residual (Di4C latent-mixture or CoDD prior), stacked on S2.
+- S4 speed-RL: graded reward under aggressive-step decode (existing pilot machinery).
+Per-phase gates: block-quality curve (largest B/K at held anchor) + retention + frozen battery, audited scorer.
+Sequences after the live quality-RL pilot (one 5090). First step: design workflow for the exact S1+S2 recipe.
