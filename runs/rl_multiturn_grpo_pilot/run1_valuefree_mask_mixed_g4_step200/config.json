@@ -1,0 +1,60 @@
+{
+  "args": {
+    "adapter": "runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+    "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+    "block_size": 32,
+    "chat_template_path": "/home/mark/shared/lumoFlyWheel_codex_fork/docker/chat_templates/qwen3-openai-codex.jinja",
+    "episode_limit": 12,
+    "eval_battery_paths": [
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+    ],
+    "gpu_index": 0,
+    "gradient_checkpointing": true,
+    "group_size": 4,
+    "input_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/public_multicall_qwen_native_smoke.jsonl",
+    "learning_rate": 2e-06,
+    "live_tool_json_topk": 128,
+    "max_grad_norm": 1.0,
+    "max_new_tokens": 160,
+    "max_steps": 200,
+    "max_turns": 3,
+    "min_turns": 2,
+    "mixed_episode_groups": true,
+    "no_merge_adapter": true,
+    "out_dir": "runs/rl_multiturn_grpo_pilot/run1_valuefree_mask_mixed_g4_step200",
+    "prompt_tokenizer_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+    "replay_max_prompt_tokens": 256,
+    "replay_max_seq_tokens": 384,
+    "seed": 20260702,
+    "small_block_size": 32,
+    "temperature": 1.0,
+    "threshold": 0.9,
+    "tokenizer_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+    "top_p": 0.95,
+    "weight_decay": 0.0
+  },
+  "episodes": 12,
+  "grammar_forced_policy_masking": "XML structure, tool names, parameter names, and tag whitespace are masked out of policy loss",
+  "grouping": "mixed adjacent public episodes",
+  "leak_filter_manifest": {
+    "eval_battery_paths": [
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+    ],
+    "input_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/public_multicall_qwen_native_smoke.jsonl",
+    "input_rows": 12,
+    "kept_rows": 12,
+    "rejected_preview": [],
+    "rejected_rows": 0
+  },
+  "logprob_replay": "raw full-vocab replay over parameter-value/free assistant tokens only",
+  "policy": "diffusion careful + live Qwen-native grammar, audited reward, GRPO group advantages",
+  "run1_anchor": "Run-1 copy-grounded checkpoint previously validated at GSM8K 0.75 and matched-20 careful 34/63",
+  "stop_rule_context": "SFT warm-start abandoned after repaired gate failed GSM8K retention",
+  "total_params": 5512663552,
+  "trainable_params": 18112512,
+  "warm_start": "runs/flare_redesign_run1_copy_grounded_qwen35_9b"
+}

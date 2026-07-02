@@ -1,0 +1,1710 @@
+{
+  "instances": [
+    {
+      "source": "hermes",
+      "id": "85f6c398-69c7-4df2-aed1-29d614a93a26",
+      "task": "View and Manage Security Camera Feeds",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "get_camera_live_feed",
+            "description": "Retrieves the live feed from a specified security camera.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "camera_id": {
+                  "type": "string",
+                  "description": "The unique identifier for the camera."
+                },
+                "stream_quality": {
+                  "type": "string",
+                  "description": "The desired quality of the live stream.",
+                  "enum": [
+                    "720p",
+                    "1080p",
+                    "4k"
+                  ]
+                }
+              },
+              "required": [
+                "camera_id"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "list_all_cameras",
+            "description": "Lists all the security cameras connected to the home network.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "include_offline": {
+                  "type": "boolean",
+                  "description": "Whether to include cameras that are currently offline.",
+                  "default": false
+                }
+              },
+              "required": []
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "record_camera_feed",
+            "description": "Starts recording the live feed from a specified security camera.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "camera_id": {
+                  "type": "string",
+                  "description": "The unique identifier for the camera."
+                },
+                "duration": {
+                  "type": "integer",
+                  "description": "The duration in minutes for which to record the feed.",
+                  "default": 60
+                }
+              },
+              "required": [
+                "camera_id"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "get_recorded_feed",
+            "description": "Retrieves a previously recorded feed from a specified security camera.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "camera_id": {
+                  "type": "string",
+                  "description": "The unique identifier for the camera."
+                },
+                "start_time": {
+                  "type": "string",
+                  "description": "The start time of the recording to retrieve, in ISO 8601 format."
+                },
+                "end_time": {
+                  "type": "string",
+                  "description": "The end time of the recording to retrieve, in ISO 8601 format."
+                }
+              },
+              "required": [
+                "camera_id",
+                "start_time",
+                "end_time"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "pan_tilt_camera",
+            "description": "Controls the pan and tilt functions of a PTZ (Pan-Tilt-Zoom) security camera.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "camera_id": {
+                  "type": "string",
+                  "description": "The unique identifier for the PTZ camera."
+                },
+                "pan_angle": {
+                  "type": "integer",
+                  "description": "The angle in degrees to pan the camera. Positive values pan right, negative values pan left."
+                },
+                "tilt_angle": {
+                  "type": "integer",
+                  "description": "The angle in degrees to tilt the camera. Positive values tilt up, negative values tilt down."
+                }
+              },
+              "required": [
+                "camera_id",
+                "pan_angle",
+                "tilt_angle"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I've recently installed a new security system at my home, and I want to ensure everything is functioning as it should. Specifically, I'd like to start by checking the live feed from the camera located at the front door to monitor any activity. The camera has a unique identifier, which I've already configured to be \"front_door.\" I'd prefer to view the live stream in high definition, so a 1080p quality would be ideal. Could you please call the appropriate function to retrieve the live feed from my front door camera in 1080p quality and provide me with the link to the stream?\n\nFollowing this, I would also like to record the live feed from this camera for the next 30 minutes. This is to test the recording feature and to keep an archived copy for security purposes. Please initiate the recording function for the \"front_door\" camera with a recording duration of 30 minutes.\n\nLastly, as part of my routine surveillance checks, I need to review footage from yesterday between 3 PM and 5 PM. The camera \"front_garden\" should have the recording for that period. I need to retrieve this specific recorded feed. The start time for the recording was at 15:00 on April 22, 2023, and it ended at 17:00 on the same day.\n\nTo summarize, I request the execution of the following functions with the provided details:\n1. Retrieve the live feed from the \"front_door\" camera at 1080p quality.\n2. Start a 30-minute recording of the live feed from the \"front_door\" camera.\n3. Retrieve the recorded feed from the \"front_garden\" camera, focusing on the time period between 15:00 and 17:00 on April 22, 2023.\n\nThank you for assisting with the management of my home security camera feeds."
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=get_camera_live_feed>\n<parameter=camera_id>\nfront_door\n</parameter>\n<parameter=stream_quality>\n1080p\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=record_camera_feed>\n<parameter=camera_id>\nfront_door\n</parameter>\n<parameter=duration>\n30\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=get_recorded_feed>\n<parameter=camera_id>\nfront_garden\n</parameter>\n<parameter=start_time>\n2023-04-22T15:00:00Z\n</parameter>\n<parameter=end_time>\n2023-04-22T17:00:00Z\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "get_camera_live_feed",
+        "record_camera_feed",
+        "get_recorded_feed"
+      ],
+      "available_tool_names": [
+        "get_camera_live_feed",
+        "get_recorded_feed",
+        "list_all_cameras",
+        "pan_tilt_camera",
+        "record_camera_feed"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "get_camera_live_feed",
+          "arguments": {
+            "camera_id": "front_door",
+            "stream_quality": "1080p"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "record_camera_feed",
+          "arguments": {
+            "camera_id": "front_door",
+            "duration": 30
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "get_recorded_feed",
+          "arguments": {
+            "camera_id": "front_garden",
+            "start_time": "2023-04-22T15:00:00Z",
+            "end_time": "2023-04-22T17:00:00Z"
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"get_camera_live_feed\", \"arguments\": {\"camera_id\": \"front_door\", \"stream_quality\": \"1080p\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"record_camera_feed\", \"arguments\": {\"camera_id\": \"front_door\", \"duration\": 30}}\n</tool_call>\n<tool_call>\n{\"name\": \"get_recorded_feed\", \"arguments\": {\"camera_id\": \"front_garden\", \"start_time\": \"2023-04-22T15:00:00Z\", \"end_time\": \"2023-04-22T17:00:00Z\"}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "89ef3c87-66bd-46ee-9297-15398fd9a235",
+      "task": "Set Up a Smart Home System",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "initialize_smart_home_system",
+            "description": "Initializes the smart home system to connect various smart devices.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "device_list": {
+                  "type": "array",
+                  "description": "List of smart devices to be connected to the system.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "device_list"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "create_device_group",
+            "description": "Groups multiple smart devices for centralized control.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "group_name": {
+                  "type": "string",
+                  "description": "The name of the group to be created."
+                },
+                "devices": {
+                  "type": "array",
+                  "description": "List of devices to include in the group.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "group_name",
+                "devices"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I've recently equipped my home with various smart devices to enhance my living experience. The products I've chosen include Philips Hue smart bulbs, a Nest Thermostat, and an Arlo Pro 3 security camera. My goal is to create a cohesive smart home environment where I can control all these devices through a unified interface. To achieve this, I would like to request the initialization of a smart home system that includes these specific devices. Furthermore, I'd like to establish a 'Main Control Group' to manage these devices collectively. Can we initiate the process by connecting these items and setting up the centralized control group?\n\nPlease initialize the smart home system with the following devices:\n- Philips Hue smart bulbs\n- Nest Thermostat\n- Arlo Pro 3 security camera\n\nAdditionally, create a device group named 'Main Control Group' consisting of the aforementioned devices for streamlined management."
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=initialize_smart_home_system>\n<parameter=device_list>\n[\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=create_device_group>\n<parameter=group_name>\nMain Control Group\n</parameter>\n<parameter=devices>\n[\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "initialize_smart_home_system",
+        "create_device_group"
+      ],
+      "available_tool_names": [
+        "create_device_group",
+        "initialize_smart_home_system"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "initialize_smart_home_system",
+          "arguments": {
+            "device_list": [
+              "Philips Hue smart bulbs",
+              "Nest Thermostat",
+              "Arlo Pro 3 security camera"
+            ]
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "create_device_group",
+          "arguments": {
+            "group_name": "Main Control Group",
+            "devices": [
+              "Philips Hue smart bulbs",
+              "Nest Thermostat",
+              "Arlo Pro 3 security camera"
+            ]
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"initialize_smart_home_system\", \"arguments\": {\"device_list\": [\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]}}\n</tool_call>\n<tool_call>\n{\"name\": \"create_device_group\", \"arguments\": {\"group_name\": \"Main Control Group\", \"devices\": [\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "c483f963-8a29-4ff0-a684-89be0d0f2843",
+      "task": "Perform Home Tasks Using Voice Commands",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "activate_voice_command",
+            "description": "Activates a device using a voice command.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "command": {
+                  "type": "string",
+                  "description": "The voice command to be executed."
+                },
+                "device_type": {
+                  "type": "string",
+                  "description": "The type of device to be controlled.",
+                  "enum": [
+                    "light",
+                    "thermostat",
+                    "camera"
+                  ]
+                },
+                "location": {
+                  "type": "string",
+                  "description": "The location of the device within the home."
+                }
+              },
+              "required": [
+                "command",
+                "device_type",
+                "location"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "set_thermostat",
+            "description": "Sets the temperature of the smart thermostat to a specified value.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "temperature": {
+                  "type": "number",
+                  "description": "The desired temperature to set on the thermostat."
+                },
+                "location": {
+                  "type": "string",
+                  "description": "The location of the thermostat within the home."
+                }
+              },
+              "required": [
+                "temperature",
+                "location"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "activate_security_cameras",
+            "description": "Changes the status of security cameras to on or off.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "The desired status of the security cameras.",
+                  "enum": [
+                    "on",
+                    "off"
+                  ]
+                },
+                "mode": {
+                  "type": "string",
+                  "description": "The mode to set for the security cameras.",
+                  "enum": [
+                    "home",
+                    "away"
+                  ]
+                }
+              },
+              "required": [
+                "status",
+                "mode"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I just arrived home and I'm carrying several bags of groceries, so I can't manually switch on the lights and adjust the thermostat. Furthermore, I'm leaving for a week-long vacation tomorrow, and I need to ensure my home security system is activated. I would like to use voice commands for these tasks. Could you please turn on the kitchen lights by saying \"Activate kitchen lights\"? I also need the thermostat in the living room to be set to a comfortable 72°F; you can command it with \"Set living room temperature to 72 degrees\". Lastly, prepare the security cameras for my absence by saying \"Activate security cameras in away mode\". Please execute these voice commands for me.\n\nFor these tasks, here are the function call arguments to use:\n1. For the kitchen lights: `command: \"Activate kitchen lights\", device_type: \"light\", location: \"kitchen\"`\n2. For the living room thermostat: `temperature: 72, location: \"living room\"`\n3. For activating security cameras: `status: \"on\", mode: \"away\"` \n\nPlease call the necessary functions to assist with these tasks."
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=activate_voice_command>\n<parameter=command>\nActivate kitchen lights\n</parameter>\n<parameter=device_type>\nlight\n</parameter>\n<parameter=location>\nkitchen\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_thermostat>\n<parameter=temperature>\n72\n</parameter>\n<parameter=location>\nliving room\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=activate_voice_command>\n<parameter=command>\nActivate security cameras in away mode\n</parameter>\n<parameter=device_type>\ncamera\n</parameter>\n<parameter=location>\n\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "activate_voice_command",
+        "set_thermostat",
+        "activate_voice_command"
+      ],
+      "available_tool_names": [
+        "activate_security_cameras",
+        "activate_voice_command",
+        "set_thermostat"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "activate_voice_command",
+          "arguments": {
+            "command": "Activate kitchen lights",
+            "device_type": "light",
+            "location": "kitchen"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "set_thermostat",
+          "arguments": {
+            "temperature": 72,
+            "location": "living room"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "activate_voice_command",
+          "arguments": {
+            "command": "Activate security cameras in away mode",
+            "device_type": "camera",
+            "location": ""
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"activate_voice_command\", \"arguments\": {\"command\": \"Activate kitchen lights\", \"device_type\": \"light\", \"location\": \"kitchen\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"set_thermostat\", \"arguments\": {\"temperature\": 72, \"location\": \"living room\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"activate_voice_command\", \"arguments\": {\"command\": \"Activate security cameras in away mode\", \"device_type\": \"camera\", \"location\": \"\"}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "81ad724a-bb74-420f-8221-91557b7e5930",
+      "task": "Control Smart Lights in a Home",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "set_smart_light_color",
+            "description": "Sets the color and brightness of smart lights in a specified room.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "room": {
+                  "type": "string",
+                  "description": "The room where the smart lights are located."
+                },
+                "brightness": {
+                  "type": "string",
+                  "description": "The desired brightness level.",
+                  "enum": [
+                    "bright",
+                    "dim",
+                    "off"
+                  ]
+                },
+                "color": {
+                  "type": "string",
+                  "description": "The desired color setting.",
+                  "enum": [
+                    "warm",
+                    "cool",
+                    "daylight"
+                  ]
+                }
+              },
+              "required": [
+                "room",
+                "brightness",
+                "color"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "sync_lights_with_automation_system",
+            "description": "Syncs the smart lights with the home automation system for a specified room.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "room": {
+                  "type": "string",
+                  "description": "The room where the smart lights are located."
+                }
+              },
+              "required": [
+                "room"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I am preparing my living room for a cozy movie night and I would like to set the mood with the appropriate lighting. Could you please adjust the smart lights in the living room to emit a warm glow at a dim brightness level? Additionally, I need the lights to be in sync with my home automation system to create a seamless experience. For the function call, please use the living room as the specified room, set the brightness to 'dim', and the color to 'warm'. Then, ensure that the lights are well-integrated with the automation system in the living room."
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=set_smart_light_color>\n<parameter=room>\nliving room\n</parameter>\n<parameter=brightness>\ndim\n</parameter>\n<parameter=color>\nwarm\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=sync_lights_with_automation_system>\n<parameter=room>\nliving room\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "set_smart_light_color",
+        "sync_lights_with_automation_system"
+      ],
+      "available_tool_names": [
+        "set_smart_light_color",
+        "sync_lights_with_automation_system"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "set_smart_light_color",
+          "arguments": {
+            "room": "living room",
+            "brightness": "dim",
+            "color": "warm"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "sync_lights_with_automation_system",
+          "arguments": {
+            "room": "living room"
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"set_smart_light_color\", \"arguments\": {\"room\": \"living room\", \"brightness\": \"dim\", \"color\": \"warm\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"sync_lights_with_automation_system\", \"arguments\": {\"room\": \"living room\"}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "d1bff923-dbd1-45da-b0a0-7bd33c9cbc46",
+      "task": "Manage Smart Irrigation Systems",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "schedule_watering",
+            "description": "Schedules watering for a specific zone based on soil moisture and weather conditions.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "zone_id": {
+                  "type": "string",
+                  "description": "The identifier for the irrigation zone."
+                },
+                "soil_moisture_threshold": {
+                  "type": "number",
+                  "description": "The soil moisture level (%) below which watering should be triggered."
+                },
+                "weather_condition": {
+                  "type": "string",
+                  "description": "The current weather condition affecting the watering schedule."
+                }
+              },
+              "required": [
+                "zone_id",
+                "soil_moisture_threshold",
+                "weather_condition"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "activate_irrigation",
+            "description": "Activates the irrigation system for a specified zone and duration.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "zone_id": {
+                  "type": "string",
+                  "description": "The identifier for the irrigation zone."
+                },
+                "duration": {
+                  "type": "number",
+                  "description": "The duration (in minutes) for which the irrigation should be activated."
+                }
+              },
+              "required": [
+                "zone_id",
+                "duration"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I am currently automating the irrigation system of my home garden, and I need to ensure that zone 01 receives adequate water without over-irrigation. The recent soil moisture measurements indicate that the soil moisture level in zone 01 is at 25%, which is below the optimal threshold. The local weather forecast reports clear skies and sunny conditions for the next few days, therefore there's no expectation of rain. I want to schedule watering for zone 01 so that the plants receive the right amount of water. Based on this information, when the soil moisture falls below 30%, the system should initiate watering for this zone only. Additionally, I'd like to activate the irrigation system in zone 01 for 15 minutes to provide immediate relief to the plants. \n\nBased on the above context, please call the relevant functions with the following specific parameters:\n\n- For the `functions.schedule_watering` tool, use the arguments:\n  - `zone_id`: \"zone_01\"\n  - `soil_moisture_threshold`: 30\n  - `weather_condition`: \"sunny\"\n\n- For the `functions.activate_irrigation` tool, use the arguments:\n  - `zone_id`: \"zone_01\"\n  - `duration`: 15\n\nGiven these parameters, could you please schedule the watering accordingly and activate the irrigation system for the specified duration?"
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=schedule_watering>\n<parameter=zone_id>\nzone_01\n</parameter>\n<parameter=soil_moisture_threshold>\n30\n</parameter>\n<parameter=weather_condition>\nsunny\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=activate_irrigation>\n<parameter=zone_id>\nzone_01\n</parameter>\n<parameter=duration>\n15\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "schedule_watering",
+        "activate_irrigation"
+      ],
+      "available_tool_names": [
+        "activate_irrigation",
+        "schedule_watering"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "schedule_watering",
+          "arguments": {
+            "zone_id": "zone_01",
+            "soil_moisture_threshold": 30,
+            "weather_condition": "sunny"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "activate_irrigation",
+          "arguments": {
+            "zone_id": "zone_01",
+            "duration": 15
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"schedule_watering\", \"arguments\": {\"zone_id\": \"zone_01\", \"soil_moisture_threshold\": 30, \"weather_condition\": \"sunny\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"activate_irrigation\", \"arguments\": {\"zone_id\": \"zone_01\", \"duration\": 15}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "d43227ba-5022-4cfc-8b70-24fae64d82dd",
+      "task": "Integrate Voice Assistant with Smart Devices",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "control_smart_light",
+            "description": "Controls the smart light device by turning it on or off.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "device_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart light device."
+                },
+                "command": {
+                  "type": "string",
+                  "description": "The command to execute on the smart light device.",
+                  "enum": [
+                    "turn_on",
+                    "turn_off"
+                  ]
+                }
+              },
+              "required": [
+                "device_id",
+                "command"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "set_thermostat_temperature",
+            "description": "Sets the temperature of the smart thermostat device.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "device_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart thermostat device."
+                },
+                "temperature": {
+                  "type": "number",
+                  "description": "The desired temperature to set on the thermostat."
+                }
+              },
+              "required": [
+                "device_id",
+                "temperature"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "get_device_status",
+            "description": "Retrieves the current status of a smart device, including temperature or lighting state.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "device_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart device."
+                },
+                "device_type": {
+                  "type": "string",
+                  "description": "The type of smart device.",
+                  "enum": [
+                    "light",
+                    "thermostat"
+                  ]
+                }
+              },
+              "required": [
+                "device_id",
+                "device_type"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I would like to further enhance my smart home experience by integrating voice commands through my voice assistant to automate the control of my smart devices. Specifically, I have a smart light in my living room labeled with the device ID \"living-room-light-001\" that I want to turn on. Additionally, I have a smart thermostat in my hallway, identified by the device ID \"hallway-thermostat-002,\" and I would like to set its temperature to 72°F. Can we execute these actions accordingly?\n\nHere are the details to use for the function calls:\n- For the smart light, please use the `control_smart_light` function with the `device_id` as \"living-room-light-001\" and the `command` as \"turn_on\".\n- For the smart thermostat, use the `set_thermostat_temperature` function with the `device_id` as \"hallway-thermostat-002\" and set the `temperature` to 72.\n\nRequesting to initiate these device control functions to achieve the desired state in my smart home automation setup."
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=control_smart_light>\n<parameter=device_id>\nliving-room-light-001\n</parameter>\n<parameter=command>\nturn_on\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_thermostat_temperature>\n<parameter=device_id>\nhallway-thermostat-002\n</parameter>\n<parameter=temperature>\n72\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "control_smart_light",
+        "set_thermostat_temperature"
+      ],
+      "available_tool_names": [
+        "control_smart_light",
+        "get_device_status",
+        "set_thermostat_temperature"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "control_smart_light",
+          "arguments": {
+            "device_id": "living-room-light-001",
+            "command": "turn_on"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "set_thermostat_temperature",
+          "arguments": {
+            "device_id": "hallway-thermostat-002",
+            "temperature": 72
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"control_smart_light\", \"arguments\": {\"device_id\": \"living-room-light-001\", \"command\": \"turn_on\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"set_thermostat_temperature\", \"arguments\": {\"device_id\": \"hallway-thermostat-002\", \"temperature\": 72}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "3f440c20-b332-48e2-aaa5-a7bfb0781ae9",
+      "task": "Create and Schedule Automated Home Routines",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "set_thermostat_schedule",
+            "description": "Sets a schedule for the smart thermostat to adjust the temperature at a specified time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "device_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart thermostat."
+                },
+                "temperature": {
+                  "type": "integer",
+                  "description": "The temperature to set in degrees Fahrenheit."
+                },
+                "schedule_time": {
+                  "type": "string",
+                  "description": "The time to adjust the temperature, in HH:MM format."
+                }
+              },
+              "required": [
+                "device_id",
+                "temperature",
+                "schedule_time"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "set_door_lock_schedule",
+            "description": "Sets a schedule to lock or unlock the smart door lock at a specified time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "device_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart door lock."
+                },
+                "lock_state": {
+                  "type": "string",
+                  "description": "The state to set the door lock, such as 'locked' or 'unlocked'.",
+                  "enum": [
+                    "locked",
+                    "unlocked"
+                  ]
+                },
+                "schedule_time": {
+                  "type": "string",
+                  "description": "The time to lock or unlock the door, in HH:MM format."
+                }
+              },
+              "required": [
+                "device_id",
+                "lock_state",
+                "schedule_time"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "set_sprinkler_schedule",
+            "description": "Sets a watering schedule for the smart sprinkler system with an interval in days.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "device_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart sprinkler system."
+                },
+                "interval_days": {
+                  "type": "integer",
+                  "description": "The interval in days between watering sessions."
+                },
+                "start_time": {
+                  "type": "string",
+                  "description": "The start time for the watering session, in HH:MM format."
+                }
+              },
+              "required": [
+                "device_id",
+                "interval_days",
+                "start_time"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I recently automated my home and I'm looking to streamline the daily activities. For my smart thermostat with Device ID \"TH12345\", I'd like to set it to maintain a temperature of 68°F every evening at precisely 7:00 PM. My smart door lock, labeled \"DL54321\", needs to automatically lock itself at night at 11:00 PM without fail. Additionally, my garden's smart sprinkler system, identified as \"SP98765\", should be scheduled to water the plants every two days promptly at 6:00 AM. Can you call the appropriate functions to set up these routines?\n\nHere are the specific function call arguments needed:\n\n- For the smart thermostat, device_id: \"TH12345\", temperature: 68, schedule_time: \"19:00\".\n- For the smart door lock, device_id: \"DL54321\", lock_state: \"locked\", schedule_time: \"23:00\".\n- For the smart sprinkler system, device_id: \"SP98765\", interval_days: 2, start_time: \"06:00\".\n\nPlease configure these devices as per the details provided."
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=set_thermostat_schedule>\n<parameter=device_id>\nTH12345\n</parameter>\n<parameter=temperature>\n68\n</parameter>\n<parameter=schedule_time>\n19:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_door_lock_schedule>\n<parameter=device_id>\nDL54321\n</parameter>\n<parameter=lock_state>\nlocked\n</parameter>\n<parameter=schedule_time>\n23:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_sprinkler_schedule>\n<parameter=device_id>\nSP98765\n</parameter>\n<parameter=interval_days>\n2\n</parameter>\n<parameter=start_time>\n06:00\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "set_thermostat_schedule",
+        "set_door_lock_schedule",
+        "set_sprinkler_schedule"
+      ],
+      "available_tool_names": [
+        "set_door_lock_schedule",
+        "set_sprinkler_schedule",
+        "set_thermostat_schedule"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "set_thermostat_schedule",
+          "arguments": {
+            "device_id": "TH12345",
+            "temperature": 68,
+            "schedule_time": "19:00"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "set_door_lock_schedule",
+          "arguments": {
+            "device_id": "DL54321",
+            "lock_state": "locked",
+            "schedule_time": "23:00"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "set_sprinkler_schedule",
+          "arguments": {
+            "device_id": "SP98765",
+            "interval_days": 2,
+            "start_time": "06:00"
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"set_thermostat_schedule\", \"arguments\": {\"device_id\": \"TH12345\", \"temperature\": 68, \"schedule_time\": \"19:00\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"set_door_lock_schedule\", \"arguments\": {\"device_id\": \"DL54321\", \"lock_state\": \"locked\", \"schedule_time\": \"23:00\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"set_sprinkler_schedule\", \"arguments\": {\"device_id\": \"SP98765\", \"interval_days\": 2, \"start_time\": \"06:00\"}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "e279e98f-095a-4d44-9c2d-170b3cfdc4bb",
+      "task": "Control and Monitor Smart Appliances",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "set_fridge_temperature_schedule",
+            "description": "Sets a schedule for the smart fridge to enter energy-saving mode during specified hours.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "appliance_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart fridge."
+                },
+                "temperature_mode": {
+                  "type": "string",
+                  "description": "The temperature mode to set, such as 'energy_saving'."
+                },
+                "start_time": {
+                  "type": "string",
+                  "description": "The start time to apply the temperature mode, in HH:MM format."
+                },
+                "end_time": {
+                  "type": "string",
+                  "description": "The end time to revert from the temperature mode, in HH:MM format."
+                }
+              },
+              "required": [
+                "appliance_id",
+                "temperature_mode",
+                "start_time",
+                "end_time"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "set_washing_machine_auto_off",
+            "description": "Enables or disables the automatic power-off feature of the smart washing machine after the laundry cycle.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "appliance_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart washing machine."
+                },
+                "auto_off": {
+                  "type": "boolean",
+                  "description": "Whether to automatically turn off the washing machine after the cycle."
+                }
+              },
+              "required": [
+                "appliance_id",
+                "auto_off"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "set_lights_brightness_schedule",
+            "description": "Sets a schedule to adjust the brightness of smart lights to a specified level at a given time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "appliance_id": {
+                  "type": "string",
+                  "description": "The unique identifier of the smart lights."
+                },
+                "brightness_level": {
+                  "type": "integer",
+                  "description": "The brightness level to set, as a percentage."
+                },
+                "schedule_time": {
+                  "type": "string",
+                  "description": "The time to adjust the brightness, in HH:MM format."
+                }
+              },
+              "required": [
+                "appliance_id",
+                "brightness_level",
+                "schedule_time"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I recently installed a smart fridge model SF-001, and I'm looking to optimize its energy consumption. I want to set it to enter 'energy_saving' mode starting from 23:00 to 07:00 daily. Additionally, my smart washing machine, model WM-002, should automatically turn off after the laundry cycle completes to save power. Moreover, for my smart lights, product code SL-003, I wish to schedule an automatic dimming to 30% brightness every evening at 22:00. Can you set up these functions for my smart appliances to enhance their efficiency and reduce energy costs?\n\nBased on the above details, please proceed with the following function calls to set up my smart home systems:\n\n1. For the smart fridge (SF-001), enable 'energy_saving' mode from 23:00 to 07:00.\n2. For the smart washing machine (WM-002), activate the automatic power-off feature after the laundry cycle.\n3. For the smart lights (SL-003), adjust the brightness level to 30% at 22:00."
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=set_fridge_temperature_schedule>\n<parameter=appliance_id>\nSF-001\n</parameter>\n<parameter=temperature_mode>\nenergy_saving\n</parameter>\n<parameter=start_time>\n23:00\n</parameter>\n<parameter=end_time>\n07:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_washing_machine_auto_off>\n<parameter=appliance_id>\nWM-002\n</parameter>\n<parameter=auto_off>\nTrue\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_lights_brightness_schedule>\n<parameter=appliance_id>\nSL-003\n</parameter>\n<parameter=brightness_level>\n30\n</parameter>\n<parameter=schedule_time>\n22:00\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "set_fridge_temperature_schedule",
+        "set_washing_machine_auto_off",
+        "set_lights_brightness_schedule"
+      ],
+      "available_tool_names": [
+        "set_fridge_temperature_schedule",
+        "set_lights_brightness_schedule",
+        "set_washing_machine_auto_off"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "set_fridge_temperature_schedule",
+          "arguments": {
+            "appliance_id": "SF-001",
+            "temperature_mode": "energy_saving",
+            "start_time": "23:00",
+            "end_time": "07:00"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "set_washing_machine_auto_off",
+          "arguments": {
+            "appliance_id": "WM-002",
+            "auto_off": true
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "set_lights_brightness_schedule",
+          "arguments": {
+            "appliance_id": "SL-003",
+            "brightness_level": 30,
+            "schedule_time": "22:00"
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"set_fridge_temperature_schedule\", \"arguments\": {\"appliance_id\": \"SF-001\", \"temperature_mode\": \"energy_saving\", \"start_time\": \"23:00\", \"end_time\": \"07:00\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"set_washing_machine_auto_off\", \"arguments\": {\"appliance_id\": \"WM-002\", \"auto_off\": true}}\n</tool_call>\n<tool_call>\n{\"name\": \"set_lights_brightness_schedule\", \"arguments\": {\"appliance_id\": \"SL-003\", \"brightness_level\": 30, \"schedule_time\": \"22:00\"}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "ec0e73f1-1f85-4963-b840-4a7e76b1c5b3",
+      "task": "Set Up and Manage Security Features in a Smart Home",
+      "category": "IoT and Home Automation",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "install_smart_lock",
+            "description": "Installs a new smart lock on a specified door using the provided model details and installation code.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "door": {
+                  "type": "string",
+                  "description": "The door where the smart lock will be installed."
+                },
+                "model": {
+                  "type": "string",
+                  "description": "The model of the smart lock to be installed."
+                },
+                "installation_code": {
+                  "type": "string",
+                  "description": "The installation code required to set up the smart lock."
+                }
+              },
+              "required": [
+                "door",
+                "model",
+                "installation_code"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "configure_motion_detectors",
+            "description": "Configures motion detectors in a specified location using the provided model details and installation code.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "location": {
+                  "type": "string",
+                  "description": "The location where the motion detectors will be configured."
+                },
+                "model": {
+                  "type": "string",
+                  "description": "The model of the motion detectors to be configured."
+                },
+                "installation_code": {
+                  "type": "string",
+                  "description": "The installation code required to set up the motion detectors."
+                }
+              },
+              "required": [
+                "location",
+                "model",
+                "installation_code"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "activate_security_alarm",
+            "description": "Activates the security alarm system using the provided system activation code.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "system_code": {
+                  "type": "string",
+                  "description": "The activation code for the security alarm system."
+                }
+              },
+              "required": [
+                "system_code"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I would like to upgrade the security features of my smart home and ensure everything is properly set up. Specifically, I need to install a YRD256 Yale Assure Lock SL smart lock on my front door. The installation code for the smart lock is \"73829SL\". In addition, I want to configure Honeywell SiXPIR motion detectors in my living room to have better motion sensing accuracy for my home security; the installation code for these is \"91MHZPIR\". Last but not least, I need to activate my existing security alarm system and the activation code for the system is \"ALRM328SEC\".\n\nCould you please assist me by calling the relevant functions to:\n1. Install the YRD256 Yale Assure Lock SL smart lock on my front door using the provided installation code.\n2. Configure Honeywell SiXPIR motion detectors in the living room with the correct installation code.\n3. Activate the security alarm system using the system code provided.\n\nYour assistance will help in ensuring that my smart home's security features are active and updated. Thank you in advance for your help."
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=install_smart_lock>\n<parameter=door>\nfront door\n</parameter>\n<parameter=model>\nYRD256 Yale Assure Lock SL\n</parameter>\n<parameter=installation_code>\n73829SL\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=configure_motion_detectors>\n<parameter=location>\nliving room\n</parameter>\n<parameter=model>\nHoneywell SiXPIR\n</parameter>\n<parameter=installation_code>\n91MHZPIR\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=activate_security_alarm>\n<parameter=system_code>\nALRM328SEC\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "install_smart_lock",
+        "configure_motion_detectors",
+        "activate_security_alarm"
+      ],
+      "available_tool_names": [
+        "activate_security_alarm",
+        "configure_motion_detectors",
+        "install_smart_lock"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "install_smart_lock",
+          "arguments": {
+            "door": "front door",
+            "model": "YRD256 Yale Assure Lock SL",
+            "installation_code": "73829SL"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "configure_motion_detectors",
+          "arguments": {
+            "location": "living room",
+            "model": "Honeywell SiXPIR",
+            "installation_code": "91MHZPIR"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "activate_security_alarm",
+          "arguments": {
+            "system_code": "ALRM328SEC"
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"install_smart_lock\", \"arguments\": {\"door\": \"front door\", \"model\": \"YRD256 Yale Assure Lock SL\", \"installation_code\": \"73829SL\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"configure_motion_detectors\", \"arguments\": {\"location\": \"living room\", \"model\": \"Honeywell SiXPIR\", \"installation_code\": \"91MHZPIR\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"activate_security_alarm\", \"arguments\": {\"system_code\": \"ALRM328SEC\"}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "5790a757-bbe7-49d7-9fbd-d98cf3e0fd45",
+      "task": "Utilize Quantum Cloud Services",
+      "category": "Quantum Computing",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "create_quantum_workspace",
+            "description": "Creates a new Azure Quantum workspace with the specified name and location.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "workspace_name": {
+                  "type": "string",
+                  "description": "The name for the new quantum workspace."
+                },
+                "location": {
+                  "type": "string",
+                  "description": "The Azure region where the workspace will be created."
+                }
+              },
+              "required": [
+                "workspace_name",
+                "location"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "estimate_quantum_resources",
+            "description": "Estimates the resources required for a quantum solution based on the number of qubits, surface code distance, and error budget.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "qubits_required": {
+                  "type": "integer",
+                  "description": "The number of qubits required for the quantum solution."
+                },
+                "surface_code_distance": {
+                  "type": "integer",
+                  "description": "The surface code distance for error correction."
+                },
+                "error_budget": {
+                  "type": "number",
+                  "description": "The acceptable error budget for the quantum solution."
+                }
+              },
+              "required": [
+                "qubits_required",
+                "surface_code_distance",
+                "error_budget"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "submit_quantum_program",
+            "description": "Submits a quantum program written in a specified language to Azure Quantum, targeting a specific quantum emulator or processor.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "language": {
+                  "type": "string",
+                  "description": "The programming language used for the quantum program."
+                },
+                "target": {
+                  "type": "string",
+                  "description": "The target quantum emulator or processor for the program."
+                }
+              },
+              "required": [
+                "language",
+                "target"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I am conducting a study on quantum mechanical simulations for chemical reactions and intend to utilize Azure Quantum's cloud services for my computations. I need to establish a workspace specifically for this project, ascertain the necessary computational resources, and run my quantum algorithms using Azure Quantum's infrastructure.\n\n1. Please create an Azure Quantum workspace named 'ChemSimulationProject' located in the 'East US' region for my simulation project.\n2. I require an estimation of the resources for implementing a quantum algorithm that uses 30 qubits, with a surface code distance of 3 to ensure fault tolerance, and maintains an error budget of 0.001 for accurate results.\n3. My quantum program is written in the Q# language and designed for computational tasks related to chemical simulations. I need to submit this program to Azure Quantum, targeting the Quantinuum H-Series Emulator, which is suitable for the kind of tasks my study requires.\n\nCould you assist by calling the appropriate functions with the specified arguments to facilitate the setup and execution of my project on the Azure Quantum platform?"
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=create_quantum_workspace>\n<parameter=workspace_name>\nChemSimulationProject\n</parameter>\n<parameter=location>\nEast US\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=estimate_quantum_resources>\n<parameter=qubits_required>\n30\n</parameter>\n<parameter=surface_code_distance>\n3\n</parameter>\n<parameter=error_budget>\n0.001\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=submit_quantum_program>\n<parameter=language>\nQ#\n</parameter>\n<parameter=target>\nQuantinuum H-Series Emulator\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "create_quantum_workspace",
+        "estimate_quantum_resources",
+        "submit_quantum_program"
+      ],
+      "available_tool_names": [
+        "create_quantum_workspace",
+        "estimate_quantum_resources",
+        "submit_quantum_program"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "create_quantum_workspace",
+          "arguments": {
+            "workspace_name": "ChemSimulationProject",
+            "location": "East US"
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "estimate_quantum_resources",
+          "arguments": {
+            "qubits_required": 30,
+            "surface_code_distance": 3,
+            "error_budget": 0.001
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "submit_quantum_program",
+          "arguments": {
+            "language": "Q#",
+            "target": "Quantinuum H-Series Emulator"
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"create_quantum_workspace\", \"arguments\": {\"workspace_name\": \"ChemSimulationProject\", \"location\": \"East US\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"estimate_quantum_resources\", \"arguments\": {\"qubits_required\": 30, \"surface_code_distance\": 3, \"error_budget\": 0.001}}\n</tool_call>\n<tool_call>\n{\"name\": \"submit_quantum_program\", \"arguments\": {\"language\": \"Q#\", \"target\": \"Quantinuum H-Series Emulator\"}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "6de2be31-985e-413a-ae33-4c1140070920",
+      "task": "Learn Quantum Programming Languages",
+      "category": "Quantum Computing",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "get_language_syntax",
+            "description": "Retrieves the syntax and structural information of specified quantum programming languages.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "languages": {
+                  "type": "array",
+                  "description": "List of quantum programming languages to retrieve syntax for.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "languages"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "get_usage_examples",
+            "description": "Provides usage examples for specified quantum programming languages.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "languages": {
+                  "type": "array",
+                  "description": "List of quantum programming languages to retrieve examples for.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "languages"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "I am seeking assistance in learning about quantum programming languages such as Qiskit, Cirq, and Q#, which are pivotal in the realm of quantum computing. I am particularly interested in understanding their unique syntax and the underlying structure that enables the programming of intricate quantum algorithms. To gain a comprehensive insight, I request detailed information on the syntax specifications and insightful examples of practical usage for these languages. \n\nTo facilitate this, could you please initiate function calls to acquire the syntax information for the quantum programming languages Qiskit, Cirq, and Q#, as well as to provide pragmatic usage examples that demonstrate how these languages can be utilized to construct and run quantum algorithms like the creation of a Bell state?"
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=get_language_syntax>\n<parameter=languages>\n[\"Qiskit\", \"Cirq\", \"Q#\"]\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=get_usage_examples>\n<parameter=languages>\n[\"Qiskit\", \"Cirq\", \"Q#\"]\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "get_language_syntax",
+        "get_usage_examples"
+      ],
+      "available_tool_names": [
+        "get_language_syntax",
+        "get_usage_examples"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "get_language_syntax",
+          "arguments": {
+            "languages": [
+              "Qiskit",
+              "Cirq",
+              "Q#"
+            ]
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "get_usage_examples",
+          "arguments": {
+            "languages": [
+              "Qiskit",
+              "Cirq",
+              "Q#"
+            ]
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"get_language_syntax\", \"arguments\": {\"languages\": [\"Qiskit\", \"Cirq\", \"Q#\"]}}\n</tool_call>\n<tool_call>\n{\"name\": \"get_usage_examples\", \"arguments\": {\"languages\": [\"Qiskit\", \"Cirq\", \"Q#\"]}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    },
+    {
+      "source": "hermes",
+      "id": "adc48a37-6341-4ea6-972a-8ec2b5421321",
+      "task": "Manage financial transactions.",
+      "category": "Services Industry Software",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "record_expenses",
+            "description": "Records a list of business expenses into the accounting system.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "business_id": {
+                  "type": "string",
+                  "description": "The unique identifier for the business."
+                },
+                "expense_data": {
+                  "type": "array",
+                  "description": "A list of expense records to be added.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "date": {
+                        "type": "string",
+                        "description": "The date of the expense."
+                      },
+                      "category": {
+                        "type": "string",
+                        "description": "The category of the expense."
+                      },
+                      "amount": {
+                        "type": "number",
+                        "description": "The amount of the expense."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "A brief description of the expense."
+                      }
+                    },
+                    "required": [
+                      "date",
+                      "category",
+                      "amount",
+                      "description"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "business_id",
+                "expense_data"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "process_invoices",
+            "description": "Processes a batch of invoices for the business.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "business_id": {
+                  "type": "string",
+                  "description": "The unique identifier for the business."
+                },
+                "invoice_data": {
+                  "type": "array",
+                  "description": "A list of invoices to be processed.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "invoice_id": {
+                        "type": "string",
+                        "description": "The unique identifier for the invoice."
+                      },
+                      "client_id": {
+                        "type": "string",
+                        "description": "The unique identifier for the client."
+                      },
+                      "amount": {
+                        "type": "number",
+                        "description": "The amount billed in the invoice."
+                      },
+                      "due_date": {
+                        "type": "string",
+                        "description": "The due date for the invoice payment."
+                      }
+                    },
+                    "required": [
+                      "invoice_id",
+                      "client_id",
+                      "amount",
+                      "due_date"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "business_id",
+                "invoice_data"
+              ]
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "track_payments",
+            "description": "Tracks payments received against invoices.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "business_id": {
+                  "type": "string",
+                  "description": "The unique identifier for the business."
+                },
+                "payment_data": {
+                  "type": "array",
+                  "description": "A list of payment records to be tracked.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "payment_id": {
+                        "type": "string",
+                        "description": "The unique identifier for the payment."
+                      },
+                      "invoice_id": {
+                        "type": "string",
+                        "description": "The unique identifier for the invoice that the payment is for."
+                      },
+                      "amount": {
+                        "type": "number",
+                        "description": "The amount of the payment received."
+                      },
+                      "date_received": {
+                        "type": "string",
+                        "description": "The date the payment was received."
+                      }
+                    },
+                    "required": [
+                      "payment_id",
+                      "invoice_id",
+                      "amount",
+                      "date_received"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "business_id",
+                "payment_data"
+              ]
+            }
+          }
+        }
+      ],
+      "prompt_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "As the Financial Manager of XYZ Corp, I need assistance with efficiently managing our financial transactions. For this month, we have several business expenses that need to be recorded, outstanding invoices to process, and recent payments received against invoices to track. Please find the details for each transaction category below:\n\n**Business Expenses:**\n```\n| Date       | Category        | Amount | Description                  |\n|------------|-----------------|--------|------------------------------|\n| 2023-04-03 | Office Supplies | 200.00 | Stationery and printing      |\n| 2023-04-05 | Utilities       | 400.00 | Electricity and water bills  |\n| 2023-04-08 | Travel          | 350.00 | Business trip transportation |\n| 2023-04-15 | Maintenance     | 150.00 | Office equipment repairs     |\n```\n\n**Invoices to Process:**\n```\n| Invoice ID | Client ID | Amount  | Due Date   |\n|------------|-----------|---------|------------|\n| INV-301    | CLI-101   | 1200.00 | 2023-05-01 |\n| INV-302    | CLI-102   | 800.00  | 2023-05-10 |\n| INV-303    | CLI-103   | 1500.00 | 2023-05-15 |\n```\n\n**Payments to Track:**\n```\n| Payment ID | Invoice ID | Amount  | Date Received |\n|------------|------------|---------|---------------|\n| PAY-401    | INV-301    | 1200.00 | 2023-04-20    |\n| PAY-402    | INV-302    | 800.00  | 2023-04-22    |\n```\n\nWith the provided information, I request the simultaneous execution of the following functions on the XYZ Corp account (Business ID: XYZ-123):\n- Record the specified business expenses.\n- Process the outlined invoices.\n- Track the payments received as described.\n\nThis action will ensure accurate accounting and financial health for our company. Can you please proceed with these functions in parallel to streamline our financial transactions' management?"
+        }
+      ],
+      "gold_assistant": "<tool_call>\n<function=record_expenses>\n<parameter=business_id>\nXYZ-123\n</parameter>\n<parameter=expense_data>\n[{\"date\": \"2023-04-03\", \"category\": \"Office Supplies\", \"amount\": 200.0, \"description\": \"Stationery and printing\"}, {\"date\": \"2023-04-05\", \"category\": \"Utilities\", \"amount\": 400.0, \"description\": \"Electricity and water bills\"}, {\"date\": \"2023-04-08\", \"category\": \"Travel\", \"amount\": 350.0, \"description\": \"Business trip transportation\"}, {\"date\": \"2023-04-15\", \"category\": \"Maintenance\", \"amount\": 150.0, \"description\": \"Office equipment repairs\"}]\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=process_invoices>\n<parameter=business_id>\nXYZ-123\n</parameter>\n<parameter=invoice_data>\n[{\"invoice_id\": \"INV-301\", \"client_id\": \"CLI-101\", \"amount\": 1200.0, \"due_date\": \"2023-05-01\"}, {\"invoice_id\": \"INV-302\", \"client_id\": \"CLI-102\", \"amount\": 800.0, \"due_date\": \"2023-05-10\"}, {\"invoice_id\": \"INV-303\", \"client_id\": \"CLI-103\", \"amount\": 1500.0, \"due_date\": \"2023-05-15\"}]\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=track_payments>\n<parameter=business_id>\nXYZ-123\n</parameter>\n<parameter=payment_data>\n[{\"payment_id\": \"PAY-401\", \"invoice_id\": \"INV-301\", \"amount\": 1200.0, \"date_received\": \"2023-04-20\"}, {\"payment_id\": \"PAY-402\", \"invoice_id\": \"INV-302\", \"amount\": 800.0, \"date_received\": \"2023-04-22\"}]\n</parameter>\n</function>\n</tool_call>",
+      "gold_tool_names": [
+        "record_expenses",
+        "process_invoices",
+        "track_payments"
+      ],
+      "available_tool_names": [
+        "process_invoices",
+        "record_expenses",
+        "track_payments"
+      ],
+      "gold_tool_calls": [
+        {
+          "name": "record_expenses",
+          "arguments": {
+            "business_id": "XYZ-123",
+            "expense_data": [
+              {
+                "date": "2023-04-03",
+                "category": "Office Supplies",
+                "amount": 200.0,
+                "description": "Stationery and printing"
+              },
+              {
+                "date": "2023-04-05",
+                "category": "Utilities",
+                "amount": 400.0,
+                "description": "Electricity and water bills"
+              },
+              {
+                "date": "2023-04-08",
+                "category": "Travel",
+                "amount": 350.0,
+                "description": "Business trip transportation"
+              },
+              {
+                "date": "2023-04-15",
+                "category": "Maintenance",
+                "amount": 150.0,
+                "description": "Office equipment repairs"
+              }
+            ]
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "process_invoices",
+          "arguments": {
+            "business_id": "XYZ-123",
+            "invoice_data": [
+              {
+                "invoice_id": "INV-301",
+                "client_id": "CLI-101",
+                "amount": 1200.0,
+                "due_date": "2023-05-01"
+              },
+              {
+                "invoice_id": "INV-302",
+                "client_id": "CLI-102",
+                "amount": 800.0,
+                "due_date": "2023-05-10"
+              },
+              {
+                "invoice_id": "INV-303",
+                "client_id": "CLI-103",
+                "amount": 1500.0,
+                "due_date": "2023-05-15"
+              }
+            ]
+          },
+          "format": "qwen_native"
+        },
+        {
+          "name": "track_payments",
+          "arguments": {
+            "business_id": "XYZ-123",
+            "payment_data": [
+              {
+                "payment_id": "PAY-401",
+                "invoice_id": "INV-301",
+                "amount": 1200.0,
+                "date_received": "2023-04-20"
+              },
+              {
+                "payment_id": "PAY-402",
+                "invoice_id": "INV-302",
+                "amount": 800.0,
+                "date_received": "2023-04-22"
+              }
+            ]
+          },
+          "format": "qwen_native"
+        }
+      ],
+      "gold_assistant_legacy": "<tool_call>\n{\"name\": \"record_expenses\", \"arguments\": {\"business_id\": \"XYZ-123\", \"expense_data\": [{\"date\": \"2023-04-03\", \"category\": \"Office Supplies\", \"amount\": 200.0, \"description\": \"Stationery and printing\"}, {\"date\": \"2023-04-05\", \"category\": \"Utilities\", \"amount\": 400.0, \"description\": \"Electricity and water bills\"}, {\"date\": \"2023-04-08\", \"category\": \"Travel\", \"amount\": 350.0, \"description\": \"Business trip transportation\"}, {\"date\": \"2023-04-15\", \"category\": \"Maintenance\", \"amount\": 150.0, \"description\": \"Office equipment repairs\"}]}}\n</tool_call>\n<tool_call>\n{\"name\": \"process_invoices\", \"arguments\": {\"business_id\": \"XYZ-123\", \"invoice_data\": [{\"invoice_id\": \"INV-301\", \"client_id\": \"CLI-101\", \"amount\": 1200.0, \"due_date\": \"2023-05-01\"}, {\"invoice_id\": \"INV-302\", \"client_id\": \"CLI-102\", \"amount\": 800.0, \"due_date\": \"2023-05-10\"}, {\"invoice_id\": \"INV-303\", \"client_id\": \"CLI-103\", \"amount\": 1500.0, \"due_date\": \"2023-05-15\"}]}}\n</tool_call>\n<tool_call>\n{\"name\": \"track_payments\", \"arguments\": {\"business_id\": \"XYZ-123\", \"payment_data\": [{\"payment_id\": \"PAY-401\", \"invoice_id\": \"INV-301\", \"amount\": 1200.0, \"date_received\": \"2023-04-20\"}, {\"payment_id\": \"PAY-402\", \"invoice_id\": \"INV-302\", \"amount\": 800.0, \"date_received\": \"2023-04-22\"}]}}\n</tool_call>",
+      "gold_assistant_format": "qwen_native_function_parameter"
+    }
+  ]
+}

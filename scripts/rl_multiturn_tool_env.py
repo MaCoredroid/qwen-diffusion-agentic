@@ -375,6 +375,7 @@ class MultiTurnToolRLEnv:
                 },
             )
             row["generated_token_ids"] = [int(token_id) for token_id in new_ids.detach().cpu().tolist()]
+            row["prompt"] = prompt
             reward = audited_reward(self.tokenizer, row, episode["tools"], gold_block)
             reward_payload = {
                 "episode_id": episode["id"],

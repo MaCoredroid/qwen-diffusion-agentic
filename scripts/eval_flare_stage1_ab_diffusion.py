@@ -354,7 +354,11 @@ def load_model_and_tokenizer(model_path: Path, adapter_path: Path | None, four_b
 
     model.mdm_sample = types.MethodType(generation_functions.Fast_dLLM_QwenForCausalLM.batch_sample, model)
     model.eval()
-    tokenizer_path = adapter_path if adapter_path is not None else model_path
+    tokenizer_path = (
+        adapter_path
+        if adapter_path is not None and (adapter_path / "tokenizer.json").exists()
+        else model_path
+    )
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=True)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token

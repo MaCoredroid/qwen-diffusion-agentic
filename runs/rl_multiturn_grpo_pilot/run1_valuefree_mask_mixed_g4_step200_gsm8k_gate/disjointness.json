@@ -1,0 +1,16 @@
+{
+  "train_path": "runs/rl_multiturn_grpo_pilot/run1_valuefree_mask_mixed_g4_step200/train_provenance_public_multicall.json",
+  "heldout_path": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+  "train_count": 12,
+  "heldout_count": 40,
+  "full_hash_overlap_count": 0,
+  "content_hash_overlap_count": 0,
+  "sources": {
+    "train": [
+      "hermes"
+    ],
+    "heldout": [
+      "None"
+    ]
+  }
+}

@@ -79,3 +79,7 @@ Results:
 The third SFT attempt failed the `GSM8K >= 0.70` retention gate. Per stop-rule, the SFT
 warm-start path is abandoned. Next work proceeds directly to the diffu-GRPO pilot from
 `runs/flare_redesign_run1_copy_grounded_qwen35_9b`.
+
+Residual likely cause: even after serialization repair, this was still a tiny `98`-row
+mix trained for `400` steps, which is roughly a 40-epoch overfit regime over the effective
+packed examples. This is noted only for accounting; no further SFT chase is planned.
