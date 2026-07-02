@@ -72,6 +72,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--threshold", type=float, default=0.9)
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--diffusion-structural-only", action="store_true")
+    parser.add_argument("--diffusion-output-name", default="diffusion")
     parser.add_argument("--timeout", type=float, default=120.0)
     parser.add_argument("--seed", type=int, default=20260701)
     return parser.parse_args()
@@ -305,11 +307,47 @@ def write_manifest(args: argparse.Namespace, episodes: list[dict], tokenizer, ch
             "merge_adapter": not args.no_merge_adapter,
             "dtype": "bf16",
             "quant": "none",
-            "decode": "per_call_waves_tau095_prefix_cache",
+            "decode": (
+                "per_call_waves_tau095_structural_only_prefix_cache"
+                if args.diffusion_structural_only
+                else "per_call_waves_tau095_prefix_cache"
+            ),
+            "structural_only_projection": bool(args.diffusion_structural_only),
         },
     }
+    prior_manifest_path = args.out_dir / "fairness_manifest.json"
+    if prior_manifest_path.exists():
+        try:
+            prior_manifest = json.loads(prior_manifest_path.read_text(encoding="utf-8"))
+            prior_core = [
+                {
+                    "episode_idx": item.get("episode_idx"),
+                    "id": item.get("id"),
+                    "turns": item.get("turns"),
+                    "tools_hash": item.get("tools_hash"),
+                    "gold_hash": item.get("gold_hash"),
+                }
+                for item in prior_manifest.get("episodes", [])
+            ]
+            current_core = [
+                {
+                    "episode_idx": item.get("episode_idx"),
+                    "id": item.get("id"),
+                    "turns": item.get("turns"),
+                    "tools_hash": item.get("tools_hash"),
+                    "gold_hash": item.get("gold_hash"),
+                }
+                for item in manifest.get("episodes", [])
+            ]
+            if prior_core == current_core and prior_manifest.get("episode_set_hash"):
+                manifest["episode_set_hash"] = prior_manifest["episode_set_hash"]
+                manifest["episode_set_hash_note"] = "preserved from prior manifest; episode ids/tools/gold match"
+            if "server_launch" in prior_manifest and "server_launch" not in manifest:
+                manifest["server_launch"] = prior_manifest["server_launch"]
+        except Exception:
+            pass
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    (args.out_dir / "fairness_manifest.json").write_text(
+    prior_manifest_path.write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -495,6 +533,10 @@ def run_diffusion(args: argparse.Namespace, episodes: list[dict], tokenizer, cha
             argument_boundary_token_ids=argument_boundary_token_ids,
             argument_newline_token_ids=argument_newline_token_ids,
         )
+        if args.diffusion_structural_only:
+            gen_args.two_wave_grammar_forced_only = True
+            gen_args.record_projected_token_positions = True
+            gen_args.two_wave_no_project_inside_parameter_value = True
         for turn_idx, gold_block in enumerate(episode["gold_blocks"]):
             schedule, schedule_record, schedule_build_seconds = build_schedule(model_tokenizer, gold_block)
             prompt_input_ids = model_tokenizer([prompt], return_tensors="pt").input_ids.to("cuda")
@@ -530,7 +572,11 @@ def run_diffusion(args: argparse.Namespace, episodes: list[dict], tokenizer, cha
             history_text = decode_text(model_tokenizer, new_ids)
             assistant_text = trim_scored_assistant(history_text)
             row = row_from_generation(
-                backend="diffusion_percall_waves",
+                backend=(
+                    "diffusion_percall_waves_structural_only"
+                    if args.diffusion_structural_only
+                    else "diffusion_percall_waves"
+                ),
                 episode=episode,
                 turn_idx=turn_idx,
                 prompt=prompt,
@@ -751,9 +797,13 @@ def write_report(args: argparse.Namespace) -> dict:
     ar_rows = read_rows(args.out_dir / "ar-vllm" / "turns.jsonl")
     guided_path = args.out_dir / "ar-vllm-guided" / "turns.jsonl"
     ar_guided_rows = read_rows(guided_path) if guided_path.exists() else []
-    diffusion_rows = read_rows(args.out_dir / "diffusion" / "turns.jsonl")
+    contaminated_diffusion_rows = read_rows(args.out_dir / "diffusion" / "turns.jsonl")
+    corrected_diffusion_path = args.out_dir / "diffusion_structural_only" / "turns.jsonl"
+    corrected_diffusion_rows = read_rows(corrected_diffusion_path) if corrected_diffusion_path.exists() else []
+    diffusion_rows = corrected_diffusion_rows or contaminated_diffusion_rows
     ar = summarize_backend(ar_rows)
     ar_guided = summarize_backend(ar_guided_rows) if ar_guided_rows else None
+    contaminated_diffusion = summarize_backend(contaminated_diffusion_rows)
     diffusion = summarize_backend(diffusion_rows)
     source_breakdown = {
         "ar_vllm": summarize_by_source(ar_rows),
@@ -833,7 +883,9 @@ def write_report(args: argparse.Namespace) -> dict:
         "manifest": manifest,
         "ar_vllm": ar,
         "ar_vllm_guided": ar_guided,
+        "diffusion_percall_waves_contaminated": contaminated_diffusion,
         "diffusion_percall_waves": diffusion,
+        "diffusion_corrected_structural_only": bool(corrected_diffusion_rows),
         "source_breakdown": source_breakdown,
         "paired": paired,
         "paired_guided": paired_guided,
@@ -869,8 +921,22 @@ def write_report(args: argparse.Namespace) -> dict:
             f"| {ar_guided['sec_per_turn']:.3f} | {ar_guided['turn_wall_seconds']:.3f}s "
             f"| {ar_guided['generated_tokens_per_turn']:.3f} | n/a |"
         )
+    if corrected_diffusion_rows:
+        lines.append(
+            "| Diffusion per-call waves (measurement-contaminated) "
+            f"| {contaminated_diffusion['exact_arguments']}/{contaminated_diffusion['turns']} "
+            f"| {contaminated_diffusion['episode_exact_arguments_all_turns']}/{contaminated_diffusion['episodes']} "
+            f"| {contaminated_diffusion['exact_tool_sequence']}/{contaminated_diffusion['turns']} "
+            f"| {contaminated_diffusion['valid_tool_json']}/{contaminated_diffusion['turns']} "
+            f"| {contaminated_diffusion['all_schema_valid']}/{contaminated_diffusion['turns']} "
+            f"| {contaminated_diffusion['sec_per_turn']:.3f} "
+            f"| {contaminated_diffusion['turn_wall_seconds']:.3f}s "
+            f"| {contaminated_diffusion['generated_tokens_per_turn']:.3f} "
+            f"| {contaminated_diffusion['denoise_forwards_per_turn']:.3f} |"
+        )
     lines.append(
-        f"| Diffusion per-call waves | {diffusion['exact_arguments']}/{diffusion['turns']} "
+        f"| Diffusion per-call waves{' (corrected structural-only)' if corrected_diffusion_rows else ''} "
+        f"| {diffusion['exact_arguments']}/{diffusion['turns']} "
         f"| {diffusion['episode_exact_arguments_all_turns']}/{diffusion['episodes']} "
         f"| {diffusion['exact_tool_sequence']}/{diffusion['turns']} "
         f"| {diffusion['valid_tool_json']}/{diffusion['turns']} "
@@ -878,6 +944,33 @@ def write_report(args: argparse.Namespace) -> dict:
         f"| {diffusion['sec_per_turn']:.3f} | {diffusion['turn_wall_seconds']:.3f}s "
         f"| {diffusion['generated_tokens_per_turn']:.3f} | {diffusion['denoise_forwards_per_turn']:.3f} |"
     )
+    if corrected_diffusion_rows:
+        audit_path = args.out_dir / "diffusion_structural_only" / "projection_value_audit.json"
+        audit_totals = {}
+        if audit_path.exists():
+            try:
+                audit_totals = json.loads(audit_path.read_text(encoding="utf-8")).get("totals") or {}
+            except Exception:
+                audit_totals = {}
+        lines.extend(
+            [
+                "",
+                "## Contamination Note",
+                "",
+                (
+                    "- The original 55/63 diffusion row is measurement-contaminated. "
+                    "It was produced without structural-only projection, and the tokenizer-offset audit found "
+                    "projected value tokens. The corrected row reruns diffusion with "
+                    "`two_wave_grammar_forced_only=True`; AR rows are unchanged."
+                ),
+                (
+                    "- Corrected projection audit: "
+                    f"mode=`{audit_totals.get('verification_mode', 'n/a')}`, "
+                    f"projected_value_tokens_exact={audit_totals.get('projected_value_tokens_exact', 'n/a')}, "
+                    f"projected_token_records={audit_totals.get('projected_token_record_count', 'n/a')}."
+                ),
+            ]
+        )
     headline_lines = []
     if ar_guided is not None:
         turn_holds = diffusion["exact_arguments"] >= ar_guided["exact_arguments"]
@@ -982,7 +1075,9 @@ def write_report(args: argparse.Namespace) -> dict:
             else []
         ),
         f"- Full manifest: `{args.out_dir / 'fairness_manifest.json'}`.",
-        f"- Per-turn rows: `{args.out_dir / 'ar-vllm/turns.jsonl'}`, `{args.out_dir / 'ar-vllm-guided/turns.jsonl'}`, `{args.out_dir / 'diffusion/turns.jsonl'}`.",
+        f"- Per-turn rows: `{args.out_dir / 'ar-vllm/turns.jsonl'}`, `{args.out_dir / 'ar-vllm-guided/turns.jsonl'}`, `{args.out_dir / 'diffusion/turns.jsonl'}`"
+        + (f", `{corrected_diffusion_path}`" if corrected_diffusion_rows else "")
+        + ".",
         ]
     )
     (args.out_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -1010,7 +1105,7 @@ def main() -> int:
         write_rows(args.out_dir, "ar-vllm-guided", rows)
     elif args.backend == "diffusion":
         rows = run_diffusion(args, episodes, tokenizer, chat_template)
-        write_rows(args.out_dir, "diffusion", rows)
+        write_rows(args.out_dir, args.diffusion_output_name, rows)
     return 0
 
 

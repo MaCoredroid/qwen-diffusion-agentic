@@ -240,6 +240,7 @@ def fmt_float(value: Any) -> str:
 
 def markdown(report: dict[str, Any]) -> str:
     a = report["conditions"]["baseline_careful"]
+    contaminated = report["conditions"].get("percall_waves_tau095_contaminated")
     b = report["conditions"]["percall_waves_tau095"]
     manifest = report.get("manifest") or {}
     leak = manifest.get("train_leak_check") or {}
@@ -264,12 +265,44 @@ def markdown(report: dict[str, Any]) -> str:
             f"{a['valid_json']}/{a['records']} | {fmt_float(a['blended_tpf'])} | "
             f"{fmt_float(a['seconds_per_record'])} | {fmt_float(a['elapsed_seconds'])}s |"
         ),
+        *(
+            [
+                (
+                    f"| Per-call waves tau 0.95 (measurement-contaminated) | "
+                    f"{contaminated['exact_args']}/{contaminated['records']} | "
+                    f"{contaminated['exact_seq']}/{contaminated['records']} | "
+                    f"{contaminated['valid_json']}/{contaminated['records']} | "
+                    f"{fmt_float(contaminated['blended_tpf'])} | "
+                    f"{fmt_float(contaminated['seconds_per_record'])} | "
+                    f"{fmt_float(contaminated['elapsed_seconds'])}s |"
+                )
+            ]
+            if contaminated
+            else []
+        ),
         (
-            f"| Per-call waves tau 0.95 | {b['exact_args']}/{b['records']} | {b['exact_seq']}/{b['records']} | "
+            f"| Per-call waves tau 0.95"
+            f"{' (corrected structural-only)' if contaminated else ''} | "
+            f"{b['exact_args']}/{b['records']} | {b['exact_seq']}/{b['records']} | "
             f"{b['valid_json']}/{b['records']} | {fmt_float(b['blended_tpf'])} | "
             f"{fmt_float(b['seconds_per_record'])} | {fmt_float(b['elapsed_seconds'])}s |"
         ),
         "",
+        *(
+            [
+                "## Contamination Note",
+                "",
+                (
+                    "- The original 30/58 per-call row is measurement-contaminated. "
+                    "It was produced without structural-only projection, and the tokenizer-offset audit found "
+                    "projected value tokens. The corrected row reruns per-call waves with "
+                    "`two_wave_grammar_forced_only=True`; baseline careful is unchanged."
+                ),
+                "",
+            ]
+            if contaminated
+            else []
+        ),
         "## Headline",
         "",
         f"- exact_args delta (per-call - baseline): {report['headline']['exact_args_delta']} / {a['records']}",
@@ -301,12 +334,23 @@ def main() -> int:
     parser.add_argument("--manifest-json", type=Path, default=DEFAULT_ROOT / "scaleup_native_58_manifest.json")
     parser.add_argument("--baseline-summary", type=Path, default=DEFAULT_ROOT / "baseline_careful/scaleup_native_58.summary.json")
     parser.add_argument("--percall-summary", type=Path, default=DEFAULT_ROOT / "percall_waves_tau095/scaleup_native_58.summary.json")
+    parser.add_argument(
+        "--corrected-percall-summary",
+        type=Path,
+        default=DEFAULT_ROOT / "percall_waves_tau095_structural_only/scaleup_native_58.summary.json",
+    )
     parser.add_argument("--out-json", type=Path, default=DEFAULT_ROOT / "scaleup_eval_report.json")
     parser.add_argument("--out-md", type=Path, default=DEFAULT_ROOT / "scaleup_eval_report.md")
     args = parser.parse_args()
 
     baseline = summarize_condition(args.baseline_summary, "baseline_careful")
-    percall = summarize_condition(args.percall_summary, "percall_waves_tau095")
+    contaminated_percall = summarize_condition(args.percall_summary, "percall_waves_tau095")
+    corrected_percall = (
+        summarize_condition(args.corrected_percall_summary, "percall_waves_tau095")
+        if args.corrected_percall_summary.exists()
+        else None
+    )
+    percall = corrected_percall or contaminated_percall
     failures = failure_taxonomy(
         args.cases_jsonl,
         Path(baseline["output_jsonl"]),
@@ -319,6 +363,15 @@ def main() -> int:
         "manifest": read_json(args.manifest_json) if args.manifest_json.exists() else {},
         "conditions": {
             "baseline_careful": {k: v for k, v in baseline.items() if k != "raw_summary"},
+            **(
+                {
+                    "percall_waves_tau095_contaminated": {
+                        k: v for k, v in contaminated_percall.items() if k != "raw_summary"
+                    }
+                }
+                if corrected_percall is not None
+                else {}
+            ),
             "percall_waves_tau095": {k: v for k, v in percall.items() if k != "raw_summary"},
         },
         "headline": {

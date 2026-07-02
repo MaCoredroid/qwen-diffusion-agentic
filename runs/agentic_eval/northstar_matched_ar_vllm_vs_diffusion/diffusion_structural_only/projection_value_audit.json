@@ -1,0 +1,26 @@
+{
+  "per_row_jsonl": "runs/agentic_eval/northstar_matched_ar_vllm_vs_diffusion/diffusion_structural_only/projection_value_audit.jsonl",
+  "rows": "runs/agentic_eval/northstar_matched_ar_vllm_vs_diffusion/diffusion_structural_only/turns.jsonl",
+  "tokenizer": "models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "totals": {
+    "exact_args": 3,
+    "exact_rows_dependent_on_projected_values": 0,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 594,
+    "projected_true_value_tokens_lower_bound": 141,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 1772,
+    "rows": 63,
+    "rows_with_projected_token_records": 63,
+    "rows_with_projected_true_value_tokens_lower_bound": 28,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 1377,
+    "verification_mode": "projected_token_records_x_tokenizer_offsets",
+    "wave1_projected_tokens": 594,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 0,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  }
+}

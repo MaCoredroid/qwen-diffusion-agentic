@@ -911,6 +911,17 @@ def target_is_truly_forced_grammar_token(tokenizer, sequence, original_len, abs_
     return len(legal) == 1 and int(legal[0]) == int(target_token_id)
 
 
+def qwen_native_inside_parameter_value(text):
+    text = str(text or "")
+    open_matches = list(re.finditer(r"<parameter=[^>\s]+>\n?", text))
+    if not open_matches:
+        return False
+    close_matches = list(re.finditer(r"</parameter>\n?", text))
+    last_open = open_matches[-1]
+    last_close_end = close_matches[-1].end() if close_matches else -1
+    return last_open.end() > last_close_end
+
+
 def apply_two_wave_grammar_projected_scaffold(
     tokenizer,
     x_t,
@@ -933,6 +944,11 @@ def apply_two_wave_grammar_projected_scaffold(
     active_rows = 0
     stop_ids = set(int(token_id) for token_id in getattr(args, "stop_token_ids", [args.stop_token_id]))
     for row_idx in range(x_t.shape[0]):
+        if getattr(args, "two_wave_no_project_inside_parameter_value", False):
+            generated = x_t[row_idx, original_len:].detach().tolist()
+            text = contiguous_decoded_prefix(tokenizer, generated, args.mask_id)
+            if qwen_native_inside_parameter_value(text):
+                continue
         mask_idx = x_t[row_idx, -window_len:] == args.mask_id
         if not bool(mask_idx.any().item()):
             continue
@@ -986,6 +1002,15 @@ def apply_two_wave_grammar_projected_scaffold(
                 blocked_unsafe += 1
                 break
             x_t[row_idx, abs_idx] = token_id
+            if getattr(args, "record_projected_token_positions", False):
+                schedule_events.setdefault("two_wave_wave1_projected_token_records", []).append(
+                    {
+                        "abs_idx": int(abs_idx),
+                        "rel_idx": int(abs_idx) - int(original_len),
+                        "kind": str(kind),
+                        "token_id": int(token_id),
+                    }
+                )
             committed += 1
             structural_tokens += 1
             _wave_event_increment(schedule_events, "two_wave_wave1", f"kind_tokens:{kind}")
@@ -2738,6 +2763,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         "two_wave_wave1_forced_tokens": 0,
         "two_wave_wave1_blocked_unsafe_tokens": 0,
         "two_wave_wave1_projected_tokens": 0,
+        "two_wave_wave1_projected_token_records": [],
         "two_wave_wave1_projection_steps": 0,
         "two_wave_wave1_projection_active_rows": 0,
         "two_wave_wave2_denoise_forwards": 0,
@@ -4485,6 +4511,16 @@ def main():
             "For grammar_projected wave 1, only direct-fill the target token when the live "
             "native grammar exposes exactly one legal next token; otherwise decode carefully."
         ),
+    )
+    parser.add_argument(
+        "--record-projected-token-positions",
+        action="store_true",
+        help="Record exact relative token positions for grammar-projected wave-1 tokens.",
+    )
+    parser.add_argument(
+        "--two-wave-no-project-inside-parameter-value",
+        action="store_true",
+        help="Disable grammar projection while the Qwen-native prefix is inside an open <parameter> value body.",
     )
     parser.add_argument(
         "--two-wave-wave2-threshold",
