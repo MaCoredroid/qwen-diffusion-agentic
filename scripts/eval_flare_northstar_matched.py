@@ -124,16 +124,27 @@ def trim_scored_assistant(text: str) -> str:
     return trim_after_first_tool_call(text.strip())
 
 
-def tool_response_suffix(payload: Any) -> str:
+def tool_response_suffix(payload: Any, next_user_message: str | None = None) -> str:
     content = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    return (
+    suffix = (
         "<|im_end|>\n"
         "<|im_start|>user\n"
         "<tool_response>\n"
         + content
         + "\n</tool_response><|im_end|>\n"
-        + ASSISTANT_GENERATION_PROMPT
     )
+    if next_user_message is not None and str(next_user_message).strip():
+        suffix += "<|im_start|>user\n" + str(next_user_message).strip() + "<|im_end|>\n"
+    return suffix + ASSISTANT_GENERATION_PROMPT
+
+
+def next_turn_user_message(episode: dict, next_turn_idx: int) -> str | None:
+    turn_user_messages = episode.get("turn_user_messages") or []
+    if next_turn_idx < len(turn_user_messages):
+        value = turn_user_messages[next_turn_idx]
+        if value is not None and str(value).strip():
+            return str(value)
+    return None
 
 
 def regex_literal(text: str) -> str:
@@ -217,7 +228,15 @@ def write_manifest(args: argparse.Namespace, episodes: list[dict], tokenizer, ch
             "episode_idx": episode["episode_idx"],
             "id": episode["id"],
             "source": episode.get("source"),
+            "source_family": episode.get("source_family"),
+            "source_dataset": episode.get("source_dataset"),
+            "source_license": episode.get("source_license"),
+            "source_row_idx": episode.get("source_row_idx"),
             "turns": len(episode["gold_blocks"]),
+            "turn_user_message_count": sum(
+                int(value is not None and bool(str(value).strip()))
+                for value in (episode.get("turn_user_messages") or [])
+            ),
             "tools_hash": sha256_json(episode.get("tools") or []),
             "gold_hash": sha256_json(episode.get("gold_blocks") or []),
         }
@@ -228,6 +247,9 @@ def write_manifest(args: argparse.Namespace, episodes: list[dict], tokenizer, ch
         "input_jsonl": str(args.input_jsonl),
         "episode_count": len(episodes),
         "turn_count": sum(len(episode["gold_blocks"]) for episode in episodes),
+        "source_family_counts": dict(
+            sorted(Counter(episode.get("source_family") or episode.get("source") or "unknown" for episode in episodes).items())
+        ),
         "episodes": episode_manifest,
         "episode_set_hash": sha256_json(episode_manifest),
         "prompt_tokenizer_path": str(args.prompt_tokenizer_path),
@@ -251,8 +273,9 @@ def write_manifest(args: argparse.Namespace, episodes: list[dict], tokenizer, ch
         "prompt_loop": {
             "mode": "prefix_stable_incremental_completion_prompt",
             "initial_prompt": "chat_template_with_tools_and_generation_prompt",
-            "followup_prompt": "previous_prompt_plus_sampled_assistant_plus_tool_response_plus_generation_prompt",
+            "followup_prompt": "previous_prompt_plus_sampled_assistant_plus_tool_response_plus_optional_next_user_plus_generation_prompt",
             "tool_response_role": "user",
+            "next_user_role": "user",
             "assistant_generation_prompt": ASSISTANT_GENERATION_PROMPT,
         },
         "ar": {
@@ -321,6 +344,10 @@ def row_from_generation(
         "episode_idx": episode["episode_idx"],
         "episode_id": episode["id"],
         "source": episode.get("source"),
+        "source_family": episode.get("source_family"),
+        "source_dataset": episode.get("source_dataset"),
+        "source_license": episode.get("source_license"),
+        "source_row_idx": episode.get("source_row_idx"),
         "turn_idx": turn_idx,
         "turns_in_episode": len(episode["gold_blocks"]),
         "prompt_sha256": sha256_text(prompt),
@@ -420,8 +447,10 @@ def run_ar_vllm(
                 },
             )
             row["assistant_history_sha256"] = sha256_text(history_text)
+            next_user = next_turn_user_message(episode, turn_idx + 1)
+            row["next_user_message_sha256"] = sha256_text(next_user) if next_user is not None else None
             rows.append(row)
-            prompt = prompt + history_text + tool_response_suffix(row["tool_response_payload"])
+            prompt = prompt + history_text + tool_response_suffix(row["tool_response_payload"], next_user)
             print(
                 f"{'ar_vllm_guided' if guided else 'ar_vllm'} "
                 f"episode={episode['episode_idx']} turn={turn_idx + 1}/{len(episode['gold_blocks'])} "
@@ -521,8 +550,10 @@ def run_diffusion(args: argparse.Namespace, episodes: list[dict], tokenizer, cha
                 },
             )
             row["assistant_history_sha256"] = sha256_text(history_text)
+            next_user = next_turn_user_message(episode, turn_idx + 1)
+            row["next_user_message_sha256"] = sha256_text(next_user) if next_user is not None else None
             rows.append(row)
-            prompt = prompt + history_text + tool_response_suffix(row["tool_response_payload"])
+            prompt = prompt + history_text + tool_response_suffix(row["tool_response_payload"], next_user)
             cache_hit = bool((row["backend_meta"].get("flare_cache_stats") or {}).get("prefix_cache_hit"))
             print(
                 f"diffusion episode={episode['episode_idx']} turn={turn_idx + 1}/{len(episode['gold_blocks'])} "
@@ -589,6 +620,17 @@ def summarize_backend(rows: list[dict]) -> dict:
     }
 
 
+def source_key(row: dict) -> str:
+    return str(row.get("source_family") or row.get("source") or "unknown")
+
+
+def summarize_by_source(rows: list[dict]) -> dict[str, dict]:
+    grouped: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        grouped[source_key(row)].append(row)
+    return {name: summarize_backend(grouped[name]) for name in sorted(grouped)}
+
+
 def paired_summary(reference_rows: list[dict], candidate_rows: list[dict]) -> dict:
     reference_by_turn = {(row["episode_id"], row["turn_idx"]): row for row in reference_rows}
     candidate_by_turn = {(row["episode_id"], row["turn_idx"]): row for row in candidate_rows}
@@ -602,6 +644,39 @@ def paired_summary(reference_rows: list[dict], candidate_rows: list[dict]) -> di
     shared_episodes = sorted(set(reference_by_episode) & set(candidate_by_episode))
     reference = summarize_backend(reference_rows)
     candidate = summarize_backend(candidate_rows)
+    candidate_only_exact_arguments = sum(
+        int(bool(candidate_by_turn[key].get("exact_arguments")) and not bool(reference_by_turn[key].get("exact_arguments")))
+        for key in shared_turns
+    )
+    reference_only_exact_arguments = sum(
+        int(bool(reference_by_turn[key].get("exact_arguments")) and not bool(candidate_by_turn[key].get("exact_arguments")))
+        for key in shared_turns
+    )
+    both_exact_arguments = sum(
+        int(bool(reference_by_turn[key].get("exact_arguments")) and bool(candidate_by_turn[key].get("exact_arguments")))
+        for key in shared_turns
+    )
+    candidate_only_exact_argument_episodes = sum(
+        int(
+            all(bool(row.get("exact_arguments")) for row in candidate_by_episode[episode_id])
+            and not all(bool(row.get("exact_arguments")) for row in reference_by_episode[episode_id])
+        )
+        for episode_id in shared_episodes
+    )
+    reference_only_exact_argument_episodes = sum(
+        int(
+            all(bool(row.get("exact_arguments")) for row in reference_by_episode[episode_id])
+            and not all(bool(row.get("exact_arguments")) for row in candidate_by_episode[episode_id])
+        )
+        for episode_id in shared_episodes
+    )
+    both_exact_argument_episodes = sum(
+        int(
+            all(bool(row.get("exact_arguments")) for row in reference_by_episode[episode_id])
+            and all(bool(row.get("exact_arguments")) for row in candidate_by_episode[episode_id])
+        )
+        for episode_id in shared_episodes
+    )
     return {
         "paired_turns": len(shared_turns),
         "exact_arguments_delta": sum(
@@ -619,6 +694,12 @@ def paired_summary(reference_rows: list[dict], candidate_rows: list[dict]) -> di
             - int(bool(reference_by_turn[key].get("valid_tool_json")))
             for key in shared_turns
         ),
+        "candidate_only_exact_arguments": candidate_only_exact_arguments,
+        "reference_only_exact_arguments": reference_only_exact_arguments,
+        "both_exact_arguments": both_exact_arguments,
+        "neither_exact_arguments": (
+            len(shared_turns) - candidate_only_exact_arguments - reference_only_exact_arguments - both_exact_arguments
+        ),
         "schema_valid_delta": sum(
             int(bool(candidate_by_turn[key].get("all_schema_valid")))
             - int(bool(reference_by_turn[key].get("all_schema_valid")))
@@ -629,6 +710,15 @@ def paired_summary(reference_rows: list[dict], candidate_rows: list[dict]) -> di
             int(all(bool(row.get("exact_arguments")) for row in candidate_by_episode[episode_id]))
             - int(all(bool(row.get("exact_arguments")) for row in reference_by_episode[episode_id]))
             for episode_id in shared_episodes
+        ),
+        "candidate_only_exact_argument_episodes": candidate_only_exact_argument_episodes,
+        "reference_only_exact_argument_episodes": reference_only_exact_argument_episodes,
+        "both_exact_argument_episodes": both_exact_argument_episodes,
+        "neither_exact_argument_episodes": (
+            len(shared_episodes)
+            - candidate_only_exact_argument_episodes
+            - reference_only_exact_argument_episodes
+            - both_exact_argument_episodes
         ),
         "reference_wall_seconds": reference["turn_wall_seconds"],
         "candidate_wall_seconds": candidate["turn_wall_seconds"],
@@ -645,6 +735,17 @@ def paired_summary(reference_rows: list[dict], candidate_rows: list[dict]) -> di
     }
 
 
+def paired_summary_by_source(reference_rows: list[dict], candidate_rows: list[dict]) -> dict[str, dict]:
+    sources = sorted({source_key(row) for row in reference_rows} | {source_key(row) for row in candidate_rows})
+    out: dict[str, dict] = {}
+    for source in sources:
+        reference_source_rows = [row for row in reference_rows if source_key(row) == source]
+        candidate_source_rows = [row for row in candidate_rows if source_key(row) == source]
+        if reference_source_rows and candidate_source_rows:
+            out[source] = paired_summary(reference_source_rows, candidate_source_rows)
+    return out
+
+
 def write_report(args: argparse.Namespace) -> dict:
     manifest = json.loads((args.out_dir / "fairness_manifest.json").read_text(encoding="utf-8"))
     ar_rows = read_rows(args.out_dir / "ar-vllm" / "turns.jsonl")
@@ -654,6 +755,11 @@ def write_report(args: argparse.Namespace) -> dict:
     ar = summarize_backend(ar_rows)
     ar_guided = summarize_backend(ar_guided_rows) if ar_guided_rows else None
     diffusion = summarize_backend(diffusion_rows)
+    source_breakdown = {
+        "ar_vllm": summarize_by_source(ar_rows),
+        "ar_vllm_guided": summarize_by_source(ar_guided_rows) if ar_guided_rows else {},
+        "diffusion_percall_waves": summarize_by_source(diffusion_rows),
+    }
     ar_by_turn = {(row["episode_id"], row["turn_idx"]): row for row in ar_rows}
     diffusion_by_turn = {(row["episode_id"], row["turn_idx"]): row for row in diffusion_rows}
     shared_turns = sorted(set(ar_by_turn) & set(diffusion_by_turn))
@@ -703,22 +809,35 @@ def write_report(args: argparse.Namespace) -> dict:
             "exact_sequence_delta_diffusion_minus_ar_guided": guided["exact_sequence_delta"],
             "valid_delta_diffusion_minus_ar_guided": guided["valid_delta"],
             "schema_valid_delta_diffusion_minus_ar_guided": guided["schema_valid_delta"],
+            "diffusion_only_exact_arguments": guided["candidate_only_exact_arguments"],
+            "ar_guided_only_exact_arguments": guided["reference_only_exact_arguments"],
+            "both_exact_arguments": guided["both_exact_arguments"],
+            "neither_exact_arguments": guided["neither_exact_arguments"],
             "paired_episodes": guided["paired_episodes"],
             "episode_exact_arguments_delta_diffusion_minus_ar_guided": guided[
                 "episode_exact_arguments_delta"
             ],
+            "diffusion_only_exact_argument_episodes": guided["candidate_only_exact_argument_episodes"],
+            "ar_guided_only_exact_argument_episodes": guided["reference_only_exact_argument_episodes"],
+            "both_exact_argument_episodes": guided["both_exact_argument_episodes"],
+            "neither_exact_argument_episodes": guided["neither_exact_argument_episodes"],
             "ar_guided_wall_seconds": guided["reference_wall_seconds"],
             "diffusion_wall_seconds": guided["candidate_wall_seconds"],
             "ar_guided_over_diffusion_wall_ratio": guided["reference_over_candidate_wall_ratio"],
             "diffusion_over_ar_guided_wall_ratio": guided["candidate_over_reference_wall_ratio"],
         }
+        paired_guided_by_source = paired_summary_by_source(ar_guided_rows, diffusion_rows)
+    else:
+        paired_guided_by_source = {}
     summary = {
         "manifest": manifest,
         "ar_vllm": ar,
         "ar_vllm_guided": ar_guided,
         "diffusion_percall_waves": diffusion,
+        "source_breakdown": source_breakdown,
         "paired": paired,
         "paired_guided": paired_guided,
+        "paired_guided_by_source": paired_guided_by_source,
     }
     (args.out_dir / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     lines = [
@@ -759,19 +878,82 @@ def write_report(args: argparse.Namespace) -> dict:
         f"| {diffusion['sec_per_turn']:.3f} | {diffusion['turn_wall_seconds']:.3f}s "
         f"| {diffusion['generated_tokens_per_turn']:.3f} | {diffusion['denoise_forwards_per_turn']:.3f} |"
     )
+    headline_lines = []
+    if ar_guided is not None:
+        turn_holds = diffusion["exact_arguments"] >= ar_guided["exact_arguments"]
+        episode_holds = (
+            diffusion["episode_exact_arguments_all_turns"]
+            >= ar_guided["episode_exact_arguments_all_turns"]
+        )
+        headline_lines = [
+            "",
+            "## Headline",
+            "",
+            (
+                "- Diffusion >= AR-guided on exact-args and episode exactness: "
+                f"{'YES' if turn_holds and episode_holds else 'NO'} "
+                f"(turns {diffusion['exact_arguments']}/{diffusion['turns']} vs "
+                f"{ar_guided['exact_arguments']}/{ar_guided['turns']}; episodes "
+                f"{diffusion['episode_exact_arguments_all_turns']}/{diffusion['episodes']} vs "
+                f"{ar_guided['episode_exact_arguments_all_turns']}/{ar_guided['episodes']})."
+            ),
+        ]
     guided_delta_lines = []
     if paired_guided is not None:
         guided_delta_lines = [
             f"- Turn exact-args delta, diffusion - AR guided: {paired_guided['exact_arguments_delta_diffusion_minus_ar_guided']} / {paired_guided['paired_turns']}",
             f"- Episode exact-args delta, diffusion - AR guided: {paired_guided['episode_exact_arguments_delta_diffusion_minus_ar_guided']} / {paired_guided['paired_episodes']}",
+            f"- Turn exact-args flips: diffusion-only {paired_guided['diffusion_only_exact_arguments']}; AR-guided-only {paired_guided['ar_guided_only_exact_arguments']}; both {paired_guided['both_exact_arguments']}; neither {paired_guided['neither_exact_arguments']}",
+            f"- Episode exact-args flips: diffusion-only {paired_guided['diffusion_only_exact_argument_episodes']}; AR-guided-only {paired_guided['ar_guided_only_exact_argument_episodes']}; both {paired_guided['both_exact_argument_episodes']}; neither {paired_guided['neither_exact_argument_episodes']}",
             f"- Valid XML delta, diffusion - AR guided: {paired_guided['valid_delta_diffusion_minus_ar_guided']} / {paired_guided['paired_turns']}",
             f"- Schema-valid delta, diffusion - AR guided: {paired_guided['schema_valid_delta_diffusion_minus_ar_guided']} / {paired_guided['paired_turns']}",
             f"- Wall latency ratio AR guided / diffusion: {paired_guided['ar_guided_over_diffusion_wall_ratio']:.3f}x",
             f"- Wall latency ratio diffusion / AR guided: {paired_guided['diffusion_over_ar_guided_wall_ratio']:.3f}x",
         ]
+    source_lines = [
+        "",
+        "## Source Breakdown",
+        "",
+        "| Source | Backend | exact_args | episode exact | exact_seq | valid_xml | schema_ok | sec/turn |",
+        "|---|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    backend_labels = [
+        ("AR vLLM FR13", source_breakdown["ar_vllm"]),
+        ("AR vLLM FR13 guided", source_breakdown["ar_vllm_guided"]),
+        ("Diffusion per-call waves", source_breakdown["diffusion_percall_waves"]),
+    ]
+    for source in sorted(
+        set(source_breakdown["ar_vllm"]) | set(source_breakdown["ar_vllm_guided"]) | set(source_breakdown["diffusion_percall_waves"])
+    ):
+        for label, table in backend_labels:
+            item = table.get(source)
+            if not item:
+                continue
+            turns = int(item.get("turns") or 0)
+            episodes_n = int(item.get("episodes") or 0)
+            source_lines.append(
+                f"| {source} | {label} | {int(item.get('exact_arguments') or 0)}/{turns} "
+                f"| {int(item.get('episode_exact_arguments_all_turns') or 0)}/{episodes_n} "
+                f"| {int(item.get('exact_tool_sequence') or 0)}/{turns} "
+                f"| {int(item.get('valid_tool_json') or 0)}/{turns} "
+                f"| {int(item.get('all_schema_valid') or 0)}/{turns} "
+                f"| {float(item.get('sec_per_turn') or 0.0):.3f} |"
+            )
+    if paired_guided_by_source:
+        source_lines.extend(["", "### Diffusion vs AR-Guided by Source", ""])
+        for source, item in sorted(paired_guided_by_source.items()):
+            source_lines.append(
+                f"- {source}: exact_args delta {item['exact_arguments_delta']} / {item['paired_turns']}; "
+                f"episode delta {item['episode_exact_arguments_delta']} / {item['paired_episodes']}; "
+                f"turn flips diffusion-only {item['candidate_only_exact_arguments']}, "
+                f"AR-guided-only {item['reference_only_exact_arguments']}; "
+                f"episode flips diffusion-only {item['candidate_only_exact_argument_episodes']}, "
+                f"AR-guided-only {item['reference_only_exact_argument_episodes']}."
+            )
     lines.extend(
         [
         "",
+        *headline_lines,
         "## Matched Deltas",
         "",
         f"- Turn exact-args delta, diffusion - AR: {paired['exact_arguments_delta_diffusion_minus_ar']} / {paired['paired_turns']}",
@@ -779,6 +961,7 @@ def write_report(args: argparse.Namespace) -> dict:
         f"- Wall latency ratio AR / diffusion: {paired['ar_over_diffusion_wall_ratio']:.3f}x",
         f"- Wall latency ratio diffusion / AR: {paired['diffusion_over_ar_wall_ratio']:.3f}x",
         *guided_delta_lines,
+        *source_lines,
         "",
         "## Fairness Manifest",
         "",

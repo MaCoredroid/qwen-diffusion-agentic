@@ -110,21 +110,32 @@ def trim_after_first_tool_call(text: str) -> str:
 
 def build_episodes(args: argparse.Namespace) -> list[dict]:
     episodes = []
+    passthrough_keys = (
+        "turn_user_messages",
+        "source_family",
+        "source_dataset",
+        "source_license",
+        "source_row_idx",
+        "public_eval_hash",
+        "leak_check",
+    )
     for row in load_jsonl(args.input_jsonl):
         blocks = split_tool_call_blocks(row.get("gold_assistant") or "")
         if len(blocks) < args.min_turns or len(blocks) > args.max_turns:
             continue
-        episodes.append(
-            {
-                "episode_idx": len(episodes),
-                "id": row.get("id") or str(len(episodes)),
-                "source": row.get("source"),
-                "prompt_messages": row.get("prompt_messages") or row.get("messages") or [],
-                "tools": row.get("tools") or [],
-                "gold_blocks": blocks,
-                "gold_assistant": row.get("gold_assistant") or "",
-            }
-        )
+        episode = {
+            "episode_idx": len(episodes),
+            "id": row.get("id") or str(len(episodes)),
+            "source": row.get("source"),
+            "prompt_messages": row.get("prompt_messages") or row.get("messages") or [],
+            "tools": row.get("tools") or [],
+            "gold_blocks": blocks,
+            "gold_assistant": row.get("gold_assistant") or "",
+        }
+        for key in passthrough_keys:
+            if key in row:
+                episode[key] = row[key]
+        episodes.append(episode)
         if args.episode_limit and len(episodes) >= args.episode_limit:
             break
     if not episodes:
