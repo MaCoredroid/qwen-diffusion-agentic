@@ -1,0 +1,51 @@
+{
+  "passed": false,
+  "status": "failed_anchor",
+  "block_anchor": {
+    "threshold": 0.65,
+    "block_size": 32,
+    "denoise_steps": 32,
+    "final": {
+      "adapter": "runs/s1_budget_retrain_r64_qwen35_9b",
+      "strict_correct": 5,
+      "examples": 20,
+      "strict_accuracy": 0.25,
+      "passed": false
+    },
+    "checkpoint_trend": [
+      {
+        "adapter": "runs/s1_budget_retrain_r64_qwen35_9b/checkpoint-1000/adapter_model",
+        "strict_correct": 2,
+        "examples": 20,
+        "strict_accuracy": 0.1,
+        "passed": false
+      },
+      {
+        "adapter": "runs/s1_budget_retrain_r64_qwen35_9b/checkpoint-1500/adapter_model",
+        "strict_correct": 5,
+        "examples": 20,
+        "strict_accuracy": 0.25,
+        "passed": false
+      },
+      {
+        "adapter": "runs/s1_budget_retrain_r64_qwen35_9b",
+        "strict_correct": 5,
+        "examples": 20,
+        "strict_accuracy": 0.25,
+        "passed": false
+      }
+    ]
+  },
+  "gsm8k_careful": {
+    "ran": false,
+    "reason": "hard block anchor failed"
+  },
+  "frozen_battery": {
+    "ran": false,
+    "reason": "hard block anchor failed"
+  },
+  "block_quality_curve": {
+    "ran": false,
+    "reason": "hard block anchor failed before K sweep"
+  }
+}

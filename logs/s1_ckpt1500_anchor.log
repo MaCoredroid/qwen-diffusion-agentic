@@ -1,0 +1,104 @@
+[load] base=models/qwen3.5-9b-fastdllm-init adapter=runs/s1_budget_retrain_r64_qwen35_9b/checkpoint-1500/adapter_model
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]/home/mark/qwen_diffusion/.venv-fastdllm/lib/python3.10/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:02,  1.02it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.84s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:02,  2.16s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.76s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.78s/it]
+[token_ids] {"mask_id": 248077, "stop_token_ids": [248044, 248045, 248046]}
+[anchor] B=32 K=32 gsm8k_limit=20
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=0 correct=0 tokens=69 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=1 correct=1 tokens=44 forwards=64
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=2 correct=0 tokens=113 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=3 correct=0 tokens=65 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=4 correct=0 tokens=137 forwards=160
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=5 correct=0 tokens=56 forwards=64
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=6 correct=1 tokens=85 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=7 correct=0 tokens=109 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=8 correct=0 tokens=151 forwards=160
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=9 correct=0 tokens=72 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=10 correct=0 tokens=111 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=11 correct=1 tokens=120 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=12 correct=0 tokens=93 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=13 correct=1 tokens=79 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=14 correct=0 tokens=102 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=15 correct=0 tokens=103 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=16 correct=1 tokens=42 forwards=64
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=17 correct=0 tokens=108 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=18 correct=0 tokens=70 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=19 correct=0 tokens=80 forwards=96
+[anchor] FAILED gate; stopping before speed sweep
+{
+  "anchor_gate": {
+    "accuracy": 0.25,
+    "block_size": 32,
+    "correct": 5,
+    "denoise_steps": 32,
+    "examples": 20,
+    "min_accuracy": 0.65,
+    "passed": false,
+    "required": true
+  },
+  "ar_timing": null,
+  "args": {
+    "adapter": "runs/s1_budget_retrain_r64_qwen35_9b/checkpoint-1500/adapter_model",
+    "anchor_block_size": 32,
+    "anchor_denoise_steps": 32,
+    "anchor_min_strict_accuracy": 0.65,
+    "anchor_only": false,
+    "ar_timing_rows": 4,
+    "ar_timing_steps": 16,
+    "base_model": "models/qwen3.5-9b-fastdllm-init",
+    "block_sizes": [
+      32
+    ],
+    "gsm8k_fewshot": 5,
+    "gsm8k_fewshot_jsonl": "data/phaseA_retention/gsm8k_main_train_first5.jsonl",
+    "gsm8k_jsonl": "data/phaseA_retention/gsm8k_main_test_first20.jsonl",
+    "gsm8k_limit": 20,
+    "k_values": [
+      32,
+      16,
+      8,
+      4
+    ],
+    "max_new_tokens": 256,
+    "no_4bit": false,
+    "out_dir": "runs/s1_budget_retrain_r64_qwen35_9b_gate/block_quality_curve_ckpt1500",
+    "quality_tolerance": 0.05,
+    "run_name": "s1_ckpt1500_gsm8k_anchor",
+    "seed": 20260701,
+    "skip_anchor_gate": false,
+    "temperature": 0.0,
+    "toolcall_jsonl": "runs/s1_budget_retrain_r64_qwen35_9b_gate/empty_toolcall.jsonl",
+    "toolcall_limit": 0,
+    "top_p": 0.95
+  },
+  "held_quality": [],
+  "mask_id": 248077,
+  "run_name": "s1_ckpt1500_gsm8k_anchor",
+  "stop_token_ids": [
+    248044,
+    248045,
+    248046
+  ],
+  "summaries": [
+    {
+      "accuracy": 0.25,
+      "block_size": 32,
+      "correct": 5,
+      "denoise_forwards": 2176,
+      "denoise_seconds": 313.1110584299313,
+      "denoise_steps": 32,
+      "elapsed_seconds": 313.80946145404596,
+      "examples": 20,
+      "generated_tokens": 1809,
+      "generated_tokens_per_forward_actual": 0.8313419117647058,
+      "generated_tokens_per_second": 5.764644544552423,
+      "is_anchor": true,
+      "mean_denoise_seconds_per_forward": 0.14389294964610813,
+      "mutable_token_changes": 8699,
+      "remasked_visible_tokens": 4959,
+      "slice": "gsm8k_first20_strict",
+      "tokens_per_forward_nominal": 1.0,
+      "unresolved_masks": 0
+    }
+  ]
+}

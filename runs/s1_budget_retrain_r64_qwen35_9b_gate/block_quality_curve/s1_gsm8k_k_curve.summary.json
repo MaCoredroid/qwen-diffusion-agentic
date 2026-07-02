@@ -1,0 +1,76 @@
+{
+  "anchor_gate": {
+    "accuracy": 0.25,
+    "block_size": 32,
+    "correct": 5,
+    "denoise_steps": 32,
+    "examples": 20,
+    "min_accuracy": 0.65,
+    "passed": false,
+    "required": true
+  },
+  "args": {
+    "adapter": "/home/mark/qwen_diffusion/runs/s1_budget_retrain_r64_qwen35_9b",
+    "anchor_block_size": 32,
+    "anchor_denoise_steps": 32,
+    "anchor_min_strict_accuracy": 0.65,
+    "anchor_only": false,
+    "ar_timing_rows": 4,
+    "ar_timing_steps": 16,
+    "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+    "block_sizes": [
+      32
+    ],
+    "gsm8k_fewshot": 5,
+    "gsm8k_fewshot_jsonl": "/home/mark/qwen_diffusion/data/phaseA_retention/gsm8k_main_train_first5.jsonl",
+    "gsm8k_jsonl": "/home/mark/qwen_diffusion/data/phaseA_retention/gsm8k_main_test_first20.jsonl",
+    "gsm8k_limit": 20,
+    "k_values": [
+      32,
+      16,
+      8,
+      4
+    ],
+    "max_new_tokens": 256,
+    "no_4bit": false,
+    "out_dir": "/home/mark/qwen_diffusion/runs/s1_budget_retrain_r64_qwen35_9b_gate/block_quality_curve",
+    "quality_tolerance": 0.05,
+    "run_name": "s1_gsm8k_k_curve",
+    "seed": 20260701,
+    "skip_anchor_gate": false,
+    "temperature": 0.0,
+    "toolcall_jsonl": "/home/mark/qwen_diffusion/runs/s1_budget_retrain_r64_qwen35_9b_gate/empty_toolcall.jsonl",
+    "toolcall_limit": 0,
+    "top_p": 0.95
+  },
+  "mask_id": 248077,
+  "rows_path": "/home/mark/qwen_diffusion/runs/s1_budget_retrain_r64_qwen35_9b_gate/block_quality_curve/s1_gsm8k_k_curve.jsonl",
+  "run_name": "s1_gsm8k_k_curve",
+  "stop_token_ids": [
+    248044,
+    248045,
+    248046
+  ],
+  "summaries": [
+    {
+      "accuracy": 0.25,
+      "block_size": 32,
+      "correct": 5,
+      "denoise_forwards": 2304,
+      "denoise_seconds": 334.23453980102204,
+      "denoise_steps": 32,
+      "elapsed_seconds": 334.96811585803516,
+      "examples": 20,
+      "generated_tokens": 2000,
+      "generated_tokens_per_forward_actual": 0.8680555555555556,
+      "generated_tokens_per_second": 5.970717525985763,
+      "is_anchor": true,
+      "mean_denoise_seconds_per_forward": 0.14506707456641582,
+      "mutable_token_changes": 8964,
+      "remasked_visible_tokens": 5146,
+      "slice": "gsm8k_first20_strict",
+      "tokens_per_forward_nominal": 1.0,
+      "unresolved_masks": 0
+    }
+  ]
+}
