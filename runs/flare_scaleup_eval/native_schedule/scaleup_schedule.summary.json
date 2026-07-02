@@ -1,0 +1,34 @@
+{
+  "input_jsonl": "runs/flare_scaleup_eval/native_schedule/scaleup_plan.jsonl",
+  "out_jsonl": "runs/flare_scaleup_eval/native_schedule/scaleup_schedule.jsonl",
+  "block_token_limits": {
+    "prose": 128,
+    "argument_value": 8,
+    "json_structure": 4,
+    "tiny": 1
+  },
+  "missing_token_block_records": 0,
+  "totals": {
+    "records": 58,
+    "tokens": 12500,
+    "source_token_blocks": 2430,
+    "schedule_blocks": 4536,
+    "schedule_blocks:tool_tag": 636,
+    "scheduled_tokens:tool_tag": 636,
+    "denoise_step_tokens:1": 1386,
+    "schedule_blocks:json_structure": 1594,
+    "scheduled_tokens:json_structure": 4999,
+    "denoise_step_tokens:3": 4999,
+    "schedule_blocks:tool_name": 579,
+    "scheduled_tokens:tool_name": 579,
+    "denoise_step_tokens:2": 579,
+    "schedule_blocks:json_key": 750,
+    "scheduled_tokens:json_key": 750,
+    "schedule_blocks:argument_value": 876,
+    "scheduled_tokens:argument_value": 5435,
+    "denoise_step_tokens:8": 5435,
+    "schedule_blocks:prose": 101,
+    "scheduled_tokens:prose": 101,
+    "denoise_step_tokens:4": 101
+  }
+}

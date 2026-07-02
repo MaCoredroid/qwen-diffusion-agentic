@@ -1,0 +1,16 @@
+{
+  "train_conversation_json": [
+    "data/flare_redesign_run1_copy_retention_mix/train_agentic_mix.json"
+  ],
+  "eval_jsonl": [
+    "data/toolcall_eval_native/flare_scaleup_native_58.jsonl"
+  ],
+  "train_records": 5055,
+  "eval_records": 58,
+  "exact_overlap_count": 0,
+  "user_overlap_count": 0,
+  "exact_overlap_eval_path_counts": {},
+  "user_overlap_eval_path_counts": {},
+  "exact_overlaps": [],
+  "user_overlaps": []
+}

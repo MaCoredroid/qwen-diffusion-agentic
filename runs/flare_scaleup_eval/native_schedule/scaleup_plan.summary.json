@@ -1,0 +1,25 @@
+{
+  "input_jsonl": "data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+  "out_jsonl": "runs/flare_scaleup_eval/native_schedule/scaleup_plan.jsonl",
+  "text_field": "gold_assistant",
+  "tokenizer_path": "models/qwen3.5-9b-fastdllm-init",
+  "totals": {
+    "records": 58,
+    "segments": 2430,
+    "tool_calls": 159,
+    "tokens": 12500,
+    "token_blocks": 2430,
+    "token_blocks:tool_tag": 318,
+    "block_tokens:tool_tag": 636,
+    "token_blocks:json_structure": 1085,
+    "block_tokens:json_structure": 4999,
+    "token_blocks:tool_name": 159,
+    "block_tokens:tool_name": 579,
+    "token_blocks:json_key": 385,
+    "block_tokens:json_key": 750,
+    "token_blocks:argument_value": 382,
+    "block_tokens:argument_value": 5435,
+    "token_blocks:prose": 101,
+    "block_tokens:prose": 101
+  }
+}
