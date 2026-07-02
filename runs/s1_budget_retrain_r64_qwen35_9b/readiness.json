@@ -1,0 +1,208 @@
+{
+  "ready": true,
+  "timestamp": "2026-07-02T10:47:46-0700",
+  "root": "/home/mark/qwen_diffusion",
+  "model": "Qwen/Qwen3.5-9B",
+  "model_source": "/home/mark/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "candidate_model_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+  "checks": {
+    "training_python": "/home/mark/qwen_diffusion/.venv-fastdllm/bin/python",
+    "metadata_python": "/home/mark/qwen_diffusion/.venv/bin/python",
+    "training_env_config_support_source": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+    "training_packages": {
+      "python": "/home/mark/qwen_diffusion/.venv-fastdllm/bin/python",
+      "python_version": "3.10.20",
+      "packages": {
+        "torch": "2.12.1+cu130",
+        "transformers": "4.53.1",
+        "peft": "0.19.1",
+        "bitsandbytes": "0.49.2",
+        "deepspeed": "0.19.2",
+        "lmflow": "0.0.9",
+        "huggingface_hub": "0.36.2"
+      },
+      "ok": true,
+      "stderr": ""
+    },
+    "training_env_config_support": {
+      "model_type": "Fast_dLLM_Qwen3_5",
+      "architectures": [
+        "Fast_dLLM_Qwen3_5ForCausalLM"
+      ],
+      "ok": true,
+      "stderr": ""
+    },
+    "raw_config": {
+      "present": true,
+      "model_type": "qwen3_5",
+      "architectures": [
+        "Qwen3_5ForConditionalGeneration"
+      ],
+      "vocab_size": 248320,
+      "hidden_size": 4096,
+      "intermediate_size": 12288,
+      "num_hidden_layers": 32,
+      "num_attention_heads": 16,
+      "num_key_value_heads": 4,
+      "head_dim": 256,
+      "bd_size": null,
+      "diffusion_bridge_status": null,
+      "gdn_mode": null,
+      "mask_token_id": null,
+      "layer_type_counts": {
+        "linear_attention": 24,
+        "full_attention": 8
+      },
+      "layer_types_head": [
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention",
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention"
+      ],
+      "has_linear_attention_layers": true,
+      "has_full_attention_layers": true
+    },
+    "raw_tokenizer": {
+      "tokenizer_len": 248077,
+      "mask_token": "|<MASK>|",
+      "mask_in_vocab": false,
+      "mask_id": null,
+      "mask_is_special": false,
+      "encoded_ids": [
+        91,
+        27,
+        48185,
+        67479
+      ],
+      "single_token": false,
+      "ok": true,
+      "stderr": ""
+    },
+    "candidate_config": {
+      "present": true,
+      "model_type": "Fast_dLLM_Qwen3_5",
+      "architectures": [
+        "Fast_dLLM_Qwen3_5ForCausalLM"
+      ],
+      "vocab_size": 248320,
+      "hidden_size": 4096,
+      "intermediate_size": 12288,
+      "num_hidden_layers": 32,
+      "num_attention_heads": 16,
+      "num_key_value_heads": 4,
+      "head_dim": 256,
+      "bd_size": 32,
+      "diffusion_bridge_status": "implemented",
+      "gdn_mode": "option_a_causal_gdn_v0",
+      "mask_token_id": 248077,
+      "layer_type_counts": {
+        "linear_attention": 24,
+        "full_attention": 8
+      },
+      "layer_types_head": [
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention",
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention"
+      ],
+      "has_linear_attention_layers": true,
+      "has_full_attention_layers": true
+    },
+    "candidate_is_fastdllm": true,
+    "candidate_tokenizer": {
+      "tokenizer_len": 248078,
+      "mask_token": "|<MASK>|",
+      "mask_in_vocab": true,
+      "mask_id": 248077,
+      "mask_is_special": true,
+      "encoded_ids": [
+        248077
+      ],
+      "single_token": true,
+      "ok": true,
+      "stderr": "[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}\n[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}\n"
+    },
+    "qwen35_weight_cache": {
+      "snapshot": "/home/mark/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "has_snapshot": true,
+      "complete": true,
+      "weight_files": 4,
+      "expected_weight_files": 4,
+      "missing_weight_files": [],
+      "index_file": "/home/mark/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a/model.safetensors.index.json"
+    },
+    "candidate_weight_cache": {
+      "snapshot": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+      "has_snapshot": true,
+      "complete": true,
+      "weight_files": 4,
+      "expected_weight_files": 4,
+      "missing_weight_files": [],
+      "index_file": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init/model.safetensors.index.json"
+    },
+    "fastdllm_qwen35_gdn_bridge": {
+      "found": true,
+      "implemented": true,
+      "hits": [
+        "models/qwen3.5-9b-fastdllm-init/configuration.py",
+        "models/qwen3.5-9b-fastdllm-init/modeling.py"
+      ],
+      "statuses": {
+        "models/qwen3.5-9b-fastdllm-init/configuration.py": "scaffold",
+        "models/qwen3.5-9b-fastdllm-init/modeling.py": "implemented"
+      },
+      "implemented_hits": [
+        "models/qwen3.5-9b-fastdllm-init/modeling.py"
+      ],
+      "searched_roots": [
+        "models",
+        "fast-dllm/v2",
+        "fast-dllm/fast_ddrive",
+        "fast-dllm/third_party/lmflow/models"
+      ]
+    },
+    "datasets": {
+      "public_toolcall_train": {
+        "path": "/home/mark/qwen_diffusion/data/fastdllm_toolcall_train/train_toolcall.json",
+        "exists": true,
+        "count": 96
+      },
+      "synthetic_onecall_train": {
+        "path": "/home/mark/qwen_diffusion/data/synthetic_onecall_train/train_synthetic_onecall.json",
+        "exists": true,
+        "count": 192
+      },
+      "synthetic_toolresult_train": {
+        "path": "/home/mark/qwen_diffusion/data/synthetic_toolresult_train/train_synthetic_toolresult.json",
+        "exists": true,
+        "count": 10
+      },
+      "repo_edit_tasks": {
+        "path": "/home/mark/qwen_diffusion/data/repo_edit_eval/tiny_repo_edit_5.jsonl",
+        "exists": true,
+        "count": 5
+      },
+      "repo_edit_qwen36_results": {
+        "path": "/home/mark/qwen_diffusion/data/repo_edit_eval/tiny_repo_edit_qwen_code_q36_8k_requiredall_512_tools12_5.jsonl",
+        "exists": true,
+        "count": 5
+      }
+    }
+  },
+  "blockers": [],
+  "warnings": [
+    "raw Qwen3.5 tokenizer does not have a single |<MASK>| token; conversion must add one"
+  ],
+  "next_actions": [
+    "Run the guarded Qwen3.5-9B diffusion QLoRA pilot.",
+    "Run scripts/run_fastdllm_qwen35_9b_agentic_qlora_pilot.sh only after readiness is clean."
+  ]
+}

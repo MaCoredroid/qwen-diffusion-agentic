@@ -17,6 +17,7 @@ import re
 import sys
 import time
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import torch
@@ -29,6 +30,13 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 from eval_fastdllm_toolcall_cases import resolve_single_token_ids, resolve_token_ids  # noqa: E402
+from eval_flare_stage1_ab_diffusion import (  # noqa: E402
+    build_gsm8k_prompt,
+    full_context_sample_one,
+    gsm8k_gold,
+    gsm8k_strict,
+    normalize_number,
+)
 from eval_flare_multiturn_percall_waves import build_episodes  # noqa: E402
 from eval_flare_northstar_matched import DEFAULT_AR_MODEL, DEFAULT_CHAT_TEMPLATE, DEFAULT_DIFFUSION_BASE, load_chat_template  # noqa: E402
 from rl_multiturn_tool_env import (  # noqa: E402
@@ -46,6 +54,8 @@ from rl_multiturn_tool_env import (  # noqa: E402
 
 DEFAULT_RUN1_ADAPTER = ROOT / "runs/flare_redesign_run1_copy_grounded_qwen35_9b"
 DEFAULT_OUT_DIR = ROOT / "runs/rl_multiturn_grpo_pilot/run1_smoke_g2_step2"
+DEFAULT_GSM8K = ROOT / "data/phaseA_retention/gsm8k_main_test_first20.jsonl"
+DEFAULT_GSM8K_FEWSHOT = ROOT / "data/phaseA_retention/gsm8k_main_train_first5.jsonl"
 
 
 def append_jsonl(path: Path, payload: dict[str, Any]) -> None:
@@ -74,6 +84,26 @@ def grpo_advantages(rewards: list[float]) -> torch.Tensor:
     if float(std.item()) < 1e-6:
         return torch.zeros_like(values)
     return (values - values.mean()) / std.clamp_min(1e-6)
+
+
+def trainable_state_snapshot(model) -> dict[str, torch.Tensor]:
+    return {
+        name: parameter.detach().cpu().clone()
+        for name, parameter in model.named_parameters()
+        if parameter.requires_grad
+    }
+
+
+def restore_trainable_state(model, snapshot: dict[str, torch.Tensor]) -> None:
+    if not snapshot:
+        return
+    by_name = dict(model.named_parameters())
+    with torch.no_grad():
+        for name, value in snapshot.items():
+            parameter = by_name.get(name)
+            if parameter is None:
+                continue
+            parameter.data.copy_(value.to(device=parameter.device, dtype=parameter.dtype))
 
 
 def configure_cuda_env() -> None:
@@ -220,13 +250,49 @@ def replay_examples(tokenizer, rollout: dict, advantage: float, args: argparse.N
     return examples
 
 
-def backward_replay_loss(model, tokenizer, examples: list[dict[str, Any]]) -> dict[str, Any]:
+def reference_kl_sum(
+    model,
+    input_ids: torch.Tensor,
+    row_slice: slice,
+    selected: torch.Tensor,
+    current_row_logits: torch.Tensor,
+    current_state: dict[str, torch.Tensor],
+    reference_state: dict[str, torch.Tensor],
+    temperature: float,
+) -> torch.Tensor:
+    restore_trainable_state(model, reference_state)
+    try:
+        with torch.no_grad():
+            ref_output = model(input_ids=input_ids, use_cache=False)
+            ref_logits = shift_logits(ref_output.logits)
+            ref_row_logits = ref_logits[0, row_slice, :].index_select(0, selected).float()
+    finally:
+        restore_trainable_state(model, current_state)
+    temp = max(float(temperature), 1e-6)
+    current_logprobs = torch.log_softmax(current_row_logits.float() / temp, dim=-1)
+    ref_logprobs = torch.log_softmax(ref_row_logits / temp, dim=-1)
+    ref_probs = ref_logprobs.exp()
+    return (ref_probs * (ref_logprobs - current_logprobs)).sum(dim=-1).sum()
+
+
+def backward_replay_loss(
+    model,
+    tokenizer,
+    examples: list[dict[str, Any]],
+    args: argparse.Namespace,
+    reference_state: dict[str, torch.Tensor] | None = None,
+) -> dict[str, Any]:
     total_tokens = sum(len(item["policy_token_indices"]) for item in examples)
     if total_tokens <= 0:
         return {"policy_tokens": 0, "grammar_forced_tokens_masked": 0, "loss": 0.0, "mean_logprob": None}
     loss_sum = torch.tensor(0.0, dtype=torch.float32, device="cuda")
+    policy_loss_sum = torch.tensor(0.0, dtype=torch.float32, device="cuda")
+    kl_loss_sum = torch.tensor(0.0, dtype=torch.float32, device="cuda")
     logprob_sum = torch.tensor(0.0, dtype=torch.float32, device="cuda")
     masked_tokens = 0
+    kl_tokens = 0
+    kl_coeff = float(getattr(args, "kl_to_base_coeff", 0.0) or 0.0)
+    current_state = trainable_state_snapshot(model) if reference_state and kl_coeff > 0 else {}
     for item in examples:
         ids = item["prompt_ids"] + item["assistant_ids"]
         input_ids = torch.tensor([ids], dtype=torch.long, device="cuda")
@@ -236,11 +302,28 @@ def backward_replay_loss(model, tokenizer, examples: list[dict[str, Any]]) -> di
         selected = torch.tensor(item["policy_token_indices"], dtype=torch.long, device="cuda")
         assistant_ids = torch.tensor(item["assistant_ids"], dtype=torch.long, device="cuda")
         targets = assistant_ids.index_select(0, selected)
-        row_logits = logits[0, start : start + len(item["assistant_ids"]), :].index_select(0, selected)
+        row_slice = slice(start, start + len(item["assistant_ids"]))
+        row_logits = logits[0, row_slice, :].index_select(0, selected)
         logprobs = torch.log_softmax(row_logits.float(), dim=-1).gather(-1, targets[:, None]).squeeze(-1)
-        unscaled = -float(item["advantage"]) * logprobs.sum()
+        policy_unscaled = -float(item["advantage"]) * logprobs.sum()
+        kl_unscaled = torch.tensor(0.0, dtype=torch.float32, device="cuda")
+        if reference_state and kl_coeff > 0:
+            kl_unscaled = reference_kl_sum(
+                model,
+                input_ids,
+                row_slice,
+                selected,
+                row_logits,
+                current_state,
+                reference_state,
+                float(args.kl_to_base_temperature),
+            )
+            kl_tokens += int(selected.numel())
+        unscaled = policy_unscaled + kl_coeff * kl_unscaled
         (unscaled / float(total_tokens)).backward()
         loss_sum = loss_sum + unscaled.detach().float()
+        policy_loss_sum = policy_loss_sum + policy_unscaled.detach().float()
+        kl_loss_sum = kl_loss_sum + kl_unscaled.detach().float()
         logprob_sum = logprob_sum + logprobs.detach().float().sum()
         masked_tokens += int(item.get("grammar_forced_tokens_masked") or 0)
         del output, logits, input_ids, selected, assistant_ids, targets, row_logits, logprobs
@@ -248,8 +331,93 @@ def backward_replay_loss(model, tokenizer, examples: list[dict[str, Any]]) -> di
         "policy_tokens": int(total_tokens),
         "grammar_forced_tokens_masked": int(masked_tokens),
         "loss": float((loss_sum / float(total_tokens)).detach().cpu().item()),
+        "policy_loss": float((policy_loss_sum / float(total_tokens)).detach().cpu().item()),
+        "kl_to_base_coeff": float(kl_coeff),
+        "kl_to_base_tokens": int(kl_tokens),
+        "kl_to_base_loss": float((kl_loss_sum / float(max(1, kl_tokens))).detach().cpu().item()) if kl_tokens else 0.0,
+        "kl_to_base_loss_scaled_per_policy_token": float(
+            ((kl_coeff * kl_loss_sum) / float(total_tokens)).detach().cpu().item()
+        )
+        if kl_tokens
+        else 0.0,
         "mean_logprob": float((logprob_sum / float(total_tokens)).detach().cpu().item()),
     }
+
+
+def run_retention_probe(env: TrainableMultiTurnToolRLEnv, args: argparse.Namespace, step: int) -> dict[str, Any]:
+    gsm_rows = read_jsonl(Path(args.retention_gsm8k_path))[: int(args.retention_probe_limit)]
+    fewshot_rows = read_jsonl(Path(args.retention_gsm8k_fewshot_path))[: int(args.retention_gsm8k_fewshot)]
+    probe_dir = args.out_dir / f"retention_probe_step_{step:04d}"
+    probe_dir.mkdir(parents=True, exist_ok=True)
+    gen_args = SimpleNamespace(
+        mask_id=int(env.mask_id),
+        stop_token_id=int(env.stop_token_id),
+        stop_token_ids=list(env.stop_token_ids),
+        block_size=int(args.retention_block_size),
+        small_block_size=int(args.retention_small_block_size),
+        max_new_tokens=int(args.retention_max_new_tokens),
+        threshold=float(args.retention_threshold),
+        top_p=float(args.retention_top_p),
+        temperature=float(args.retention_temperature),
+        fresh_generation_blocks=True,
+    )
+    was_training = bool(env.model.training)
+    env.model.eval()
+    rows: list[dict[str, Any]] = []
+    started = time.perf_counter()
+    try:
+        for idx, row in enumerate(gsm_rows):
+            prompt = build_gsm8k_prompt(env.tokenizer, row, fewshot_rows)
+            input_ids = env.tokenizer([prompt], return_tensors="pt").input_ids[0].cpu()
+            with torch.no_grad():
+                output_ids, sampler_metrics = full_context_sample_one(env.model, input_ids, gen_args)
+            new_ids = output_ids[int(input_ids.numel()) :]
+            text = env.tokenizer.decode(new_ids, skip_special_tokens=True).strip()
+            gold = gsm8k_gold(str(row.get("answer") or ""))
+            strict_pred = gsm8k_strict(text)
+            flex_pred = normalize_number(text)
+            rows.append(
+                {
+                    "task": "gsm8k_quick_retention",
+                    "step": step,
+                    "idx": row.get("idx", idx),
+                    "gold": gold,
+                    "strict_pred": strict_pred,
+                    "flex_pred": flex_pred,
+                    "strict_correct": strict_pred == gold,
+                    "flex_correct": flex_pred == gold,
+                    "prompt_tokens": int(input_ids.numel()),
+                    "generated_tokens": int((new_ids != env.mask_id).sum().item()),
+                    "mask_count": int((new_ids == env.mask_id).sum().item()),
+                    "generated": text,
+                    "sampler": sampler_metrics,
+                }
+            )
+    finally:
+        if was_training:
+            env.model.train()
+    strict_correct = sum(int(item["strict_correct"]) for item in rows)
+    flex_correct = sum(int(item["flex_correct"]) for item in rows)
+    examples = len(rows)
+    summary = {
+        "step": step,
+        "examples": examples,
+        "strict_correct": strict_correct,
+        "strict_accuracy": strict_correct / examples if examples else 0.0,
+        "flex_correct": flex_correct,
+        "flex_accuracy": flex_correct / examples if examples else 0.0,
+        "elapsed_seconds": time.perf_counter() - started,
+        "collapse_threshold_flex_accuracy": float(args.retention_collapse_flex_accuracy),
+        "early_stop_collapse": bool(
+            examples > 0 and (flex_correct / examples) < float(args.retention_collapse_flex_accuracy)
+        ),
+        "adapter": str(args.adapter),
+        "probe_dir": str(probe_dir),
+    }
+    write_jsonl(probe_dir / "gsm8k_quick_rows.jsonl", rows)
+    write_json(probe_dir / "summary.json", summary)
+    append_jsonl(args.out_dir / "retention_probes.jsonl", summary)
+    return summary
 
 
 def summarize_rollout(rollout: dict, group_idx: int, reward: float, advantage: float) -> dict[str, Any]:
@@ -279,6 +447,7 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         metrics_path.unlink()
     env = TrainableMultiTurnToolRLEnv(args)
     trainable, total = trainable_parameter_count(env.model)
+    reference_state = trainable_state_snapshot(env.model) if float(args.kl_to_base_coeff) > 0 else None
     optimizer = torch.optim.AdamW(
         (parameter for parameter in env.model.parameters() if parameter.requires_grad),
         lr=float(args.learning_rate),
@@ -292,6 +461,20 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         "policy": "diffusion careful + live Qwen-native grammar, audited reward, GRPO group advantages",
         "logprob_replay": "raw full-vocab replay over parameter-value/free assistant tokens only",
         "grammar_forced_policy_masking": "XML structure, tool names, parameter names, and tag whitespace are masked out of policy loss",
+        "kl_to_base": {
+            "enabled": bool(reference_state is not None),
+            "coefficient": float(args.kl_to_base_coeff),
+            "temperature": float(args.kl_to_base_temperature),
+            "reference": "initial trainable LoRA adapter tensor snapshot on CPU",
+            "positions": "same parameter-value/free assistant tokens as policy loss",
+        },
+        "retention_probe": {
+            "every_steps": int(args.retention_probe_every_steps),
+            "limit": int(args.retention_probe_limit),
+            "gsm8k_path": str(args.retention_gsm8k_path),
+            "fewshot_path": str(args.retention_gsm8k_fewshot_path),
+            "collapse_flex_accuracy": float(args.retention_collapse_flex_accuracy),
+        },
         "stop_rule_context": "SFT warm-start abandoned after repaired gate failed GSM8K retention",
         "run1_anchor": "Run-1 copy-grounded checkpoint previously validated at GSM8K 0.75 and matched-20 careful 34/63",
         "grouping": "mixed adjacent public episodes" if args.mixed_episode_groups else "same prompt per GRPO group",
@@ -337,7 +520,7 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
             torch.cuda.empty_cache()
         env.model.train()
         if examples:
-            loss_metrics = backward_replay_loss(env.model, env.tokenizer, examples)
+            loss_metrics = backward_replay_loss(env.model, env.tokenizer, examples, args, reference_state)
             grad_norm = torch.nn.utils.clip_grad_norm_(
                 [parameter for parameter in env.model.parameters() if parameter.requires_grad],
                 float(args.max_grad_norm),
@@ -375,10 +558,24 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
             "[train] "
             f"step={step} reward={row['reward_mean']:.3f} "
             f"zero_adv={row['zero_advantage']} tokens={row['policy_tokens']} "
-            f"loss={row['loss']:.4g} grad={row['grad_norm']:.3f} "
+            f"loss={row['loss']:.4g} kl={row.get('kl_to_base_loss', 0.0):.4g} "
+            f"grad={row['grad_norm']:.3f} "
             f"rollout_s={row['rollout_seconds']:.2f} update_s={row['update_seconds']:.2f}",
             flush=True,
         )
+        if int(args.retention_probe_every_steps) > 0 and step % int(args.retention_probe_every_steps) == 0:
+            probe = run_retention_probe(env, args, step)
+            row["retention_probe"] = probe
+            if probe["early_stop_collapse"]:
+                row["early_stop_reason"] = "retention_probe_collapse"
+                append_jsonl(metrics_path, {"step": step, "event": "early_stop", "retention_probe": probe})
+                print(
+                    "[early-stop] "
+                    f"step={step} retention_flex={probe['flex_accuracy']:.3f} "
+                    f"< threshold={probe['collapse_threshold_flex_accuracy']:.3f}",
+                    flush=True,
+                )
+                break
 
     adapter_out = args.out_dir / "adapter_model"
     env.model.save_pretrained(adapter_out)
@@ -394,6 +591,10 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         "grammar_forced_tokens_masked": sum(int(row.get("grammar_forced_tokens_masked") or 0) for row in step_rows),
         "mean_reward": sum(float(row["reward_mean"]) for row in step_rows) / max(1, len(step_rows)),
         "last_step": step_rows[-1] if step_rows else None,
+        "early_stopped": bool(step_rows and step_rows[-1].get("early_stop_reason")),
+        "early_stop_reason": step_rows[-1].get("early_stop_reason") if step_rows else None,
+        "kl_to_base_coeff": float(args.kl_to_base_coeff),
+        "retention_probe_every_steps": int(args.retention_probe_every_steps),
         "adapter_out": str(adapter_out),
         "trainable_params": trainable,
         "warm_start": str(args.adapter),
@@ -410,6 +611,9 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         f"- Nonzero-advantage steps: `{summary['nonzero_advantage_steps']}/{len(step_rows)}`",
         f"- Policy replay tokens: `{summary['policy_tokens']}`",
         f"- Grammar-forced tokens masked from policy loss: `{summary['grammar_forced_tokens_masked']}`",
+        f"- KL-to-base coefficient: `{float(args.kl_to_base_coeff)}`",
+        f"- Retention probe cadence: every `{int(args.retention_probe_every_steps)}` steps, limit `{int(args.retention_probe_limit)}`",
+        f"- Early stopped: `{summary['early_stopped']}` ({summary['early_stop_reason']})",
         f"- Mean step reward: `{summary['mean_reward']:.4f}`",
         f"- Output adapter: `{adapter_out}`",
         "",
@@ -449,8 +653,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=5e-6)
     parser.add_argument("--weight-decay", type=float, default=0.0)
     parser.add_argument("--max-grad-norm", type=float, default=1.0)
+    parser.add_argument(
+        "--kl-to-base-coeff",
+        type=float,
+        default=0.0,
+        help="Explicit KL penalty to the initial trainable adapter snapshot; v2 starts at 0.05.",
+    )
+    parser.add_argument("--kl-to-base-temperature", type=float, default=1.0)
     parser.add_argument("--replay-max-prompt-tokens", type=int, default=768)
     parser.add_argument("--replay-max-seq-tokens", type=int, default=1024)
+    parser.add_argument("--retention-probe-every-steps", type=int, default=50)
+    parser.add_argument("--retention-probe-limit", type=int, default=5)
+    parser.add_argument("--retention-collapse-flex-accuracy", type=float, default=0.40)
+    parser.add_argument("--retention-gsm8k-path", type=Path, default=DEFAULT_GSM8K)
+    parser.add_argument("--retention-gsm8k-fewshot-path", type=Path, default=DEFAULT_GSM8K_FEWSHOT)
+    parser.add_argument("--retention-gsm8k-fewshot", type=int, default=5)
+    parser.add_argument("--retention-block-size", type=int, default=32)
+    parser.add_argument("--retention-small-block-size", type=int, default=32)
+    parser.add_argument("--retention-max-new-tokens", type=int, default=384)
+    parser.add_argument("--retention-threshold", type=float, default=0.9)
+    parser.add_argument("--retention-top-p", type=float, default=0.95)
+    parser.add_argument("--retention-temperature", type=float, default=0.0)
     parser.add_argument("--gradient-checkpointing", action="store_true", default=True)
     parser.add_argument("--no-gradient-checkpointing", dest="gradient_checkpointing", action="store_false")
     parser.add_argument(

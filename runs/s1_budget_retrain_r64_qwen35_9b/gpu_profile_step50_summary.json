@@ -1,0 +1,15 @@
+{
+  "csv": "runs/s1_budget_retrain_r64_qwen35_9b/gpu_profile_step50.csv",
+  "gpu_util_max_pct": 77.0,
+  "gpu_util_mean_pct": 51.51648351648352,
+  "gpu_util_min_pct": 0.0,
+  "gpu_util_nonzero_mean_pct": 52.08888888888889,
+  "gpu_util_nonzero_samples": 90,
+  "gpu_util_trimmed_5pct_mean_pct": 52.31325301204819,
+  "gpu_util_zero_samples": 1,
+  "mem_util_mean_pct": 25.956043956043956,
+  "memory_used_max_mib": 29535.0,
+  "memory_used_mean_mib": 29535.0,
+  "power_mean_w": 228.6841758241758,
+  "samples": 91
+}
