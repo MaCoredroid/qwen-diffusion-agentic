@@ -1,23 +1,18 @@
-# FLARE Scale-Up Native Eval
+# FLARE Scale-Up Eval
 
-Slice: 58 leak-checked native records.
-Sources: {'/home/mark/qwen_diffusion/runs/flare_scaleup_eval/heldout_seed_multicall_run1_exactuser_clean.jsonl': 58}
-Leak check: exact_instance=0, user=0 against all Run-1 train records; same-tool/all-value=0 against near-leak scope `copy_synth` (2048 records).
+## Corrected Headline
 
-| Condition | exact_args | exact_seq | valid_json | blended TPF | sec/rec | total wall |
-|---|---:|---:|---:|---:|---:|---:|
-| Baseline careful | 20/58 | 36/58 | 48/58 | 1.018 | 15.039 | 872.263s |
-| Per-call waves tau 0.95 | 30/58 | 50/58 | 52/58 | 1.958 | 8.363 | 485.04s |
+Strict clean-waves scale-up was capped at N=20 after the first rows made the result decisive. The capped strict row is `0/20` exact-args with generated-token audit pass.
 
-## Headline
+| Backend | exact_args | episode exact | exact_seq | valid_xml | schema_ok | sec/turn | forwards/turn | audit | note |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| AR-guided | 0/0 | 0/0 | 0/0 | 0/0 | 0/0 | 0.000 | n/a | n/a | not run on this native single-turn scale-up slice |
+| Diffusion careful baseline | 20/58 | 20/58 | 36/58 | 48/58 | 34/58 | 15.038 | 228.207 | n/a | full N=58 |
+| Diffusion clean waves strict | 0/20 | 0/20 | 5/20 | 15/20 | 1/20 | 16.545 | 244.950 | projected_token_records_x_generated_token_offsets / projected_value=0 | N=20 cap; first 20 rows only |
+| Diffusion waves legacy | 30/58 | 30/58 | 50/58 | 52/58 | 44/58 | 8.363 | 109.569 | n/a | CONTAMINATED; old projected-value row, full N=58 |
 
-- exact_args delta (per-call - baseline): 10 / 58
-- honest wall speedup: 1.798x
-- per-call misses: 28/58
-- per-call miss value split: {'copy': 185, 'derived': 78}
-- value force counters: {'forced_schedule_token_visits': 0, 'tool_value_candidate_force_token_visits': 0, 'wave1_value_tokens': 0, 'wave2_forced_tokens': 0, 'parallel_commit_forced_tokens': 0, 'wave1_projected_tokens': 5999, 'wave1_forced_tokens': 5999}
-- full per-call miss list: `/home/mark/qwen_diffusion/runs/flare_scaleup_eval/scaleup_eval_report.json`
+## Files
 
-## B-Only Misses
-
-- idx 17 id `heldout_seed_run1clean_0017`: valid=True seq=True copy/derived={'copy': 9} names=['get_campaign_metrics', 'calculate_campaign_roi']
+- Strict capped rows: `runs/flare_scaleup_eval/percall_waves_tau095_structural_only/scaleup_native_20_capped.jsonl`
+- Strict capped audit: `runs/flare_scaleup_eval/percall_waves_tau095_structural_only/projection_value_audit_20_capped.json`
+- Capped summary: `runs/flare_scaleup_eval/percall_waves_tau095_structural_only/scaleup_native_20_capped.summary.json`

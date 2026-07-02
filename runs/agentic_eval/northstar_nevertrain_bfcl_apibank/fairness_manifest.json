@@ -841,6 +841,8 @@
     "merge_adapter": false,
     "dtype": "bf16",
     "quant": "none",
-    "decode": "per_call_waves_tau095_prefix_cache"
+    "decode": "per_call_waves_tau095_structural_only_prefix_cache",
+    "condition": "percall_waves_tau095",
+    "structural_only_projection": true
   }
 }

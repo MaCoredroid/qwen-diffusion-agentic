@@ -1,0 +1,27 @@
+{
+  "per_row_jsonl": "runs/flare_scaleup_eval/percall_waves_tau095_structural_only/projection_value_audit_20_capped.jsonl",
+  "rows": "runs/flare_scaleup_eval/percall_waves_tau095_structural_only/scaleup_native_20_capped.jsonl",
+  "tokenizer": "models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "totals": {
+    "exact_args": 0,
+    "exact_rows_dependent_on_projected_values": 0,
+    "offset_source:generated_token_ids": 20,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 204,
+    "projected_true_value_tokens_lower_bound": 173,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 1528,
+    "rows": 20,
+    "rows_with_projected_token_records": 20,
+    "rows_with_projected_true_value_tokens_lower_bound": 18,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 1993,
+    "verification_mode": "projected_token_records_x_generated_token_offsets",
+    "wave1_projected_tokens": 204,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 0,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "per_row_jsonl": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank/diffusion_structural_only_strict/projection_value_audit.jsonl",
+  "rows": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank/diffusion_structural_only_strict/turns.jsonl",
+  "tokenizer": "models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "totals": {
+    "exact_args": 9,
+    "exact_rows_dependent_on_projected_values": 0,
+    "offset_source:generated_token_ids": 184,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 1457,
+    "projected_true_value_tokens_lower_bound": 417,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 1215,
+    "rows": 184,
+    "rows_with_projected_token_records": 184,
+    "rows_with_projected_true_value_tokens_lower_bound": 125,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 1547,
+    "verification_mode": "projected_token_records_x_generated_token_offsets",
+    "wave1_projected_tokens": 1457,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 0,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  }
+}

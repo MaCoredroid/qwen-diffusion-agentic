@@ -1,0 +1,37 @@
+{
+  "audit_totals": {
+    "exact_args": 0,
+    "exact_rows_dependent_on_projected_values": 0,
+    "offset_source:generated_token_ids": 20,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 204,
+    "projected_true_value_tokens_lower_bound": 173,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 1528,
+    "rows": 20,
+    "rows_with_projected_token_records": 20,
+    "rows_with_projected_true_value_tokens_lower_bound": 18,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 1993,
+    "verification_mode": "projected_token_records_x_generated_token_offsets",
+    "wave1_projected_tokens": 204,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 0,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  },
+  "note": "Strict clean-waves scale-up rerun was capped at first 20 rows by user efficiency call; source run wrote 23 rows before interrupt, but this summary scores only scaleup_native_20_capped.jsonl.",
+  "summary": {
+    "episode_exact": 0,
+    "episodes": 20,
+    "exact_args": 0,
+    "exact_seq": 5,
+    "forwards_per_turn": 244.95,
+    "rows": 20,
+    "schema_ok": 1,
+    "sec_per_turn": 16.545176887512206,
+    "total_wall": 330.90353775024414,
+    "valid_xml": 15
+  }
+}
