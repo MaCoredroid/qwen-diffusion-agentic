@@ -1,0 +1,40 @@
+{
+  "verdict": "fail",
+  "note": "The old wave1_value_tokens=0 counter was schedule-kind based and did not cover true Qwen XML parameter bodies before the XML planner fix.",
+  "method": "Tokenizer-offset count of generated Qwen XML <parameter> body tokens; projected true-value lower bound is true_xml_value_tokens for zero-forward rows, otherwise max(0, true_xml_value_tokens - reported_model_value_tokens), capped by two_wave_wave1_projected_tokens.",
+  "tokenizer": "models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "slices": {
+    "matched20_northstar_diffusion": {
+      "input": "runs/agentic_eval/northstar_matched_ar_vllm_vs_diffusion/diffusion/turns.jsonl",
+      "rows": 63,
+      "exact_rows": 55,
+      "zero_forward_rows": 42,
+      "zero_forward_rows_with_values": 42,
+      "true_xml_value_tokens": 1966,
+      "reported_model_value_tokens": 621,
+      "wave1_projected_tokens": 4157,
+      "wave1_value_tokens_counter": 0,
+      "wave2_value_tokens": 621,
+      "parallel_value_tokens": 621,
+      "projected_true_value_tokens_lower_bound": 1345,
+      "rows_with_projected_value_lower_bound": 63,
+      "exact_rows_dependent_lower_bound": 55
+    },
+    "scaleup58_percall_tau095": {
+      "input": "runs/flare_scaleup_eval/percall_waves_tau095/scaleup_native_58.jsonl",
+      "rows": 58,
+      "exact_rows": 30,
+      "zero_forward_rows": 0,
+      "zero_forward_rows_with_values": 0,
+      "true_xml_value_tokens": 4879,
+      "reported_model_value_tokens": 5194,
+      "wave1_projected_tokens": 5999,
+      "wave1_value_tokens_counter": 0,
+      "wave2_value_tokens": 5194,
+      "parallel_value_tokens": 5194,
+      "projected_true_value_tokens_lower_bound": 18,
+      "rows_with_projected_value_lower_bound": 3,
+      "exact_rows_dependent_lower_bound": 0
+    }
+  }
+}
