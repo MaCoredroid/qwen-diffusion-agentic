@@ -1,0 +1,964 @@
+{
+  "cases": "runs/flare_redesign_run1_redteam/copyspan_isolation/copyspan_eval_12.jsonl",
+  "blocks": "runs/flare_redesign_run1_redteam/copyspan_isolation/copyspan_blocks_12.jsonl",
+  "condition_names": {
+    "control_careful": "(0) CONTROL careful",
+    "all_parallel_tau050": "(1) ALL-PARALLEL",
+    "leftctx_value_tau050": "(2) LEFT-CONTEXT-FIRST, values-only parallel"
+  },
+  "runs": {
+    "control_careful": {
+      "label": "arg8_tau099",
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/arg8_tau099.jsonl",
+      "summary_json": "runs/flare_redesign_run1_redteam/copyspan_isolation/arg8_tau099.summary.json",
+      "parallel_commit_threshold": 0.99,
+      "parallel_commit_kinds": null,
+      "record_valid_tool_json": 12,
+      "record_exact_arguments": 12,
+      "record_count": 12,
+      "copy_spans": 41,
+      "copy_exact": 41,
+      "copy_accuracy": 1.0,
+      "single_token_spans": 1,
+      "single_token_exact": 1,
+      "single_token_accuracy": 1.0,
+      "multi_token_spans": 40,
+      "multi_token_exact": 40,
+      "multi_token_accuracy": 1.0,
+      "value_tokens": 499,
+      "value_forward_visits": 499,
+      "value_tokens_per_forward": 1.0,
+      "structural_tokens": 663,
+      "structural_forward_visits": 659,
+      "structural_tokens_per_forward": 1.0060698027314112,
+      "single_token_details": [
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "priority",
+          "target_text": "normal",
+          "token_count": 1,
+          "exact": true,
+          "gold": "normal",
+          "predicted": "normal"
+        }
+      ],
+      "failures": []
+    },
+    "all_parallel_tau050": {
+      "label": "arg32_tau050",
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/arg32_tau050.jsonl",
+      "summary_json": "runs/flare_redesign_run1_redteam/copyspan_isolation/arg32_tau050.summary.json",
+      "parallel_commit_threshold": 0.5,
+      "parallel_commit_kinds": null,
+      "record_valid_tool_json": 0,
+      "record_exact_arguments": 0,
+      "record_count": 12,
+      "copy_spans": 41,
+      "copy_exact": 0,
+      "copy_accuracy": 0.0,
+      "single_token_spans": 1,
+      "single_token_exact": 0,
+      "single_token_accuracy": 0.0,
+      "multi_token_spans": 40,
+      "multi_token_exact": 0,
+      "multi_token_accuracy": 0.0,
+      "value_tokens": 439,
+      "value_forward_visits": 356,
+      "value_tokens_per_forward": 1.2331460674157304,
+      "structural_tokens": 730,
+      "structural_forward_visits": 578,
+      "structural_tokens_per_forward": 1.2629757785467128,
+      "single_token_details": [
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "priority",
+          "target_text": "normal",
+          "token_count": 1,
+          "exact": false,
+          "gold": "normal",
+          "predicted": null
+        }
+      ],
+      "failures": [
+        {
+          "id": "run1_copyspan_0000",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "order_id",
+          "target_text": "ORD-JJTB1-00949",
+          "token_count": 11,
+          "exact": false,
+          "gold": "ORD-JJTB1-00949",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0000",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "sku_list",
+          "target_text": "[\"SKU-UQTXN\", \"SKU-STE2R\", \"SKU-AAJB0\"]",
+          "token_count": 20,
+          "exact": false,
+          "gold": [
+            "SKU-UQTXN",
+            "SKU-STE2R",
+            "SKU-AAJB0"
+          ],
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0000",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "warehouse_id",
+          "target_text": "WH-26-B",
+          "token_count": 5,
+          "exact": false,
+          "gold": "WH-26-B",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "tool_call_index": 0,
+          "function": "query_metric_window",
+          "json_key": "metric_name",
+          "target_text": "gdn.cache.hit_rate",
+          "token_count": 5,
+          "exact": false,
+          "gold": "gdn.cache.hit_rate",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "tool_call_index": 0,
+          "function": "query_metric_window",
+          "json_key": "region",
+          "target_text": "us-east-1",
+          "token_count": 4,
+          "exact": false,
+          "gold": "us-east-1",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "tool_call_index": 0,
+          "function": "query_metric_window",
+          "json_key": "window_start",
+          "target_text": "2026-07-08T05:38:00Z",
+          "token_count": 20,
+          "exact": false,
+          "gold": "2026-07-08T05:38:00Z",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "tool_call_index": 0,
+          "function": "query_metric_window",
+          "json_key": "window_end",
+          "target_text": "2026-07-08T03:08:00Z",
+          "token_count": 20,
+          "exact": false,
+          "gold": "2026-07-08T03:08:00Z",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "tool_call_index": 0,
+          "function": "register_webhook",
+          "json_key": "webhook_id",
+          "target_text": "wh_t7gef29c93bl",
+          "token_count": 10,
+          "exact": false,
+          "gold": "wh_t7gef29c93bl",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "tool_call_index": 0,
+          "function": "register_webhook",
+          "json_key": "callback_url",
+          "target_text": "https://hooks.example.net/helix-vault-282/ds8xk7",
+          "token_count": 19,
+          "exact": false,
+          "gold": "https://hooks.example.net/helix-vault-282/ds8xk7",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "tool_call_index": 0,
+          "function": "register_webhook",
+          "json_key": "secret_ref",
+          "target_text": "secret/projects/forge-ledger-468/b46aaqjx",
+          "token_count": 17,
+          "exact": false,
+          "gold": "secret/projects/forge-ledger-468/b46aaqjx",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "tool_call_index": 0,
+          "function": "register_webhook",
+          "json_key": "events",
+          "target_text": "[\"job.started\", \"invoice.paid\"]",
+          "token_count": 9,
+          "exact": false,
+          "gold": [
+            "job.started",
+            "invoice.paid"
+          ],
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "job_id",
+          "target_text": "job_0958_lbv38r",
+          "token_count": 11,
+          "exact": false,
+          "gold": "job_0958_lbv38r",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "model_ref",
+          "target_text": "qwen35-fastdllm/run1-847",
+          "token_count": 13,
+          "exact": false,
+          "gold": "qwen35-fastdllm/run1-847",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "manifest_path",
+          "target_text": "/srv/flare/ember-beacon-792/batch_085/g34xugbn.json",
+          "token_count": 25,
+          "exact": false,
+          "gold": "/srv/flare/ember-beacon-792/batch_085/g34xugbn.json",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "dataset_sha",
+          "target_text": "yepi42v16z5uyc0o",
+          "token_count": 14,
+          "exact": false,
+          "gold": "yepi42v16z5uyc0o",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "order_id",
+          "target_text": "ORD-Q8AWV-00990",
+          "token_count": 11,
+          "exact": false,
+          "gold": "ORD-Q8AWV-00990",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "sku_list",
+          "target_text": "[\"SKU-7M1SC\", \"SKU-UA61K\"]",
+          "token_count": 15,
+          "exact": false,
+          "gold": [
+            "SKU-7M1SC",
+            "SKU-UA61K"
+          ],
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "warehouse_id",
+          "target_text": "WH-23-B",
+          "token_count": 5,
+          "exact": false,
+          "gold": "WH-23-B",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "tenant_id",
+          "target_text": "tenant_PSWUX9",
+          "token_count": 5,
+          "exact": false,
+          "gold": "tenant_PSWUX9",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "file_path",
+          "target_text": "/srv/flare/ion-matrix-54/batch_075/4h0js9id.json",
+          "token_count": 24,
+          "exact": false,
+          "gold": "/srv/flare/ion-matrix-54/batch_075/4h0js9id.json",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "revision_id",
+          "target_text": "rev-jfqzi52anx",
+          "token_count": 8,
+          "exact": false,
+          "gold": "rev-jfqzi52anx",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "tenant_id",
+          "target_text": "tenant_7FUZ6M",
+          "token_count": 7,
+          "exact": false,
+          "gold": "tenant_7FUZ6M",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "file_path",
+          "target_text": "/srv/flare/ion-trace-475/batch_006/n9gnhjlb.json",
+          "token_count": 23,
+          "exact": false,
+          "gold": "/srv/flare/ion-trace-475/batch_006/n9gnhjlb.json",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "revision_id",
+          "target_text": "rev-t214bv4rzc",
+          "token_count": 9,
+          "exact": false,
+          "gold": "rev-t214bv4rzc",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "site_id",
+          "target_text": "SITE-6559-FFB",
+          "token_count": 9,
+          "exact": false,
+          "gold": "SITE-6559-FFB",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "visit_date",
+          "target_text": "2026-08-27",
+          "token_count": 10,
+          "exact": false,
+          "gold": "2026-08-27",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "technician_id",
+          "target_text": "tech_ce4wb",
+          "token_count": 4,
+          "exact": false,
+          "gold": "tech_ce4wb",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "priority",
+          "target_text": "normal",
+          "token_count": 1,
+          "exact": false,
+          "gold": "normal",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "tool_call_index": 0,
+          "function": "apply_json_patch",
+          "json_key": "object_id",
+          "target_text": "obj_n8gdgihqca",
+          "token_count": 8,
+          "exact": false,
+          "gold": "obj_n8gdgihqca",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "tool_call_index": 0,
+          "function": "apply_json_patch",
+          "json_key": "patch_path",
+          "target_text": "/limits/max_tokens",
+          "token_count": 4,
+          "exact": false,
+          "gold": "/limits/max_tokens",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "tool_call_index": 0,
+          "function": "apply_json_patch",
+          "json_key": "patch_value",
+          "target_text": "{\"source_id\": \"src_j86dvo\", \"enabled\": true, \"rank\": 9}",
+          "token_count": 23,
+          "exact": false,
+          "gold": {
+            "source_id": "src_j86dvo",
+            "enabled": true,
+            "rank": 9
+          },
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "order_id",
+          "target_text": "ORD-WTSE1-01301",
+          "token_count": 11,
+          "exact": false,
+          "gold": "ORD-WTSE1-01301",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "sku_list",
+          "target_text": "[\"SKU-4FEXR\", \"SKU-RWSV0\", \"SKU-15Z6X\", \"SKU-0B75R\"]",
+          "token_count": 33,
+          "exact": false,
+          "gold": [
+            "SKU-4FEXR",
+            "SKU-RWSV0",
+            "SKU-15Z6X",
+            "SKU-0B75R"
+          ],
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "warehouse_id",
+          "target_text": "WH-88-A",
+          "token_count": 5,
+          "exact": false,
+          "gold": "WH-88-A",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "order_id",
+          "target_text": "ORD-R76K3-00951",
+          "token_count": 12,
+          "exact": false,
+          "gold": "ORD-R76K3-00951",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "sku_list",
+          "target_text": "[\"SKU-FI4YU\", \"SKU-D2NPF\"]",
+          "token_count": 15,
+          "exact": false,
+          "gold": [
+            "SKU-FI4YU",
+            "SKU-D2NPF"
+          ],
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "warehouse_id",
+          "target_text": "WH-17-B",
+          "token_count": 5,
+          "exact": false,
+          "gold": "WH-17-B",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "tool_call_index": 0,
+          "function": "query_metric_window",
+          "json_key": "metric_name",
+          "target_text": "gdn.cache.hit_rate",
+          "token_count": 5,
+          "exact": false,
+          "gold": "gdn.cache.hit_rate",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "tool_call_index": 0,
+          "function": "query_metric_window",
+          "json_key": "region",
+          "target_text": "us-west-2",
+          "token_count": 4,
+          "exact": false,
+          "gold": "us-west-2",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "tool_call_index": 0,
+          "function": "query_metric_window",
+          "json_key": "window_start",
+          "target_text": "2026-07-17T22:15:00Z",
+          "token_count": 20,
+          "exact": false,
+          "gold": "2026-07-17T22:15:00Z",
+          "predicted": null
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "tool_call_index": 0,
+          "function": "query_metric_window",
+          "json_key": "window_end",
+          "target_text": "2026-07-17T03:13:00Z",
+          "token_count": 20,
+          "exact": false,
+          "gold": "2026-07-17T03:13:00Z",
+          "predicted": null
+        }
+      ]
+    },
+    "leftctx_value_tau050": {
+      "label": "leftctx_value_arg32_tau050",
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau050.jsonl",
+      "summary_json": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau050.summary.json",
+      "parallel_commit_threshold": 0.5,
+      "parallel_commit_kinds": [
+        "argument_value"
+      ],
+      "record_valid_tool_json": 12,
+      "record_exact_arguments": 5,
+      "record_count": 12,
+      "copy_spans": 41,
+      "copy_exact": 29,
+      "copy_accuracy": 0.7073170731707317,
+      "single_token_spans": 1,
+      "single_token_exact": 1,
+      "single_token_accuracy": 1.0,
+      "multi_token_spans": 40,
+      "multi_token_exact": 28,
+      "multi_token_accuracy": 0.7,
+      "value_tokens": 178,
+      "value_forward_visits": 119,
+      "value_tokens_per_forward": 1.495798319327731,
+      "structural_tokens": 0,
+      "structural_forward_visits": 0,
+      "structural_tokens_per_forward": null,
+      "single_token_details": [
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "priority",
+          "target_text": "normal",
+          "token_count": 1,
+          "exact": true,
+          "gold": "normal",
+          "predicted": "normal"
+        }
+      ],
+      "failures": [
+        {
+          "id": "run1_copyspan_0000",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "order_id",
+          "target_text": "ORD-JJTB1-00949",
+          "token_count": 11,
+          "exact": false,
+          "gold": "ORD-JJTB1-00949",
+          "predicted": "ORD-JJJTB1-00949"
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "tool_call_index": 0,
+          "function": "register_webhook",
+          "json_key": "callback_url",
+          "target_text": "https://hooks.example.net/helix-vault-282/ds8xk7",
+          "token_count": 19,
+          "exact": false,
+          "gold": "https://hooks.example.net/helix-vault-282/ds8xk7",
+          "predicted": "https://hooks.example.net/hhelix-vault-282/ds8xk7"
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "tool_call_index": 0,
+          "function": "register_webhook",
+          "json_key": "secret_ref",
+          "target_text": "secret/projects/forge-ledger-468/b46aaqjx",
+          "token_count": 17,
+          "exact": false,
+          "gold": "secret/projects/forge-ledger-468/b46aaqjx",
+          "predicted": "secret/projects/forge-ledger-4688/b46aaqjx"
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "tool_call_index": 0,
+          "function": "register_webhook",
+          "json_key": "events",
+          "target_text": "[\"job.started\", \"invoice.paid\"]",
+          "token_count": 9,
+          "exact": false,
+          "gold": [
+            "job.started",
+            "invoice.paid"
+          ],
+          "predicted": [
+            "job.started.started",
+            "invoice.paid"
+          ]
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "model_ref",
+          "target_text": "qwen35-fastdllm/run1-847",
+          "token_count": 13,
+          "exact": false,
+          "gold": "qwen35-fastdllm/run1-847",
+          "predicted": "qwen35-fastfastdllm/run1-847"
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "manifest_path",
+          "target_text": "/srv/flare/ember-beacon-792/batch_085/g34xugbn.json",
+          "token_count": 25,
+          "exact": false,
+          "gold": "/srv/flare/ember-beacon-792/batch_085/g34xugbn.json",
+          "predicted": "/srv/flare/ember-beacon-792/batch_085/g34xxugbn.json"
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "dataset_sha",
+          "target_text": "yepi42v16z5uyc0o",
+          "token_count": 14,
+          "exact": false,
+          "gold": "yepi42v16z5uyc0o",
+          "predicted": "yepi422v16z5uyc0o"
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "file_path",
+          "target_text": "/srv/flare/ion-matrix-54/batch_075/4h0js9id.json",
+          "token_count": 24,
+          "exact": false,
+          "gold": "/srv/flare/ion-matrix-54/batch_075/4h0js9id.json",
+          "predicted": "/srv/flare/ion-matrix-54/batch_075/4h0js9idid.json"
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "file_path",
+          "target_text": "/srv/flare/ion-trace-475/batch_006/n9gnhjlb.json",
+          "token_count": 23,
+          "exact": false,
+          "gold": "/srv/flare/ion-trace-475/batch_006/n9gnhjlb.json",
+          "predicted": "/srv/flare/ion-trace-475/batch_006/n9gnhjlb.json.json"
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "revision_id",
+          "target_text": "rev-t214bv4rzc",
+          "token_count": 9,
+          "exact": false,
+          "gold": "rev-t214bv4rzc",
+          "predicted": "rev-t214bv4rzc</"
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "tool_call_index": 0,
+          "function": "apply_json_patch",
+          "json_key": "patch_value",
+          "target_text": "{\"source_id\": \"src_j86dvo\", \"enabled\": true, \"rank\": 9}",
+          "token_count": 23,
+          "exact": false,
+          "gold": {
+            "source_id": "src_j86dvo",
+            "enabled": true,
+            "rank": 9
+          },
+          "predicted": "{\"source_id\": \"\"src_j86d\",\", \"enabledenabled\": true, \"rank\": 9}"
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "tool_call_index": 0,
+          "function": "reserve_inventory",
+          "json_key": "order_id",
+          "target_text": "ORD-R76K3-00951",
+          "token_count": 12,
+          "exact": false,
+          "gold": "ORD-R76K3-00951",
+          "predicted": "ORD-R76K33-00951"
+        }
+      ]
+    },
+    "leftctx_value_tau070": {
+      "label": "leftctx_value_arg32_tau070",
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau070.jsonl",
+      "summary_json": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau070.summary.json",
+      "parallel_commit_threshold": 0.7,
+      "parallel_commit_kinds": [
+        "argument_value"
+      ],
+      "record_valid_tool_json": 12,
+      "record_exact_arguments": 9,
+      "record_count": 12,
+      "copy_spans": 41,
+      "copy_exact": 36,
+      "copy_accuracy": 0.8780487804878049,
+      "single_token_spans": 1,
+      "single_token_exact": 1,
+      "single_token_accuracy": 1.0,
+      "multi_token_spans": 40,
+      "multi_token_exact": 35,
+      "multi_token_accuracy": 0.875,
+      "value_tokens": 178,
+      "value_forward_visits": 150,
+      "value_tokens_per_forward": 1.1866666666666668,
+      "structural_tokens": 0,
+      "structural_forward_visits": 0,
+      "structural_tokens_per_forward": null,
+      "single_token_details": [
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "priority",
+          "target_text": "normal",
+          "token_count": 1,
+          "exact": true,
+          "gold": "normal",
+          "predicted": "normal"
+        }
+      ],
+      "failures": [
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "model_ref",
+          "target_text": "qwen35-fastdllm/run1-847",
+          "token_count": 13,
+          "exact": false,
+          "gold": "qwen35-fastdllm/run1-847",
+          "predicted": "qwen35-fastfastdllm/run1-847"
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "tool_call_index": 0,
+          "function": "start_training_job",
+          "json_key": "dataset_sha",
+          "target_text": "yepi42v16z5uyc0o",
+          "token_count": 14,
+          "exact": false,
+          "gold": "yepi42v16z5uyc0o",
+          "predicted": "yepi42v16z55uyc0o"
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "file_path",
+          "target_text": "/srv/flare/ion-trace-475/batch_006/n9gnhjlb.json",
+          "token_count": 23,
+          "exact": false,
+          "gold": "/srv/flare/ion-trace-475/batch_006/n9gnhjlb.json",
+          "predicted": "/srv/flare/ion-trace-475/batch_006/n9gnhjlb.json.json"
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "revision_id",
+          "target_text": "rev-t214bv4rzc",
+          "token_count": 9,
+          "exact": false,
+          "gold": "rev-t214bv4rzc",
+          "predicted": "rev-t214bv4rzc</"
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "tool_call_index": 0,
+          "function": "apply_json_patch",
+          "json_key": "patch_value",
+          "target_text": "{\"source_id\": \"src_j86dvo\", \"enabled\": true, \"rank\": 9}",
+          "token_count": 23,
+          "exact": false,
+          "gold": {
+            "source_id": "src_j86dvo",
+            "enabled": true,
+            "rank": 9
+          },
+          "predicted": {
+            "source_id": "src_j86dvo",
+            "enabledenabled": true,
+            "rank": 9
+          }
+        }
+      ]
+    },
+    "leftctx_value_tau080": {
+      "label": "leftctx_value_arg32_tau080",
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau080.jsonl",
+      "summary_json": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau080.summary.json",
+      "parallel_commit_threshold": 0.8,
+      "parallel_commit_kinds": [
+        "argument_value"
+      ],
+      "record_valid_tool_json": 12,
+      "record_exact_arguments": 11,
+      "record_count": 12,
+      "copy_spans": 41,
+      "copy_exact": 40,
+      "copy_accuracy": 0.975609756097561,
+      "single_token_spans": 1,
+      "single_token_exact": 1,
+      "single_token_accuracy": 1.0,
+      "multi_token_spans": 40,
+      "multi_token_exact": 39,
+      "multi_token_accuracy": 0.975,
+      "value_tokens": 178,
+      "value_forward_visits": 163,
+      "value_tokens_per_forward": 1.0920245398773005,
+      "structural_tokens": 0,
+      "structural_forward_visits": 0,
+      "structural_tokens_per_forward": null,
+      "single_token_details": [
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "priority",
+          "target_text": "normal",
+          "token_count": 1,
+          "exact": true,
+          "gold": "normal",
+          "predicted": "normal"
+        }
+      ],
+      "failures": [
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "revision_id",
+          "target_text": "rev-t214bv4rzc",
+          "token_count": 9,
+          "exact": false,
+          "gold": "rev-t214bv4rzc",
+          "predicted": null
+        }
+      ]
+    },
+    "leftctx_value_tau085": {
+      "label": "leftctx_value_arg32_tau085",
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau085.jsonl",
+      "summary_json": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau085.summary.json",
+      "parallel_commit_threshold": 0.85,
+      "parallel_commit_kinds": [
+        "argument_value"
+      ],
+      "record_valid_tool_json": 12,
+      "record_exact_arguments": 11,
+      "record_count": 12,
+      "copy_spans": 41,
+      "copy_exact": 40,
+      "copy_accuracy": 0.975609756097561,
+      "single_token_spans": 1,
+      "single_token_exact": 1,
+      "single_token_accuracy": 1.0,
+      "multi_token_spans": 40,
+      "multi_token_exact": 39,
+      "multi_token_accuracy": 0.975,
+      "value_tokens": 178,
+      "value_forward_visits": 170,
+      "value_tokens_per_forward": 1.0470588235294118,
+      "structural_tokens": 0,
+      "structural_forward_visits": 0,
+      "structural_tokens_per_forward": null,
+      "single_token_details": [
+        {
+          "id": "run1_copyspan_0007",
+          "tool_call_index": 0,
+          "function": "schedule_field_visit",
+          "json_key": "priority",
+          "target_text": "normal",
+          "token_count": 1,
+          "exact": true,
+          "gold": "normal",
+          "predicted": "normal"
+        }
+      ],
+      "failures": [
+        {
+          "id": "run1_copyspan_0006",
+          "tool_call_index": 0,
+          "function": "read_project_file",
+          "json_key": "revision_id",
+          "target_text": "rev-t214bv4rzc",
+          "token_count": 9,
+          "exact": false,
+          "gold": "rev-t214bv4rzc",
+          "predicted": null
+        }
+      ]
+    }
+  },
+  "verdict": {
+    "h1_decode_order_fixable": true,
+    "h2_circuit_disruption_confirmed": false,
+    "speed_gate_full_pass": false,
+    "summary": "Left context first rescues copy at value_tpf > 1, including the single-token value, but the best >1 TPF point remains 40/41 instead of the 41/41 careful baseline."
+  }
+}

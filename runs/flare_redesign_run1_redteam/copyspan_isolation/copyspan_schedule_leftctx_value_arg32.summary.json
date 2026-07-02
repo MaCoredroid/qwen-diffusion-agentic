@@ -1,0 +1,31 @@
+{
+  "input_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/copyspan_blocks_12.jsonl",
+  "out_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/copyspan_schedule_leftctx_value_arg32.jsonl",
+  "block_token_limits": {
+    "prose": 128,
+    "argument_value": 32,
+    "json_structure": 1,
+    "tiny": 1
+  },
+  "missing_token_block_records": 0,
+  "totals": {
+    "records": 12,
+    "tokens": 1157,
+    "source_token_blocks": 224,
+    "schedule_blocks": 700,
+    "schedule_blocks:tool_tag": 48,
+    "scheduled_tokens:tool_tag": 48,
+    "denoise_step_tokens:1": 128,
+    "schedule_blocks:json_structure": 498,
+    "scheduled_tokens:json_structure": 498,
+    "denoise_step_tokens:3": 498,
+    "schedule_blocks:tool_name": 32,
+    "scheduled_tokens:tool_name": 32,
+    "denoise_step_tokens:2": 32,
+    "schedule_blocks:json_key": 80,
+    "scheduled_tokens:json_key": 80,
+    "schedule_blocks:argument_value": 42,
+    "scheduled_tokens:argument_value": 499,
+    "denoise_step_tokens:8": 499
+  }
+}

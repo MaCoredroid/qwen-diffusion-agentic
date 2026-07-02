@@ -899,6 +899,10 @@ def apply_toolcall_parallel_commit_run(
             if interval is None:
                 stopped_rows.add(row_idx)
                 continue
+            kind = interval.get("kind") or "default"
+            if args.parallel_commit_kinds and kind not in args.parallel_commit_kinds:
+                stopped_rows.add(row_idx)
+                continue
             token_id, confidence, forced, source, safe = _parallel_commit_token_choice(
                 tokenizer,
                 x_t,
@@ -922,7 +926,6 @@ def apply_toolcall_parallel_commit_run(
 
             abs_idx = int(window_abs_start) + int(local_pos)
             x_t[row_idx, abs_idx] = int(token_id)
-            kind = interval.get("kind") or "default"
             committed += 1
             per_row_commits[row_idx] += 1
             made_progress = True
@@ -3577,6 +3580,7 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
         "live_tool_json_topk": args.live_tool_json_topk,
         "live_tool_json_mode": "hybrid_diffusion_nl_constrained_ar_qwen_native" if args.live_tool_json_grammar else "off",
         "parallel_commit_threshold": args.parallel_commit_threshold,
+        "parallel_commit_kinds": sorted(args.parallel_commit_kinds),
         "parallel_commit_mode": "confident_run_same_forward" if args.parallel_commit_threshold is not None else "off",
         "strip_gold_for_generation": args.strip_gold_for_generation,
         "argument_boundary_token_ids": args.argument_boundary_token_ids,
@@ -3817,6 +3821,14 @@ def main():
         ),
     )
     parser.add_argument(
+        "--parallel-commit-kinds",
+        default="",
+        help=(
+            "Comma/space separated schedule kinds eligible for --parallel-commit-threshold. "
+            "Empty preserves the legacy behavior: all scheduled/default kinds may parallel-commit."
+        ),
+    )
+    parser.add_argument(
         "--strip-gold-for-generation",
         action="store_true",
         help=(
@@ -3874,6 +3886,7 @@ def main():
     args.chat_template = resolve_chat_template(args.conversation_template)
     args.sampler_schedules, args.sampler_schedule_rows = load_sampler_schedules(args.sampler_schedule_jsonl)
     args.force_schedule_token_kinds = parse_kind_set(args.force_schedule_token_kinds)
+    args.parallel_commit_kinds = parse_kind_set(args.parallel_commit_kinds)
     args.json_prefix_guard_kinds = parse_kind_set(args.json_prefix_guard_kinds)
     args.json_prefix_guard_left_to_right = not args.no_json_prefix_guard_left_to_right
     token_id_tokenizer = AutoTokenizer.from_pretrained(

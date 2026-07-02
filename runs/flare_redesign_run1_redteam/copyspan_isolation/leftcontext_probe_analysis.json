@@ -1,0 +1,1019 @@
+{
+  "cases": "runs/flare_redesign_run1_redteam/copyspan_isolation/copyspan_eval_12.jsonl",
+  "runs": {
+    "copyspan_isolation/arg8_tau099": {
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/arg8_tau099.jsonl",
+      "records": 12,
+      "outputs": 12,
+      "missing_outputs": 0,
+      "groups": {
+        "copy": {
+          "arguments": 41,
+          "exact": 41,
+          "accuracy": 1.0
+        }
+      },
+      "record_exact_arguments": 12,
+      "record_valid_tool_json": 12,
+      "sampler": {
+        "value_tokens": 499,
+        "value_forward_visits": 499,
+        "value_tokens_per_forward": 1.0,
+        "structural_tokens": 663,
+        "structural_forward_visits": 659,
+        "structural_tokens_per_forward": 1.0060698027314112
+      },
+      "per_record": [
+        {
+          "id": "run1_copyspan_0000",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "copyspan_isolation/arg32_tau050": {
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/arg32_tau050.jsonl",
+      "records": 12,
+      "outputs": 12,
+      "missing_outputs": 0,
+      "groups": {
+        "copy": {
+          "arguments": 41,
+          "exact": 0,
+          "accuracy": 0.0
+        }
+      },
+      "record_exact_arguments": 0,
+      "record_valid_tool_json": 0,
+      "sampler": {
+        "value_tokens": 439,
+        "value_forward_visits": 356,
+        "value_tokens_per_forward": 1.2331460674157304,
+        "structural_tokens": 730,
+        "structural_forward_visits": 578,
+        "structural_tokens_per_forward": 1.2629757785467128
+      },
+      "per_record": [
+        {
+          "id": "run1_copyspan_0000",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "valid_tool_json": false,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 0,
+              "accuracy": 0.0
+            }
+          }
+        }
+      ]
+    },
+    "copyspan_isolation/leftctx_value_arg32_tau050": {
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau050.jsonl",
+      "records": 12,
+      "outputs": 12,
+      "missing_outputs": 0,
+      "groups": {
+        "copy": {
+          "arguments": 41,
+          "exact": 29,
+          "accuracy": 0.7073170731707317
+        }
+      },
+      "record_exact_arguments": 5,
+      "record_valid_tool_json": 12,
+      "sampler": {
+        "value_tokens": 178,
+        "value_forward_visits": 119,
+        "value_tokens_per_forward": 1.495798319327731,
+        "structural_tokens": 0,
+        "structural_forward_visits": 0,
+        "structural_tokens_per_forward": null
+      },
+      "per_record": [
+        {
+          "id": "run1_copyspan_0000",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 2,
+              "accuracy": 0.6666666666666666
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 1,
+              "accuracy": 0.25
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 1,
+              "accuracy": 0.25
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 2,
+              "accuracy": 0.6666666666666666
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 1,
+              "accuracy": 0.3333333333333333
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 2,
+              "accuracy": 0.6666666666666666
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 2,
+              "accuracy": 0.6666666666666666
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "copyspan_isolation/leftctx_value_arg32_tau070": {
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau070.jsonl",
+      "records": 12,
+      "outputs": 12,
+      "missing_outputs": 0,
+      "groups": {
+        "copy": {
+          "arguments": 41,
+          "exact": 36,
+          "accuracy": 0.8780487804878049
+        }
+      },
+      "record_exact_arguments": 9,
+      "record_valid_tool_json": 12,
+      "sampler": {
+        "value_tokens": 178,
+        "value_forward_visits": 150,
+        "value_tokens_per_forward": 1.1866666666666668,
+        "structural_tokens": 0,
+        "structural_forward_visits": 0,
+        "structural_tokens_per_forward": null
+      },
+      "per_record": [
+        {
+          "id": "run1_copyspan_0000",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 2,
+              "accuracy": 0.5
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 1,
+              "accuracy": 0.3333333333333333
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 2,
+              "accuracy": 0.6666666666666666
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "copyspan_isolation/leftctx_value_arg32_tau080": {
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau080.jsonl",
+      "records": 12,
+      "outputs": 12,
+      "missing_outputs": 0,
+      "groups": {
+        "copy": {
+          "arguments": 41,
+          "exact": 40,
+          "accuracy": 0.975609756097561
+        }
+      },
+      "record_exact_arguments": 11,
+      "record_valid_tool_json": 12,
+      "sampler": {
+        "value_tokens": 178,
+        "value_forward_visits": 163,
+        "value_tokens_per_forward": 1.0920245398773005,
+        "structural_tokens": 0,
+        "structural_forward_visits": 0,
+        "structural_tokens_per_forward": null
+      },
+      "per_record": [
+        {
+          "id": "run1_copyspan_0000",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 2,
+              "accuracy": 0.6666666666666666
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "copyspan_isolation/leftctx_value_arg32_tau085": {
+      "output_jsonl": "runs/flare_redesign_run1_redteam/copyspan_isolation/leftctx_value_arg32_tau085.jsonl",
+      "records": 12,
+      "outputs": 12,
+      "missing_outputs": 0,
+      "groups": {
+        "copy": {
+          "arguments": 41,
+          "exact": 40,
+          "accuracy": 0.975609756097561
+        }
+      },
+      "record_exact_arguments": 11,
+      "record_valid_tool_json": 12,
+      "sampler": {
+        "value_tokens": 178,
+        "value_forward_visits": 170,
+        "value_tokens_per_forward": 1.0470588235294118,
+        "structural_tokens": 0,
+        "structural_forward_visits": 0,
+        "structural_tokens_per_forward": null
+      },
+      "per_record": [
+        {
+          "id": "run1_copyspan_0000",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0001",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0002",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0003",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0004",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0005",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0006",
+          "valid_tool_json": true,
+          "exact_arguments_record": false,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 2,
+              "accuracy": 0.6666666666666666
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0007",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0008",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0009",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0010",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 3,
+              "exact": 3,
+              "accuracy": 1.0
+            }
+          }
+        },
+        {
+          "id": "run1_copyspan_0011",
+          "valid_tool_json": true,
+          "exact_arguments_record": true,
+          "groups": {
+            "copy": {
+              "arguments": 4,
+              "exact": 4,
+              "accuracy": 1.0
+            }
+          }
+        }
+      ]
+    }
+  }
+}
