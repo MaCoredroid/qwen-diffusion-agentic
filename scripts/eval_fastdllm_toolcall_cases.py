@@ -745,8 +745,129 @@ def interval_for_local_pos(intervals, local_pos):
     return None
 
 
+def has_mask_for_kinds(x_t, window_len, intervals, allowed_kinds, mask_id):
+    allowed_kinds = set(allowed_kinds)
+    if not allowed_kinds:
+        return bool((x_t[:, -window_len:] == mask_id).any().item())
+    mask_idx = x_t[:, -window_len:] == mask_id
+    if not bool(mask_idx.any().item()):
+        return False
+    for local_pos in mask_idx.nonzero(as_tuple=False)[:, 1].detach().tolist():
+        interval = interval_for_local_pos(intervals, int(local_pos))
+        kind = (interval or {}).get("kind") or "default"
+        if kind in allowed_kinds:
+            return True
+    return False
+
+
+def leftmost_mask_interval_for_kinds(x_t, window_len, intervals, allowed_kinds, mask_id):
+    allowed_kinds = set(allowed_kinds)
+    for row_idx in range(x_t.shape[0]):
+        mask_idx = x_t[row_idx, -window_len:] == mask_id
+        if not bool(mask_idx.any().item()):
+            continue
+        local_pos = int(mask_idx.nonzero(as_tuple=False)[0, 0].item())
+        interval = interval_for_local_pos(intervals, local_pos)
+        kind = (interval or {}).get("kind") or "default"
+        if (not allowed_kinds) or kind in allowed_kinds:
+            return interval
+    return None
+
+
+def interval_key(interval):
+    if not interval:
+        return None
+    return (int(interval["start"]), int(interval["end"]), interval.get("kind") or "default")
+
+
 def _event_increment(schedule_events, key, amount=1):
     schedule_events[key] = int(schedule_events.get(key) or 0) + int(amount)
+
+
+def _parallel_event_increment(schedule_events, event_prefix, key, amount=1):
+    _event_increment(schedule_events, f"{event_prefix}_{key}", amount)
+    if event_prefix != "parallel_commit":
+        _event_increment(schedule_events, f"parallel_commit_{key}", amount)
+
+
+def _wave_event_increment(schedule_events, event_prefix, key, amount=1):
+    _event_increment(schedule_events, f"{event_prefix}_{key}", amount)
+
+
+def apply_two_wave_grammar_projected_scaffold(
+    tokenizer,
+    x_t,
+    intervals,
+    window_abs_start,
+    window_len,
+    original_len,
+    args,
+    schedule_events,
+):
+    project_kinds = set(args.two_wave_grammar_project_kinds)
+    if not project_kinds:
+        return x_t, 0
+
+    committed = 0
+    structural_tokens = 0
+    blocked_unsafe = 0
+    active_rows = 0
+    stop_ids = set(int(token_id) for token_id in getattr(args, "stop_token_ids", [args.stop_token_id]))
+    for row_idx in range(x_t.shape[0]):
+        mask_idx = x_t[row_idx, -window_len:] == args.mask_id
+        if not bool(mask_idx.any().item()):
+            continue
+        local_pos = int(mask_idx.nonzero(as_tuple=False)[0, 0].item())
+        interval = interval_for_local_pos(intervals, local_pos)
+        if interval is None:
+            continue
+        kind = interval.get("kind") or "default"
+        if kind == "argument_value" or kind not in project_kinds:
+            continue
+        target_token_ids = interval.get("target_token_ids") or []
+        if not interval.get("scheduled") or len(target_token_ids) != int(interval["end"]) - int(interval["start"]):
+            continue
+        active_rows += 1
+        for candidate_pos in range(local_pos, int(interval["end"])):
+            abs_idx = int(window_abs_start) + int(candidate_pos)
+            if int(x_t[row_idx, abs_idx].item()) != int(args.mask_id):
+                continue
+            target_idx = int(candidate_pos) - int(interval["start"])
+            token_id = int(target_token_ids[target_idx])
+            if not proposal_keeps_tool_json_prefix(
+                tokenizer,
+                x_t[row_idx].clone(),
+                original_len,
+                abs_idx,
+                token_id,
+                args.mask_id,
+                schemas=getattr(args, "_live_tool_schemas", {}) or {},
+                mode=getattr(args, "tool_prefix_guard_mode", "qwen_native"),
+            ):
+                blocked_unsafe += 1
+                break
+            x_t[row_idx, abs_idx] = token_id
+            committed += 1
+            structural_tokens += 1
+            _wave_event_increment(schedule_events, "two_wave_wave1", f"kind_tokens:{kind}")
+            _wave_event_increment(schedule_events, "two_wave_wave1", "source_tokens:grammar_projected")
+            _event_increment(schedule_events, "scheduled_token_visits")
+            if token_id in stop_ids:
+                break
+
+    if active_rows:
+        _wave_event_increment(schedule_events, "two_wave_wave1", "projection_steps")
+        _wave_event_increment(schedule_events, "two_wave_wave1", "projection_active_rows", active_rows)
+    if blocked_unsafe:
+        _wave_event_increment(schedule_events, "two_wave_wave1", "blocked_unsafe_tokens", blocked_unsafe)
+    if committed:
+        _wave_event_increment(schedule_events, "two_wave_wave1", "projected_tokens", committed)
+        _wave_event_increment(schedule_events, "two_wave_wave1", "committed_tokens", committed)
+        _wave_event_increment(schedule_events, "two_wave_wave1", "structural_tokens", structural_tokens)
+        _wave_event_increment(schedule_events, "two_wave_wave1", "forced_tokens", committed)
+        _wave_event_increment(schedule_events, "two_wave_wave1", "nonempty_forwards")
+        _wave_event_increment(schedule_events, "two_wave_wave1", "structural_forward_visits")
+    return x_t, committed
 
 
 def _parallel_commit_token_choice(
@@ -871,10 +992,18 @@ def apply_toolcall_parallel_commit_run(
     original_len,
     args,
     schedule_events,
+    *,
+    threshold=None,
+    allowed_kinds=None,
+    event_prefix="parallel_commit",
+    skip_disallowed=False,
 ):
+    _event_increment(schedule_events, "denoise_forwards_total")
+    _parallel_event_increment(schedule_events, event_prefix, "denoise_forwards")
     logits_window = denoise_logits_for_mode(model, x_t, args)[:, -window_len:].clone()
     logits_window[..., int(args.mask_id)] = torch.finfo(logits_window.dtype).min
-    tau = float(args.parallel_commit_threshold)
+    tau = float(args.parallel_commit_threshold if threshold is None else threshold)
+    allowed_kinds = set(args.parallel_commit_kinds if allowed_kinds is None else allowed_kinds)
     stop_ids = set(int(token_id) for token_id in getattr(args, "stop_token_ids", [args.stop_token_id]))
     per_row_commits = [0 for _ in range(x_t.shape[0])]
     stopped_rows = set()
@@ -894,15 +1023,31 @@ def apply_toolcall_parallel_commit_run(
             if not bool(mask_idx.any().item()):
                 stopped_rows.add(row_idx)
                 continue
-            local_pos = int(mask_idx.nonzero(as_tuple=False)[0, 0].item())
-            interval = interval_for_local_pos(intervals, local_pos)
-            if interval is None:
+            local_pos = None
+            interval = None
+            for candidate in mask_idx.nonzero(as_tuple=False)[:, 0].detach().tolist():
+                candidate_pos = int(candidate)
+                candidate_interval = interval_for_local_pos(intervals, candidate_pos)
+                if candidate_interval is None:
+                    if skip_disallowed:
+                        continue
+                    stopped_rows.add(row_idx)
+                    break
+                candidate_kind = candidate_interval.get("kind") or "default"
+                if allowed_kinds and candidate_kind not in allowed_kinds:
+                    if skip_disallowed:
+                        continue
+                    stopped_rows.add(row_idx)
+                    break
+                local_pos = candidate_pos
+                interval = candidate_interval
+                break
+            if row_idx in stopped_rows:
+                continue
+            if interval is None or local_pos is None:
                 stopped_rows.add(row_idx)
                 continue
             kind = interval.get("kind") or "default"
-            if args.parallel_commit_kinds and kind not in args.parallel_commit_kinds:
-                stopped_rows.add(row_idx)
-                continue
             token_id, confidence, forced, source, safe = _parallel_commit_token_choice(
                 tokenizer,
                 x_t,
@@ -917,7 +1062,7 @@ def apply_toolcall_parallel_commit_run(
                 schedule_events,
             )
             if not safe:
-                _event_increment(schedule_events, "parallel_commit_blocked_unsafe_tokens")
+                _parallel_event_increment(schedule_events, event_prefix, "blocked_unsafe_tokens")
                 stopped_rows.add(row_idx)
                 continue
             if per_row_commits[row_idx] > 0 and confidence <= tau:
@@ -941,24 +1086,23 @@ def apply_toolcall_parallel_commit_run(
             else:
                 structural_tokens += 1
                 structural_seen = True
-            _event_increment(schedule_events, f"parallel_commit_kind_tokens:{kind}")
-            _event_increment(schedule_events, f"parallel_commit_source_tokens:{source}")
+            _parallel_event_increment(schedule_events, event_prefix, f"kind_tokens:{kind}")
+            _parallel_event_increment(schedule_events, event_prefix, f"source_tokens:{source}")
             if int(token_id) in stop_ids:
                 stopped_rows.add(row_idx)
         if not made_progress:
             break
 
-    _event_increment(schedule_events, "parallel_commit_denoise_forwards")
-    _event_increment(schedule_events, "parallel_commit_committed_tokens", committed)
-    _event_increment(schedule_events, "parallel_commit_value_tokens", value_tokens)
-    _event_increment(schedule_events, "parallel_commit_structural_tokens", structural_tokens)
-    _event_increment(schedule_events, "parallel_commit_forced_tokens", forced_tokens)
+    _parallel_event_increment(schedule_events, event_prefix, "committed_tokens", committed)
+    _parallel_event_increment(schedule_events, event_prefix, "value_tokens", value_tokens)
+    _parallel_event_increment(schedule_events, event_prefix, "structural_tokens", structural_tokens)
+    _parallel_event_increment(schedule_events, event_prefix, "forced_tokens", forced_tokens)
     if value_seen:
-        _event_increment(schedule_events, "parallel_commit_value_forward_visits")
+        _parallel_event_increment(schedule_events, event_prefix, "value_forward_visits")
     if structural_seen:
-        _event_increment(schedule_events, "parallel_commit_structural_forward_visits")
+        _parallel_event_increment(schedule_events, event_prefix, "structural_forward_visits")
     if committed > 0:
-        _event_increment(schedule_events, "parallel_commit_nonempty_forwards")
+        _parallel_event_increment(schedule_events, event_prefix, "nonempty_forwards")
     return x_t, committed
 
 
@@ -2396,6 +2540,8 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         "live_tool_json_grammar_left_to_right_dropped_token_visits": 0,
         "live_tool_json_grammar_replacement_token_visits": 0,
         "live_tool_json_grammar_unsafe_fallback_token_visits": 0,
+        "denoise_forwards_total": 0,
+        "fallback_denoise_forwards": 0,
         "parallel_commit_denoise_forwards": 0,
         "parallel_commit_nonempty_forwards": 0,
         "parallel_commit_committed_tokens": 0,
@@ -2406,6 +2552,27 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
         "parallel_commit_forced_tokens": 0,
         "parallel_commit_blocked_unsafe_tokens": 0,
         "parallel_commit_zero_commit_fallbacks": 0,
+        "two_wave_wave1_denoise_forwards": 0,
+        "two_wave_wave1_nonempty_forwards": 0,
+        "two_wave_wave1_committed_tokens": 0,
+        "two_wave_wave1_structural_tokens": 0,
+        "two_wave_wave1_value_tokens": 0,
+        "two_wave_wave1_structural_forward_visits": 0,
+        "two_wave_wave1_value_forward_visits": 0,
+        "two_wave_wave1_forced_tokens": 0,
+        "two_wave_wave1_blocked_unsafe_tokens": 0,
+        "two_wave_wave1_projected_tokens": 0,
+        "two_wave_wave1_projection_steps": 0,
+        "two_wave_wave1_projection_active_rows": 0,
+        "two_wave_wave2_denoise_forwards": 0,
+        "two_wave_wave2_nonempty_forwards": 0,
+        "two_wave_wave2_committed_tokens": 0,
+        "two_wave_wave2_structural_tokens": 0,
+        "two_wave_wave2_value_tokens": 0,
+        "two_wave_wave2_structural_forward_visits": 0,
+        "two_wave_wave2_value_forward_visits": 0,
+        "two_wave_wave2_forced_tokens": 0,
+        "two_wave_wave2_blocked_unsafe_tokens": 0,
     }
     candidate_group_choices = {}
     candidate_group_allowed_indices = {}
@@ -2452,7 +2619,116 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                 sampler_schedule,
                 args.small_block_size,
             )
-            if args.parallel_commit_threshold is not None:
+            restricted_wave1_interval = None
+            if args.two_wave_tool_schedule:
+                if args.two_wave_wave1_mode == "confidence":
+                    if has_mask_for_kinds(x_t, window_len, intervals, args.two_wave_wave1_kinds, args.mask_id):
+                        x_t, committed = apply_toolcall_parallel_commit_run(
+                            model,
+                            tokenizer,
+                            x_t,
+                            intervals,
+                            window_abs_start,
+                            window_len,
+                            original_len,
+                            args,
+                            schedule_events,
+                            threshold=args.two_wave_wave1_threshold,
+                            allowed_kinds=args.two_wave_wave1_kinds,
+                            event_prefix="two_wave_wave1",
+                            skip_disallowed=True,
+                        )
+                        stopped = truncate_if_stopped(x_t)
+                        if stopped is not None:
+                            args._last_sampler_schedule_events = schedule_events
+                            finish_cache(stopped)
+                            return stopped[0]
+                        if committed > 0:
+                            continue
+                    if has_mask_for_kinds(x_t, window_len, intervals, args.two_wave_wave2_kinds, args.mask_id):
+                        x_t, committed = apply_toolcall_parallel_commit_run(
+                            model,
+                            tokenizer,
+                            x_t,
+                            intervals,
+                            window_abs_start,
+                            window_len,
+                            original_len,
+                            args,
+                            schedule_events,
+                            threshold=args.two_wave_wave2_threshold,
+                            allowed_kinds=args.two_wave_wave2_kinds,
+                            event_prefix="two_wave_wave2",
+                            skip_disallowed=True,
+                        )
+                        stopped = truncate_if_stopped(x_t)
+                        if stopped is not None:
+                            args._last_sampler_schedule_events = schedule_events
+                            finish_cache(stopped)
+                            return stopped[0]
+                        if committed > 0:
+                            continue
+                    _event_increment(schedule_events, "parallel_commit_zero_commit_fallbacks")
+                else:
+                    restricted_wave1_interval = leftmost_mask_interval_for_kinds(
+                        x_t,
+                        window_len,
+                        intervals,
+                        args.two_wave_wave1_kinds,
+                        args.mask_id,
+                    )
+                    if restricted_wave1_interval is not None:
+                        if args.two_wave_wave1_mode == "grammar_projected":
+                            x_t, committed = apply_two_wave_grammar_projected_scaffold(
+                                tokenizer,
+                                x_t,
+                                intervals,
+                                window_abs_start,
+                                window_len,
+                                original_len,
+                                args,
+                                schedule_events,
+                            )
+                            stopped = truncate_if_stopped(x_t)
+                            if stopped is not None:
+                                args._last_sampler_schedule_events = schedule_events
+                                finish_cache(stopped)
+                                return stopped[0]
+                            if committed > 0:
+                                continue
+                    else:
+                        wave2_interval = leftmost_mask_interval_for_kinds(
+                            x_t,
+                            window_len,
+                            intervals,
+                            args.two_wave_wave2_kinds,
+                            args.mask_id,
+                        )
+                        if wave2_interval is not None:
+                            x_t, committed = apply_toolcall_parallel_commit_run(
+                                model,
+                                tokenizer,
+                                x_t,
+                                intervals,
+                                window_abs_start,
+                                window_len,
+                                original_len,
+                                args,
+                                schedule_events,
+                                threshold=args.two_wave_wave2_threshold,
+                                allowed_kinds=args.two_wave_wave2_kinds,
+                                event_prefix="two_wave_wave2",
+                                skip_disallowed=False,
+                            )
+                            stopped = truncate_if_stopped(x_t)
+                            if stopped is not None:
+                                args._last_sampler_schedule_events = schedule_events
+                                finish_cache(stopped)
+                                return stopped[0]
+                            if committed > 0:
+                                continue
+                        _event_increment(schedule_events, "parallel_commit_zero_commit_fallbacks")
+            elif args.parallel_commit_threshold is not None:
                 x_t, committed = apply_toolcall_parallel_commit_run(
                     model,
                     tokenizer,
@@ -2473,6 +2749,8 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                     continue
                 _event_increment(schedule_events, "parallel_commit_zero_commit_fallbacks")
             for interval in intervals:
+                if restricted_wave1_interval is not None and interval_key(interval) != interval_key(restricted_wave1_interval):
+                    continue
                 start = interval["start"]
                 end = interval["end"]
                 while True:
@@ -2562,6 +2840,8 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         else:
                             target_sequence = None
                             if chosen_idx is None:
+                                _event_increment(schedule_events, "denoise_forwards_total")
+                                _event_increment(schedule_events, "candidate_sequence_score_denoise_forwards")
                                 logits = denoise_logits_for_mode(model, x_t, args)
                                 logits = logits[:, -window_len:][:, start:end]
                                 log_probs = torch.log_softmax(logits, dim=-1)
@@ -2695,6 +2975,8 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         else:
                             target_sequence = None
                             if chosen_idx is None:
+                                _event_increment(schedule_events, "denoise_forwards_total")
+                                _event_increment(schedule_events, "candidate_sequence_score_denoise_forwards")
                                 logits = denoise_logits_for_mode(model, x_t, args)
                                 logits = logits[:, -window_len:][:, start:end]
                                 log_probs = torch.log_softmax(logits, dim=-1)
@@ -2807,6 +3089,10 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                         schedule_events["scheduled_interval_visits"] += 1
                         schedule_events["scheduled_token_visits"] += forced_count
                         break
+                    _event_increment(schedule_events, "denoise_forwards_total")
+                    _event_increment(schedule_events, "fallback_denoise_forwards")
+                    if restricted_wave1_interval is not None:
+                        _wave_event_increment(schedule_events, "two_wave_wave1", "denoise_forwards")
                     logits = denoise_logits_for_mode(model, x_t, args)
                     logits = logits[:, -window_len:][:, start:end]
                     candidate_allowed = interval.get("candidate_allowed_token_ids_by_offset") or []
@@ -2896,6 +3182,22 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                     span[unmask_idx] = x_1[unmask_idx]
                     window[:, start:end] = span
                     x_t[:, -window_len:] = window
+                    committed_count = int(unmask_idx.sum().item())
+                    if restricted_wave1_interval is not None:
+                        kind = interval.get("kind") or "default"
+                        _wave_event_increment(schedule_events, "two_wave_wave1", "committed_tokens", committed_count)
+                        if kind == "argument_value":
+                            _wave_event_increment(schedule_events, "two_wave_wave1", "value_tokens", committed_count)
+                            if committed_count:
+                                _wave_event_increment(schedule_events, "two_wave_wave1", "value_forward_visits")
+                        else:
+                            _wave_event_increment(schedule_events, "two_wave_wave1", "structural_tokens", committed_count)
+                            if committed_count:
+                                _wave_event_increment(schedule_events, "two_wave_wave1", "structural_forward_visits")
+                        if committed_count:
+                            _wave_event_increment(schedule_events, "two_wave_wave1", "nonempty_forwards")
+                            _wave_event_increment(schedule_events, "two_wave_wave1", f"kind_tokens:{kind}", committed_count)
+                            _wave_event_increment(schedule_events, "two_wave_wave1", "source_tokens:careful_fallback", committed_count)
                     stopped = truncate_if_stopped(x_t)
                     if stopped is not None:
                         args._last_sampler_schedule_events = schedule_events
@@ -2907,6 +3209,8 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                     else:
                         schedule_events["default_interval_visits"] += 1
                         schedule_events["default_token_visits"] += int(current_mask.sum().item())
+                if restricted_wave1_interval is not None:
+                    break
             if (x_t[:, -block_pad:] == args.mask_id).all():
                 break
         if cache_enabled:
@@ -3017,6 +3321,9 @@ def empty_totals():
         "sampler_live_tool_json_grammar_left_to_right_dropped_token_visits": 0,
         "sampler_live_tool_json_grammar_replacement_token_visits": 0,
         "sampler_live_tool_json_grammar_unsafe_fallback_token_visits": 0,
+        "sampler_denoise_forwards_total": 0,
+        "sampler_fallback_denoise_forwards": 0,
+        "sampler_candidate_sequence_score_denoise_forwards": 0,
         "sampler_parallel_commit_denoise_forwards": 0,
         "sampler_parallel_commit_nonempty_forwards": 0,
         "sampler_parallel_commit_committed_tokens": 0,
@@ -3027,6 +3334,27 @@ def empty_totals():
         "sampler_parallel_commit_forced_tokens": 0,
         "sampler_parallel_commit_blocked_unsafe_tokens": 0,
         "sampler_parallel_commit_zero_commit_fallbacks": 0,
+        "sampler_two_wave_wave1_denoise_forwards": 0,
+        "sampler_two_wave_wave1_nonempty_forwards": 0,
+        "sampler_two_wave_wave1_committed_tokens": 0,
+        "sampler_two_wave_wave1_structural_tokens": 0,
+        "sampler_two_wave_wave1_value_tokens": 0,
+        "sampler_two_wave_wave1_structural_forward_visits": 0,
+        "sampler_two_wave_wave1_value_forward_visits": 0,
+        "sampler_two_wave_wave1_forced_tokens": 0,
+        "sampler_two_wave_wave1_blocked_unsafe_tokens": 0,
+        "sampler_two_wave_wave1_projected_tokens": 0,
+        "sampler_two_wave_wave1_projection_steps": 0,
+        "sampler_two_wave_wave1_projection_active_rows": 0,
+        "sampler_two_wave_wave2_denoise_forwards": 0,
+        "sampler_two_wave_wave2_nonempty_forwards": 0,
+        "sampler_two_wave_wave2_committed_tokens": 0,
+        "sampler_two_wave_wave2_structural_tokens": 0,
+        "sampler_two_wave_wave2_value_tokens": 0,
+        "sampler_two_wave_wave2_structural_forward_visits": 0,
+        "sampler_two_wave_wave2_value_forward_visits": 0,
+        "sampler_two_wave_wave2_forced_tokens": 0,
+        "sampler_two_wave_wave2_blocked_unsafe_tokens": 0,
         "stop_boundary_guard_trimmed": 0,
         "errors": 0,
     }
@@ -3456,6 +3784,33 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
                 totals["sampler_live_tool_json_grammar_unsafe_fallback_token_visits"] += int(
                     schedule_events.get("live_tool_json_grammar_unsafe_fallback_token_visits") or 0
                 )
+                for event_key in [
+                    "denoise_forwards_total",
+                    "fallback_denoise_forwards",
+                    "candidate_sequence_score_denoise_forwards",
+                    "two_wave_wave1_denoise_forwards",
+                    "two_wave_wave1_nonempty_forwards",
+                    "two_wave_wave1_committed_tokens",
+                    "two_wave_wave1_structural_tokens",
+                    "two_wave_wave1_value_tokens",
+                    "two_wave_wave1_structural_forward_visits",
+                    "two_wave_wave1_value_forward_visits",
+                    "two_wave_wave1_forced_tokens",
+                    "two_wave_wave1_blocked_unsafe_tokens",
+                    "two_wave_wave1_projected_tokens",
+                    "two_wave_wave1_projection_steps",
+                    "two_wave_wave1_projection_active_rows",
+                    "two_wave_wave2_denoise_forwards",
+                    "two_wave_wave2_nonempty_forwards",
+                    "two_wave_wave2_committed_tokens",
+                    "two_wave_wave2_structural_tokens",
+                    "two_wave_wave2_value_tokens",
+                    "two_wave_wave2_structural_forward_visits",
+                    "two_wave_wave2_value_forward_visits",
+                    "two_wave_wave2_forced_tokens",
+                    "two_wave_wave2_blocked_unsafe_tokens",
+                ]:
+                    totals[f"sampler_{event_key}"] += int(schedule_events.get(event_key) or 0)
                 totals["sampler_parallel_commit_denoise_forwards"] += int(
                     schedule_events.get("parallel_commit_denoise_forwards") or 0
                 )
@@ -3582,6 +3937,13 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
         "parallel_commit_threshold": args.parallel_commit_threshold,
         "parallel_commit_kinds": sorted(args.parallel_commit_kinds),
         "parallel_commit_mode": "confident_run_same_forward" if args.parallel_commit_threshold is not None else "off",
+        "two_wave_tool_schedule": args.two_wave_tool_schedule,
+        "two_wave_wave1_mode": args.two_wave_wave1_mode,
+        "two_wave_wave1_threshold": args.two_wave_wave1_threshold,
+        "two_wave_wave1_kinds": sorted(args.two_wave_wave1_kinds),
+        "two_wave_grammar_project_kinds": sorted(args.two_wave_grammar_project_kinds),
+        "two_wave_wave2_threshold": args.two_wave_wave2_threshold,
+        "two_wave_wave2_kinds": sorted(args.two_wave_wave2_kinds),
         "strip_gold_for_generation": args.strip_gold_for_generation,
         "argument_boundary_token_ids": args.argument_boundary_token_ids,
         "argument_newline_token_ids": args.argument_newline_token_ids,
@@ -3829,6 +4191,55 @@ def main():
         ),
     )
     parser.add_argument(
+        "--two-wave-tool-schedule",
+        action="store_true",
+        help=(
+            "Run a per-window two-wave schedule before fallback: wave 1 bulk-commits scaffold/key "
+            "kinds while skipping value masks, then wave 2 parallel-commits value kinds."
+        ),
+    )
+    parser.add_argument(
+        "--two-wave-wave1-threshold",
+        type=float,
+        default=0.0,
+        help="Confidence threshold for wave-1 same-forward scaffold/key commits.",
+    )
+    parser.add_argument(
+        "--two-wave-wave1-mode",
+        choices=["confidence", "careful", "grammar_projected"],
+        default="confidence",
+        help=(
+            "Wave-1 scaffold handling for --two-wave-tool-schedule. confidence preserves the "
+            "same-forward bulk path; careful decodes left-context scaffold through the normal "
+            "fallback path; grammar_projected deterministically fills grammar scaffold kinds "
+            "before falling back on choices."
+        ),
+    )
+    parser.add_argument(
+        "--two-wave-wave1-kinds",
+        default="tool_tag,json_structure,json_key,tool_name",
+        help="Comma/space separated schedule kinds eligible for wave-1 commits.",
+    )
+    parser.add_argument(
+        "--two-wave-grammar-project-kinds",
+        default="tool_tag,json_structure,json_key",
+        help=(
+            "Comma/space separated non-value schedule kinds that grammar_projected wave 1 may "
+            "fill directly from scaffold target ids. argument_value is always ignored."
+        ),
+    )
+    parser.add_argument(
+        "--two-wave-wave2-threshold",
+        type=float,
+        default=0.95,
+        help="Confidence threshold for wave-2 same-forward value commits.",
+    )
+    parser.add_argument(
+        "--two-wave-wave2-kinds",
+        default="argument_value",
+        help="Comma/space separated schedule kinds eligible for wave-2 commits.",
+    )
+    parser.add_argument(
         "--strip-gold-for-generation",
         action="store_true",
         help=(
@@ -3887,6 +4298,9 @@ def main():
     args.sampler_schedules, args.sampler_schedule_rows = load_sampler_schedules(args.sampler_schedule_jsonl)
     args.force_schedule_token_kinds = parse_kind_set(args.force_schedule_token_kinds)
     args.parallel_commit_kinds = parse_kind_set(args.parallel_commit_kinds)
+    args.two_wave_wave1_kinds = parse_kind_set(args.two_wave_wave1_kinds)
+    args.two_wave_grammar_project_kinds = parse_kind_set(args.two_wave_grammar_project_kinds)
+    args.two_wave_wave2_kinds = parse_kind_set(args.two_wave_wave2_kinds)
     args.json_prefix_guard_kinds = parse_kind_set(args.json_prefix_guard_kinds)
     args.json_prefix_guard_left_to_right = not args.no_json_prefix_guard_left_to_right
     token_id_tokenizer = AutoTokenizer.from_pretrained(
