@@ -196,6 +196,31 @@
     "quant": "none",
     "fr13_apc": true
   },
+  "ar_guided": {
+    "backend": "vllm",
+    "model_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+    "served_model": "qwen3.5-9b-fastdllm-b1000-bf16",
+    "base_url": "http://127.0.0.1:9951",
+    "dtype": "bf16",
+    "quant": "none",
+    "fr13_apc": true,
+    "structured_outputs": "regex_from_qwen_xml_tool_schema",
+    "constraint_scope": "one complete qwen-native XML tool call; allowed function names and schema properties from tools; values not gold-constrained"
+  },
+  "server_launch": {
+    "ar_unguided_gpu_memory_utilization": 0.75,
+    "ar_guided_gpu_memory_utilization": 0.745,
+    "ar_guided_reason": "0.75 startup failed because GNOME-held GPU memory left 23.39 GiB free vs vLLM requested 23.49 GiB",
+    "ar_guided_kv_cache_tokens": 64950,
+    "unchanged": [
+      "same model/export",
+      "same max_model_len=4096",
+      "same FR13 APC enabled",
+      "same mamba_block_size=1024",
+      "same dtype=bf16",
+      "same gdn_prefill_backend=triton"
+    ]
+  },
   "diffusion": {
     "backend": "hf_route_i_flare",
     "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",

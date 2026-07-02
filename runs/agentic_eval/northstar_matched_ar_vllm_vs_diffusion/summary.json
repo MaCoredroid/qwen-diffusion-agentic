@@ -197,6 +197,31 @@
       "quant": "none",
       "fr13_apc": true
     },
+    "ar_guided": {
+      "backend": "vllm",
+      "model_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+      "served_model": "qwen3.5-9b-fastdllm-b1000-bf16",
+      "base_url": "http://127.0.0.1:9951",
+      "dtype": "bf16",
+      "quant": "none",
+      "fr13_apc": true,
+      "structured_outputs": "regex_from_qwen_xml_tool_schema",
+      "constraint_scope": "one complete qwen-native XML tool call; allowed function names and schema properties from tools; values not gold-constrained"
+    },
+    "server_launch": {
+      "ar_unguided_gpu_memory_utilization": 0.75,
+      "ar_guided_gpu_memory_utilization": 0.745,
+      "ar_guided_reason": "0.75 startup failed because GNOME-held GPU memory left 23.39 GiB free vs vLLM requested 23.49 GiB",
+      "ar_guided_kv_cache_tokens": 64950,
+      "unchanged": [
+        "same model/export",
+        "same max_model_len=4096",
+        "same FR13 APC enabled",
+        "same mamba_block_size=1024",
+        "same dtype=bf16",
+        "same gdn_prefill_backend=triton"
+      ]
+    },
     "diffusion": {
       "backend": "hf_route_i_flare",
       "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
@@ -213,6 +238,8 @@
     "valid_tool_json": 58,
     "exact_tool_sequence": 54,
     "exact_arguments": 46,
+    "all_schema_valid": 57,
+    "all_required_args_present": 58,
     "episode_exact_arguments_all_turns": 13,
     "turn_wall_seconds": 89.93750190734863,
     "sec_per_turn": 1.4275793953547402,
@@ -225,12 +252,34 @@
     "prefix_cache_eligible_followup_turns": 43,
     "schedule_build_seconds": 0.04745602607727051
   },
+  "ar_vllm_guided": {
+    "episodes": 20,
+    "turns": 63,
+    "valid_tool_json": 63,
+    "exact_tool_sequence": 63,
+    "exact_arguments": 50,
+    "all_schema_valid": 59,
+    "all_required_args_present": 63,
+    "episode_exact_arguments_all_turns": 13,
+    "turn_wall_seconds": 70.57259130477905,
+    "sec_per_turn": 1.12019986198062,
+    "generated_tokens": 4890,
+    "generated_tokens_per_turn": 77.61904761904762,
+    "denoise_forwards_total": 0.0,
+    "denoise_forwards_per_turn": 0.0,
+    "blended_tpf": null,
+    "prefix_cache_hit_turns": 0,
+    "prefix_cache_eligible_followup_turns": 43,
+    "schedule_build_seconds": 0.06195950508117676
+  },
   "diffusion_percall_waves": {
     "episodes": 20,
     "turns": 63,
     "valid_tool_json": 63,
     "exact_tool_sequence": 63,
     "exact_arguments": 55,
+    "all_schema_valid": 58,
+    "all_required_args_present": 63,
     "episode_exact_arguments_all_turns": 15,
     "turn_wall_seconds": 90.86559104919434,
     "sec_per_turn": 1.4423109690348308,
@@ -254,5 +303,18 @@
     "diffusion_wall_seconds": 90.86559104919434,
     "ar_over_diffusion_wall_ratio": 0.9897861321196575,
     "diffusion_over_ar_wall_ratio": 1.0103192675153663
+  },
+  "paired_guided": {
+    "paired_turns": 63,
+    "exact_arguments_delta_diffusion_minus_ar_guided": 5,
+    "exact_sequence_delta_diffusion_minus_ar_guided": 0,
+    "valid_delta_diffusion_minus_ar_guided": 0,
+    "schema_valid_delta_diffusion_minus_ar_guided": -1,
+    "paired_episodes": 20,
+    "episode_exact_arguments_delta_diffusion_minus_ar_guided": 2,
+    "ar_guided_wall_seconds": 70.57259130477905,
+    "diffusion_wall_seconds": 90.86559104919434,
+    "ar_guided_over_diffusion_wall_ratio": 0.7766701398175166,
+    "diffusion_over_ar_guided_wall_ratio": 1.2875478903243995
   }
 }

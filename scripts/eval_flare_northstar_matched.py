@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -48,7 +49,7 @@ ASSISTANT_GENERATION_PROMPT = "<|im_start|>assistant\n" + EMPTY_THINK_PREFIX
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--backend", choices=["ar-vllm", "diffusion", "report"], required=True)
+    parser.add_argument("--backend", choices=["ar-vllm", "ar-vllm-guided", "diffusion", "report"], required=True)
     parser.add_argument("--input-jsonl", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--episode-limit", type=int, default=20)
@@ -135,6 +136,81 @@ def tool_response_suffix(payload: Any) -> str:
     )
 
 
+def regex_literal(text: str) -> str:
+    return re.escape(str(text))
+
+
+def schema_type(schema: dict) -> str | None:
+    expected = schema.get("type") if isinstance(schema, dict) else None
+    if isinstance(expected, list):
+        return next((item for item in expected if item != "null"), expected[0] if expected else None)
+    return expected
+
+
+def guided_value_regex(schema: dict) -> str:
+    if not isinstance(schema, dict):
+        return "[^<]*"
+    enum_values = schema.get("enum")
+    if isinstance(enum_values, list) and enum_values:
+        choices = []
+        for value in enum_values:
+            if isinstance(value, str):
+                choices.append(regex_literal(value))
+            elif isinstance(value, bool):
+                choices.extend([str(value).lower(), str(value)])
+            elif value is None:
+                choices.append("null")
+            else:
+                choices.append(regex_literal(json.dumps(value, ensure_ascii=False)))
+        return "(?:" + "|".join(dict.fromkeys(choices)) + ")"
+    expected = schema_type(schema)
+    if expected == "integer":
+        return "-?[0-9]+"
+    if expected == "number":
+        return "-?(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?"
+    if expected == "boolean":
+        return "(?:true|false|True|False)"
+    if expected == "array":
+        return "\\[[^<]*\\]"
+    if expected == "object":
+        return "\\{[^<]*\\}"
+    return "[^<]*"
+
+
+def guided_tool_call_regex(tools: list[dict]) -> str:
+    alternatives = []
+    for tool in tools or []:
+        fn = tool.get("function", tool) if isinstance(tool, dict) else {}
+        if not isinstance(fn, dict) or not fn.get("name"):
+            continue
+        name = str(fn["name"])
+        schema = fn.get("parameters") or {}
+        props = schema.get("properties") if isinstance(schema, dict) else {}
+        props = props if isinstance(props, dict) else {}
+        required = set(schema.get("required") or []) if isinstance(schema, dict) else set()
+        params = []
+        for prop_name, prop_schema in props.items():
+            body = (
+                f"<parameter={regex_literal(prop_name)}>\\n"
+                f"{guided_value_regex(prop_schema)}\\n"
+                "</parameter>\\n"
+            )
+            if prop_name in required:
+                params.append(body)
+            else:
+                params.append(f"(?:{body})?")
+        alternatives.append(
+            "<tool_call>\\n"
+            f"<function={regex_literal(name)}>\\n"
+            + "".join(params)
+            + "</function>\\n"
+            + "</tool_call>"
+        )
+    if not alternatives:
+        return "<tool_call>\\n<function=[^>]+>\\n(?:<parameter=[^>]+>\\n[^<]*\\n</parameter>\\n)*</function>\\n</tool_call>"
+    return "(?:" + "|".join(alternatives) + ")"
+
+
 def write_manifest(args: argparse.Namespace, episodes: list[dict], tokenizer, chat_template: str | None) -> dict:
     episode_manifest = [
         {
@@ -187,6 +263,17 @@ def write_manifest(args: argparse.Namespace, episodes: list[dict], tokenizer, ch
             "dtype": "bf16",
             "quant": "none",
             "fr13_apc": True,
+        },
+        "ar_guided": {
+            "backend": "vllm",
+            "model_path": str(args.ar_model_path),
+            "served_model": args.ar_served_model,
+            "base_url": args.ar_base_url,
+            "dtype": "bf16",
+            "quant": "none",
+            "fr13_apc": True,
+            "structured_outputs": "regex_from_qwen_xml_tool_schema",
+            "constraint_scope": "one complete qwen-native XML tool call; allowed function names and schema properties from tools; values not gold-constrained",
         },
         "diffusion": {
             "backend": "hf_route_i_flare",
@@ -269,11 +356,19 @@ def row_from_generation(
     }
 
 
-def run_ar_vllm(args: argparse.Namespace, episodes: list[dict], tokenizer, chat_template: str | None) -> list[dict]:
+def run_ar_vllm(
+    args: argparse.Namespace,
+    episodes: list[dict],
+    tokenizer,
+    chat_template: str | None,
+    *,
+    guided: bool = False,
+) -> list[dict]:
     rows = []
     for episode in episodes:
         messages = [dict(message) for message in episode["prompt_messages"]]
         prompt = render_matched_prompt(tokenizer, messages, episode["tools"], chat_template)
+        guided_regex = guided_tool_call_regex(episode["tools"]) if guided else None
         for turn_idx, gold_block in enumerate(episode["gold_blocks"]):
             max_tokens, schedule_build_seconds = turn_budget(args, tokenizer, gold_block)
             prompt_ids = tokenizer(prompt, add_special_tokens=False).input_ids
@@ -285,6 +380,8 @@ def run_ar_vllm(args: argparse.Namespace, episodes: list[dict], tokenizer, chat_
                 "stop": ["</tool_call>"],
                 "include_stop_str_in_output": True,
             }
+            if guided_regex is not None:
+                payload["structured_outputs"] = {"regex": guided_regex}
             start = time.time()
             response = post_json(args.ar_base_url.rstrip("/") + "/v1/completions", payload, args.timeout)
             turn_wall_seconds = time.time() - start
@@ -295,7 +392,7 @@ def run_ar_vllm(args: argparse.Namespace, episodes: list[dict], tokenizer, chat_
                 history_text = history_text.rstrip() + "\n</tool_call>"
             assistant_text = trim_scored_assistant(history_text)
             row = row_from_generation(
-                backend="ar_vllm",
+                backend="ar_vllm_guided" if guided else "ar_vllm",
                 episode=episode,
                 turn_idx=turn_idx,
                 prompt=prompt,
@@ -313,13 +410,21 @@ def run_ar_vllm(args: argparse.Namespace, episodes: list[dict], tokenizer, chat_
                     "max_tokens": max_tokens,
                     "raw_model": response.get("model"),
                     "system_fingerprint": response.get("system_fingerprint"),
+                    "structured_outputs": {
+                        "type": "regex_from_qwen_xml_tool_schema",
+                        "regex_sha256": sha256_text(guided_regex),
+                        "regex_chars": len(guided_regex),
+                    }
+                    if guided_regex is not None
+                    else None,
                 },
             )
             row["assistant_history_sha256"] = sha256_text(history_text)
             rows.append(row)
             prompt = prompt + history_text + tool_response_suffix(row["tool_response_payload"])
             print(
-                f"ar_vllm episode={episode['episode_idx']} turn={turn_idx + 1}/{len(episode['gold_blocks'])} "
+                f"{'ar_vllm_guided' if guided else 'ar_vllm'} "
+                f"episode={episode['episode_idx']} turn={turn_idx + 1}/{len(episode['gold_blocks'])} "
                 f"exact_args={int(bool(row['exact_arguments']))} wall={turn_wall_seconds:.3f}s",
                 flush=True,
             )
@@ -465,6 +570,8 @@ def summarize_backend(rows: list[dict]) -> dict:
         "valid_tool_json": sum(int(bool(row.get("valid_tool_json"))) for row in rows),
         "exact_tool_sequence": sum(int(bool(row.get("exact_tool_sequence"))) for row in rows),
         "exact_arguments": sum(int(bool(row.get("exact_arguments"))) for row in rows),
+        "all_schema_valid": sum(int(bool(row.get("all_schema_valid"))) for row in rows),
+        "all_required_args_present": sum(int(bool(row.get("all_required_args_present"))) for row in rows),
         "episode_exact_arguments_all_turns": sum(
             int(all(bool(row.get("exact_arguments")) for row in episode_rows))
             for episode_rows in by_episode.values()
@@ -482,11 +589,70 @@ def summarize_backend(rows: list[dict]) -> dict:
     }
 
 
+def paired_summary(reference_rows: list[dict], candidate_rows: list[dict]) -> dict:
+    reference_by_turn = {(row["episode_id"], row["turn_idx"]): row for row in reference_rows}
+    candidate_by_turn = {(row["episode_id"], row["turn_idx"]): row for row in candidate_rows}
+    shared_turns = sorted(set(reference_by_turn) & set(candidate_by_turn))
+    reference_by_episode: dict[str, list[dict]] = defaultdict(list)
+    candidate_by_episode: dict[str, list[dict]] = defaultdict(list)
+    for row in reference_rows:
+        reference_by_episode[row["episode_id"]].append(row)
+    for row in candidate_rows:
+        candidate_by_episode[row["episode_id"]].append(row)
+    shared_episodes = sorted(set(reference_by_episode) & set(candidate_by_episode))
+    reference = summarize_backend(reference_rows)
+    candidate = summarize_backend(candidate_rows)
+    return {
+        "paired_turns": len(shared_turns),
+        "exact_arguments_delta": sum(
+            int(bool(candidate_by_turn[key].get("exact_arguments")))
+            - int(bool(reference_by_turn[key].get("exact_arguments")))
+            for key in shared_turns
+        ),
+        "exact_sequence_delta": sum(
+            int(bool(candidate_by_turn[key].get("exact_tool_sequence")))
+            - int(bool(reference_by_turn[key].get("exact_tool_sequence")))
+            for key in shared_turns
+        ),
+        "valid_delta": sum(
+            int(bool(candidate_by_turn[key].get("valid_tool_json")))
+            - int(bool(reference_by_turn[key].get("valid_tool_json")))
+            for key in shared_turns
+        ),
+        "schema_valid_delta": sum(
+            int(bool(candidate_by_turn[key].get("all_schema_valid")))
+            - int(bool(reference_by_turn[key].get("all_schema_valid")))
+            for key in shared_turns
+        ),
+        "paired_episodes": len(shared_episodes),
+        "episode_exact_arguments_delta": sum(
+            int(all(bool(row.get("exact_arguments")) for row in candidate_by_episode[episode_id]))
+            - int(all(bool(row.get("exact_arguments")) for row in reference_by_episode[episode_id]))
+            for episode_id in shared_episodes
+        ),
+        "reference_wall_seconds": reference["turn_wall_seconds"],
+        "candidate_wall_seconds": candidate["turn_wall_seconds"],
+        "reference_over_candidate_wall_ratio": (
+            reference["turn_wall_seconds"] / candidate["turn_wall_seconds"]
+            if candidate["turn_wall_seconds"]
+            else 0.0
+        ),
+        "candidate_over_reference_wall_ratio": (
+            candidate["turn_wall_seconds"] / reference["turn_wall_seconds"]
+            if reference["turn_wall_seconds"]
+            else 0.0
+        ),
+    }
+
+
 def write_report(args: argparse.Namespace) -> dict:
     manifest = json.loads((args.out_dir / "fairness_manifest.json").read_text(encoding="utf-8"))
     ar_rows = read_rows(args.out_dir / "ar-vllm" / "turns.jsonl")
+    guided_path = args.out_dir / "ar-vllm-guided" / "turns.jsonl"
+    ar_guided_rows = read_rows(guided_path) if guided_path.exists() else []
     diffusion_rows = read_rows(args.out_dir / "diffusion" / "turns.jsonl")
     ar = summarize_backend(ar_rows)
+    ar_guided = summarize_backend(ar_guided_rows) if ar_guided_rows else None
     diffusion = summarize_backend(diffusion_rows)
     ar_by_turn = {(row["episode_id"], row["turn_idx"]): row for row in ar_rows}
     diffusion_by_turn = {(row["episode_id"], row["turn_idx"]): row for row in diffusion_rows}
@@ -528,7 +694,32 @@ def write_report(args: argparse.Namespace) -> dict:
             diffusion["turn_wall_seconds"] / ar["turn_wall_seconds"] if ar["turn_wall_seconds"] else 0.0
         ),
     }
-    summary = {"manifest": manifest, "ar_vllm": ar, "diffusion_percall_waves": diffusion, "paired": paired}
+    paired_guided = None
+    if ar_guided_rows:
+        guided = paired_summary(ar_guided_rows, diffusion_rows)
+        paired_guided = {
+            "paired_turns": guided["paired_turns"],
+            "exact_arguments_delta_diffusion_minus_ar_guided": guided["exact_arguments_delta"],
+            "exact_sequence_delta_diffusion_minus_ar_guided": guided["exact_sequence_delta"],
+            "valid_delta_diffusion_minus_ar_guided": guided["valid_delta"],
+            "schema_valid_delta_diffusion_minus_ar_guided": guided["schema_valid_delta"],
+            "paired_episodes": guided["paired_episodes"],
+            "episode_exact_arguments_delta_diffusion_minus_ar_guided": guided[
+                "episode_exact_arguments_delta"
+            ],
+            "ar_guided_wall_seconds": guided["reference_wall_seconds"],
+            "diffusion_wall_seconds": guided["candidate_wall_seconds"],
+            "ar_guided_over_diffusion_wall_ratio": guided["reference_over_candidate_wall_ratio"],
+            "diffusion_over_ar_guided_wall_ratio": guided["candidate_over_reference_wall_ratio"],
+        }
+    summary = {
+        "manifest": manifest,
+        "ar_vllm": ar,
+        "ar_vllm_guided": ar_guided,
+        "diffusion_percall_waves": diffusion,
+        "paired": paired,
+        "paired_guided": paired_guided,
+    }
     (args.out_dir / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     lines = [
         "# FLARE North-Star Matched Eval",
@@ -538,22 +729,48 @@ def write_report(args: argparse.Namespace) -> dict:
         "Generated-history loop: prefix-stable completion prompts; each backend appends its sampled assistant text, "
         "then the same synthetic tool-result schema and next generation prompt.",
         "",
-        "| Backend | exact_args | episode exact | exact_seq | valid_json | sec/turn | total wall | gen tok/turn | model forwards/turn |",
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Backend | exact_args | episode exact | exact_seq | valid_xml | schema_ok | sec/turn | total wall | gen tok/turn | model forwards/turn |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
         (
             f"| AR vLLM FR13 | {ar['exact_arguments']}/{ar['turns']} "
             f"| {ar['episode_exact_arguments_all_turns']}/{ar['episodes']} "
             f"| {ar['exact_tool_sequence']}/{ar['turns']} | {ar['valid_tool_json']}/{ar['turns']} "
+            f"| {ar['all_schema_valid']}/{ar['turns']} "
             f"| {ar['sec_per_turn']:.3f} | {ar['turn_wall_seconds']:.3f}s "
             f"| {ar['generated_tokens_per_turn']:.3f} | n/a |"
         ),
-        (
-            f"| Diffusion per-call waves | {diffusion['exact_arguments']}/{diffusion['turns']} "
-            f"| {diffusion['episode_exact_arguments_all_turns']}/{diffusion['episodes']} "
-            f"| {diffusion['exact_tool_sequence']}/{diffusion['turns']} | {diffusion['valid_tool_json']}/{diffusion['turns']} "
-            f"| {diffusion['sec_per_turn']:.3f} | {diffusion['turn_wall_seconds']:.3f}s "
-            f"| {diffusion['generated_tokens_per_turn']:.3f} | {diffusion['denoise_forwards_per_turn']:.3f} |"
-        ),
+    ]
+    if ar_guided is not None:
+        lines.append(
+            f"| AR vLLM FR13 guided | {ar_guided['exact_arguments']}/{ar_guided['turns']} "
+            f"| {ar_guided['episode_exact_arguments_all_turns']}/{ar_guided['episodes']} "
+            f"| {ar_guided['exact_tool_sequence']}/{ar_guided['turns']} "
+            f"| {ar_guided['valid_tool_json']}/{ar_guided['turns']} "
+            f"| {ar_guided['all_schema_valid']}/{ar_guided['turns']} "
+            f"| {ar_guided['sec_per_turn']:.3f} | {ar_guided['turn_wall_seconds']:.3f}s "
+            f"| {ar_guided['generated_tokens_per_turn']:.3f} | n/a |"
+        )
+    lines.append(
+        f"| Diffusion per-call waves | {diffusion['exact_arguments']}/{diffusion['turns']} "
+        f"| {diffusion['episode_exact_arguments_all_turns']}/{diffusion['episodes']} "
+        f"| {diffusion['exact_tool_sequence']}/{diffusion['turns']} "
+        f"| {diffusion['valid_tool_json']}/{diffusion['turns']} "
+        f"| {diffusion['all_schema_valid']}/{diffusion['turns']} "
+        f"| {diffusion['sec_per_turn']:.3f} | {diffusion['turn_wall_seconds']:.3f}s "
+        f"| {diffusion['generated_tokens_per_turn']:.3f} | {diffusion['denoise_forwards_per_turn']:.3f} |"
+    )
+    guided_delta_lines = []
+    if paired_guided is not None:
+        guided_delta_lines = [
+            f"- Turn exact-args delta, diffusion - AR guided: {paired_guided['exact_arguments_delta_diffusion_minus_ar_guided']} / {paired_guided['paired_turns']}",
+            f"- Episode exact-args delta, diffusion - AR guided: {paired_guided['episode_exact_arguments_delta_diffusion_minus_ar_guided']} / {paired_guided['paired_episodes']}",
+            f"- Valid XML delta, diffusion - AR guided: {paired_guided['valid_delta_diffusion_minus_ar_guided']} / {paired_guided['paired_turns']}",
+            f"- Schema-valid delta, diffusion - AR guided: {paired_guided['schema_valid_delta_diffusion_minus_ar_guided']} / {paired_guided['paired_turns']}",
+            f"- Wall latency ratio AR guided / diffusion: {paired_guided['ar_guided_over_diffusion_wall_ratio']:.3f}x",
+            f"- Wall latency ratio diffusion / AR guided: {paired_guided['diffusion_over_ar_guided_wall_ratio']:.3f}x",
+        ]
+    lines.extend(
+        [
         "",
         "## Matched Deltas",
         "",
@@ -561,20 +778,32 @@ def write_report(args: argparse.Namespace) -> dict:
         f"- Episode exact-args delta, diffusion - AR: {paired['episode_exact_arguments_delta_diffusion_minus_ar']} / {paired['paired_episodes']}",
         f"- Wall latency ratio AR / diffusion: {paired['ar_over_diffusion_wall_ratio']:.3f}x",
         f"- Wall latency ratio diffusion / AR: {paired['diffusion_over_ar_wall_ratio']:.3f}x",
+        *guided_delta_lines,
         "",
         "## Fairness Manifest",
         "",
         f"- AR: `{manifest['ar']['model_path']}`, bf16, no quant, FR13 APC on.",
+        *(
+            ["- AR guided: regex structured outputs from Qwen XML tool schemas, FR13 APC on."]
+            if ar_guided is not None
+            else []
+        ),
         f"- Diffusion: `{manifest['diffusion']['base_model']}` + `{manifest['diffusion']['adapter']}`, bf16, no quant.",
         f"- Prompt tokenizer: `{manifest['prompt_tokenizer_path']}`.",
         f"- Chat template: `{manifest.get('chat_template_path')}` (`{manifest.get('chat_template_sha256')}`).",
         f"- Prompt loop: `{json.dumps(manifest.get('prompt_loop', {}), sort_keys=True)}`.",
         f"- Stop policy: `{json.dumps(manifest['stop_policy'], sort_keys=True)}`.",
+        *(
+            [f"- Server launch notes: `{json.dumps(manifest.get('server_launch', {}), sort_keys=True)}`."]
+            if manifest.get("server_launch")
+            else []
+        ),
         f"- Full manifest: `{args.out_dir / 'fairness_manifest.json'}`.",
-        f"- Per-turn rows: `{args.out_dir / 'ar-vllm/turns.jsonl'}`, `{args.out_dir / 'diffusion/turns.jsonl'}`.",
-    ]
+        f"- Per-turn rows: `{args.out_dir / 'ar-vllm/turns.jsonl'}`, `{args.out_dir / 'ar-vllm-guided/turns.jsonl'}`, `{args.out_dir / 'diffusion/turns.jsonl'}`.",
+        ]
+    )
     (args.out_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(json.dumps(paired, indent=2), flush=True)
+    print(json.dumps({"paired": paired, "paired_guided": paired_guided}, indent=2), flush=True)
     print(f"wrote {args.out_dir / 'report.md'}", flush=True)
     return summary
 
@@ -593,6 +822,9 @@ def main() -> int:
     if args.backend == "ar-vllm":
         rows = run_ar_vllm(args, episodes, tokenizer, chat_template)
         write_rows(args.out_dir, "ar-vllm", rows)
+    elif args.backend == "ar-vllm-guided":
+        rows = run_ar_vllm(args, episodes, tokenizer, chat_template, guided=True)
+        write_rows(args.out_dir, "ar-vllm-guided", rows)
     elif args.backend == "diffusion":
         rows = run_diffusion(args, episodes, tokenizer, chat_template)
         write_rows(args.out_dir, "diffusion", rows)
