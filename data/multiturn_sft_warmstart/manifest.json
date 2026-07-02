@@ -1,0 +1,388 @@
+{
+  "audit_path": "data/multiturn_sft_warmstart/train_agentic_mix.audit.jsonl",
+  "conversion": {
+    "converted_rows": 361,
+    "gold_assistant_format": "qwen_native_function_parameter",
+    "input_rows": 361,
+    "out_jsonl": "data/multiturn_sft_warmstart/public_train_multicall_native.jsonl",
+    "rejected": {},
+    "sources": [
+      {
+        "input_rows": 28,
+        "kind": "eval-jsonl",
+        "path": "/home/mark/qwen_diffusion/data/flare_agentic_mix_v2_pilot/teacher_native_fresh30_cases.jsonl"
+      },
+      {
+        "input_rows": 30,
+        "kind": "eval-jsonl",
+        "path": "/home/mark/qwen_diffusion/data/flare_agentic_mix_v2_pilot/teacher_pilot_cases.jsonl"
+      },
+      {
+        "input_rows": 1024,
+        "kind": "train-json",
+        "materialized_multicall_rows": 147,
+        "path": "/home/mark/qwen_diffusion/data/flare_agentic_mix_v2_native_train_only/train_agentic_mix.json"
+      },
+      {
+        "input_rows": 467,
+        "kind": "train-json",
+        "materialized_multicall_rows": 156,
+        "path": "/home/mark/qwen_diffusion/data/qwen35_9b_toolcall_multicall_curriculum/train_agentic_mix.json"
+      }
+    ]
+  },
+  "created_by": "scripts/build_multiturn_sft_warmstart.py",
+  "final_count": 98,
+  "leak_filter": {
+    "eval_battery_paths": [
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+    ],
+    "input_jsonl": "data/multiturn_sft_warmstart/public_train_multicall_native.jsonl",
+    "input_rows": 361,
+    "kept_rows": 162,
+    "rejected_preview": [
+      {
+        "id": "23586ceb-f4f6-4606-a3af-72ccc78d81d1",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "260c475f-0116-42be-9529-7392a78ad1cf",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "2a6aed4b-eb80-43e0-b882-aa945f75e348",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "3a06afa8-2222-42e3-a707-8e533ade54de",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "3e153b9d-05dd-4186-9047-2803b610aeaa",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "41e69096-2be9-4098-9d9d-de910fe08739",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "464878f8-a902-40e1-a80d-f34d5aa57d14",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "489d8799-a63b-45d5-bbd5-a93d14aa6ba4",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "497924ac-4aea-401f-ad36-8cc0474dce33",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "5ccb92a9-35be-4679-868f-5353e32dfc3c",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "5ff5fe50-ef4f-4920-a5c0-7f51663d5649",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "63eeb057-885b-4884-8c2d-2e22f2ba540c",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "4a77cd94-904a-4ac1-8b40-707512d73f6b",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "4f80ba5d-9ab2-4212-8f71-76452bf71f42",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "860c38a2-ef33-4002-bcf3-b94044795ceb",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "37c43506-c016-4947-9746-b6d28b6bc4ef",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "800e361c-9949-4085-9969-6618791ef835",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "ae501e62-7a6b-436b-a0c8-ad353d82f97c",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "5c1edf8e-9732-4346-80fb-66c7307b70da",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      },
+      {
+        "id": "558711c2-6939-4e4b-8135-47daec637d13",
+        "reason": "eval_fingerprint_overlap",
+        "source": "hermes"
+      }
+    ],
+    "rejected_rows": 199
+  },
+  "mix": "50/50 tool self-generated audited turns and retention examples",
+  "next_gate": {
+    "gsm8k_retention": ">= 0.70 before RL",
+    "matched20_promotion_bar": ">= 50/63 exact_args",
+    "matched20_start": "34/63 diffusion-careful",
+    "sft_steps": "300-600 QLoRA steps"
+  },
+  "oversampling": {
+    "class_counts_raw": {
+      "complex_value": 3,
+      "long_episode": 2,
+      "long_episode_final_stop": 1
+    },
+    "oversample_policy": {
+      "complex_extra_repeats": 3,
+      "long_context_extra_repeats": 1,
+      "long_stop_extra_repeats": 3,
+      "max_tool_examples": 320
+    },
+    "oversampled_tool_examples": 49,
+    "raw_accepted_turns": 36,
+    "repeat_histogram_raw": {
+      "1": 31,
+      "2": 1,
+      "4": 4
+    }
+  },
+  "policy": {
+    "decode": "diffusion careful + live Qwen-native structure grammar",
+    "keep_rule": "exact_args and audit_clean with projected_value_tokens_exact == 0",
+    "oversample_focus": [
+      "complex array/object-valued parameters",
+      "long-episode final stop behavior"
+    ],
+    "source_pool": "public training rows only; eval battery paths are filtered by id/fingerprint",
+    "values": "raw generated model tokens; no value projection allowed"
+  },
+  "projection_value_audit": {
+    "exact_args": 0,
+    "exact_rows_dependent_on_projected_values": 0,
+    "offset_source:no_projected_token_records": 49,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 0,
+    "projected_true_value_tokens_lower_bound": 0,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 0,
+    "rows": 49,
+    "rows_with_projected_token_records": 0,
+    "rows_with_projected_true_value_tokens_lower_bound": 0,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 0,
+    "verification_mode": "no_projection_events",
+    "wave1_projected_tokens": 0,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 49,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  },
+  "retention": {
+    "path": "/home/mark/qwen_diffusion/data/flare_stage1_ab_pilot_train/train_agentic_mix.json",
+    "policy": "repeat/shuffle retention to match oversampled audited tool-call example count exactly",
+    "raw_instances": 256,
+    "selected_instances": 49,
+    "source_counts": {
+      "google-research-datasets/mbpp:full:train": 24,
+      "openai/gsm8k:main:train": 25
+    },
+    "unique_selected_instances": 49
+  },
+  "retention_count": 49,
+  "retention_source_counts": {
+    "google-research-datasets/mbpp:full:train": 24,
+    "openai/gsm8k:main:train": 25
+  },
+  "rollout": {
+    "accepted_turns": 36,
+    "audit_clean_turns": 50,
+    "episode_summaries": [
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 10,
+        "episode_id": "ebc5a118-1748-43b2-86bf-95c0a47e036d",
+        "exact_turns": 2,
+        "turns": 10
+      },
+      {
+        "accepted_turns": 3,
+        "audit_clean_turns": 3,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0027",
+        "exact_turns": 3,
+        "turns": 3
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0049",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0061",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 3,
+        "audit_clean_turns": 3,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0087",
+        "exact_turns": 3,
+        "turns": 3
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0088",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0091",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0093",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 0,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0119",
+        "exact_turns": 0,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 3,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0125",
+        "exact_turns": 2,
+        "turns": 3
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0126",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 3,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0136",
+        "exact_turns": 2,
+        "turns": 3
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0139",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0145",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 3,
+        "audit_clean_turns": 3,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0152",
+        "exact_turns": 3,
+        "turns": 3
+      },
+      {
+        "accepted_turns": 3,
+        "audit_clean_turns": 3,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0180",
+        "exact_turns": 3,
+        "turns": 3
+      },
+      {
+        "accepted_turns": 2,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0206",
+        "exact_turns": 2,
+        "turns": 2
+      },
+      {
+        "accepted_turns": 0,
+        "audit_clean_turns": 2,
+        "episode_id": "flare_agentic_mix_v2_native_train_only_0209",
+        "exact_turns": 0,
+        "turns": 2
+      }
+    ],
+    "episodes": 18,
+    "exact_turns": 36,
+    "leak_filter_manifest": {
+      "eval_battery_paths": [
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+      ],
+      "input_jsonl": "data/multiturn_sft_warmstart/public_train_multicall_native.filtered.jsonl",
+      "input_rows": 162,
+      "kept_rows": 162,
+      "rejected_preview": [],
+      "rejected_rows": 0
+    },
+    "turns": 50
+  },
+  "seed": 20260702,
+  "source_counts": {
+    "google-research-datasets/mbpp:full:train": 24,
+    "openai/gsm8k:main:train": 25,
+    "selfgen_multiturn_exact_audited": 49
+  },
+  "tool_class_counts_after_oversampling": {
+    "complex_value": 12,
+    "long_episode": 6,
+    "long_episode_final_stop": 4
+  },
+  "tool_count": 49,
+  "tool_source_counts": {
+    "selfgen_multiturn_exact_audited": 49
+  },
+  "train_path": "data/multiturn_sft_warmstart/train_agentic_mix.json",
+  "training_template": "fast_dllm_v2_native"
+}

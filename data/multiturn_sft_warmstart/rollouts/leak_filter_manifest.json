@@ -1,0 +1,12 @@
+{
+  "eval_battery_paths": [
+    "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+    "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+    "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+  ],
+  "input_jsonl": "data/multiturn_sft_warmstart/public_train_multicall_native.filtered.jsonl",
+  "input_rows": 162,
+  "kept_rows": 162,
+  "rejected_preview": [],
+  "rejected_rows": 0
+}
