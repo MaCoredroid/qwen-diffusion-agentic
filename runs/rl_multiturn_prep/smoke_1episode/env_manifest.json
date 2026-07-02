@@ -1,0 +1,19 @@
+{
+  "episodes": 1,
+  "filtered_jsonl": "/home/mark/qwen_diffusion/runs/rl_multiturn_prep/smoke_1episode/filtered_public_episodes.jsonl",
+  "input_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/public_multicall_qwen_native_smoke.jsonl",
+  "leak_filter": {
+    "eval_battery_paths": [
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+    ],
+    "input_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/public_multicall_qwen_native_smoke.jsonl",
+    "input_rows": 12,
+    "kept_rows": 12,
+    "rejected_preview": [],
+    "rejected_rows": 0
+  },
+  "policy": "diffusion-careful + live grammar structure, values raw",
+  "training": "not run"
+}

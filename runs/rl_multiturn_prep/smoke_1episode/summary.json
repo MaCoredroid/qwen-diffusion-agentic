@@ -1,0 +1,82 @@
+{
+  "audit_totals": {
+    "exact_args": 2,
+    "exact_rows_dependent_on_projected_values": 0,
+    "offset_source:generated_token_ids": 3,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 0,
+    "projected_true_value_tokens_lower_bound": 0,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 0,
+    "rows": 3,
+    "rows_with_projected_token_records": 3,
+    "rows_with_projected_true_value_tokens_lower_bound": 0,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 52,
+    "verification_mode": "no_projection_events",
+    "wave1_projected_tokens": 0,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 0,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  },
+  "episode_exact_all_turns": false,
+  "episode_id": "85f6c398-69c7-4df2-aed1-29d614a93a26",
+  "episode_reward_mean": 0.9222222222222222,
+  "exact_args": 2,
+  "grpo_advantages_single_group": [
+    0.7071067811865482,
+    0.7071067811865482,
+    -1.4142135623730945
+  ],
+  "leak_filter_manifest": {
+    "eval_battery_paths": [
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+      "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+    ],
+    "input_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/public_multicall_qwen_native_smoke.jsonl",
+    "input_rows": 12,
+    "kept_rows": 12,
+    "rejected_preview": [],
+    "rejected_rows": 0
+  },
+  "objective": "RL env skeleton smoke; no training/optimizer step",
+  "policy": {
+    "decode": "diffusion-careful",
+    "live_grammar_token_visits": 178,
+    "parallel_commit": "off",
+    "parallel_commit_forwards": 0,
+    "sampler_schedule": "none; no gold token schedule",
+    "structure_constraint": "live Qwen-native grammar, label-free schema/tool names only",
+    "values": "raw model tokens",
+    "waves": "retired/off"
+  },
+  "reward": {
+    "audit_gate": "zero projected value tokens required",
+    "graded_terms": {
+      "argument_name": 0.2,
+      "argument_value": 0.35,
+      "format": 0.1,
+      "schema_required": 0.15,
+      "tool_name_sequence_or_overlap": 0.2
+    },
+    "promotion_gate": "exact_args"
+  },
+  "reward_values": [
+    1.0,
+    1.0,
+    0.7666666666666667
+  ],
+  "training_guards": {
+    "eval_battery": [
+      "matched-20",
+      "scaleup_native_58",
+      "nevertrain BFCL/API-Bank"
+    ],
+    "kl_to_base": "skeleton hook; not run in smoke",
+    "retention_guard": "GSM8K >= 0.70 before any promotion"
+  },
+  "turns": 3
+}
