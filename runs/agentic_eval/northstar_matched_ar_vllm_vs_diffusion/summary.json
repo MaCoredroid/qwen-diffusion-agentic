@@ -1,0 +1,258 @@
+{
+  "manifest": {
+    "input_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+    "episode_count": 20,
+    "turn_count": 63,
+    "episodes": [
+      {
+        "episode_idx": 0,
+        "id": "heldout_seed_run1clean_0000",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 4,
+        "tools_hash": "c2a5dec05338c50f63a655436d0836502c651b514d0d23fbc841a741ba17211b",
+        "gold_hash": "ef6fbaa83ca81f543987126b5284450ed1e2b9209e26868e61ad7dfe936835fa"
+      },
+      {
+        "episode_idx": 1,
+        "id": "heldout_seed_run1clean_0001",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "89cc247098de5f000332f2b867d063a433d76aa51564d6f6dd93939abac926a0",
+        "gold_hash": "1a1b3db9d75795b6437ed5e47e6456fbeadd760adb7f63c5ea8e4b580b846751"
+      },
+      {
+        "episode_idx": 2,
+        "id": "heldout_seed_run1clean_0002",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "8c272ca91508ec92c988dcd642ca4bea8e1ce3db630b7d52e8b80838f53abd33",
+        "gold_hash": "bc2bb4525eea6855bda6cdf4de7b38d7c07a2a9d90a59e6f1ae633f5279cd038"
+      },
+      {
+        "episode_idx": 3,
+        "id": "heldout_seed_run1clean_0003",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "20508928d38ecfcf408217aac9831a56b502703dfe3ffc046ad80616d80fc27b",
+        "gold_hash": "3282af06b7096cce9ded4b0d6605027ee4b1cbe192bf0236ca51009d4619eeef"
+      },
+      {
+        "episode_idx": 4,
+        "id": "heldout_seed_run1clean_0004",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "5d93a19117720d183ce0612cc216becb4b3d5618f6ddc8c03e8ed3331b719f30",
+        "gold_hash": "edd295ba186eb443129dca6d0c7ca8aa8df2a79e87ab27093be1faf8ed04c980"
+      },
+      {
+        "episode_idx": 5,
+        "id": "heldout_seed_run1clean_0006",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "54425cf81fe11ebccd8abf07affa3f79521d604995ae1d5ab4766f6f6aae1bb6",
+        "gold_hash": "eebb1ed5ff7ab1a4080461ef6206e73b3e276a900c836e066e119f0aa3a7654d"
+      },
+      {
+        "episode_idx": 6,
+        "id": "heldout_seed_run1clean_0008",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "3a384e122ebfac2eeabc02a98cddf293dc651cd2dc7492b7fce8657005e2c584",
+        "gold_hash": "6bedf2e7c72f469acc823add4c19e117602664d4b87e3631009aefea7c3c7029"
+      },
+      {
+        "episode_idx": 7,
+        "id": "heldout_seed_run1clean_0009",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "627bf55423e8de3c16f4cb7b15b939985b22a4a2beeabae75c606246f883decd",
+        "gold_hash": "32971a1278f632588d3ebd9927ce4d2955a1da4b25f82e42e8bcccfea367265b"
+      },
+      {
+        "episode_idx": 8,
+        "id": "heldout_seed_run1clean_0010",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 4,
+        "tools_hash": "ef5b719f1d7a6ec30396458f57032fe2fa2743ca65838b79854a5113f938e5ff",
+        "gold_hash": "3293303e430860a737749f039f0c85791088be866c630dd5e2edeb2be8b2e33f"
+      },
+      {
+        "episode_idx": 9,
+        "id": "heldout_seed_run1clean_0011",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "941cdd980f84d29e4d839ff5537a021787a0e9d1fba49b29d1928c3f0dbbc7db",
+        "gold_hash": "0f2dc99701348057e4f5f4bb172e35d15ab0c55196b69ac80d18665cdaee9fff"
+      },
+      {
+        "episode_idx": 10,
+        "id": "heldout_seed_run1clean_0015",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "1349ca9656f286763ee2b620aabefbdcc005e18cf89ebf320150b1a242c0e56a",
+        "gold_hash": "f8fc7aa58878d8a4c955e52b9bdb30e65c0a9fa2ef02ff1bccd281ea055e2114"
+      },
+      {
+        "episode_idx": 11,
+        "id": "heldout_seed_run1clean_0018",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "48f5eca80fe5371a26f255301f7dc501a4896c541d7964430b03eae7cd22983c",
+        "gold_hash": "651f42a3aad451208af0d3422fd8380ef9644221eee54325aa016eded9de0141"
+      },
+      {
+        "episode_idx": 12,
+        "id": "heldout_seed_run1clean_0019",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "108a882a9a4135aa26cd374c36989179f578b59903f195304e74dd9bf1c7833f",
+        "gold_hash": "6a05ddbfd07ea57de46676ac79c6b26c159dc03860822e35c7ae3d3bedb57e19"
+      },
+      {
+        "episode_idx": 13,
+        "id": "heldout_seed_run1clean_0022",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "8260a8c3d4bd18d717689161287bbde3d510580b946eee705fceb611f5b5690d",
+        "gold_hash": "a81d18dcc27719833493bd488894027feefe1cc5a41c49c42900ba2ac0d0f76a"
+      },
+      {
+        "episode_idx": 14,
+        "id": "heldout_seed_run1clean_0023",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "6a9a34d06f355e6be1579cd9c16e3b111e17235a060b88229930d5ff55ed62b7",
+        "gold_hash": "0b8d7070d8c45519f8aa0c06bb1f695653c029077588d9a36a96439824939c3e"
+      },
+      {
+        "episode_idx": 15,
+        "id": "heldout_seed_run1clean_0026",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 4,
+        "tools_hash": "1f27f9eb58f405b790a2968d3073af895cf9ee1d34c42ff1a3369142bceb2556",
+        "gold_hash": "176c13b7445c79f687c718d4dd24fbdb2a7d5b6df6acad141805ad2f6bf75a8a"
+      },
+      {
+        "episode_idx": 16,
+        "id": "heldout_seed_run1clean_0028",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "e54cb4063dbc7807bb6938e5c1e0d1b1ffa8fe35f92baa7570b2663056ee0641",
+        "gold_hash": "bd9a0eae8529d14cc1c36e7c967cd3a6deeba4c82a48abe302a2e29da110ea32"
+      },
+      {
+        "episode_idx": 17,
+        "id": "heldout_seed_run1clean_0029",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "9277202d59b3cb278da04fa7c1605ef8be0bc285d422d0e311a65102c2caf68e",
+        "gold_hash": "fbb3eb6f035f00c864d02503fe99b6a52383c3331964dcc2bfa5aeb243b0c8ae"
+      },
+      {
+        "episode_idx": 18,
+        "id": "heldout_seed_run1clean_0030",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "d20e80109836333c282144b8d9e69ec2c5e2d4aaa415b7ab3418232aa6c7bb0c",
+        "gold_hash": "39aefff81c816ecf979b5568c0a9732bc06c2c558b22136f28358afff66999ac"
+      },
+      {
+        "episode_idx": 19,
+        "id": "heldout_seed_run1clean_0031",
+        "source": "heldout_seed_multicall_clean",
+        "turns": 3,
+        "tools_hash": "3bae0b8c24443f78aca0a78392a9b86db2eb58b3abef67d60103f3e844f0a01c",
+        "gold_hash": "49446430a071e6cf5ad3e2226ce6f90dc06f94e0899da238c4f006a3a48b7dab"
+      }
+    ],
+    "episode_set_hash": "baf90863e2fe080a03c32c9bd8473d029ead19f470fe31919ad7001ac3b07871",
+    "prompt_tokenizer_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+    "chat_template_path": "/home/mark/shared/lumoFlyWheel_codex_fork/docker/chat_templates/qwen3-openai-codex.jinja",
+    "chat_template_sha256": "c166a05aaf5ad4b807a7c46497f92180e3df24e64d4b54d27fd26ec61bec38da",
+    "prompt_tokenizer_hash": "6a49d253d9fde317b4ecf2cd6b2699888bbe2220f933f4ca942c0260d6b29ccb",
+    "tool_close_token_ids": [
+      248059
+    ],
+    "stop_policy": {
+      "temperature": 0.0,
+      "stop_string": "</tool_call>",
+      "ar_include_stop_str_in_output": true,
+      "diffusion_stop_token_included": true,
+      "max_new_tokens": 384,
+      "turn_budget": "same_absolute_max_new_tokens"
+    },
+    "prompt_loop": {
+      "mode": "prefix_stable_incremental_completion_prompt",
+      "initial_prompt": "chat_template_with_tools_and_generation_prompt",
+      "followup_prompt": "previous_prompt_plus_sampled_assistant_plus_tool_response_plus_generation_prompt",
+      "tool_response_role": "user",
+      "assistant_generation_prompt": "<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    },
+    "ar": {
+      "backend": "vllm",
+      "model_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+      "served_model": "qwen3.5-9b-fastdllm-b1000-bf16",
+      "base_url": "http://127.0.0.1:9951",
+      "dtype": "bf16",
+      "quant": "none",
+      "fr13_apc": true
+    },
+    "diffusion": {
+      "backend": "hf_route_i_flare",
+      "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+      "adapter": "/home/mark/qwen_diffusion/runs/flare_stage1_ab_pilot/two_stream_B_s1024_step1000",
+      "merge_adapter": false,
+      "dtype": "bf16",
+      "quant": "none",
+      "decode": "per_call_waves_tau095_prefix_cache"
+    }
+  },
+  "ar_vllm": {
+    "episodes": 20,
+    "turns": 63,
+    "valid_tool_json": 58,
+    "exact_tool_sequence": 54,
+    "exact_arguments": 46,
+    "episode_exact_arguments_all_turns": 13,
+    "turn_wall_seconds": 89.93750190734863,
+    "sec_per_turn": 1.4275793953547402,
+    "generated_tokens": 6375,
+    "generated_tokens_per_turn": 101.19047619047619,
+    "denoise_forwards_total": 0.0,
+    "denoise_forwards_per_turn": 0.0,
+    "blended_tpf": null,
+    "prefix_cache_hit_turns": 0,
+    "prefix_cache_eligible_followup_turns": 43,
+    "schedule_build_seconds": 0.04745602607727051
+  },
+  "diffusion_percall_waves": {
+    "episodes": 20,
+    "turns": 63,
+    "valid_tool_json": 63,
+    "exact_tool_sequence": 63,
+    "exact_arguments": 55,
+    "episode_exact_arguments_all_turns": 15,
+    "turn_wall_seconds": 90.86559104919434,
+    "sec_per_turn": 1.4423109690348308,
+    "generated_tokens": 4778,
+    "generated_tokens_per_turn": 75.84126984126983,
+    "denoise_forwards_total": 561.0,
+    "denoise_forwards_per_turn": 8.904761904761905,
+    "blended_tpf": 8.516934046345812,
+    "prefix_cache_hit_turns": 43,
+    "prefix_cache_eligible_followup_turns": 43,
+    "schedule_build_seconds": 0.03569912910461426
+  },
+  "paired": {
+    "paired_turns": 63,
+    "exact_arguments_delta_diffusion_minus_ar": 9,
+    "exact_sequence_delta_diffusion_minus_ar": 9,
+    "valid_delta_diffusion_minus_ar": 5,
+    "paired_episodes": 20,
+    "episode_exact_arguments_delta_diffusion_minus_ar": 2,
+    "ar_wall_seconds": 89.93750190734863,
+    "diffusion_wall_seconds": 90.86559104919434,
+    "ar_over_diffusion_wall_ratio": 0.9897861321196575,
+    "diffusion_over_ar_wall_ratio": 1.0103192675153663
+  }
+}

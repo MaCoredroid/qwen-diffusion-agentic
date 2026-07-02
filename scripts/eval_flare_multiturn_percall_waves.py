@@ -282,6 +282,17 @@ def summarize_rows(rows: list[dict]) -> dict:
     condition_summaries = {}
     for condition, condition_rows in sorted(by_condition.items()):
         episodes = sorted({row["episode_id"] for row in condition_rows})
+        rows_by_episode: dict[str, list[dict]] = defaultdict(list)
+        for row in condition_rows:
+            rows_by_episode[row["episode_id"]].append(row)
+        exact_arg_episodes = sum(
+            int(bool(episode_rows) and all(bool(row.get("exact_arguments")) for row in episode_rows))
+            for episode_rows in rows_by_episode.values()
+        )
+        exact_seq_episodes = sum(
+            int(bool(episode_rows) and all(bool(row.get("exact_tool_sequence")) for row in episode_rows))
+            for episode_rows in rows_by_episode.values()
+        )
         generated_tokens = sum(int(row.get("generated_token_count") or 0) for row in condition_rows)
         denoise_forwards = numeric_event_sum(condition_rows, "denoise_forwards_total")
         timing_totals = Counter()
@@ -304,14 +315,18 @@ def summarize_rows(rows: list[dict]) -> dict:
             "valid_tool_json": bool_sum(condition_rows, "valid_tool_json"),
             "exact_tool_sequence": bool_sum(condition_rows, "exact_tool_sequence"),
             "exact_arguments": bool_sum(condition_rows, "exact_arguments"),
+            "episode_exact_arguments_all_turns": exact_arg_episodes,
+            "episode_exact_sequence_all_turns": exact_seq_episodes,
             "all_schema_valid": bool_sum(condition_rows, "all_schema_valid"),
             "turn_wall_seconds": sum(float(row.get("turn_wall_seconds") or 0.0) for row in condition_rows),
             "sample_seconds": sum(float(row.get("sample_seconds") or 0.0) for row in condition_rows),
             "schedule_build_seconds": sum(float(row.get("schedule_build_seconds") or 0.0) for row in condition_rows),
             "prompt_tokenize_seconds": sum(float(row.get("prompt_tokenize_seconds") or 0.0) for row in condition_rows),
             "generated_tokens": generated_tokens,
+            "generated_tokens_per_turn": generated_tokens / len(condition_rows) if condition_rows else 0.0,
             "prompt_tokens": sum(int(row.get("prompt_tokens") or 0) for row in condition_rows),
             "denoise_forwards_total": denoise_forwards,
+            "denoise_forwards_per_turn": denoise_forwards / len(condition_rows) if condition_rows else 0.0,
             "blended_tpf": generated_tokens / denoise_forwards if denoise_forwards else 0.0,
             "prefix_cache_hit_turns": cache_hits,
             "prefix_cache_eligible_followup_turns": max(0, len(condition_rows) - len(episodes)),
@@ -363,6 +378,33 @@ def summarize_rows(rows: list[dict]) -> dict:
                 for key in shared
             ),
         }
+        baseline_by_episode: dict[str, list[dict]] = defaultdict(list)
+        percall_by_episode: dict[str, list[dict]] = defaultdict(list)
+        for row in by_condition["baseline_careful"]:
+            baseline_by_episode[row["episode_id"]].append(row)
+        for row in by_condition["percall_waves_tau095"]:
+            percall_by_episode[row["episode_id"]].append(row)
+        shared_episodes = sorted(set(baseline_by_episode) & set(percall_by_episode))
+        paired["paired_episodes"] = len(shared_episodes)
+        paired["episode_exact_arguments_delta"] = sum(
+            int(all(bool(row.get("exact_arguments")) for row in percall_by_episode[episode_id]))
+            - int(all(bool(row.get("exact_arguments")) for row in baseline_by_episode[episode_id]))
+            for episode_id in shared_episodes
+        )
+        paired["percall_only_exact_argument_episodes"] = sum(
+            int(
+                all(bool(row.get("exact_arguments")) for row in percall_by_episode[episode_id])
+                and not all(bool(row.get("exact_arguments")) for row in baseline_by_episode[episode_id])
+            )
+            for episode_id in shared_episodes
+        )
+        paired["baseline_only_exact_argument_episodes"] = sum(
+            int(
+                all(bool(row.get("exact_arguments")) for row in baseline_by_episode[episode_id])
+                and not all(bool(row.get("exact_arguments")) for row in percall_by_episode[episode_id])
+            )
+            for episode_id in shared_episodes
+        )
         b = condition_summaries["baseline_careful"]
         p = condition_summaries["percall_waves_tau095"]
         paired["turn_wall_speedup"] = (
@@ -541,20 +583,21 @@ def write_report(out_dir: Path, args: argparse.Namespace, episodes: list[dict], 
         "Prompting: previous sampled assistant tool call plus synthetic `<tool_response>` is appended before the next turn.",
         "Stop: `</tool_call>` added as a stop token so each turn measures one tool call.",
         "",
-        "| Condition | exact_args | exact_seq | valid_json | blended TPF | sec/turn | prefix hits | decode share | prefill share |",
+        "| Condition | exact_args | episode exact | valid_json | model forwards/turn | gen tok/turn | blended TPF | sec/turn | prefix hits |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for name, item in [("Baseline careful", b), ("Per-call waves tau 0.95", p)]:
         turns = int(item.get("turns") or 0)
+        episodes_n = int(item.get("episodes") or 0)
         lines.append(
             f"| {name} | {int(item.get('exact_arguments') or 0)}/{turns} "
-            f"| {int(item.get('exact_tool_sequence') or 0)}/{turns} "
+            f"| {int(item.get('episode_exact_arguments_all_turns') or 0)}/{episodes_n} "
             f"| {int(item.get('valid_tool_json') or 0)}/{turns} "
+            f"| {float(item.get('denoise_forwards_per_turn') or 0.0):.3f} "
+            f"| {float(item.get('generated_tokens_per_turn') or 0.0):.3f} "
             f"| {float(item.get('blended_tpf') or 0.0):.3f} "
             f"| {float(item.get('turn_wall_seconds') or 0.0) / turns if turns else 0.0:.3f} "
-            f"| {int(item.get('prefix_cache_hit_turns') or 0)}/{int(item.get('prefix_cache_eligible_followup_turns') or 0)} "
-            f"| {float(item.get('decode_share_of_timed') or 0.0):.3f} "
-            f"| {float(item.get('prefill_share_of_timed') or 0.0):.3f} |"
+            f"| {int(item.get('prefix_cache_hit_turns') or 0)}/{int(item.get('prefix_cache_eligible_followup_turns') or 0)} |"
         )
     lines.extend(
         [
@@ -564,6 +607,11 @@ def write_report(out_dir: Path, args: argparse.Namespace, episodes: list[dict], 
             f"- End-to-end turn/episode wall speedup: {speedup:.3f}x",
             f"- Paired exact-args delta (per-call - baseline): {exact_delta} / {int(paired.get('paired_turns') or 0)} turns",
             f"- Per-call only exact args: {int(paired.get('percall_only_exact_arguments') or 0)}; baseline only: {int(paired.get('baseline_only_exact_arguments') or 0)}",
+            f"- Episode-level exact-args delta: {int(paired.get('episode_exact_arguments_delta') or 0)} / {int(paired.get('paired_episodes') or 0)} episodes",
+            f"- Per-call only exact episodes: {int(paired.get('percall_only_exact_argument_episodes') or 0)}; baseline only: {int(paired.get('baseline_only_exact_argument_episodes') or 0)}",
+            f"- TPF accounting: numerator is all generated visible tokens; denominator is model denoise forwards. Grammar-projected scaffold tokens count in generated tokens but consume no model forward.",
+            f"- Baseline raw TPF: {int(b.get('generated_tokens') or 0)} generated tokens / {float(b.get('denoise_forwards_total') or 0.0):.0f} denoise forwards = {float(b.get('blended_tpf') or 0.0):.3f}",
+            f"- Per-call raw TPF: {int(p.get('generated_tokens') or 0)} generated tokens / {float(p.get('denoise_forwards_total') or 0.0):.0f} denoise forwards = {float(p.get('blended_tpf') or 0.0):.3f}",
             f"- Baseline timed split: prefill/cache-reset {float(b.get('prefill_share_of_timed') or 0.0):.3f}, decode {float(b.get('decode_share_of_timed') or 0.0):.3f}",
             f"- Per-call timed split: prefill/cache-reset {float(p.get('prefill_share_of_timed') or 0.0):.3f}, decode {float(p.get('decode_share_of_timed') or 0.0):.3f}",
             f"- Schedule build overhead: baseline {float(b.get('schedule_build_seconds') or 0.0):.3f}s, per-call {float(p.get('schedule_build_seconds') or 0.0):.3f}s",
