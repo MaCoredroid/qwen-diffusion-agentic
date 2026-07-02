@@ -1,0 +1,1443 @@
+{
+  "created_by": "scripts/build_nevertrain_bfcl_apibank_eval.py",
+  "difficulty": {
+    "episode_count": 60,
+    "summary_by_source": {
+      "API-Bank-Lv1": {
+        "args": 36,
+        "args_per_call": 2.769230769230769,
+        "argument_type_counts": {
+          "copy_from_context": 26,
+          "derived_or_constant": 10
+        },
+        "avg_value_length_per_episode_mean": 11.102564102564104,
+        "calls": 13,
+        "calls_per_turn": 1.0,
+        "episodes": 13,
+        "schema_type_counts": {
+          "datetime": 5,
+          "string": 25,
+          "unknown": 6
+        },
+        "turns": 13
+      },
+      "API-Bank-Lv2": {
+        "args": 33,
+        "args_per_call": 2.75,
+        "argument_type_counts": {
+          "copy_from_context": 17,
+          "derived_or_constant": 16
+        },
+        "avg_value_length_per_episode_mean": 13.4375,
+        "calls": 12,
+        "calls_per_turn": 1.0,
+        "episodes": 12,
+        "schema_type_counts": {
+          "datetime": 5,
+          "string": 21,
+          "unknown": 7
+        },
+        "turns": 12
+      },
+      "BFCL-AST": {
+        "args": 26,
+        "args_per_call": 2.1666666666666665,
+        "argument_type_counts": {
+          "copy_from_context": 7,
+          "derived_or_constant": 20
+        },
+        "avg_value_length_per_episode_mean": 2.033333333333333,
+        "calls": 12,
+        "calls_per_turn": 1.0,
+        "episodes": 8,
+        "schema_type_counts": {
+          "array": 1,
+          "integer": 20,
+          "number": 3,
+          "string": 2
+        },
+        "turns": 12
+      },
+      "BFCL-multi_turn": {
+        "args": 227,
+        "args_per_call": 1.5442176870748299,
+        "argument_type_counts": {
+          "copy_from_context": 150,
+          "derived_or_constant": 81
+        },
+        "avg_value_length_per_episode_mean": 14.628806584362135,
+        "calls": 147,
+        "calls_per_turn": 1.0,
+        "episodes": 27,
+        "schema_type_counts": {
+          "array": 12,
+          "boolean": 8,
+          "integer": 11,
+          "string": 196
+        },
+        "turns": 147
+      }
+    }
+  },
+  "episode_set_hash": "08079d85b071deaa34423b51db7902d729b57b679ee268d8514056caa370b2c1",
+  "leak_check": {
+    "counts": {
+      "canonical_text_overlap_count": 0,
+      "full_tool_signature_overlap_count": 0,
+      "same_tool_all_arg_values_overlap_count": 0,
+      "tool_name_overlap_count": 0,
+      "user_prompt_overlap_count": 0
+    },
+    "eval_episode_count": 60,
+    "eval_episodes_with_any_hard_overlap": 0,
+    "eval_ids": [
+      "bfcl_mt_multi_turn_base_0001",
+      "bfcl_mt_multi_turn_base_0002",
+      "bfcl_mt_multi_turn_base_0003",
+      "bfcl_mt_multi_turn_base_0004",
+      "bfcl_mt_multi_turn_base_0005",
+      "bfcl_mt_multi_turn_base_0007",
+      "bfcl_mt_multi_turn_base_0008",
+      "bfcl_mt_multi_turn_miss_param_0001",
+      "bfcl_mt_multi_turn_miss_param_0002",
+      "bfcl_mt_multi_turn_miss_param_0003",
+      "bfcl_mt_multi_turn_miss_param_0004",
+      "bfcl_mt_multi_turn_miss_param_0005",
+      "bfcl_mt_multi_turn_miss_param_0007",
+      "bfcl_mt_multi_turn_miss_param_0008",
+      "bfcl_mt_multi_turn_miss_func_0001",
+      "bfcl_mt_multi_turn_miss_func_0002",
+      "bfcl_mt_multi_turn_miss_func_0003",
+      "bfcl_mt_multi_turn_miss_func_0004",
+      "bfcl_mt_multi_turn_miss_func_0005",
+      "bfcl_mt_multi_turn_miss_func_0007",
+      "bfcl_mt_multi_turn_miss_func_0008",
+      "bfcl_mt_multi_turn_long_context_0001",
+      "bfcl_mt_multi_turn_long_context_0002",
+      "bfcl_mt_multi_turn_long_context_0003",
+      "bfcl_mt_multi_turn_long_context_0004",
+      "bfcl_mt_multi_turn_long_context_0005",
+      "bfcl_mt_multi_turn_long_context_0007",
+      "bfcl_ast_multiple_0000",
+      "bfcl_ast_multiple_0001",
+      "bfcl_ast_parallel_0000",
+      "bfcl_ast_parallel_0001",
+      "bfcl_ast_parallel_multiple_0000",
+      "bfcl_ast_parallel_multiple_0001",
+      "bfcl_ast_simple_python_0000",
+      "bfcl_ast_simple_python_0001",
+      "apibank_api_bank_lv1_AddAgenda-level-1-1_0",
+      "apibank_api_bank_lv1_AddAgenda-level-1-1_1",
+      "apibank_api_bank_lv1_AddAgenda-level-1-2_0",
+      "apibank_api_bank_lv1_AddAgenda-level-1-2_1",
+      "apibank_api_bank_lv1_AddAlarm-level-1-1_0",
+      "apibank_api_bank_lv1_AddAlarm-level-1-1_1",
+      "apibank_api_bank_lv1_AddMeeting-level-1-1_0",
+      "apibank_api_bank_lv1_AddMeeting-level-1-1_1",
+      "apibank_api_bank_lv1_AddReminder-level-1-1_0",
+      "apibank_api_bank_lv1_AddReminder-level-1-1_1",
+      "apibank_api_bank_lv1_AddReminder-level-1-2_0",
+      "apibank_api_bank_lv1_AddReminder-level-1-2_1",
+      "apibank_api_bank_lv1_AddReminder-level-1-3_0",
+      "apibank_api_bank_lv2_AddAgenda-AddAlarm-GetUserToken-level-2-1_0",
+      "apibank_api_bank_lv2_AddAgenda-AddAlarm-GetUserToken-level-2-1_1",
+      "apibank_api_bank_lv2_AddAgenda-AddAlarm-GetUserToken-level-2-1_2",
+      "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-2_0",
+      "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-2_1",
+      "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-3_0",
+      "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-3_1",
+      "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-4_0",
+      "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-4_1",
+      "apibank_api_bank_lv2_AddAlarm-GetReminder-ModifyAgenda-GetUserToken-level-2-1_0",
+      "apibank_api_bank_lv2_AddAlarm-GetReminder-ModifyAgenda-GetUserToken-level-2-1_1",
+      "apibank_api_bank_lv2_Calculator-QueryHistoryToday-level-2-1_0"
+    ],
+    "hard_overlap_verdict": "no-hard-overlap",
+    "method": {
+      "canonical_text": "sha256(normalized concatenated user text + normalized assistant/gold tool-call text)",
+      "full_tool_signature": "sha256(safe tool name + sorted argument keys + normalized scalar leaf values)",
+      "same_tool_all_arg_values": "near check: same safe tool name and every eval scalar leaf value appears in one train call",
+      "tool_name_overlap": "descriptive only; same tool name appears anywhere in train calls, not treated as leakage by itself",
+      "user_prompt": "sha256(normalized concatenated user turns including ToolACE follow-up user messages)"
+    },
+    "overlap_examples": {},
+    "scope": "BFCL/API-Bank never-train eval rows selected for this rebuild",
+    "train_files_checked": 92,
+    "train_rows_checked": 24505,
+    "train_tool_calls_indexed": 14276
+  },
+  "never_train_claim": {
+    "API-Bank": "Raw DAMO API-Bank lv1-lv2-samples/level-1-given-desc evaluation samples; Level-3/toolsearcher files are excluded; upstream repo license MIT.",
+    "BFCL": "BFCL V4 eval-designated non-live AST and multi-turn categories; BFCL was never used as a training candidate in rl_dataset_plan; upstream repo license Apache-2.0.",
+    "xLAM": {
+      "probe": {
+        "notes": [
+          "Normalized seed data for Qwen-style tool-call eval/data loop.",
+          "This is not final training data; teacher repair/verification is still required."
+        ],
+        "output": "data/toolcall_seed/xlam_probe.jsonl",
+        "per_source_limit": 1,
+        "sources": {
+          "xlam": {
+            "count": 0,
+            "dataset": "Salesforce/xlam-function-calling-60k",
+            "error": "DatasetNotFoundError: Dataset 'Salesforce/xlam-function-calling-60k' is a gated dataset on the Hub. Visit the dataset page at https://huggingface.co/datasets/Salesforce/xlam-function-calling-60k to ask for access.",
+            "status": "error"
+          }
+        }
+      },
+      "reason": "local probe remains gated; not allowed to block this rebuild",
+      "status": "not_used"
+    }
+  },
+  "out_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+  "overlap_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.overlap_rows.jsonl",
+  "records": 60,
+  "rejected_count": 9,
+  "rejected_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.rejected.jsonl",
+  "rejected_reason_counts": {
+    "empty_or_too_large": 8,
+    "prompt_or_gold_too_long": 1
+  },
+  "rows": [
+    {
+      "id": "bfcl_mt_multi_turn_base_0001",
+      "public_eval_hash": "650686897f81de488d8c3887383ffbb7a772df8cf0c4d59d1a7292ca7bc3380e",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_base",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 1,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 39,
+        "max_gold_path_prompt_tokens": 2146
+      },
+      "tools": 7,
+      "turns": 6
+    },
+    {
+      "id": "bfcl_mt_multi_turn_base_0002",
+      "public_eval_hash": "f1d87bd00031caa0cebc453e43c1afb70c8d1a1b9e7a033d03e745dd029a88eb",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_base",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 2,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 50,
+        "max_gold_path_prompt_tokens": 2640
+      },
+      "tools": 9,
+      "turns": 8
+    },
+    {
+      "id": "bfcl_mt_multi_turn_base_0003",
+      "public_eval_hash": "ac676da5a6519770b5725e71c1421ad445a367ad81ee0100fb341d856bed3ebb",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_base",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 3,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 41,
+        "max_gold_path_prompt_tokens": 1590
+      },
+      "tools": 4,
+      "turns": 5
+    },
+    {
+      "id": "bfcl_mt_multi_turn_base_0004",
+      "public_eval_hash": "af9d89712b564239d7169bf0ac4f7f6656a155f1f5ef70597957ab5c45469c3d",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_base",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 4,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 67,
+        "max_gold_path_prompt_tokens": 1518
+      },
+      "tools": 6,
+      "turns": 3
+    },
+    {
+      "id": "bfcl_mt_multi_turn_base_0005",
+      "public_eval_hash": "653be592382f411a2c57dbac011d935034335adbf74493733f8564cc5963eb6a",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_base",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 5,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 51,
+        "max_gold_path_prompt_tokens": 2614
+      },
+      "tools": 9,
+      "turns": 7
+    },
+    {
+      "id": "bfcl_mt_multi_turn_base_0007",
+      "public_eval_hash": "6c89782862e56f0ebde45b5ebd4f666ab6d440ae87658131dd7c09a499189604",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_base",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 7,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 34,
+        "max_gold_path_prompt_tokens": 2017
+      },
+      "tools": 8,
+      "turns": 4
+    },
+    {
+      "id": "bfcl_mt_multi_turn_base_0008",
+      "public_eval_hash": "1d90e0250a534c896faa79c53c68dfec01e8a612f01cdfa6d52d386b8c355eb1",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_base",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 8,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 65,
+        "max_gold_path_prompt_tokens": 2119
+      },
+      "tools": 7,
+      "turns": 5
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_param_0001",
+      "public_eval_hash": "4ec300b1c60475bbe310dbf2d0f891a96f8481dbaa54a30634fea3e576a805f9",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_param",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 1,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 39,
+        "max_gold_path_prompt_tokens": 2152
+      },
+      "tools": 7,
+      "turns": 6
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_param_0002",
+      "public_eval_hash": "bf1bc1840b5f00d6c09993a8197b97362ba1957f524398d7fb91aba005d2d8d8",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_param",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 2,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 50,
+        "max_gold_path_prompt_tokens": 2639
+      },
+      "tools": 9,
+      "turns": 8
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_param_0003",
+      "public_eval_hash": "434f8ed8e2480c76a9cb4b4089063b6198a6b9347660edb62220ef1557773df2",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_param",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 3,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 41,
+        "max_gold_path_prompt_tokens": 1566
+      },
+      "tools": 4,
+      "turns": 5
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_param_0004",
+      "public_eval_hash": "d4a21759ab4ed2ace82f80a28c533a374a7fefed8ff425a83966bb3b77b95693",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_param",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 4,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 67,
+        "max_gold_path_prompt_tokens": 1488
+      },
+      "tools": 6,
+      "turns": 3
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_param_0005",
+      "public_eval_hash": "d481af65f86d1de9e58de2e9ecc570d6527f3120a4d650d12707fb4792241629",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_param",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 5,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 51,
+        "max_gold_path_prompt_tokens": 2602
+      },
+      "tools": 9,
+      "turns": 7
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_param_0007",
+      "public_eval_hash": "35e63558c9f6f712ef1c1161f744d76b203bbea3cf78328b72b08f37b3bb9c62",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_param",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 7,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 34,
+        "max_gold_path_prompt_tokens": 2004
+      },
+      "tools": 8,
+      "turns": 4
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_param_0008",
+      "public_eval_hash": "063f49dd36d9b80cdd6e6e6487158a344a21931103aa09cd65f3fdba6b6471cc",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_param",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 8,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 65,
+        "max_gold_path_prompt_tokens": 2119
+      },
+      "tools": 7,
+      "turns": 5
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_func_0001",
+      "public_eval_hash": "6a51e48e16d6850dce93e82d85e7825091162f326119ba1a4837ee028c4493c6",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_func",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 1,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 39,
+        "max_gold_path_prompt_tokens": 2125
+      },
+      "tools": 7,
+      "turns": 6
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_func_0002",
+      "public_eval_hash": "2e579316468f56de8c77960c0a6217965fc9046d4eaad17cd313662000d6d4f7",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_func",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 2,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 50,
+        "max_gold_path_prompt_tokens": 2590
+      },
+      "tools": 9,
+      "turns": 8
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_func_0003",
+      "public_eval_hash": "c7a3932a9d6557e4ed547a4a0cb1f7c3fd4f68a76cc2c8150c861a8da4a87a1f",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_func",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 3,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 41,
+        "max_gold_path_prompt_tokens": 1587
+      },
+      "tools": 4,
+      "turns": 5
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_func_0004",
+      "public_eval_hash": "cc2cf212b99e7e26dd4c0c35cc6f4d4e992adb341ec2d12cb419bd2be198b351",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_func",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 4,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 67,
+        "max_gold_path_prompt_tokens": 1487
+      },
+      "tools": 6,
+      "turns": 3
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_func_0005",
+      "public_eval_hash": "9d1b11b3e13552df0d6744b690fc97d0e0b9c95244567c33d981b101b7e95799",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_func",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 5,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 51,
+        "max_gold_path_prompt_tokens": 2566
+      },
+      "tools": 9,
+      "turns": 7
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_func_0007",
+      "public_eval_hash": "e2adc6fa01276885c5017ad33636404426106224dfbbd9f9a29435ee84b9bed4",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_func",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 7,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 34,
+        "max_gold_path_prompt_tokens": 2020
+      },
+      "tools": 8,
+      "turns": 4
+    },
+    {
+      "id": "bfcl_mt_multi_turn_miss_func_0008",
+      "public_eval_hash": "316dac44e5e3bd5a5d06085713591dc3b4cec3ba293c27d851d3c9d6c21bece2",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_miss_func",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 8,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 65,
+        "max_gold_path_prompt_tokens": 2069
+      },
+      "tools": 7,
+      "turns": 5
+    },
+    {
+      "id": "bfcl_mt_multi_turn_long_context_0001",
+      "public_eval_hash": "e55d2f5d97b68988d4efb127351940d77a1fd49c4c273b5ba03c2f79d49aa027",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_long_context",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 1,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 39,
+        "max_gold_path_prompt_tokens": 2151
+      },
+      "tools": 7,
+      "turns": 6
+    },
+    {
+      "id": "bfcl_mt_multi_turn_long_context_0002",
+      "public_eval_hash": "2bc1b9358c331736db18219f7c8bd6558cd57359cb92aae65fb523ee190bf34a",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_long_context",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 2,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 50,
+        "max_gold_path_prompt_tokens": 2647
+      },
+      "tools": 9,
+      "turns": 8
+    },
+    {
+      "id": "bfcl_mt_multi_turn_long_context_0003",
+      "public_eval_hash": "1ccbaaec470df97ae055106808dc9c1d2c744ae9a63314bc6d17fc4162d7866b",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_long_context",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 3,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 41,
+        "max_gold_path_prompt_tokens": 1594
+      },
+      "tools": 4,
+      "turns": 5
+    },
+    {
+      "id": "bfcl_mt_multi_turn_long_context_0004",
+      "public_eval_hash": "582d1f67118b24a2cfe123f7f5cbbf480f83277c22d0c3b597da7279490198f8",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_long_context",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 4,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 67,
+        "max_gold_path_prompt_tokens": 1520
+      },
+      "tools": 6,
+      "turns": 3
+    },
+    {
+      "id": "bfcl_mt_multi_turn_long_context_0005",
+      "public_eval_hash": "357036cb71990f118a8a3580d43cecb03601fbf004e24d535ac76d2766c1ee1f",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_long_context",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 5,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 51,
+        "max_gold_path_prompt_tokens": 2620
+      },
+      "tools": 9,
+      "turns": 7
+    },
+    {
+      "id": "bfcl_mt_multi_turn_long_context_0007",
+      "public_eval_hash": "47789ba62005a875593e69c7170788e5ee68b4d92a82f3f45d2bfa8082cdd965",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multi_turn_long_context",
+      "source_family": "BFCL-multi_turn",
+      "source_row_idx": 7,
+      "source_split": "BFCL_v4_eval_non_live_multi_turn",
+      "token_filter": {
+        "max_gold_block_tokens": 34,
+        "max_gold_path_prompt_tokens": 2020
+      },
+      "tools": 8,
+      "turns": 4
+    },
+    {
+      "id": "bfcl_ast_multiple_0000",
+      "public_eval_hash": "3306853b7674949a9b50fcbc637c3a1a586a7eb9b42baecf8ac392e1b1bad847",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multiple",
+      "source_family": "BFCL-AST",
+      "source_row_idx": 0,
+      "source_split": "BFCL_v4_eval_non_live_ast",
+      "token_filter": {
+        "max_gold_block_tokens": 54,
+        "max_gold_path_prompt_tokens": 819
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "bfcl_ast_multiple_0001",
+      "public_eval_hash": "aca140f85688e3f14e960d4d051244f317d1d57dcc912d2d79ace774ccbdcaaa",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_multiple",
+      "source_family": "BFCL-AST",
+      "source_row_idx": 1,
+      "source_split": "BFCL_v4_eval_non_live_ast",
+      "token_filter": {
+        "max_gold_block_tokens": 57,
+        "max_gold_path_prompt_tokens": 734
+      },
+      "tools": 3,
+      "turns": 1
+    },
+    {
+      "id": "bfcl_ast_parallel_0000",
+      "public_eval_hash": "e6ce35ea654dd580fc72e6dc5f24190fea3aaeb5875b768e5b886a3049bc180d",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_parallel",
+      "source_family": "BFCL-AST",
+      "source_row_idx": 0,
+      "source_split": "BFCL_v4_eval_non_live_ast",
+      "token_filter": {
+        "max_gold_block_tokens": 42,
+        "max_gold_path_prompt_tokens": 627
+      },
+      "tools": 1,
+      "turns": 2
+    },
+    {
+      "id": "bfcl_ast_parallel_0001",
+      "public_eval_hash": "6541082364db73eef824bebac089e1d4e0ea7ec9d3f622dfddff081d7021a576",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_parallel",
+      "source_family": "BFCL-AST",
+      "source_row_idx": 1,
+      "source_split": "BFCL_v4_eval_non_live_ast",
+      "token_filter": {
+        "max_gold_block_tokens": 52,
+        "max_gold_path_prompt_tokens": 711
+      },
+      "tools": 1,
+      "turns": 2
+    },
+    {
+      "id": "bfcl_ast_parallel_multiple_0000",
+      "public_eval_hash": "1826e36d4380fb0b80a1198882af0f508596a791d6f949ba2a1debce844d1dfd",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_parallel_multiple",
+      "source_family": "BFCL-AST",
+      "source_row_idx": 0,
+      "source_split": "BFCL_v4_eval_non_live_ast",
+      "token_filter": {
+        "max_gold_block_tokens": 66,
+        "max_gold_path_prompt_tokens": 794
+      },
+      "tools": 2,
+      "turns": 2
+    },
+    {
+      "id": "bfcl_ast_parallel_multiple_0001",
+      "public_eval_hash": "a7a7b0722fa6c3da315ca9779c351ae189024c2529f4e03e0ff1826c6a8e92f3",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_parallel_multiple",
+      "source_family": "BFCL-AST",
+      "source_row_idx": 1,
+      "source_split": "BFCL_v4_eval_non_live_ast",
+      "token_filter": {
+        "max_gold_block_tokens": 43,
+        "max_gold_path_prompt_tokens": 793
+      },
+      "tools": 3,
+      "turns": 2
+    },
+    {
+      "id": "bfcl_ast_simple_python_0000",
+      "public_eval_hash": "115f2c001ce3394b7873bb4da5e05577489671d3a5b8b2e16a0217a46532f107",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_simple_python",
+      "source_family": "BFCL-AST",
+      "source_row_idx": 0,
+      "source_split": "BFCL_v4_eval_non_live_ast",
+      "token_filter": {
+        "max_gold_block_tokens": 40,
+        "max_gold_path_prompt_tokens": 530
+      },
+      "tools": 1,
+      "turns": 1
+    },
+    {
+      "id": "bfcl_ast_simple_python_0001",
+      "public_eval_hash": "8f77646911056ff2a276aa9ac82fab0379ab64780d92b012d47846be22286156",
+      "source_dataset": "ShishirPatil/gorilla BFCL_v4_simple_python",
+      "source_family": "BFCL-AST",
+      "source_row_idx": 1,
+      "source_split": "BFCL_v4_eval_non_live_ast",
+      "token_filter": {
+        "max_gold_block_tokens": 27,
+        "max_gold_path_prompt_tokens": 467
+      },
+      "tools": 1,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddAgenda-level-1-1_0",
+      "public_eval_hash": "e8db2049208e9a60f1aec6e4265c74c612486c5651e554d517995dc8a702c753",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-level-1-1.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 37,
+        "max_gold_path_prompt_tokens": 884
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddAgenda-level-1-1_1",
+      "public_eval_hash": "3530d67c4f1288fffc19534d21c00fc7b32ca021acf3e65beaf901b7b3be6f19",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-level-1-1.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 102,
+        "max_gold_path_prompt_tokens": 962
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddAgenda-level-1-2_0",
+      "public_eval_hash": "a2adae5caf0472cf6bfb8670c8748afbcb7c2459b133bf32ad8da074b013a4e9",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-level-1-2.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 37,
+        "max_gold_path_prompt_tokens": 865
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddAgenda-level-1-2_1",
+      "public_eval_hash": "d834d687bde95c5b176f9d1370da57b4d2fefa1ebbc07159254d0b03caa71fbe",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-level-1-2.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 100,
+        "max_gold_path_prompt_tokens": 932
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddAlarm-level-1-1_0",
+      "public_eval_hash": "ed3c483af785fac0c7201c0178c5d34c6c6f060d036f33aba026b36ff050655f",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAlarm-level-1-1.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 37,
+        "max_gold_path_prompt_tokens": 725
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddAlarm-level-1-1_1",
+      "public_eval_hash": "34d662370c979e97ac631e3580fd78e2ef86564c3885cd169cfb3f092a642ffb",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAlarm-level-1-1.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 72,
+        "max_gold_path_prompt_tokens": 839
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddMeeting-level-1-1_0",
+      "public_eval_hash": "236dc5f93ff68f1cc91910f255028d003955dbe0c066b38162f49b6bfc4b053b",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddMeeting-level-1-1.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 42,
+        "max_gold_path_prompt_tokens": 905
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddMeeting-level-1-1_1",
+      "public_eval_hash": "9499c03a7200adc1934870337aaa2e6842697a5a7509324e8c90b660c1a8286b",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddMeeting-level-1-1.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 154,
+        "max_gold_path_prompt_tokens": 977
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddReminder-level-1-1_0",
+      "public_eval_hash": "a8a00496ae001e53c8c47875930bd4c66ae368340693461d9cf5bcec11106b31",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-1.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 40,
+        "max_gold_path_prompt_tokens": 708
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddReminder-level-1-1_1",
+      "public_eval_hash": "8890a06ef4c67cce596489100b4e432cf4c2b76cc9cb92111dd0cc5ed3775909",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-1.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 87,
+        "max_gold_path_prompt_tokens": 836
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddReminder-level-1-2_0",
+      "public_eval_hash": "40063118083ba771cd4c9837ef62356adc8d2d7d8040ef5296cddfb639a6bfd1",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-2.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 40,
+        "max_gold_path_prompt_tokens": 732
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddReminder-level-1-2_1",
+      "public_eval_hash": "7ecb6eeb903578cf6bc0d7780c43923669ef76aaa8c7c36941b4b1a824e06ff7",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-2.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 87,
+        "max_gold_path_prompt_tokens": 791
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv1_AddReminder-level-1-3_0",
+      "public_eval_hash": "47bd01efe3cf1bfeef08a7e3117ff1bf946009e1649b7236ae021783edd616ca",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv1",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-3.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 40,
+        "max_gold_path_prompt_tokens": 723
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddAlarm-GetUserToken-level-2-1_0",
+      "public_eval_hash": "08f7883227572cade7715ee81545067f9e6cba5b2fd09640d8cb0a8bdcb4b0d1",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddAlarm-GetUserToken-level-2-1.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 38,
+        "max_gold_path_prompt_tokens": 1002
+      },
+      "tools": 3,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddAlarm-GetUserToken-level-2-1_1",
+      "public_eval_hash": "b8090efcfb40285b73263d658d208e56346a0fbab8515cc304be915c0af5438f",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddAlarm-GetUserToken-level-2-1.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 102,
+        "max_gold_path_prompt_tokens": 1080
+      },
+      "tools": 3,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddAlarm-GetUserToken-level-2-1_2",
+      "public_eval_hash": "18b7804d11bf1395bb2bc21df7a836baad812d30c635b9a92bff75791a4fc06a",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddAlarm-GetUserToken-level-2-1.jsonl:2",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 72,
+        "max_gold_path_prompt_tokens": 1184
+      },
+      "tools": 3,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-2_0",
+      "public_eval_hash": "01881658c5df904b6dc68532ac512ad7c021428a66649612dcecd2ab5fe6ba52",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-2.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 42,
+        "max_gold_path_prompt_tokens": 806
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-2_1",
+      "public_eval_hash": "5561a9b550049e4dde5dcb414a52c4f8c451a77a6fea655424adf72f66100b0a",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-2.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 103,
+        "max_gold_path_prompt_tokens": 865
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-3_0",
+      "public_eval_hash": "0a776727908a5dcf02393340106856750d57e60413b2180ccbfd37192d608592",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-3.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 42,
+        "max_gold_path_prompt_tokens": 826
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-3_1",
+      "public_eval_hash": "51d13fe0385fe54758bf79bccbcaa55d350e8b5476780d14978267b625d7b16c",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-3.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 149,
+        "max_gold_path_prompt_tokens": 885
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-4_0",
+      "public_eval_hash": "8a0cdd299e567c0fe9c7b5a6f1c0b308b091b38daec9a8682fae1a004af9ee99",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-4.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 42,
+        "max_gold_path_prompt_tokens": 775
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAgenda-AddMeeting-GetUserToken-level-2-4_1",
+      "public_eval_hash": "3b573a03ee6e1a32c504ba0e37d07b496423d3ac61d74eff38ce947d9f7653b8",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-4.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 103,
+        "max_gold_path_prompt_tokens": 834
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAlarm-GetReminder-ModifyAgenda-GetUserToken-level-2-1_0",
+      "public_eval_hash": "879b46bc9a5e12c3b782a73e9ba5b94bf57576d6abd9b6d1215781a1302ade2e",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAlarm-GetReminder-ModifyAgenda-GetUserToken-level-2-1.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 38,
+        "max_gold_path_prompt_tokens": 756
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_AddAlarm-GetReminder-ModifyAgenda-GetUserToken-level-2-1_1",
+      "public_eval_hash": "bc799e04f4862bbf2414af0ac351678a09b4d3b02cdc7a63b9b3b26154a31b5e",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/AddAlarm-GetReminder-ModifyAgenda-GetUserToken-level-2-1.jsonl:1",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 72,
+        "max_gold_path_prompt_tokens": 866
+      },
+      "tools": 2,
+      "turns": 1
+    },
+    {
+      "id": "apibank_api_bank_lv2_Calculator-QueryHistoryToday-level-2-1_0",
+      "public_eval_hash": "62051aa4a91277ff8aef0022961cc7567515acb6da8571522ac7d31e59b3e9b3",
+      "source_dataset": "AlibabaResearch/DAMO-ConvAI api-bank/lv1-lv2-samples/level-1-given-desc",
+      "source_family": "API-Bank-Lv2",
+      "source_row_idx": "api-bank/lv1-lv2-samples/level-1-given-desc/Calculator-QueryHistoryToday-level-2-1.jsonl:0",
+      "source_split": "API-Bank evaluation Lv1/Lv2 samples",
+      "token_filter": {
+        "max_gold_block_tokens": 33,
+        "max_gold_path_prompt_tokens": 593
+      },
+      "tools": 2,
+      "turns": 1
+    }
+  ],
+  "selection": {
+    "apibank_lv1_target": 13,
+    "apibank_lv2_target": 12,
+    "bfcl_ast_target": 8,
+    "bfcl_multi_target": 30,
+    "max_gold_tokens": 384,
+    "max_prompt_tokens": 4500,
+    "max_tools": 24,
+    "max_turns": 8,
+    "qwen_contract": "Every generated turn has exactly one Qwen-native XML tool-call gold block; multi-call BFCL answers are split into sequential one-call turns."
+  },
+  "source_family_counts": {
+    "API-Bank-Lv1": 13,
+    "API-Bank-Lv2": 12,
+    "BFCL-AST": 8,
+    "BFCL-multi_turn": 27
+  },
+  "source_records": [
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 18,
+      "sha256": "c4c1b741c71e2a17c97a5dc9c4a91d89978c4eaece56494d14272d5df6c650e9",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/gorilla_file_system.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 17,
+      "sha256": "83fa31708c89442bdcf12ac4dfbe3be8663ec9183a1b1524a9fda98164bc7e0b",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/math_api.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 15,
+      "sha256": "96480cd9cbd3d4a34cd8f78879bc6622731768a26e080f7a34782e36e3402287",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/memory_kv.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 5,
+      "sha256": "4ceff946df00983c7f0b95d1b70ae402247f3312fb898bac9ecfa1de52f5a783",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/memory_rec_sum.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 12,
+      "sha256": "917908ca99fdd01e203274b7ec6eb2347fa91d57f3c6341e20945cc9c9d746cf",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/memory_vector.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 10,
+      "sha256": "4d58ea933a5d2b280d7a52366617fb47fecd333d7b0e08e724db6fa12fb5f847",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/message_api.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 14,
+      "sha256": "87f9fc404a06e4107d7c366f1399c596440e84c16cb119faf374b2f532d86e8b",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/posting_api.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 9,
+      "sha256": "31324e0380782664fe82ba05bd23517808ad55692b45a5fe7c3d4d395fe4f0f8",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/ticket_api.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 20,
+      "sha256": "1a7933fd8f0cb8fbec38aeae05cb8c24132747cad4904fe1c13ac3d01fc22c2d",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/trading_bot.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 18,
+      "sha256": "f17b950c13adddf41d0848077df58788252e4c2e7cad5cfa71c8c4bf04f57b26",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/travel_booking.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 22,
+      "sha256": "0c8a66292844874ef7b168f343bc394d8615d2d9e1f4387999a9ee23011eac78",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/vehicle_control.json"
+    },
+    {
+      "kind": "multi_turn_func_doc",
+      "rows": 2,
+      "sha256": "61fcee411e35f7ff67415e18cd67276615cf06e1c8841a683d2d997dbb46eac5",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/web_search.json"
+    },
+    {
+      "category": "multi_turn_base",
+      "kind": "question",
+      "rows": 200,
+      "sha256": "1a21a995d06fd6f20ba55de7bced30ef953ec35e998f502ec2ecf4d66ef1c43a",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multi_turn_base.json"
+    },
+    {
+      "category": "multi_turn_base",
+      "kind": "possible_answer",
+      "rows": 200,
+      "sha256": "1fee67823b317571649177dd89d63969feaae4e810cc7448ee55ba797fb7c8fc",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_multi_turn_base.json"
+    },
+    {
+      "category": "multi_turn_miss_param",
+      "kind": "question",
+      "rows": 200,
+      "sha256": "f0c66dda3795f5f53e3e1c0cc8ba0246b6761c8f58bdba8317203bf451ab8838",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multi_turn_miss_param.json"
+    },
+    {
+      "category": "multi_turn_miss_param",
+      "kind": "possible_answer",
+      "rows": 200,
+      "sha256": "59c442901779e2c31c33abcd566d032e03736e5ad8069de2fe05489873046ecf",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_multi_turn_miss_param.json"
+    },
+    {
+      "category": "multi_turn_miss_func",
+      "kind": "question",
+      "rows": 200,
+      "sha256": "87d28ce10e37d864b72de85d5732eef2a867b241d6c1c99b4ae682c9e3ea921c",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multi_turn_miss_func.json"
+    },
+    {
+      "category": "multi_turn_miss_func",
+      "kind": "possible_answer",
+      "rows": 200,
+      "sha256": "69e679b806d1c871b05393a4b95583bb973248e5b8d96c2d7f4ca05e29fc32e6",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_multi_turn_miss_func.json"
+    },
+    {
+      "category": "multi_turn_long_context",
+      "kind": "question",
+      "rows": 200,
+      "sha256": "78c3268c5cc8e97c0f4ec6c811b3b9a2bba14323b1830b7a874b06d822749324",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multi_turn_long_context.json"
+    },
+    {
+      "category": "multi_turn_long_context",
+      "kind": "possible_answer",
+      "rows": 200,
+      "sha256": "e82aa0e839c39d23c64a05834f7ae024d7c9738ec21738ecee78dc876e3d0d18",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_multi_turn_long_context.json"
+    },
+    {
+      "category": "multiple",
+      "kind": "question",
+      "rows": 200,
+      "sha256": "aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multiple.json"
+    },
+    {
+      "category": "multiple",
+      "kind": "possible_answer",
+      "rows": 200,
+      "sha256": "244e00ce9395df948bcafc7bee64e8f9c87ef70887587d83cae45b13699f3047",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_multiple.json"
+    },
+    {
+      "category": "parallel",
+      "kind": "question",
+      "rows": 200,
+      "sha256": "19f51a82eff42e5d62541aa500115a056eb78f437c2ba1f10415fd7c8e5dda84",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_parallel.json"
+    },
+    {
+      "category": "parallel",
+      "kind": "possible_answer",
+      "rows": 200,
+      "sha256": "8a6aa19c1adddc6a5a2f7e40f9dbf30cc7e95815e7b830c90589ab318229e0f0",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_parallel.json"
+    },
+    {
+      "category": "parallel_multiple",
+      "kind": "question",
+      "rows": 200,
+      "sha256": "8863ea8433239f55c5f016154cf0830853c89f693c6ea270396a2fa121960579",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_parallel_multiple.json"
+    },
+    {
+      "category": "parallel_multiple",
+      "kind": "possible_answer",
+      "rows": 200,
+      "sha256": "5ebf24f458c1f16300c05505d83d6f0a1b68b79be273a033febd0d4f840507e3",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_parallel_multiple.json"
+    },
+    {
+      "category": "simple_python",
+      "kind": "question",
+      "rows": 400,
+      "sha256": "82dd63ba502eb2520c6b5d1d9a5c4b590e03ff261565175561f6228a367d1991",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_simple_python.json"
+    },
+    {
+      "category": "simple_python",
+      "kind": "possible_answer",
+      "rows": 400,
+      "sha256": "90cd5bc653690ee8e459b5b3f3fc9458606f7f3fcbf795bb51b7dc581f8c86dc",
+      "source": "BFCL",
+      "url": "https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_simple_python.json"
+    },
+    {
+      "kind": "api_schema_csv",
+      "sha256": "9341ebe9a9ab396b69310b80d6954a3dbba6c9ffd2fa5931e20bcf89202be6c0",
+      "source": "API-Bank",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/data/all_apis.csv"
+    },
+    {
+      "kind": "repo_tree",
+      "sha256": "4cb214ca6b6453419a0fb9ec7ee3975caa401d25953e91e5dab9d67cb65eac00",
+      "source": "API-Bank",
+      "url": "https://api.github.com/repos/AlibabaResearch/DAMO-ConvAI/git/trees/483554eae102996f5ec1f4feab4e78ef29c2a394?recursive=1"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 13,
+      "sha256": "1cd20b3cabdea2a7237fdbcbca615d6e54b8bd3aa5d9d4cdcb69e7956f201c33",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv1",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-level-1-1.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 12,
+      "sha256": "757247188a06a0ca87b7e3bd2601b3f74a12c992d886d83144da50a7612bee4a",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv1",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-level-1-2.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 10,
+      "sha256": "cec234e0d21f9e5a11f078b3fb3b395ebf03d4473ab3a615a479636199e1854b",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv1",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddAlarm-level-1-1.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 15,
+      "sha256": "c8f75c2ed8297225c0ef7c8bcfbbc949aca0dd450cbed143344baf7f8f10b1ec",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv1",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddMeeting-level-1-1.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 12,
+      "sha256": "dee9049e3c0211ea10ffc7f7523c3d58ec1e2b30fd88fb64eabda774cbd75c5a",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv1",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-1.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 8,
+      "sha256": "a805adf81a941b8b01156f5d93263cb82a4abb8a67f89dc92daed3c4d5cf2517",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv1",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-2.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 8,
+      "sha256": "281e2be7f715dd6bad85a06389381ecfed427256d18f43ad7a19ed4420b6bb35",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv1",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-3.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 12,
+      "sha256": "efe74ef0a01c32717f983b1d779f7dc979b4f90da5c1335726d0f7121667428e",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv2",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddAlarm-GetUserToken-level-2-1.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 5,
+      "sha256": "4e6e2dd795e3db0b3f590077029c2a199a5768bfcecc5e9f661a5c02ac29d46d",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv2",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-2.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 6,
+      "sha256": "3446a90a8322676443e83117911eca7ecaba052128894097ca4e31ac5932c956",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv2",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-3.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 5,
+      "sha256": "8ff5126f2e48498e00b1c169a29fdb0817dbb2385f5f9be3ad3665542c0fcf83",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv2",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-4.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 10,
+      "sha256": "e82db4f329f8a721d5ad1118695d27f6984a0990a6d65139964d0750afae0f41",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv2",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/AddAlarm-GetReminder-ModifyAgenda-GetUserToken-level-2-1.jsonl"
+    },
+    {
+      "kind": "dialogue",
+      "rows": 8,
+      "sha256": "f71ceac19dfa8bf855857221883efad32872b60c5c05b782004a8e4fa03c8ad9",
+      "source": "API-Bank",
+      "source_family": "API-Bank-Lv2",
+      "url": "https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/main/api-bank/lv1-lv2-samples/level-1-given-desc/Calculator-QueryHistoryToday-level-2-1.jsonl"
+    }
+  ],
+  "source_summary": {
+    "API-Bank-Lv1": {
+      "avg_tools": 2.0,
+      "categories": {
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-level-1-1.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-level-1-2.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddAlarm-level-1-1.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddMeeting-level-1-1.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-1.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-2.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddReminder-level-1-3.jsonl": 1
+      },
+      "episodes": 13,
+      "turns": 13
+    },
+    "API-Bank-Lv2": {
+      "avg_tools": 2.25,
+      "categories": {
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddAlarm-GetUserToken-level-2-1.jsonl": 3,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-2.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-3.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddAgenda-AddMeeting-GetUserToken-level-2-4.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/AddAlarm-GetReminder-ModifyAgenda-GetUserToken-level-2-1.jsonl": 2,
+        "api-bank/lv1-lv2-samples/level-1-given-desc/Calculator-QueryHistoryToday-level-2-1.jsonl": 1
+      },
+      "episodes": 12,
+      "turns": 12
+    },
+    "BFCL-AST": {
+      "avg_tools": 1.75,
+      "categories": {
+        "multiple": 2,
+        "parallel": 2,
+        "parallel_multiple": 2,
+        "simple_python": 2
+      },
+      "episodes": 8,
+      "turns": 12
+    },
+    "BFCL-multi_turn": {
+      "avg_tools": 7.148148148148148,
+      "categories": {
+        "multi_turn_base": 7,
+        "multi_turn_long_context": 6,
+        "multi_turn_miss_func": 7,
+        "multi_turn_miss_param": 7
+      },
+      "episodes": 27,
+      "turns": 147
+    }
+  },
+  "turns": 184
+}

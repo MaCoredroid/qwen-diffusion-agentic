@@ -1,0 +1,9 @@
+{"source": "BFCL-multi_turn", "id": "multi_turn_base_0", "reason": "empty_or_too_large", "turns": 10, "tools": 9}
+{"source": "BFCL-multi_turn", "id": "multi_turn_base_6", "reason": "empty_or_too_large", "turns": 9, "tools": 7}
+{"source": "BFCL-multi_turn", "id": "multi_turn_miss_param_0", "reason": "empty_or_too_large", "turns": 10, "tools": 9}
+{"source": "BFCL-multi_turn", "id": "multi_turn_miss_param_6", "reason": "empty_or_too_large", "turns": 9, "tools": 7}
+{"source": "BFCL-multi_turn", "id": "multi_turn_miss_func_0", "reason": "empty_or_too_large", "turns": 10, "tools": 9}
+{"source": "BFCL-multi_turn", "id": "multi_turn_miss_func_6", "reason": "empty_or_too_large", "turns": 9, "tools": 7}
+{"source": "BFCL-multi_turn", "id": "multi_turn_long_context_0", "reason": "empty_or_too_large", "turns": 10, "tools": 9}
+{"source": "BFCL-multi_turn", "id": "multi_turn_long_context_6", "reason": "empty_or_too_large", "turns": 9, "tools": 7}
+{"source": "BFCL-multi_turn", "id": "bfcl_mt_multi_turn_long_context_0008", "reason": "prompt_or_gold_too_long", "max_gold_path_prompt_tokens": 4314, "max_gold_block_tokens": 1161}
