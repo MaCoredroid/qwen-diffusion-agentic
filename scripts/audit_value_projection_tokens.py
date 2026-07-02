@@ -49,12 +49,45 @@ def value_spans(text: str) -> list[dict]:
     return spans
 
 
-def token_count_for_spans(tokenizer, text: str, spans: list[dict]) -> int:
+def token_offsets_from_generated_ids(tokenizer, token_ids: list[int]) -> tuple[str, list[tuple[int, int]]]:
+    pieces = []
+    offsets = []
+    cursor = 0
+    for token_id in token_ids:
+        piece = tokenizer.decode(
+            [int(token_id)],
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=False,
+        )
+        start = cursor
+        cursor += len(piece)
+        offsets.append((start, cursor))
+        pieces.append(piece)
+    return "".join(pieces), offsets
+
+
+def row_text_and_token_offsets(tokenizer, row: dict) -> tuple[str, list[tuple[int, int]], str]:
+    token_ids = row.get("generated_token_ids")
+    if isinstance(token_ids, list):
+        usable_ids = []
+        for token_id in token_ids:
+            try:
+                usable_ids.append(int(token_id))
+            except Exception:
+                return row.get("assistant") or "", [], "invalid_generated_token_ids"
+        text, offsets = token_offsets_from_generated_ids(tokenizer, usable_ids)
+        return text, offsets, "generated_token_ids"
+    text = row.get("assistant") or ""
+    encoded = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
+    offsets = [(int(start), int(end)) for start, end in encoded["offset_mapping"]]
+    return text, offsets, "retokenized_text"
+
+
+def token_count_for_spans(offsets: list[tuple[int, int]], spans: list[dict]) -> int:
     if not spans:
         return 0
-    encoded = tokenizer(text or "", add_special_tokens=False, return_offsets_mapping=True)
     count = 0
-    for start, end in encoded["offset_mapping"]:
+    for start, end in offsets:
         token_start, token_end = int(start), int(end)
         if token_end <= token_start:
             continue
@@ -64,18 +97,16 @@ def token_count_for_spans(tokenizer, text: str, spans: list[dict]) -> int:
 
 
 def output_value_token_count(tokenizer, row: dict) -> int:
-    text = row.get("assistant") or ""
-    return token_count_for_spans(tokenizer, text, value_spans(text))
+    text, offsets, _ = row_text_and_token_offsets(tokenizer, row)
+    return token_count_for_spans(offsets, value_spans(text))
 
 
-def projected_value_tokens_exact(tokenizer, row: dict) -> tuple[int | None, int]:
+def projected_value_tokens_exact(tokenizer, row: dict) -> tuple[int | None, int, str]:
     records = schedule_events(row).get("two_wave_wave1_projected_token_records")
     if not isinstance(records, list):
-        return None, 0
-    text = row.get("assistant") or ""
+        return None, 0, "no_projected_token_records"
+    text, offsets, offset_source = row_text_and_token_offsets(tokenizer, row)
     spans = value_spans(text)
-    encoded = tokenizer(text or "", add_special_tokens=False, return_offsets_mapping=True)
-    offsets = [(int(start), int(end)) for start, end in encoded["offset_mapping"]]
     value_positions = set()
     for idx, (start, end) in enumerate(offsets):
         if end <= start:
@@ -96,7 +127,7 @@ def projected_value_tokens_exact(tokenizer, row: dict) -> tuple[int | None, int]
             continue
         projected_total += 1
         projected_value += int(rel_idx in value_positions)
-    return projected_value, projected_total
+    return projected_value, projected_total, offset_source
 
 
 def audit_rows(tokenizer, rows: list[dict]) -> tuple[dict, list[dict]]:
@@ -112,7 +143,7 @@ def audit_rows(tokenizer, rows: list[dict]) -> tuple[dict, list[dict]]:
         ) + event_int(row, "two_wave_wave1_value_tokens")
         projected_value_lb = true_value_tokens if forwards == 0 else max(0, true_value_tokens - model_value_tokens)
         projected_value_lb = min(projected_value_lb, projected)
-        projected_value_exact, projected_record_count = projected_value_tokens_exact(tokenizer, row)
+        projected_value_exact, projected_record_count, offset_source = projected_value_tokens_exact(tokenizer, row)
         projected_value_for_gate = (
             projected_value_exact if projected_value_exact is not None else projected_value_lb
         )
@@ -132,6 +163,7 @@ def audit_rows(tokenizer, rows: list[dict]) -> tuple[dict, list[dict]]:
             "projected_true_value_tokens_lower_bound": projected_value_lb,
             "projected_value_tokens_exact": projected_value_exact,
             "projected_token_record_count": projected_record_count,
+            "offset_source": offset_source,
             "exact_depends_on_projected_values": exact and projected_value_for_gate > 0,
         }
         audited.append(out)
@@ -148,13 +180,20 @@ def audit_rows(tokenizer, rows: list[dict]) -> tuple[dict, list[dict]]:
         totals["rows_with_projected_value_tokens_exact"] += int((projected_value_exact or 0) > 0)
         totals["projected_token_record_count"] += int(projected_record_count or 0)
         totals["rows_with_projected_token_records"] += int(projected_value_exact is not None)
+        totals[f"offset_source:{offset_source}"] += 1
         totals["exact_rows_dependent_on_projected_values"] += int(exact and projected_value_for_gate > 0)
         totals["wave1_value_tokens_counter"] += event_int(row, "two_wave_wave1_value_tokens")
         totals["wave2_forced_tokens_counter"] += event_int(row, "two_wave_wave2_forced_tokens")
         totals["parallel_commit_forced_tokens_counter"] += event_int(row, "parallel_commit_forced_tokens")
-    if totals["rows_with_projected_token_records"]:
+    if totals["wave1_projected_tokens"] == 0:
+        totals["zero_projected_value_tokens_verified"] = 1
+        totals["verification_mode"] = "no_projection_events"
+    elif totals["rows_with_projected_token_records"]:
         totals["zero_projected_value_tokens_verified"] = int(totals["projected_value_tokens_exact"] == 0)
-        totals["verification_mode"] = "projected_token_records_x_tokenizer_offsets"
+        if totals.get("offset_source:generated_token_ids", 0):
+            totals["verification_mode"] = "projected_token_records_x_generated_token_offsets"
+        else:
+            totals["verification_mode"] = "projected_token_records_x_retokenized_offsets"
     else:
         totals["zero_projected_value_tokens_verified"] = int(
             totals["projected_true_value_tokens_lower_bound"] == 0

@@ -958,11 +958,17 @@ def apply_two_wave_grammar_projected_scaffold(
             candidate_pos = int(candidate)
             candidate_interval = interval_for_local_pos(intervals, candidate_pos)
             if candidate_interval is None:
+                if getattr(args, "two_wave_no_project_inside_parameter_value", False):
+                    break
                 continue
             if tool_call_index is not None and candidate_interval.get("tool_call_index") != tool_call_index:
+                if getattr(args, "two_wave_no_project_inside_parameter_value", False):
+                    break
                 continue
             candidate_kind = candidate_interval.get("kind") or "default"
             if candidate_kind == "argument_value" or candidate_kind not in project_kinds:
+                if getattr(args, "two_wave_no_project_inside_parameter_value", False):
+                    break
                 continue
             local_pos = candidate_pos
             interval = candidate_interval
@@ -975,6 +981,11 @@ def apply_two_wave_grammar_projected_scaffold(
             continue
         active_rows += 1
         for candidate_pos in range(local_pos, int(interval["end"])):
+            if getattr(args, "two_wave_no_project_inside_parameter_value", False):
+                generated = x_t[row_idx, original_len:].detach().tolist()
+                text = contiguous_decoded_prefix(tokenizer, generated, args.mask_id)
+                if qwen_native_inside_parameter_value(text):
+                    break
             abs_idx = int(window_abs_start) + int(candidate_pos)
             if int(x_t[row_idx, abs_idx].item()) != int(args.mask_id):
                 continue
@@ -3688,6 +3699,8 @@ def generate_case(model, tokenizer, case, args, sampler_schedule=None):
         else:
             args._live_tool_schemas = previous_live_tool_schemas
     new_ids = generated[prompt_input_ids.shape[1] :]
+    if getattr(args, "record_projected_token_positions", False) or getattr(args, "record_generated_token_ids", False):
+        args._last_generated_token_ids = [int(token_id) for token_id in new_ids.detach().cpu().tolist()]
     mask_count = int((new_ids == args.mask_id).sum().item())
     generated_token_count = int((new_ids != args.mask_id).sum().item())
     text = tokenizer.decode(new_ids, skip_special_tokens=True).strip()
@@ -3841,6 +3854,9 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
                 )
                 if stop_guard_trimmed:
                     row["pre_stop_boundary_assistant"] = raw_generated_text
+                generated_token_ids = getattr(args, "_last_generated_token_ids", None)
+                if generated_token_ids is not None:
+                    row["generated_token_ids"] = generated_token_ids
                 if repaired_metrics is not None:
                     row.update(
                         {
@@ -4516,6 +4532,14 @@ def main():
         "--record-projected-token-positions",
         action="store_true",
         help="Record exact relative token positions for grammar-projected wave-1 tokens.",
+    )
+    parser.add_argument(
+        "--record-generated-token-ids",
+        action="store_true",
+        help=(
+            "Record generated token ids for audit tooling. This is enabled implicitly by "
+            "--record-projected-token-positions."
+        ),
     )
     parser.add_argument(
         "--two-wave-no-project-inside-parameter-value",

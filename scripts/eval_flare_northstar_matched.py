@@ -72,6 +72,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--threshold", type=float, default=0.9)
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--diffusion-condition", choices=["percall_waves_tau095", "baseline_careful"], default="percall_waves_tau095")
     parser.add_argument("--diffusion-structural-only", action="store_true")
     parser.add_argument("--diffusion-output-name", default="diffusion")
     parser.add_argument("--timeout", type=float, default=120.0)
@@ -308,10 +309,15 @@ def write_manifest(args: argparse.Namespace, episodes: list[dict], tokenizer, ch
             "dtype": "bf16",
             "quant": "none",
             "decode": (
-                "per_call_waves_tau095_structural_only_prefix_cache"
-                if args.diffusion_structural_only
-                else "per_call_waves_tau095_prefix_cache"
+                "careful_plain_prefix_cache"
+                if args.diffusion_condition == "baseline_careful"
+                else (
+                    "per_call_waves_tau095_structural_only_prefix_cache"
+                    if args.diffusion_structural_only
+                    else "per_call_waves_tau095_prefix_cache"
+                )
             ),
+            "condition": args.diffusion_condition,
             "structural_only_projection": bool(args.diffusion_structural_only),
         },
     }
@@ -519,13 +525,22 @@ def run_diffusion(args: argparse.Namespace, episodes: list[dict], tokenizer, cha
     )
     argument_newline_token_ids = resolve_single_token_ids(model_tokenizer, ["\n", "\n\n"])
     rows = []
+    backend_name = (
+        "diffusion_careful"
+        if args.diffusion_condition == "baseline_careful"
+        else (
+            "diffusion_percall_waves_structural_only"
+            if args.diffusion_structural_only
+            else "diffusion_percall_waves"
+        )
+    )
     for episode in episodes:
         messages = [dict(message) for message in episode["prompt_messages"]]
         prompt = render_matched_prompt(model_tokenizer, messages, episode["tools"], chat_template)
         prefix_cache = FlarePrefixCache()
         gen_args = make_gen_args(
             args,
-            condition="percall_waves_tau095",
+            condition=args.diffusion_condition,
             prefix_cache=prefix_cache,
             mask_id=mask_id,
             stop_token_id=stop_token_id,
@@ -533,10 +548,12 @@ def run_diffusion(args: argparse.Namespace, episodes: list[dict], tokenizer, cha
             argument_boundary_token_ids=argument_boundary_token_ids,
             argument_newline_token_ids=argument_newline_token_ids,
         )
-        if args.diffusion_structural_only:
+        if args.diffusion_structural_only and args.diffusion_condition == "percall_waves_tau095":
             gen_args.two_wave_grammar_forced_only = True
             gen_args.record_projected_token_positions = True
             gen_args.two_wave_no_project_inside_parameter_value = True
+        elif args.diffusion_condition == "baseline_careful":
+            gen_args.record_projected_token_positions = True
         for turn_idx, gold_block in enumerate(episode["gold_blocks"]):
             schedule, schedule_record, schedule_build_seconds = build_schedule(model_tokenizer, gold_block)
             prompt_input_ids = model_tokenizer([prompt], return_tensors="pt").input_ids.to("cuda")
@@ -572,11 +589,7 @@ def run_diffusion(args: argparse.Namespace, episodes: list[dict], tokenizer, cha
             history_text = decode_text(model_tokenizer, new_ids)
             assistant_text = trim_scored_assistant(history_text)
             row = row_from_generation(
-                backend=(
-                    "diffusion_percall_waves_structural_only"
-                    if args.diffusion_structural_only
-                    else "diffusion_percall_waves"
-                ),
+                backend=backend_name,
                 episode=episode,
                 turn_idx=turn_idx,
                 prompt=prompt,
@@ -596,6 +609,8 @@ def run_diffusion(args: argparse.Namespace, episodes: list[dict], tokenizer, cha
                 },
             )
             row["assistant_history_sha256"] = sha256_text(history_text)
+            if getattr(gen_args, "record_projected_token_positions", False) or getattr(gen_args, "record_generated_token_ids", False):
+                row["generated_token_ids"] = [int(token_id) for token_id in new_ids.detach().cpu().tolist()]
             next_user = next_turn_user_message(episode, turn_idx + 1)
             row["next_user_message_sha256"] = sha256_text(next_user) if next_user is not None else None
             rows.append(row)
@@ -798,12 +813,15 @@ def write_report(args: argparse.Namespace) -> dict:
     guided_path = args.out_dir / "ar-vllm-guided" / "turns.jsonl"
     ar_guided_rows = read_rows(guided_path) if guided_path.exists() else []
     contaminated_diffusion_rows = read_rows(args.out_dir / "diffusion" / "turns.jsonl")
+    careful_diffusion_path = args.out_dir / "diffusion_careful" / "turns.jsonl"
+    careful_diffusion_rows = read_rows(careful_diffusion_path) if careful_diffusion_path.exists() else []
     corrected_diffusion_path = args.out_dir / "diffusion_structural_only" / "turns.jsonl"
     corrected_diffusion_rows = read_rows(corrected_diffusion_path) if corrected_diffusion_path.exists() else []
     diffusion_rows = corrected_diffusion_rows or contaminated_diffusion_rows
     ar = summarize_backend(ar_rows)
     ar_guided = summarize_backend(ar_guided_rows) if ar_guided_rows else None
     contaminated_diffusion = summarize_backend(contaminated_diffusion_rows)
+    careful_diffusion = summarize_backend(careful_diffusion_rows) if careful_diffusion_rows else None
     diffusion = summarize_backend(diffusion_rows)
     source_breakdown = {
         "ar_vllm": summarize_by_source(ar_rows),
@@ -884,6 +902,7 @@ def write_report(args: argparse.Namespace) -> dict:
         "ar_vllm": ar,
         "ar_vllm_guided": ar_guided,
         "diffusion_percall_waves_contaminated": contaminated_diffusion,
+        "diffusion_careful": careful_diffusion,
         "diffusion_percall_waves": diffusion,
         "diffusion_corrected_structural_only": bool(corrected_diffusion_rows),
         "source_breakdown": source_breakdown,
@@ -920,6 +939,19 @@ def write_report(args: argparse.Namespace) -> dict:
             f"| {ar_guided['all_schema_valid']}/{ar_guided['turns']} "
             f"| {ar_guided['sec_per_turn']:.3f} | {ar_guided['turn_wall_seconds']:.3f}s "
             f"| {ar_guided['generated_tokens_per_turn']:.3f} | n/a |"
+        )
+    if careful_diffusion is not None:
+        lines.append(
+            "| Diffusion careful (no waves) "
+            f"| {careful_diffusion['exact_arguments']}/{careful_diffusion['turns']} "
+            f"| {careful_diffusion['episode_exact_arguments_all_turns']}/{careful_diffusion['episodes']} "
+            f"| {careful_diffusion['exact_tool_sequence']}/{careful_diffusion['turns']} "
+            f"| {careful_diffusion['valid_tool_json']}/{careful_diffusion['turns']} "
+            f"| {careful_diffusion['all_schema_valid']}/{careful_diffusion['turns']} "
+            f"| {careful_diffusion['sec_per_turn']:.3f} "
+            f"| {careful_diffusion['turn_wall_seconds']:.3f}s "
+            f"| {careful_diffusion['generated_tokens_per_turn']:.3f} "
+            f"| {careful_diffusion['denoise_forwards_per_turn']:.3f} |"
         )
     if corrected_diffusion_rows:
         lines.append(
@@ -1076,6 +1108,7 @@ def write_report(args: argparse.Namespace) -> dict:
         ),
         f"- Full manifest: `{args.out_dir / 'fairness_manifest.json'}`.",
         f"- Per-turn rows: `{args.out_dir / 'ar-vllm/turns.jsonl'}`, `{args.out_dir / 'ar-vllm-guided/turns.jsonl'}`, `{args.out_dir / 'diffusion/turns.jsonl'}`"
+        + (f", `{careful_diffusion_path}`" if careful_diffusion_rows else "")
         + (f", `{corrected_diffusion_path}`" if corrected_diffusion_rows else "")
         + ".",
         ]
