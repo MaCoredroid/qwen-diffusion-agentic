@@ -7,6 +7,8 @@ from pathlib import Path
 
 
 TOOL_CALL_RE = re.compile(r"<tool_call>\s*(.*?)\s*</tool_call>", re.DOTALL)
+QWEN_FUNCTION_RE = re.compile(r"<function=([^>\s]+)>", re.DOTALL)
+QWEN_PARAMETER_RE = re.compile(r"<parameter=([^>\s]+)>(.*?)</parameter>", re.DOTALL)
 
 
 POLICIES = {
@@ -226,6 +228,54 @@ def token_sensitive_spans(json_text, base_offset):
     return spans
 
 
+def qwen_native_sensitive_spans(tool_text, base_offset):
+    spans = []
+    for match in QWEN_FUNCTION_RE.finditer(tool_text):
+        spans.append(
+            {
+                "start": base_offset + match.start(1),
+                "end": base_offset + match.end(1),
+                "kind": "tool_name",
+                "json_key": "name",
+                "json_path": "name",
+                "argument_path": None,
+                "text": match.group(1),
+            }
+        )
+    for match in QWEN_PARAMETER_RE.finditer(tool_text):
+        key = match.group(1).strip()
+        spans.append(
+            {
+                "start": base_offset + match.start(1),
+                "end": base_offset + match.end(1),
+                "kind": "json_key",
+                "json_key": key,
+                "json_path": key,
+                "argument_path": None,
+                "text": match.group(1),
+            }
+        )
+        value_start, value_end = match.span(2)
+        if value_start < value_end and tool_text[value_start] == "\n":
+            value_start += 1
+        if value_end > value_start and tool_text[value_end - 1] == "\n":
+            value_end -= 1
+        if value_start < value_end:
+            spans.append(
+                {
+                    "start": base_offset + value_start,
+                    "end": base_offset + value_end,
+                    "kind": "argument_value",
+                    "json_key": key,
+                    "json_path": key,
+                    "argument_path": key,
+                    "text": tool_text[value_start:value_end],
+                }
+            )
+    spans.sort(key=lambda item: (item["start"], item["end"]))
+    return spans
+
+
 def add_structural_gaps(segments, start, end, sensitive_spans, max_chars):
     cursor = start
     for span in sorted(sensitive_spans, key=lambda item: (item["start"], item["end"])):
@@ -248,7 +298,9 @@ def plan_text(text, max_prose_chars, max_json_structure_chars):
         body_start, body_end = match.span(1)
         segments.append({"start": match.start(), "end": body_start, "kind": "tool_tag"})
         body = text[body_start:body_end]
-        sensitive_spans = token_sensitive_spans(body, body_start)
+        sensitive_spans = qwen_native_sensitive_spans(body, body_start)
+        if not sensitive_spans:
+            sensitive_spans = token_sensitive_spans(body, body_start)
         add_structural_gaps(
             segments,
             body_start,

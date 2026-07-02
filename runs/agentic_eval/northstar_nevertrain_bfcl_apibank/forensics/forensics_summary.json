@@ -1,0 +1,1069 @@
+{
+  "inputs": {
+    "input_jsonl": "data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+    "old_run_dir": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank",
+    "corrected_run_dir": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank_forensics",
+    "corrected_diffusion_turns": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank_forensics/diffusion/turns.jsonl",
+    "tokenizer_path": "models/qwen3.5-9b-fastdllm-b1000-vllm-bf16"
+  },
+  "backend_summaries": {
+    "AR vLLM FR13": {
+      "turns": 184,
+      "exact_args": 74,
+      "episode_exact": 19,
+      "episodes": 60,
+      "exact_seq": 118,
+      "valid_xml": 169,
+      "schema_ok": 166,
+      "total_wall_seconds": 125.087,
+      "sec_per_turn": 0.6798206521739131,
+      "generated_tokens_per_turn": 46.233695652173914,
+      "model_forwards_total": null,
+      "model_forwards_per_turn": null,
+      "forwards_histogram": {},
+      "by_source": {
+        "API-Bank-Lv1": {
+          "turns": 13,
+          "exact_args": 7,
+          "episode_exact": 7,
+          "episodes": 13,
+          "exact_seq": 12,
+          "valid_xml": 12,
+          "schema_ok": 12,
+          "sec_per_turn": 0.802923076923077
+        },
+        "API-Bank-Lv2": {
+          "turns": 12,
+          "exact_args": 4,
+          "episode_exact": 4,
+          "episodes": 12,
+          "exact_seq": 9,
+          "valid_xml": 12,
+          "schema_ok": 12,
+          "sec_per_turn": 1.0340833333333335
+        },
+        "BFCL-AST": {
+          "turns": 12,
+          "exact_args": 12,
+          "episode_exact": 8,
+          "episodes": 8,
+          "exact_seq": 12,
+          "valid_xml": 12,
+          "schema_ok": 12,
+          "sec_per_turn": 0.6445833333333334
+        },
+        "BFCL-multi_turn": {
+          "turns": 147,
+          "exact_args": 51,
+          "episode_exact": 0,
+          "episodes": 27,
+          "exact_seq": 85,
+          "valid_xml": 133,
+          "schema_ok": 130,
+          "sec_per_turn": 0.642891156462585
+        }
+      }
+    },
+    "AR vLLM FR13 guided": {
+      "turns": 184,
+      "exact_args": 77,
+      "episode_exact": 19,
+      "episodes": 60,
+      "exact_seq": 126,
+      "valid_xml": 184,
+      "schema_ok": 184,
+      "total_wall_seconds": 108.68,
+      "sec_per_turn": 0.5906521739130435,
+      "generated_tokens_per_turn": 39.04891304347826,
+      "model_forwards_total": null,
+      "model_forwards_per_turn": null,
+      "forwards_histogram": {},
+      "by_source": {
+        "API-Bank-Lv1": {
+          "turns": 13,
+          "exact_args": 7,
+          "episode_exact": 7,
+          "episodes": 13,
+          "exact_seq": 13,
+          "valid_xml": 13,
+          "schema_ok": 13,
+          "sec_per_turn": 0.9033846153846153
+        },
+        "API-Bank-Lv2": {
+          "turns": 12,
+          "exact_args": 4,
+          "episode_exact": 4,
+          "episodes": 12,
+          "exact_seq": 9,
+          "valid_xml": 12,
+          "schema_ok": 12,
+          "sec_per_turn": 1.04325
+        },
+        "BFCL-AST": {
+          "turns": 12,
+          "exact_args": 12,
+          "episode_exact": 8,
+          "episodes": 8,
+          "exact_seq": 12,
+          "valid_xml": 12,
+          "schema_ok": 12,
+          "sec_per_turn": 0.65025
+        },
+        "BFCL-multi_turn": {
+          "turns": 147,
+          "exact_args": 54,
+          "episode_exact": 0,
+          "episodes": 27,
+          "exact_seq": 92,
+          "valid_xml": 147,
+          "schema_ok": 147,
+          "sec_per_turn": 0.5211836734693878
+        }
+      }
+    },
+    "Diffusion per-call waves (tainted)": {
+      "turns": 184,
+      "exact_args": 181,
+      "episode_exact": 57,
+      "episodes": 60,
+      "exact_seq": 184,
+      "valid_xml": 184,
+      "schema_ok": 184,
+      "total_wall_seconds": 160.986,
+      "sec_per_turn": 0.8749239130434782,
+      "generated_tokens_per_turn": 40.15217391304348,
+      "model_forwards_total": 110,
+      "model_forwards_per_turn": 0.5978260869565217,
+      "forwards_histogram": {
+        "0": 171,
+        "3": 10,
+        "5": 1,
+        "31": 1,
+        "44": 1
+      },
+      "by_source": {
+        "API-Bank-Lv1": {
+          "turns": 13,
+          "exact_args": 12,
+          "episode_exact": 12,
+          "episodes": 13,
+          "exact_seq": 13,
+          "valid_xml": 13,
+          "schema_ok": 13,
+          "sec_per_turn": 1.7533846153846153
+        },
+        "API-Bank-Lv2": {
+          "turns": 12,
+          "exact_args": 10,
+          "episode_exact": 10,
+          "episodes": 12,
+          "exact_seq": 12,
+          "valid_xml": 12,
+          "schema_ok": 12,
+          "sec_per_turn": 1.8877499999999998
+        },
+        "BFCL-AST": {
+          "turns": 12,
+          "exact_args": 12,
+          "episode_exact": 8,
+          "episodes": 8,
+          "exact_seq": 12,
+          "valid_xml": 12,
+          "schema_ok": 12,
+          "sec_per_turn": 0.85925
+        },
+        "BFCL-multi_turn": {
+          "turns": 147,
+          "exact_args": 147,
+          "episode_exact": 27,
+          "episodes": 27,
+          "exact_seq": 147,
+          "valid_xml": 147,
+          "schema_ok": 147,
+          "sec_per_turn": 0.7158367346938775
+        }
+      }
+    },
+    "Diffusion per-call waves (corrected)": {
+      "turns": 184,
+      "exact_args": 88,
+      "episode_exact": 19,
+      "episodes": 60,
+      "exact_seq": 141,
+      "valid_xml": 182,
+      "schema_ok": 147,
+      "total_wall_seconds": 295.134,
+      "sec_per_turn": 1.6039891304347826,
+      "generated_tokens_per_turn": 38.59239130434783,
+      "model_forwards_total": 1894,
+      "model_forwards_per_turn": 10.293478260869565,
+      "forwards_histogram": {
+        "2": 23,
+        "3": 23,
+        "4": 29,
+        "5": 28,
+        "6": 7,
+        "7": 13,
+        "8": 7,
+        "9": 4,
+        "10": 6,
+        "11": 1,
+        "14": 1,
+        "15": 3,
+        "16": 4,
+        "17": 4,
+        "18": 1,
+        "19": 2,
+        "21": 1,
+        "23": 2,
+        "24": 2,
+        "25": 2,
+        "26": 2,
+        "27": 1,
+        "32": 1,
+        "34": 3,
+        "35": 1,
+        "36": 1,
+        "37": 3,
+        "40": 1,
+        "41": 1,
+        "42": 2,
+        "45": 3,
+        "46": 1,
+        "74": 1
+      },
+      "by_source": {
+        "API-Bank-Lv1": {
+          "turns": 13,
+          "exact_args": 7,
+          "episode_exact": 7,
+          "episodes": 13,
+          "exact_seq": 13,
+          "valid_xml": 13,
+          "schema_ok": 12,
+          "sec_per_turn": 2.8901538461538463
+        },
+        "API-Bank-Lv2": {
+          "turns": 12,
+          "exact_args": 5,
+          "episode_exact": 5,
+          "episodes": 12,
+          "exact_seq": 11,
+          "valid_xml": 12,
+          "schema_ok": 9,
+          "sec_per_turn": 2.98525
+        },
+        "BFCL-AST": {
+          "turns": 12,
+          "exact_args": 10,
+          "episode_exact": 7,
+          "episodes": 8,
+          "exact_seq": 12,
+          "valid_xml": 12,
+          "schema_ok": 10,
+          "sec_per_turn": 1.357
+        },
+        "BFCL-multi_turn": {
+          "turns": 147,
+          "exact_args": 66,
+          "episode_exact": 0,
+          "episodes": 27,
+          "exact_seq": 105,
+          "valid_xml": 145,
+          "schema_ok": 116,
+          "sec_per_turn": 1.39765306122449
+        }
+      }
+    }
+  },
+  "old_diffusion_projection_audit": {
+    "totals": {
+      "turns": 184,
+      "zero_forward_turns": 171,
+      "zero_forward_turns_with_values": 171,
+      "exact_args": 181,
+      "exact_turns_dependent_on_projected_values": 181,
+      "wave1_projected_tokens": 7287,
+      "true_xml_value_tokens": 1433,
+      "reported_model_value_tokens": 56,
+      "projected_true_value_tokens_lower_bound": 1377,
+      "projected_scaffold_tokens_upper_bound": 5910,
+      "strict_old_no_value_projection_exact": 0
+    },
+    "per_turn_jsonl": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank/forensics/projection_value_audit.jsonl"
+  },
+  "corrected_diffusion_no_value_projection_check": {
+    "turns": 184,
+    "zero_forward_turns": 0,
+    "zero_forward_turns_with_values": 0,
+    "wave1_value_tokens": 0,
+    "wave2_value_tokens": 1297,
+    "parallel_commit_value_tokens": 1297,
+    "wave1_projected_tokens": 5224,
+    "model_forwards": 1894
+  },
+  "ar_guided_failure_taxonomy": {
+    "failure_count": 107,
+    "sample_size": 20,
+    "sample_counts": {
+      "missing/extra arg": 13,
+      "wrong value": 7
+    },
+    "all_failure_counts": {
+      "missing/extra arg": 66,
+      "wrong value": 41
+    },
+    "order_insensitive_recovers": 0,
+    "sample": [
+      {
+        "row_idx": 0,
+        "episode_idx": 0,
+        "episode_id": "bfcl_mt_multi_turn_base_0001",
+        "turn_idx": 0,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "cd"
+        ],
+        "generated_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "alex"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "ls",
+            "arguments": {
+              "a": true
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=ls>\n<parameter=a>\nTrue\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\nalex\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 2,
+        "episode_idx": 0,
+        "episode_id": "bfcl_mt_multi_turn_base_0001",
+        "turn_idx": 2,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "find"
+        ],
+        "generated_calls": [
+          {
+            "name": "find",
+            "arguments": {
+              "path": ".",
+              "name": "log.txt"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "mv",
+            "arguments": {
+              "source": "log.txt",
+              "destination": "archive"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=mv>\n<parameter=source>\nlog.txt\n</parameter>\n<parameter=destination>\narchive\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=find>\n<parameter=path>\n.\n</parameter>\n<parameter=name>\nlog.txt\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 3,
+        "episode_idx": 0,
+        "episode_id": "bfcl_mt_multi_turn_base_0001",
+        "turn_idx": 3,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "grep"
+        ],
+        "generated_calls": [
+          {
+            "name": "grep",
+            "arguments": {
+              "file_name": "log.txt",
+              "pattern": "Error"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "archive"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\narchive\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=grep>\n<parameter=file_name>\nlog.txt\n</parameter>\n<parameter=pattern>\nError\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 4,
+        "episode_idx": 0,
+        "episode_id": "bfcl_mt_multi_turn_base_0001",
+        "turn_idx": 4,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "cd"
+        ],
+        "generated_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "archive"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "grep",
+            "arguments": {
+              "file_name": "log.txt",
+              "pattern": "Error"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=grep>\n<parameter=file_name>\nlog.txt\n</parameter>\n<parameter=pattern>\nError\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\narchive\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 6,
+        "episode_idx": 1,
+        "episode_id": "bfcl_mt_multi_turn_base_0002",
+        "turn_idx": 0,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "wrong value",
+        "called_names": [
+          "cd"
+        ],
+        "generated_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "document"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "documents"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\ndocuments\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\ndocument\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 7,
+        "episode_idx": 1,
+        "episode_id": "bfcl_mt_multi_turn_base_0002",
+        "turn_idx": 1,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "echo"
+        ],
+        "generated_calls": [
+          {
+            "name": "echo",
+            "arguments": {
+              "content": "TeamNotes.txt",
+              "file_name": "TeamNotes.txt"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "touch",
+            "arguments": {
+              "file_name": "TeamNotes.txt"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=touch>\n<parameter=file_name>\nTeamNotes.txt\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=echo>\n<parameter=content>\nTeamNotes.txt\n</parameter>\n<parameter=file_name>\nTeamNotes.txt\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 10,
+        "episode_idx": 1,
+        "episode_id": "bfcl_mt_multi_turn_base_0002",
+        "turn_idx": 4,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "cd"
+        ],
+        "generated_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "document"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cp",
+            "arguments": {
+              "source": "TeamNotes.txt",
+              "destination": "Archived"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cp>\n<parameter=source>\nTeamNotes.txt\n</parameter>\n<parameter=destination>\nArchived\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\ndocument\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 11,
+        "episode_idx": 1,
+        "episode_id": "bfcl_mt_multi_turn_base_0002",
+        "turn_idx": 5,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "cp"
+        ],
+        "generated_calls": [
+          {
+            "name": "cp",
+            "arguments": {
+              "source": "TeamNotes.txt",
+              "destination": "archive"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "Archived"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\nArchived\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cp>\n<parameter=source>\nTeamNotes.txt\n</parameter>\n<parameter=destination>\narchive\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 12,
+        "episode_idx": 1,
+        "episode_id": "bfcl_mt_multi_turn_base_0002",
+        "turn_idx": 6,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "wrong value",
+        "called_names": [
+          "mv"
+        ],
+        "generated_calls": [
+          {
+            "name": "mv",
+            "arguments": {
+              "source": "archive/TeamNotes.txt",
+              "destination": "IdeasArchive.txt"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "mv",
+            "arguments": {
+              "source": "TeamNotes.txt",
+              "destination": "IdeasArchive.txt"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=mv>\n<parameter=source>\nTeamNotes.txt\n</parameter>\n<parameter=destination>\nIdeasArchive.txt\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=mv>\n<parameter=source>\narchive/TeamNotes.txt\n</parameter>\n<parameter=destination>\nIdeasArchive.txt\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 13,
+        "episode_idx": 1,
+        "episode_id": "bfcl_mt_multi_turn_base_0002",
+        "turn_idx": 7,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "cd"
+        ],
+        "generated_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "document"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cat",
+            "arguments": {
+              "file_name": "IdeasArchive.txt"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cat>\n<parameter=file_name>\nIdeasArchive.txt\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\ndocument\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 14,
+        "episode_idx": 2,
+        "episode_id": "bfcl_mt_multi_turn_base_0003",
+        "turn_idx": 0,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "find"
+        ],
+        "generated_calls": [
+          {
+            "name": "find",
+            "arguments": {
+              "name": "test"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "find",
+            "arguments": {
+              "path": ".",
+              "name": "test"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=find>\n<parameter=path>\n.\n</parameter>\n<parameter=name>\ntest\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=find>\n<parameter=name>\ntest\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 15,
+        "episode_idx": 2,
+        "episode_id": "bfcl_mt_multi_turn_base_0003",
+        "turn_idx": 1,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "wrong value",
+        "called_names": [
+          "cd"
+        ],
+        "generated_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "."
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "projects"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\nprojects\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\n.\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 16,
+        "episode_idx": 2,
+        "episode_id": "bfcl_mt_multi_turn_base_0003",
+        "turn_idx": 2,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "cp"
+        ],
+        "generated_calls": [
+          {
+            "name": "cp",
+            "arguments": {
+              "source": "test_images",
+              "destination": "backup_tests"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "photography"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\nphotography\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cp>\n<parameter=source>\ntest_images\n</parameter>\n<parameter=destination>\nbackup_tests\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 17,
+        "episode_idx": 2,
+        "episode_id": "bfcl_mt_multi_turn_base_0003",
+        "turn_idx": 3,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "wrong value",
+        "called_names": [
+          "cp"
+        ],
+        "generated_calls": [
+          {
+            "name": "cp",
+            "arguments": {
+              "source": "test_text",
+              "destination": "backup_tests"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cp",
+            "arguments": {
+              "source": "test_image1.jpg",
+              "destination": "backup_tests"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cp>\n<parameter=source>\ntest_image1.jpg\n</parameter>\n<parameter=destination>\nbackup_tests\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cp>\n<parameter=source>\ntest_text\n</parameter>\n<parameter=destination>\nbackup_tests\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 18,
+        "episode_idx": 2,
+        "episode_id": "bfcl_mt_multi_turn_base_0003",
+        "turn_idx": 4,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "wrong value",
+        "called_names": [
+          "cp"
+        ],
+        "generated_calls": [
+          {
+            "name": "cp",
+            "arguments": {
+              "source": "test_data",
+              "destination": "backup_tests"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cp",
+            "arguments": {
+              "source": "test_document.txt",
+              "destination": "backup_tests"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cp>\n<parameter=source>\ntest_document.txt\n</parameter>\n<parameter=destination>\nbackup_tests\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cp>\n<parameter=source>\ntest_data\n</parameter>\n<parameter=destination>\nbackup_tests\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 19,
+        "episode_idx": 3,
+        "episode_id": "bfcl_mt_multi_turn_base_0004",
+        "turn_idx": 0,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "cd"
+        ],
+        "generated_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "tmp"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "ls",
+            "arguments": {
+              "a": true
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=ls>\n<parameter=a>\nTrue\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\ntmp\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 20,
+        "episode_idx": 3,
+        "episode_id": "bfcl_mt_multi_turn_base_0004",
+        "turn_idx": 1,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "wrong value",
+        "called_names": [
+          "sort"
+        ],
+        "generated_calls": [
+          {
+            "name": "sort",
+            "arguments": {
+              "file_name": "report"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "sort",
+            "arguments": {
+              "file_name": "report.txt"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=sort>\n<parameter=file_name>\nreport.txt\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=sort>\n<parameter=file_name>\nreport\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 21,
+        "episode_idx": 3,
+        "episode_id": "bfcl_mt_multi_turn_base_0004",
+        "turn_idx": 2,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "wrong value",
+        "called_names": [
+          "post_tweet"
+        ],
+        "generated_calls": [
+          {
+            "name": "post_tweet",
+            "arguments": {
+              "content": "Here is the sorted result of the report.",
+              "tags": [
+                "currenttechtrend"
+              ],
+              "mentions": [
+                "Julia"
+              ]
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "post_tweet",
+            "arguments": {
+              "content": "Initial report content More unsorted data Unsorted data",
+              "mentions": [
+                "@Julia"
+              ],
+              "tags": [
+                "#currenttechtrend"
+              ]
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=post_tweet>\n<parameter=content>\nInitial report content More unsorted data Unsorted data\n</parameter>\n<parameter=mentions>\n[\"@Julia\"]\n</parameter>\n<parameter=tags>\n[\"#currenttechtrend\"]\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=post_tweet>\n<parameter=content>\nHere is the sorted result of the report.\n</parameter>\n<parameter=tags>\n[\"currenttechtrend\"]\n</parameter>\n<parameter=mentions>\n[\"Julia\"]\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 22,
+        "episode_idx": 4,
+        "episode_id": "bfcl_mt_multi_turn_base_0005",
+        "turn_idx": 0,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "find"
+        ],
+        "generated_calls": [
+          {
+            "name": "find",
+            "arguments": {
+              "name": "analysis_report.csv"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "project"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\nproject\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=find>\n<parameter=name>\nanalysis_report.csv\n</parameter>\n</function>\n</tool_call>"
+      },
+      {
+        "row_idx": 23,
+        "episode_idx": 4,
+        "episode_id": "bfcl_mt_multi_turn_base_0005",
+        "turn_idx": 1,
+        "source": "bfcl_v4_multi_turn",
+        "source_family": "BFCL-multi_turn",
+        "category": "missing/extra arg",
+        "called_names": [
+          "cd"
+        ],
+        "generated_calls": [
+          {
+            "name": "cd",
+            "arguments": {
+              "folder": "."
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "generated_invalid_count": 0,
+        "gold_calls": [
+          {
+            "name": "mv",
+            "arguments": {
+              "source": "analysis_report.csv",
+              "destination": "archive"
+            },
+            "format": "qwen_function"
+          }
+        ],
+        "gold_invalid_count": 0,
+        "gold_excerpt": "<tool_call>\n<function=mv>\n<parameter=source>\nanalysis_report.csv\n</parameter>\n<parameter=destination>\narchive\n</parameter>\n</function>\n</tool_call>",
+        "assistant_excerpt": "<tool_call>\n<function=cd>\n<parameter=folder>\n.\n</parameter>\n</function>\n</tool_call>"
+      }
+    ]
+  },
+  "corrected_three_way_table": [
+    {
+      "backend": "AR vLLM FR13",
+      "exact_args": "74/184",
+      "episode_exact": "19/60",
+      "exact_seq": "118/184",
+      "valid_xml": "169/184",
+      "schema_ok": "166/184",
+      "sec_per_turn": 0.68,
+      "total_wall_seconds": 125.087,
+      "model_forwards_per_turn": "n/a"
+    },
+    {
+      "backend": "AR vLLM FR13 guided",
+      "exact_args": "77/184",
+      "episode_exact": "19/60",
+      "exact_seq": "126/184",
+      "valid_xml": "184/184",
+      "schema_ok": "184/184",
+      "sec_per_turn": 0.591,
+      "total_wall_seconds": 108.68,
+      "model_forwards_per_turn": "n/a"
+    },
+    {
+      "backend": "Diffusion per-call waves (corrected)",
+      "exact_args": "88/184",
+      "episode_exact": "19/60",
+      "exact_seq": "141/184",
+      "valid_xml": "182/184",
+      "schema_ok": "147/184",
+      "sec_per_turn": 1.604,
+      "total_wall_seconds": 295.134,
+      "model_forwards_per_turn": 10.293
+    }
+  ],
+  "artifacts": {
+    "summary_json": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank/forensics/forensics_summary.json",
+    "report_md": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank/forensics/forensics_report.md",
+    "projection_audit_jsonl": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank/forensics/projection_value_audit.jsonl",
+    "taxonomy_jsonl": "runs/agentic_eval/northstar_nevertrain_bfcl_apibank/forensics/ar_guided_failure_taxonomy.jsonl"
+  }
+}
