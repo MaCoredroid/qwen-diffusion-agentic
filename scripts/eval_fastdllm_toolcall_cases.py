@@ -142,9 +142,40 @@ def load_sampler_schedules(path):
                 continue
             row = json.loads(line)
             key = case_key(row, idx)
+            row["schedule"] = annotate_sampler_schedule(row.get("schedule") or [])
             rows[key] = row
-            schedules[key] = row.get("schedule") or []
+            schedules[key] = row["schedule"]
     return schedules, rows
+
+
+def annotate_sampler_schedule(schedule):
+    annotated = [dict(item) for item in schedule]
+    explicit = []
+    for item in annotated:
+        value = item.get("tool_call_index")
+        if isinstance(value, int):
+            explicit.append((int(item.get("token_start", 0)), int(value)))
+
+    for idx, item in enumerate(annotated):
+        value = item.get("tool_call_index")
+        if isinstance(value, int):
+            item["inferred_tool_call_index"] = int(value)
+            continue
+        token_start = int(item.get("token_start", 0))
+        prev_call = None
+        next_call = None
+        for start, call_idx in explicit:
+            if start <= token_start:
+                prev_call = call_idx
+            elif next_call is None:
+                next_call = call_idx
+                break
+        kind = item.get("kind") or "scheduled"
+        if kind == "prose" and next_call is not None and next_call != prev_call:
+            item["inferred_tool_call_index"] = next_call
+        else:
+            item["inferred_tool_call_index"] = prev_call if prev_call is not None else next_call
+    return annotated
 
 
 def parse_kind_set(raw):
@@ -774,6 +805,52 @@ def leftmost_mask_interval_for_kinds(x_t, window_len, intervals, allowed_kinds, 
     return None
 
 
+def masked_intervals_for_kinds(x_t, window_len, intervals, allowed_kinds, mask_id, tool_call_index=None):
+    allowed_kinds = set(allowed_kinds)
+    seen = set()
+    matched = []
+    mask_idx = x_t[:, -window_len:] == mask_id
+    if not bool(mask_idx.any().item()):
+        return matched
+    for local_pos in mask_idx.nonzero(as_tuple=False)[:, 1].detach().tolist():
+        interval = interval_for_local_pos(intervals, int(local_pos))
+        if interval is None:
+            continue
+        kind = interval.get("kind") or "default"
+        if allowed_kinds and kind not in allowed_kinds:
+            continue
+        if tool_call_index is not None and interval.get("tool_call_index") != tool_call_index:
+            continue
+        key = interval_key(interval)
+        if key in seen:
+            continue
+        seen.add(key)
+        matched.append(interval)
+    return matched
+
+
+def active_tool_call_index_for_waves(x_t, window_len, intervals, wave1_kinds, wave2_kinds, mask_id):
+    allowed_kinds = set(wave1_kinds) | set(wave2_kinds)
+    candidates = []
+    mask_idx = x_t[:, -window_len:] == mask_id
+    if not bool(mask_idx.any().item()):
+        return None
+    for local_pos in mask_idx.nonzero(as_tuple=False)[:, 1].detach().tolist():
+        interval = interval_for_local_pos(intervals, int(local_pos))
+        if interval is None:
+            continue
+        kind = interval.get("kind") or "default"
+        if kind not in allowed_kinds:
+            continue
+        call_idx = interval.get("tool_call_index")
+        if call_idx is None:
+            continue
+        candidates.append((int(call_idx), int(local_pos)))
+    if not candidates:
+        return None
+    return sorted(candidates)[0][0]
+
+
 def interval_key(interval):
     if not interval:
         return None
@@ -794,6 +871,46 @@ def _wave_event_increment(schedule_events, event_prefix, key, amount=1):
     _event_increment(schedule_events, f"{event_prefix}_{key}", amount)
 
 
+def grammar_legal_candidate_token_ids(tokenizer, sequence, original_len, abs_idx, mask_id, schemas, mode):
+    generated = sequence[original_len:].detach().tolist()
+    text = contiguous_decoded_prefix(tokenizer, generated, mask_id)
+    candidate_ids = native_tool_candidate_token_ids(tokenizer, text, schemas=schemas)
+    legal = []
+    seen = set()
+    for token_id in candidate_ids:
+        token_id = int(token_id)
+        if token_id in seen:
+            continue
+        seen.add(token_id)
+        if proposal_keeps_tool_json_prefix(
+            tokenizer,
+            sequence.clone(),
+            original_len,
+            abs_idx,
+            token_id,
+            mask_id,
+            schemas=schemas,
+            mode=mode,
+        ):
+            legal.append(token_id)
+    return legal
+
+
+def target_is_truly_forced_grammar_token(tokenizer, sequence, original_len, abs_idx, target_token_id, args):
+    schemas = getattr(args, "_live_tool_schemas", {}) or {}
+    mode = getattr(args, "tool_prefix_guard_mode", "qwen_native")
+    legal = grammar_legal_candidate_token_ids(
+        tokenizer,
+        sequence,
+        original_len,
+        abs_idx,
+        args.mask_id,
+        schemas,
+        mode,
+    )
+    return len(legal) == 1 and int(legal[0]) == int(target_token_id)
+
+
 def apply_two_wave_grammar_projected_scaffold(
     tokenizer,
     x_t,
@@ -803,6 +920,8 @@ def apply_two_wave_grammar_projected_scaffold(
     original_len,
     args,
     schedule_events,
+    *,
+    tool_call_index=None,
 ):
     project_kinds = set(args.two_wave_grammar_project_kinds)
     if not project_kinds:
@@ -817,13 +936,24 @@ def apply_two_wave_grammar_projected_scaffold(
         mask_idx = x_t[row_idx, -window_len:] == args.mask_id
         if not bool(mask_idx.any().item()):
             continue
-        local_pos = int(mask_idx.nonzero(as_tuple=False)[0, 0].item())
-        interval = interval_for_local_pos(intervals, local_pos)
-        if interval is None:
+        local_pos = None
+        interval = None
+        for candidate in mask_idx.nonzero(as_tuple=False)[:, 0].detach().tolist():
+            candidate_pos = int(candidate)
+            candidate_interval = interval_for_local_pos(intervals, candidate_pos)
+            if candidate_interval is None:
+                continue
+            if tool_call_index is not None and candidate_interval.get("tool_call_index") != tool_call_index:
+                continue
+            candidate_kind = candidate_interval.get("kind") or "default"
+            if candidate_kind == "argument_value" or candidate_kind not in project_kinds:
+                continue
+            local_pos = candidate_pos
+            interval = candidate_interval
+            break
+        if interval is None or local_pos is None:
             continue
         kind = interval.get("kind") or "default"
-        if kind == "argument_value" or kind not in project_kinds:
-            continue
         target_token_ids = interval.get("target_token_ids") or []
         if not interval.get("scheduled") or len(target_token_ids) != int(interval["end"]) - int(interval["start"]):
             continue
@@ -834,6 +964,15 @@ def apply_two_wave_grammar_projected_scaffold(
                 continue
             target_idx = int(candidate_pos) - int(interval["start"])
             token_id = int(target_token_ids[target_idx])
+            if args.two_wave_grammar_forced_only and not target_is_truly_forced_grammar_token(
+                tokenizer,
+                x_t[row_idx].clone(),
+                original_len,
+                abs_idx,
+                token_id,
+                args,
+            ):
+                break
             if not proposal_keeps_tool_json_prefix(
                 tokenizer,
                 x_t[row_idx].clone(),
@@ -995,6 +1134,7 @@ def apply_toolcall_parallel_commit_run(
     *,
     threshold=None,
     allowed_kinds=None,
+    allowed_tool_call_index=None,
     event_prefix="parallel_commit",
     skip_disallowed=False,
 ):
@@ -1035,6 +1175,14 @@ def apply_toolcall_parallel_commit_run(
                     break
                 candidate_kind = candidate_interval.get("kind") or "default"
                 if allowed_kinds and candidate_kind not in allowed_kinds:
+                    if skip_disallowed:
+                        continue
+                    stopped_rows.add(row_idx)
+                    break
+                if (
+                    allowed_tool_call_index is not None
+                    and candidate_interval.get("tool_call_index") != allowed_tool_call_index
+                ):
                     if skip_disallowed:
                         continue
                     stopped_rows.add(row_idx)
@@ -2399,6 +2547,7 @@ def scheduled_window_intervals(
                 "start": start - window_abs_start,
                 "end": end - window_abs_start,
                 "kind": item.get("kind") or "scheduled",
+                "tool_call_index": item.get("inferred_tool_call_index", item.get("tool_call_index")),
                 "scheduled": True,
                 "denoise_steps": item.get("denoise_steps"),
                 "constraint": item.get("constraint"),
@@ -2670,13 +2819,34 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                             continue
                     _event_increment(schedule_events, "parallel_commit_zero_commit_fallbacks")
                 else:
-                    restricted_wave1_interval = leftmost_mask_interval_for_kinds(
-                        x_t,
-                        window_len,
-                        intervals,
-                        args.two_wave_wave1_kinds,
-                        args.mask_id,
-                    )
+                    active_call_index = None
+                    if args.two_wave_per_call:
+                        active_call_index = active_tool_call_index_for_waves(
+                            x_t,
+                            window_len,
+                            intervals,
+                            args.two_wave_wave1_kinds,
+                            args.two_wave_wave2_kinds,
+                            args.mask_id,
+                        )
+                        wave1_intervals = masked_intervals_for_kinds(
+                            x_t,
+                            window_len,
+                            intervals,
+                            args.two_wave_wave1_kinds,
+                            args.mask_id,
+                            tool_call_index=active_call_index,
+                        )
+                    else:
+                        wave1_intervals = masked_intervals_for_kinds(
+                            x_t,
+                            window_len,
+                            intervals,
+                            args.two_wave_wave1_kinds,
+                            args.mask_id,
+                        )
+                    wave1_intervals = sorted(wave1_intervals, key=lambda row: (int(row["start"]), int(row["end"])))
+                    restricted_wave1_interval = wave1_intervals[0] if wave1_intervals else None
                     if restricted_wave1_interval is not None:
                         if args.two_wave_wave1_mode == "grammar_projected":
                             x_t, committed = apply_two_wave_grammar_projected_scaffold(
@@ -2688,6 +2858,7 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                                 original_len,
                                 args,
                                 schedule_events,
+                                tool_call_index=active_call_index if args.two_wave_per_call else None,
                             )
                             stopped = truncate_if_stopped(x_t)
                             if stopped is not None:
@@ -2697,13 +2868,28 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                             if committed > 0:
                                 continue
                     else:
-                        wave2_interval = leftmost_mask_interval_for_kinds(
-                            x_t,
-                            window_len,
-                            intervals,
-                            args.two_wave_wave2_kinds,
-                            args.mask_id,
-                        )
+                        if args.two_wave_per_call:
+                            wave2_intervals = masked_intervals_for_kinds(
+                                x_t,
+                                window_len,
+                                intervals,
+                                args.two_wave_wave2_kinds,
+                                args.mask_id,
+                                tool_call_index=active_call_index,
+                            )
+                            wave2_intervals = sorted(
+                                wave2_intervals,
+                                key=lambda row: (int(row["start"]), int(row["end"])),
+                            )
+                            wave2_interval = wave2_intervals[0] if wave2_intervals else None
+                        else:
+                            wave2_interval = leftmost_mask_interval_for_kinds(
+                                x_t,
+                                window_len,
+                                intervals,
+                                args.two_wave_wave2_kinds,
+                                args.mask_id,
+                            )
                         if wave2_interval is not None:
                             x_t, committed = apply_toolcall_parallel_commit_run(
                                 model,
@@ -2717,8 +2903,9 @@ def full_context_sample(model, input_ids, tokenizer, args, sampler_schedule=None
                                 schedule_events,
                                 threshold=args.two_wave_wave2_threshold,
                                 allowed_kinds=args.two_wave_wave2_kinds,
+                                allowed_tool_call_index=active_call_index if args.two_wave_per_call else None,
                                 event_prefix="two_wave_wave2",
-                                skip_disallowed=False,
+                                skip_disallowed=bool(args.two_wave_per_call),
                             )
                             stopped = truncate_if_stopped(x_t)
                             if stopped is not None:
@@ -3938,7 +4125,9 @@ def run_eval(model, tokenizer, args, eval_name, input_jsonl, out_jsonl, limit):
         "parallel_commit_kinds": sorted(args.parallel_commit_kinds),
         "parallel_commit_mode": "confident_run_same_forward" if args.parallel_commit_threshold is not None else "off",
         "two_wave_tool_schedule": args.two_wave_tool_schedule,
+        "two_wave_per_call": args.two_wave_per_call,
         "two_wave_wave1_mode": args.two_wave_wave1_mode,
+        "two_wave_grammar_forced_only": args.two_wave_grammar_forced_only,
         "two_wave_wave1_threshold": args.two_wave_wave1_threshold,
         "two_wave_wave1_kinds": sorted(args.two_wave_wave1_kinds),
         "two_wave_grammar_project_kinds": sorted(args.two_wave_grammar_project_kinds),
@@ -4199,6 +4388,14 @@ def main():
         ),
     )
     parser.add_argument(
+        "--two-wave-per-call",
+        action="store_true",
+        help=(
+            "With --two-wave-tool-schedule, finish wave-1 scaffold and wave-2 values for the "
+            "current tool call before exposing later-call scaffold."
+        ),
+    )
+    parser.add_argument(
         "--two-wave-wave1-threshold",
         type=float,
         default=0.0,
@@ -4217,15 +4414,23 @@ def main():
     )
     parser.add_argument(
         "--two-wave-wave1-kinds",
-        default="tool_tag,json_structure,json_key,tool_name",
+        default="tool_tag,json_structure,json_key,tool_name,prose",
         help="Comma/space separated schedule kinds eligible for wave-1 commits.",
     )
     parser.add_argument(
         "--two-wave-grammar-project-kinds",
-        default="tool_tag,json_structure,json_key",
+        default="tool_tag,json_structure,json_key,prose",
         help=(
             "Comma/space separated non-value schedule kinds that grammar_projected wave 1 may "
             "fill directly from scaffold target ids. argument_value is always ignored."
+        ),
+    )
+    parser.add_argument(
+        "--two-wave-grammar-forced-only",
+        action="store_true",
+        help=(
+            "For grammar_projected wave 1, only direct-fill the target token when the live "
+            "native grammar exposes exactly one legal next token; otherwise decode carefully."
         ),
     )
     parser.add_argument(

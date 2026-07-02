@@ -1,0 +1,698 @@
+{
+  "anchor": {
+    "plain_careful_public_tau095_exact_args": "8/12"
+  },
+  "per_row_diff": {
+    "plain_exact_rows": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      10
+    ],
+    "old_A_lost_vs_plain": [
+      {
+        "idx": 1,
+        "classification": "iii_cross_call_separator_stop",
+        "finding": "Whole-block A omitted the deterministic inter-call prose/newline separator from wave 1; after call 1 the model emitted stop instead of exposing call 2. Per-call waves plus prose scaffold fixed this row.",
+        "plain": {
+          "idx": 1,
+          "id": "89ef3c87-66bd-46ee-9297-15398fd9a235",
+          "exact_args": true,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "initialize_smart_home_system",
+            "create_device_group"
+          ],
+          "calls": [
+            {
+              "name": "initialize_smart_home_system",
+              "arguments": {
+                "device_list": [
+                  "Philips Hue smart bulbs",
+                  "Nest Thermostat",
+                  "Arlo Pro 3 security camera"
+                ]
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "create_device_group",
+              "arguments": {
+                "group_name": "Main Control Group",
+                "devices": [
+                  "Philips Hue smart bulbs",
+                  "Nest Thermostat",
+                  "Arlo Pro 3 security camera"
+                ]
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=initialize_smart_home_system>\n<parameter=device_list>\n[\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=create_device_group>\n<parameter=group_name>\nMain Control Group\n</parameter>\n<parameter=devices>\n[\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]\n</parameter>\n</function></tool_call>"
+        },
+        "old_A": {
+          "idx": 1,
+          "id": "89ef3c87-66bd-46ee-9297-15398fd9a235",
+          "exact_args": false,
+          "exact_seq": false,
+          "valid_json": true,
+          "called_names": [
+            "initialize_smart_home_system"
+          ],
+          "calls": [
+            {
+              "name": "initialize_smart_home_system",
+              "arguments": {
+                "device_list": [
+                  "Philips Hue smart bulbs",
+                  "Nest Thermostat",
+                  "Arlo Pro 3 security camera"
+                ]
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<tool_call>\n<function=initialize_smart_home_system>\n<parameter=device_list>\n[\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]\n</parameter>\n</function>\n</tool_call>"
+        },
+        "percall_tau095": {
+          "idx": 1,
+          "id": "89ef3c87-66bd-46ee-9297-15398fd9a235",
+          "exact_args": true,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "initialize_smart_home_system",
+            "create_device_group"
+          ],
+          "calls": [
+            {
+              "name": "initialize_smart_home_system",
+              "arguments": {
+                "device_list": [
+                  "Philips Hue smart bulbs",
+                  "Nest Thermostat",
+                  "Arlo Pro 3 security camera"
+                ]
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "create_device_group",
+              "arguments": {
+                "group_name": "Main Control Group",
+                "devices": [
+                  "Philips Hue smart bulbs",
+                  "Nest Thermostat",
+                  "Arlo Pro 3 security camera"
+                ]
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<tool_call>\n<function=initialize_smart_home_system>\n<parameter=device_list>\n[\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=create_device_group>\n<parameter=group_name>\nMain Control Group\n</parameter>\n<parameter=devices>\n[\"Philips Hue smart bulbs\", \"Nest Thermostat\", \"Arlo Pro 3 security camera\"]\n</parameter>\n</function>\n</tool_call>"
+        }
+      },
+      {
+        "idx": 9,
+        "classification": "ii_value_corrupt",
+        "finding": "Final target value was truncated/corrupted in old A. Per-call waves removed the extra trailing tool call and restored validity, but the final value remained corrupt at tau 0.95 and tau 0.99.",
+        "plain": {
+          "idx": 9,
+          "id": "5790a757-bbe7-49d7-9fbd-d98cf3e0fd45",
+          "exact_args": true,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "create_quantum_workspace",
+            "estimate_quantum_resources",
+            "submit_quantum_program"
+          ],
+          "calls": [
+            {
+              "name": "create_quantum_workspace",
+              "arguments": {
+                "workspace_name": "ChemSimulationProject",
+                "location": "East US"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "estimate_quantum_resources",
+              "arguments": {
+                "qubits_required": "30",
+                "surface_code_distance": "3",
+                "error_budget": "0.001"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "submit_quantum_program",
+              "arguments": {
+                "language": "Q#",
+                "target": "Quantinuum H-Series Emulator"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=create_quantum_workspace>\n<parameter=workspace_name>\nChemSimulationProject\n</parameter>\n<parameter=location>\nEast US\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=estimate_quantum_resources>\n<parameter=qubits_required>\n30\n</parameter>\n<parameter=surface_code_distance>\n3\n</parameter>\n<parameter=error_budget>\n0.001\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=submit_quantum_program>\n<parameter=language>\nQ#\n</parameter>\n<paramete"
+        },
+        "old_A": {
+          "idx": 9,
+          "id": "5790a757-bbe7-49d7-9fbd-d98cf3e0fd45",
+          "exact_args": false,
+          "exact_seq": true,
+          "valid_json": false,
+          "called_names": [
+            "create_quantum_workspace",
+            "estimate_quantum_resources",
+            "submit_quantum_program"
+          ],
+          "calls": [
+            {
+              "name": "create_quantum_workspace",
+              "arguments": {
+                "workspace_name": "ChemSimulationProject",
+                "location": "East US"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "estimate_quantum_resources",
+              "arguments": {
+                "qubits_required": "30",
+                "surface_code_distance": "3",
+                "error_budget": "0.001"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "submit_quantum_program",
+              "arguments": {
+                "language": "Q#",
+                "target": "Quantinuum H-Series"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<tool_call>\n<function=create_quantum_workspace>\n<parameter=workspace_name>\nChemSimulationProject\n</parameter>\n<parameter=location>\nEast US\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=estimate_quantum_resources>\n<parameter=qubits_required>\n30\n</parameter>\n<parameter=surface_code_distance>\n3\n</parameter>\n<parameter=error_budget>\n0.001\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=submit_quantum_program>\n<parameter=language>\nQ#\n</parameter>\n<parameter=target>\nQuantinuu"
+        },
+        "percall_tau095": {
+          "idx": 9,
+          "id": "5790a757-bbe7-49d7-9fbd-d98cf3e0fd45",
+          "exact_args": false,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "create_quantum_workspace",
+            "estimate_quantum_resources",
+            "submit_quantum_program"
+          ],
+          "calls": [
+            {
+              "name": "create_quantum_workspace",
+              "arguments": {
+                "workspace_name": "ChemSimulationProject",
+                "location": "East US"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "estimate_quantum_resources",
+              "arguments": {
+                "qubits_required": "30",
+                "surface_code_distance": "3",
+                "error_budget": "0.001"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "submit_quantum_program",
+              "arguments": {
+                "language": "Q#",
+                "target": "Quantinuum H-Series\n</"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<tool_call>\n<function=create_quantum_workspace>\n<parameter=workspace_name>\nChemSimulationProject\n</parameter>\n<parameter=location>\nEast US\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=estimate_quantum_resources>\n<parameter=qubits_required>\n30\n</parameter>\n<parameter=surface_code_distance>\n3\n</parameter>\n<parameter=error_budget>\n0.001\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=submit_quantum_program>\n<parameter=language>\nQ#\n</parameter>\n<parameter=target>\nQuantinuu"
+        }
+      }
+    ],
+    "old_B_lost_vs_plain": [
+      {
+        "idx": 4,
+        "classification": "i_scaffold_tool_name_corrupt",
+        "finding": "Careful wave-1 whole-block ordering produced `sschedule_watering` instead of `schedule_watering`.",
+        "plain": {
+          "idx": 4,
+          "id": "d1bff923-dbd1-45da-b0a0-7bd33c9cbc46",
+          "exact_args": true,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "schedule_watering",
+            "activate_irrigation"
+          ],
+          "calls": [
+            {
+              "name": "schedule_watering",
+              "arguments": {
+                "zone_id": "zone_01",
+                "soil_moisture_threshold": "30",
+                "weather_condition": "sunny"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "activate_irrigation",
+              "arguments": {
+                "zone_id": "zone_01",
+                "duration": "15"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=schedule_watering>\n<parameter=zone_id>\nzone_01\n</parameter>\n<parameter=soil_moisture_threshold>\n30\n</parameter>\n<parameter=weather_condition>\nsunny\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=activate_irrigation>\n<parameter=zone_id>\nzone_01\n</parameter>\n<parameter=duration>\n15\n</parameter>\n</function>\n</tool_call>"
+        },
+        "old_B": {
+          "idx": 4,
+          "id": "d1bff923-dbd1-45da-b0a0-7bd33c9cbc46",
+          "exact_args": false,
+          "exact_seq": false,
+          "valid_json": true,
+          "called_names": [
+            "sschedule_watering",
+            "activate_irrigation"
+          ],
+          "calls": [
+            {
+              "name": "sschedule_watering",
+              "arguments": {
+                "zone_id": "zone_01",
+                "soil_moisture_threshold": "30",
+                "weather_condition": "sunny"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "activate_irrigation",
+              "arguments": {
+                "zone_id": "zone_01",
+                "duration": "15"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=sschedule_watering>\n<parameter=zone_id>\nzone_01\n</parameter>\n<parameter=soil_moisture_threshold>\n30\n</parameter>\n<parameter=weather_condition>\nsunny\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=activate_irrigation>\n<parameter=zone_id>\nzone_01\n</parameter>\n<parameter=duration>\n15\n</parameter>\n</function>\n</tool_call>"
+        }
+      },
+      {
+        "idx": 5,
+        "classification": "i_scaffold_tool_name_corrupt",
+        "finding": "Careful wave-1 whole-block ordering produced `set_thermostatmostat_temperature`.",
+        "plain": {
+          "idx": 5,
+          "id": "d43227ba-5022-4cfc-8b70-24fae64d82dd",
+          "exact_args": true,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "control_smart_light",
+            "set_thermostat_temperature"
+          ],
+          "calls": [
+            {
+              "name": "control_smart_light",
+              "arguments": {
+                "device_id": "living-room-light-001",
+                "command": "turn_on"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_thermostat_temperature",
+              "arguments": {
+                "device_id": "hallway-thermostat-002",
+                "temperature": "72"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=control_smart_light>\n<parameter=device_id>\nliving-room-light-001\n</parameter>\n<parameter=command>\nturn_on\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_thermostat_temperature>\n<parameter=device_id>\nhallway-thermostat-002\n</parameter>\n<parameter=temperature>\n72\n</parameter>\n</function>\n</tool_call>"
+        },
+        "old_B": {
+          "idx": 5,
+          "id": "d43227ba-5022-4cfc-8b70-24fae64d82dd",
+          "exact_args": false,
+          "exact_seq": false,
+          "valid_json": true,
+          "called_names": [
+            "control_smart_light",
+            "set_thermostatmostat_temperature"
+          ],
+          "calls": [
+            {
+              "name": "control_smart_light",
+              "arguments": {
+                "device_id": "living-room-light-001",
+                "command": "turn_on"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_thermostatmostat_temperature",
+              "arguments": {
+                "device_id": "hallway-thermostat-002",
+                "temperature": "72"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=control_smart_light>\n<parameter=device_id>\nliving-room-light-001\n</parameter>\n<parameter=command>\nturn_on\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_thermostatmostat_temperature>\n<parameter=device_id>\nhallway-thermostat-002\n</parameter>\n<parameter=temperature>\n72\n</parameter>\n</function></tool_call>"
+        }
+      },
+      {
+        "idx": 6,
+        "classification": "i_scaffold_tool_name_corrupt",
+        "finding": "Careful wave-1 whole-block ordering produced `set_thermostatmostat_schedule`.",
+        "plain": {
+          "idx": 6,
+          "id": "3f440c20-b332-48e2-aaa5-a7bfb0781ae9",
+          "exact_args": true,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "set_thermostat_schedule",
+            "set_door_lock_schedule",
+            "set_sprinkler_schedule"
+          ],
+          "calls": [
+            {
+              "name": "set_thermostat_schedule",
+              "arguments": {
+                "device_id": "TH12345",
+                "temperature": "68",
+                "schedule_time": "19:00"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_door_lock_schedule",
+              "arguments": {
+                "device_id": "DL54321",
+                "lock_state": "locked",
+                "schedule_time": "23:00"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_sprinkler_schedule",
+              "arguments": {
+                "device_id": "SP98765",
+                "interval_days": "2",
+                "start_time": "06:00"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=set_thermostat_schedule>\n<parameter=device_id>\nTH12345\n</parameter>\n<parameter=temperature>\n68\n</parameter>\n<parameter=schedule_time>\n19:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_door_lock_schedule>\n<parameter=device_id>\nDL54321\n</parameter>\n<parameter=lock_state>\nlocked\n</parameter>\n<parameter=schedule_time>\n23:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_sprinkler_schedule>\n<parameter=device_id>\nSP98765\n</p"
+        },
+        "old_B": {
+          "idx": 6,
+          "id": "3f440c20-b332-48e2-aaa5-a7bfb0781ae9",
+          "exact_args": false,
+          "exact_seq": false,
+          "valid_json": true,
+          "called_names": [
+            "set_thermostatmostat_schedule",
+            "set_door_lock_schedule",
+            "set_sprinkler_schedule"
+          ],
+          "calls": [
+            {
+              "name": "set_thermostatmostat_schedule",
+              "arguments": {
+                "device_id": "TH12345",
+                "temperature": "68",
+                "schedule_time": "19:00"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_door_lock_schedule",
+              "arguments": {
+                "device_id": "DL54321",
+                "lock_state": "locked",
+                "schedule_time": "23:00"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_sprinkler_schedule",
+              "arguments": {
+                "device_id": "SP98765",
+                "interval_days": "2",
+                "start_time": "06:00"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=set_thermostatmostat_schedule>\n<parameter=device_id>\nTH12345\n</parameter>\n<parameter=temperature>\n68\n</parameter>\n<parameter=schedule_time>\n19:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_door_lock_schedule>\n<parameter=device_id>\nDL54321\n</parameter>\n<parameter=lock_state>\nlocked\n</parameter>\n<parameter=schedule_time>\n23:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_sprinkler_schedule>\n<parameter=device_id>\nSP987"
+        }
+      },
+      {
+        "idx": 7,
+        "classification": "ii_value_boundary_corrupt",
+        "finding": "Tool sequence remained correct, but the final `schedule_time` value/close boundary became `</parameterparameter>`, dropping the argument.",
+        "plain": {
+          "idx": 7,
+          "id": "e279e98f-095a-4d44-9c2d-170b3cfdc4bb",
+          "exact_args": true,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "set_fridge_temperature_schedule",
+            "set_washing_machine_auto_off",
+            "set_lights_brightness_schedule"
+          ],
+          "calls": [
+            {
+              "name": "set_fridge_temperature_schedule",
+              "arguments": {
+                "appliance_id": "SF-001",
+                "temperature_mode": "energy_saving",
+                "start_time": "23:00",
+                "end_time": "07:00"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_washing_machine_auto_off",
+              "arguments": {
+                "appliance_id": "WM-002",
+                "auto_off": true
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_lights_brightness_schedule",
+              "arguments": {
+                "appliance_id": "SL-003",
+                "brightness_level": "30",
+                "schedule_time": "22:00"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=set_fridge_temperature_schedule>\n<parameter=appliance_id>\nSF-001\n</parameter>\n<parameter=temperature_mode>\nenergy_saving\n</parameter>\n<parameter=start_time>\n23:00\n</parameter>\n<parameter=end_time>\n07:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_washing_machine_auto_off>\n<parameter=appliance_id>\nWM-002\n</parameter>\n<parameter=auto_off>\nTrue\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_lights_brightness_schedule>\n<pa"
+        },
+        "old_B": {
+          "idx": 7,
+          "id": "e279e98f-095a-4d44-9c2d-170b3cfdc4bb",
+          "exact_args": false,
+          "exact_seq": true,
+          "valid_json": true,
+          "called_names": [
+            "set_fridge_temperature_schedule",
+            "set_washing_machine_auto_off",
+            "set_lights_brightness_schedule"
+          ],
+          "calls": [
+            {
+              "name": "set_fridge_temperature_schedule",
+              "arguments": {
+                "appliance_id": "SF-001",
+                "temperature_mode": "energy_saving",
+                "start_time": "23:00",
+                "end_time": "07:00"
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_washing_machine_auto_off",
+              "arguments": {
+                "appliance_id": "WM-002",
+                "auto_off": true
+              },
+              "format": "qwen_function"
+            },
+            {
+              "name": "set_lights_brightness_schedule",
+              "arguments": {
+                "appliance_id": "SL-003",
+                "brightness_level": "30"
+              },
+              "format": "qwen_function"
+            }
+          ],
+          "assistant_excerpt": "<think>\n\n</think>\n\n<tool_call>\n<function=set_fridge_temperature_schedule>\n<parameter=appliance_id>\nSF-001\n</parameter>\n<parameter=temperature_mode>\nenergy_saving\n</parameter>\n<parameter=start_time>\n23:00\n</parameter>\n<parameter=end_time>\n07:00\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_washing_machine_auto_off>\n<parameter=appliance_id>\nWM-002\n</parameter>\n<parameter=auto_off>\nTrue\n</parameter>\n</function>\n</tool_call>\n<tool_call>\n<function=set_lights_brightness_schedule>\n<pa"
+        }
+      }
+    ]
+  },
+  "sweep_rows": [
+    {
+      "label": "percall_fullproj",
+      "tau": "0.80",
+      "split": "heldout_native_12",
+      "records": 12,
+      "exact_args": 5,
+      "exact_seq": 11,
+      "valid_json": 11,
+      "blended_tpf": 1.852,
+      "scaffold_tpf": 6.39,
+      "value_tpf": 1.056,
+      "seconds_per_record": 9.37,
+      "wave1_projected_tokens": 1201,
+      "value_force_counters": {
+        "wave1_value_tokens": 0,
+        "wave2_forced_tokens": 0,
+        "tool_value_candidate_force_token_visits": 0,
+        "forced_schedule_token_visits": 0
+      },
+      "value_nonleakage_pass": true,
+      "summary_json": "runs/flare_redesign_run1_percall_waves/fullproj/tau_080/heldout_native_12.summary.json",
+      "output_jsonl": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_percall_waves/fullproj/tau_080/heldout_native_12.jsonl"
+    },
+    {
+      "label": "percall_fullproj",
+      "tau": "0.80",
+      "split": "public_native_12",
+      "records": 12,
+      "exact_args": 6,
+      "exact_seq": 9,
+      "valid_json": 9,
+      "blended_tpf": 2.547,
+      "scaffold_tpf": 8.268,
+      "value_tpf": 1.084,
+      "seconds_per_record": 5.45,
+      "wave1_projected_tokens": 1112,
+      "value_force_counters": {
+        "wave1_value_tokens": 0,
+        "wave2_forced_tokens": 0,
+        "tool_value_candidate_force_token_visits": 0,
+        "forced_schedule_token_visits": 0
+      },
+      "value_nonleakage_pass": true,
+      "summary_json": "runs/flare_redesign_run1_percall_waves/fullproj/tau_080/public_native_12.summary.json",
+      "output_jsonl": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_percall_waves/fullproj/tau_080/public_native_12.jsonl"
+    },
+    {
+      "label": "percall_fullproj",
+      "tau": "0.95",
+      "split": "heldout_native_12",
+      "records": 12,
+      "exact_args": 5,
+      "exact_seq": 11,
+      "valid_json": 11,
+      "blended_tpf": 1.795,
+      "scaffold_tpf": 6.39,
+      "value_tpf": 1.018,
+      "seconds_per_record": 9.58,
+      "wave1_projected_tokens": 1201,
+      "value_force_counters": {
+        "wave1_value_tokens": 0,
+        "wave2_forced_tokens": 0,
+        "tool_value_candidate_force_token_visits": 0,
+        "forced_schedule_token_visits": 0
+      },
+      "value_nonleakage_pass": true,
+      "summary_json": "runs/flare_redesign_run1_percall_waves/fullproj/tau_095/heldout_native_12.summary.json",
+      "output_jsonl": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_percall_waves/fullproj/tau_095/heldout_native_12.jsonl"
+    },
+    {
+      "label": "percall_fullproj",
+      "tau": "0.95",
+      "split": "public_native_12",
+      "records": 12,
+      "exact_args": 7,
+      "exact_seq": 10,
+      "valid_json": 10,
+      "blended_tpf": 2.465,
+      "scaffold_tpf": 8.322,
+      "value_tpf": 1.036,
+      "seconds_per_record": 5.55,
+      "wave1_projected_tokens": 1112,
+      "value_force_counters": {
+        "wave1_value_tokens": 0,
+        "wave2_forced_tokens": 0,
+        "tool_value_candidate_force_token_visits": 0,
+        "forced_schedule_token_visits": 0
+      },
+      "value_nonleakage_pass": true,
+      "summary_json": "runs/flare_redesign_run1_percall_waves/fullproj/tau_095/public_native_12.summary.json",
+      "output_jsonl": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_percall_waves/fullproj/tau_095/public_native_12.jsonl"
+    },
+    {
+      "label": "percall_fullproj",
+      "tau": "0.99",
+      "split": "heldout_native_12",
+      "records": 12,
+      "exact_args": 5,
+      "exact_seq": 11,
+      "valid_json": 11,
+      "blended_tpf": 1.783,
+      "scaffold_tpf": 6.39,
+      "value_tpf": 1.009,
+      "seconds_per_record": 9.63,
+      "wave1_projected_tokens": 1201,
+      "value_force_counters": {
+        "wave1_value_tokens": 0,
+        "wave2_forced_tokens": 0,
+        "tool_value_candidate_force_token_visits": 0,
+        "forced_schedule_token_visits": 0
+      },
+      "value_nonleakage_pass": true,
+      "summary_json": "runs/flare_redesign_run1_percall_waves/fullproj/tau_099/heldout_native_12.summary.json",
+      "output_jsonl": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_percall_waves/fullproj/tau_099/heldout_native_12.jsonl"
+    },
+    {
+      "label": "percall_fullproj",
+      "tau": "0.99",
+      "split": "public_native_12",
+      "records": 12,
+      "exact_args": 7,
+      "exact_seq": 10,
+      "valid_json": 10,
+      "blended_tpf": 2.421,
+      "scaffold_tpf": 8.322,
+      "value_tpf": 1.013,
+      "seconds_per_record": 5.66,
+      "wave1_projected_tokens": 1112,
+      "value_force_counters": {
+        "wave1_value_tokens": 0,
+        "wave2_forced_tokens": 0,
+        "tool_value_candidate_force_token_visits": 0,
+        "forced_schedule_token_visits": 0
+      },
+      "value_nonleakage_pass": true,
+      "summary_json": "runs/flare_redesign_run1_percall_waves/fullproj/tau_099/public_native_12.summary.json",
+      "output_jsonl": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_percall_waves/fullproj/tau_099/public_native_12.jsonl"
+    }
+  ]
+}
