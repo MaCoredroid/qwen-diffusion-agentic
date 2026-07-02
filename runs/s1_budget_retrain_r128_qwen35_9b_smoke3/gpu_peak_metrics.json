@@ -1,0 +1,6 @@
+{
+  "torch_cuda_max_memory_allocated_bytes": 22105823744,
+  "torch_cuda_max_memory_allocated_mib": 21081.75634765625,
+  "torch_cuda_max_memory_reserved_bytes": 22680698880,
+  "torch_cuda_max_memory_reserved_mib": 21630.0
+}

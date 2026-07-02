@@ -1,0 +1,32 @@
+{
+  "status": "pass",
+  "ceiling_mib": 31232.0,
+  "mandatory_r64_pass": true,
+  "r128_escalation_banked": true,
+  "smokes": [
+    {
+      "label": "r64_alpha128",
+      "output_dir": "runs/s1_budget_retrain_r64_qwen35_9b_smoke3",
+      "max_steps": 3,
+      "torch_cuda_max_memory_allocated_mib": 19838.06884765625,
+      "torch_cuda_max_memory_reserved_mib": 20576.0,
+      "train_runtime_seconds": 17.4385,
+      "train_steps_per_second": 0.172,
+      "train_loss": 11.815587361653646,
+      "global_step": 3,
+      "passed_30_5_gib_ceiling": true
+    },
+    {
+      "label": "r128_alpha256",
+      "output_dir": "runs/s1_budget_retrain_r128_qwen35_9b_smoke3",
+      "max_steps": 3,
+      "torch_cuda_max_memory_allocated_mib": 21081.75634765625,
+      "torch_cuda_max_memory_reserved_mib": 21630.0,
+      "train_runtime_seconds": 18.3415,
+      "train_steps_per_second": 0.164,
+      "train_loss": 11.79318618774414,
+      "global_step": 3,
+      "passed_30_5_gib_ceiling": true
+    }
+  ]
+}

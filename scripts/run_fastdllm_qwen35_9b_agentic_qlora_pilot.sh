@@ -17,6 +17,10 @@ MAX_STEPS="${MAX_STEPS:-50}"
 MAX_TRAIN_SAMPLES="${MAX_TRAIN_SAMPLES:-64}"
 BLOCK_SIZE="${BLOCK_SIZE:-512}"
 LEARNING_RATE="${LEARNING_RATE:-1e-5}"
+LR_SCHEDULER_TYPE="${LR_SCHEDULER_TYPE:-cosine}"
+LR_SCHEDULER_KWARGS="${LR_SCHEDULER_KWARGS:-}"
+WARMUP_RATIO="${WARMUP_RATIO:-0.03}"
+WARMUP_STEPS="${WARMUP_STEPS:-}"
 GRAD_ACCUM="${GRAD_ACCUM:-4}"
 SAVE_STEPS="${SAVE_STEPS:-25}"
 SAVE_TOTAL_LIMIT="${SAVE_TOTAL_LIMIT:-2}"
@@ -196,6 +200,14 @@ fi
 if [[ "${GRADIENT_CHECKPOINTING}" == "1" || "${GRADIENT_CHECKPOINTING}" == "true" || "${GRADIENT_CHECKPOINTING}" == "True" ]]; then
     EXTRA_ARGS+=(--gradient_checkpointing_kwargs "${GRADIENT_CHECKPOINTING_KWARGS}")
 fi
+if [[ -n "${WARMUP_STEPS}" ]]; then
+    EXTRA_ARGS+=(--warmup_steps "${WARMUP_STEPS}")
+else
+    EXTRA_ARGS+=(--warmup_ratio "${WARMUP_RATIO}")
+fi
+if [[ -n "${LR_SCHEDULER_KWARGS}" ]]; then
+    EXTRA_ARGS+=(--lr_scheduler_kwargs "${LR_SCHEDULER_KWARGS}")
+fi
 
 exec "${ENV_PY}" train_scripts/finetune.py \
     --model_name_or_path "${MODEL_PATH}" \
@@ -218,8 +230,7 @@ exec "${ENV_PY}" train_scripts/finetune.py \
     --max_train_samples "${MAX_TRAIN_SAMPLES}" \
     --overwrite_cache "${OVERWRITE_CACHE}" \
     --learning_rate "${LEARNING_RATE}" \
-    --lr_scheduler_type cosine \
-    --warmup_ratio 0.03 \
+    --lr_scheduler_type "${LR_SCHEDULER_TYPE}" \
     --seed "${SEED}" \
     --data_seed "${DATA_SEED}" \
     "${EXTRA_ARGS[@]}" \
