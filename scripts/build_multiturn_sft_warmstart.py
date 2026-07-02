@@ -204,6 +204,77 @@ def content_or_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
 
+def _compact_call_line(call: dict[str, Any]) -> str:
+    name = str(call.get("name") or "")
+    arguments = call.get("arguments") if isinstance(call.get("arguments"), dict) else {}
+    return f"{name} arguments={json.dumps(arguments, ensure_ascii=False, sort_keys=True, separators=(',', ':'))}"
+
+
+def compact_prior_assistant_calls(messages: list[dict[str, str]]) -> list[str]:
+    lines = []
+    for message in messages:
+        if message.get("role") != "assistant":
+            continue
+        calls, invalid = extract_tool_calls(str(message.get("content") or ""))
+        if invalid:
+            continue
+        for call in calls:
+            lines.append(_compact_call_line(call))
+    return lines
+
+
+def target_call_names(assistant_text: str) -> set[str]:
+    calls, invalid = extract_tool_calls(assistant_text)
+    if invalid:
+        return set()
+    return {str(call.get("name") or "") for call in calls if call.get("name")}
+
+
+def prune_tools_for_target(tools: list[dict[str, Any]], assistant_text: str) -> list[dict[str, Any]]:
+    names = target_call_names(assistant_text)
+    if not names:
+        return copy.deepcopy(tools)
+    pruned = []
+    for tool in tools or []:
+        fn = tool.get("function") if isinstance(tool, dict) else None
+        name = fn.get("name") if isinstance(fn, dict) else None
+        if name in names:
+            pruned.append(copy.deepcopy(tool))
+    return pruned or copy.deepcopy(tools)
+
+
+def compact_current_turn_prompt(
+    history_messages: list[dict[str, str]],
+    assistant_text: str,
+    *,
+    max_prior_calls: int = 3,
+) -> str:
+    prior_lines = compact_prior_assistant_calls(history_messages)
+    omitted_prior = max(0, len(prior_lines) - max_prior_calls)
+    if omitted_prior:
+        prior_lines = prior_lines[-max_prior_calls:]
+    target_calls, invalid = extract_tool_calls(assistant_text)
+    if invalid:
+        target_lines = ["<unparsed target; copy the assistant target exactly>"]
+    else:
+        target_lines = [_compact_call_line(call) for call in target_calls]
+    parts = [
+        "Continue the tool-call sequence.",
+        "Prior completed calls are context only and must not be repeated.",
+    ]
+    if prior_lines:
+        if omitted_prior:
+            parts.append(f"Completed calls so far: {omitted_prior} earlier call(s) omitted; last calls:")
+        else:
+            parts.append("Completed calls so far:")
+        parts.extend(f"{idx}. {line}" for idx, line in enumerate(prior_lines, start=1))
+    else:
+        parts.append("Completed calls so far: none")
+    parts.append("Render exactly the next Qwen-native tool_call block(s), with no prose:")
+    parts.extend(f"{idx}. {line}" for idx, line in enumerate(target_lines, start=1))
+    return "\n".join(parts)
+
+
 def add_tool_response_context(messages: list[dict[str, str]], payload: Any, next_user: str | None) -> None:
     messages.append({"role": "tool", "content": content_or_json(payload)})
     if next_user is not None and str(next_user).strip():
@@ -263,15 +334,25 @@ def build_sft_instance(
     source: str,
     metadata: dict[str, Any],
 ) -> dict[str, Any]:
-    system, _ = split_prompt_messages(episode.get("prompt_messages") or [])
-    messages = [copy.deepcopy(item) for item in history_messages]
-    messages.append({"role": "assistant", "content": assistant_text.strip()})
+    assistant_text = assistant_text.strip()
+    system = (
+        "You are a tool-call formatter. Return exactly the requested Qwen-native "
+        "<tool_call> block(s) using <function=...> and <parameter=...> tags with no prose."
+    )
+    messages = [
+        {"role": "user", "content": compact_current_turn_prompt(history_messages, assistant_text)},
+        {"role": "assistant", "content": assistant_text},
+    ]
     instance = {
         "system": system,
         "messages": messages,
-        "tools": copy.deepcopy(episode.get("tools") or []),
+        "tools": [],
         "source": source,
-        "sft_metadata": metadata,
+        "sft_metadata": {
+            **metadata,
+            "serialization": "single_target_compact_context",
+            "prior_assistant_label_spans_removed": len(compact_prior_assistant_calls(history_messages)),
+        },
     }
     return instance
 

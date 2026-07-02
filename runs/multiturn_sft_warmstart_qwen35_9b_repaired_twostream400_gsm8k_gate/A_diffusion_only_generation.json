@@ -1,0 +1,1492 @@
+{
+  "summary": {
+    "gsm8k": {
+      "examples": 20,
+      "strict_correct": 2,
+      "strict_accuracy": 0.1,
+      "flex_correct": 3,
+      "flex_accuracy": 0.15
+    },
+    "mbpp": {
+      "examples": 0,
+      "passed": 0,
+      "pass_at_1": 0.0
+    },
+    "elapsed_seconds": 732.5256233400432,
+    "generated_tokens": 4854,
+    "generated_tokens_per_second": 6.626389364876512,
+    "unresolved_mask_examples": 0
+  },
+  "per_example": [
+    {
+      "task": "gsm8k",
+      "idx": 0,
+      "id": "gsm8k-0",
+      "gold": "18",
+      "strict_pred": null,
+      "flex_pred": "12",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.72488609608263,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 199,
+        "forced_commits": 57,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "Natalia's ducks lay 16 eggs per day.\nShe uses 3 3 +30330330>>30303030303 16 - 3 -  4 =  13 eggs 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 124 12"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 1,
+      "id": "gsm8k-1",
+      "gold": "3",
+      "strict_pred": null,
+      "flex_pred": "4",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 37.36072007101029,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 221,
+        "forced_commits": 35,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "A robe2 bolts22=2>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4>>4"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 2,
+      "id": "gsm8k-2",
+      "gold": "70000",
+      "strict_pred": null,
+      "flex_pred": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.54561982897576,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 216,
+        "forced_commits": 40,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "The value house increased by 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 3,
+      "id": "gsm8k-3",
+      "gold": "540",
+      "strict_pred": "540",
+      "flex_pred": "540",
+      "strict_correct": true,
+      "flex_correct": true,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.214489521924406,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 207,
+        "forced_commits": 49,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "He runs 3*3=<<3*3=9>>9 sprints a week.\nHe runs 9*60=<<9*60=540>>540 meters a week.\n#### 540\n\n</think>\n####\n900\n####000\n 54\n000\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540\n 540"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 4,
+      "id": "gsm8k-4",
+      "gold": "20",
+      "strict_pred": null,
+      "flex_pred": "20",
+      "strict_correct": false,
+      "flex_correct": true,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 40.41246211505495,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 206,
+        "forced_commits": 50,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "N total 25 +225-25>>25>>25>>25>>25>>25>>220>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20>>20"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 5,
+      "id": "gsm8k-5",
+      "gold": "64",
+      "strict_pred": null,
+      "flex_pred": "2",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.56724750401918,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 144,
+        "forced_commits": 112,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "Kylar\nThe0.6 * 0.60 = 0.\nThe0.6\nThe0.\n\nThe0.\nThe\nThe\nThe4\n\n\nThe\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n24\n\n22\n22\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n\n2\n\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 6,
+      "id": "gsm8k-6",
+      "gold": "260",
+      "strict_pred": "240",
+      "flex_pred": "2",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.17891113599762,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 31,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 31,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 254,
+        "selected_mask_tokens": 0,
+        "natural_commits": 209,
+        "forced_commits": 47,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "Charleston has 4*20=<<4*20=80>>80 sheep.\nToulouse has 80*2=<<80*2=160>>160 sheep.\nIn total, they have 20+80+160=<<20+80+160=240>>240 sheep.\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 240\n#### 2"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 7,
+      "id": "gsm8k-7",
+      "gold": "160",
+      "strict_pred": null,
+      "flex_pred": "100",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 39.28163822297938,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 215,
+        "forced_commits": 41,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "The total size of the file is 200 GB.\nNormally, the download2222200/2=100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>100>>"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 8,
+      "id": "gsm8k-8",
+      "gold": "45",
+      "strict_pred": null,
+      "flex_pred": "20020002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 40.56375209102407,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 214,
+        "forced_commits": 42,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "Natalia\nThe80/2= 20022 20020002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 9,
+      "id": "gsm8k-9",
+      "gold": "460",
+      "strict_pred": "460",
+      "flex_pred": "460",
+      "strict_correct": true,
+      "flex_correct": true,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 114,
+      "seconds": 16.230858704075217,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 19,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 115,
+        "selected_mask_tokens": 0,
+        "natural_commits": 65,
+        "forced_commits": 50,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ],
+        "stop_token_hit": 248046,
+        "stop_offset": 113
+      },
+      "generated": "Eliza earns $10 for the first 40 hours.\nShe earns 40 * 10 = $400 for the first 40 hours.\nShe works 4 5 hours overtime, so 45 - 40 = 5 hours of overtime.\nShe earns 5 * (10 * 1.2) = $60 for the overtime.\nHer total earnings for the week are 400 + 60 = $460.\n#### 460"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 10,
+      "id": "gsm8k-10",
+      "gold": "366",
+      "strict_pred": null,
+      "flex_pred": "33",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.61359993496444,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 205,
+        "forced_commits": 51,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "The number of downloads in the second month was 60 * 3 = 180.\nThe0.30 reduction in30% in330% in330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%330%33"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 11,
+      "id": "gsm8k-11",
+      "gold": "694",
+      "strict_pred": "550",
+      "flex_pred": "2",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.629987039021216,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 165,
+        "forced_commits": 91,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "Natalia bought 3 dozen donuts for 3 * $68 = $204.\nShe bought 2 dozen mini cupcakes for 2 * $80 = $160.\nShe also bought 6 dozen mini cheesecakes for 6 * $55 = $330.\nThe total cost was $2204 + $160 + $330 = $550.\n#### 550\nThe total 550\n####  55\nThe48 + 2\n48 +\n\n2\n48 +\n2\n4\n2\n\n\n2\n\n\n22\n\n224\n24\n\n24\n\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n24\n2"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 12,
+      "id": "gsm8k-12",
+      "gold": "13",
+      "strict_pred": "12",
+      "flex_pred": "12",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 132,
+      "seconds": 19.1153475480387,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 4,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 132,
+        "selected_mask_tokens": 0,
+        "natural_commits": 82,
+        "forced_commits": 50,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ],
+        "stop_token_hit": 248046,
+        "stop_offset": 131
+      },
+      "generated": "The tree produces 7 lemons per year, and each lemon sells1.5, so the tree produces 7 * 1.5 = $<<7*1.5=10.5>>10.5 per year.\nThe cost to water and feed the tree is $3 per year.\nThe profit per year is 10.5 - 3 = $<<10.5-3=7.5>>7.5.\nTo earn back the initial investment of $90, it will take 90 / 7.5 = 12 years.\n#### 12"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 13,
+      "id": "gsm8k-13",
+      "gold": "18",
+      "strict_pred": null,
+      "flex_pred": "24",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.700952849932946,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 160,
+        "forced_commits": 96,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "Let x be the total number of vacuum cleaners.\nShe sold 1/3 of of the total at the green house, so she sold 1/3 x.She sold 2 more to the red house, so she sold 2.She sold half of what was left at the orange house, so she sold 1/2 (x - 1/3 x - 2).\nThe remaining pages are x2/3 x - 1/3 x - 2 - 2 = 0.\n2 = 122244>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24>>24"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 14,
+      "id": "gsm8k-14",
+      "gold": "60",
+      "strict_pred": "19",
+      "flex_pred": "20",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.40415638801642,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 31,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 255,
+        "selected_mask_tokens": 0,
+        "natural_commits": 183,
+        "forced_commits": 73,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "20% of 20 is 20/100*20 = <<20/100*20=4>>4 students enrolled in contemporary dance.\n25% of the remaining 20-4=16 is 25/100*16 = <<25/100*16=5>>5 students enrolled in jazz dance.\nSo 100% -  4 - 5 = 100 - 4 - 5 = 19 students left.\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 19\n#### 20\n#### 20\n#### 20\n#### 20\n#### 20\n#### 20\n#### 20\n#### 20\n#### 20\n#### 20\n####"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 15,
+      "id": "gsm8k-15",
+      "gold": "125",
+      "strict_pred": null,
+      "flex_pred": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 39.65673726296518,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 224,
+        "forced_commits": 32,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "The jewelry jewelry0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 16,
+      "id": "gsm8k-16",
+      "gold": "230",
+      "strict_pred": null,
+      "flex_pred": "0",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.390831306925975,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 198,
+        "forced_commits": 58,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "The trains travel 80 + 10 = <<0+0=0>>0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles0 miles"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 17,
+      "id": "gsm8k-17",
+      "gold": "57500",
+      "strict_pred": null,
+      "flex_pred": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.70370492595248,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 205,
+        "forced_commits": 51,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "She earns 30*50=11500 as a2 5000000 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 18,
+      "id": "gsm8k-18",
+      "gold": "7",
+      "strict_pred": null,
+      "flex_pred": "3",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 37.57273190689739,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 225,
+        "forced_commits": 31,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "Claire makes 3*3=3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs3 eggs"
+    },
+    {
+      "task": "gsm8k",
+      "idx": 19,
+      "id": "gsm8k-19",
+      "gold": "6",
+      "strict_pred": null,
+      "flex_pred": "120",
+      "strict_correct": false,
+      "flex_correct": false,
+      "mask_count": 0,
+      "nonmask_generated_tokens": 256,
+      "seconds": 38.6535076550208,
+      "sampler": {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 256,
+        "selected_mask_tokens": 0,
+        "natural_commits": 204,
+        "forced_commits": 52,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ]
+      },
+      "generated": "She total distance is 4 + 2 = 6 miles.\nThe total time for 1 + 1 = 2 hours.\nThe total time for 120 -  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /  120 /"
+    }
+  ],
+  "gpu": {
+    "samples": 718,
+    "gpu_peak_memory_mib": 18097,
+    "gpu_util_mean_pct": 99.21030640668523,
+    "gpu_util_max_pct": 100
+  },
+  "cuda_peak_allocated_gb": 8.280075073242188,
+  "cuda_peak_reserved_gb": 9.287109375
+}

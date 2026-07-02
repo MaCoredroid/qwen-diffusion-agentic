@@ -1,0 +1,18 @@
+{
+  "train_path": "data/multiturn_sft_warmstart_repaired/train_agentic_mix.json",
+  "heldout_path": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+  "train_count": 98,
+  "heldout_count": 40,
+  "full_hash_overlap_count": 0,
+  "content_hash_overlap_count": 0,
+  "sources": {
+    "train": [
+      "google-research-datasets/mbpp:full:train",
+      "openai/gsm8k:main:train",
+      "selfgen_multiturn_exact_audited"
+    ],
+    "heldout": [
+      "None"
+    ]
+  }
+}

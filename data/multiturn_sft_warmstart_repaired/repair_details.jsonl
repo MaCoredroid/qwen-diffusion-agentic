@@ -1,0 +1,98 @@
+{"index": 0, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 1, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 2, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 3, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 4, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 5, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 6, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 7, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 8, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 9, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 10, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 11, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 12, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 13, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 14, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 15, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 9, "original_message_count": 20, "original_assistant_message_count": 10}
+{"index": 16, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 17, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 18, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 19, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 2, "original_message_count": 6, "original_assistant_message_count": 3}
+{"index": 20, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 21, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 22, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 23, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 24, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 25, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 2, "original_message_count": 6, "original_assistant_message_count": 3}
+{"index": 26, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 2, "original_message_count": 6, "original_assistant_message_count": 3}
+{"index": 27, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 9, "original_message_count": 20, "original_assistant_message_count": 10}
+{"index": 28, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 29, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 30, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 31, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 32, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 33, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 34, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 35, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 36, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 37, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 2, "original_message_count": 6, "original_assistant_message_count": 3}
+{"index": 38, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 39, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 40, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 41, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 42, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 43, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 44, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 45, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 46, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 47, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 48, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 2, "original_message_count": 6, "original_assistant_message_count": 3}
+{"index": 49, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 50, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 51, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 52, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 53, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 54, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 55, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 9, "original_message_count": 20, "original_assistant_message_count": 10}
+{"index": 56, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 57, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 58, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 59, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 60, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 61, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 62, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 63, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 2, "original_message_count": 6, "original_assistant_message_count": 3}
+{"index": 64, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 65, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 66, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 67, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 68, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 69, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 70, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 71, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 72, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 73, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 74, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 75, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 76, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 77, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 78, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 79, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 80, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 81, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 82, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 83, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 84, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 9, "original_message_count": 20, "original_assistant_message_count": 10}
+{"index": 85, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 86, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 87, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 88, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 89, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 90, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 91, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 92, "source": "openai/gsm8k:main:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 93, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 94, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 1, "original_message_count": 4, "original_assistant_message_count": 2}
+{"index": 95, "source": "google-research-datasets/mbpp:full:train", "repaired": false, "reason": "retention_or_no_assistant"}
+{"index": 96, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}
+{"index": 97, "source": "selfgen_multiturn_exact_audited", "repaired": true, "prior_assistant_label_spans_removed": 0, "original_message_count": 2, "original_assistant_message_count": 1}

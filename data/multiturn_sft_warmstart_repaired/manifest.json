@@ -1,0 +1,68 @@
+{
+  "created_by": "scripts/repair_multiturn_sft_warmstart_serialization.py",
+  "input": "data/multiturn_sft_warmstart/lmflow_dataset/train_agentic_mix.json",
+  "train_path": "data/multiturn_sft_warmstart_repaired/train_agentic_mix.json",
+  "lmflow_dataset_dir": "data/multiturn_sft_warmstart_repaired/lmflow_dataset",
+  "lmflow_train_path": "data/multiturn_sft_warmstart_repaired/lmflow_dataset/train_agentic_mix.json",
+  "final_count": 98,
+  "source_counts": {
+    "google-research-datasets/mbpp:full:train": 24,
+    "openai/gsm8k:main:train": 25,
+    "selfgen_multiturn_exact_audited": 49
+  },
+  "repair_counts": {
+    "repaired": 49,
+    "retention_or_no_assistant": 49
+  },
+  "original_token_stats": {
+    "rows": 98,
+    "length": {
+      "min": 97,
+      "p50": 672,
+      "p90": 971,
+      "max": 2641
+    },
+    "full_labels": {
+      "min": 14,
+      "p50": 87,
+      "p90": 147,
+      "max": 856
+    },
+    "kept_labels": {
+      "min": 14,
+      "p50": 87,
+      "p90": 147,
+      "max": 239
+    },
+    "over_block_size": 49,
+    "full_labels_kept": 94,
+    "partial_after_truncation": 4,
+    "zero_after_truncation": 0
+  },
+  "repaired_token_stats": {
+    "rows": 98,
+    "length": {
+      "min": 97,
+      "p50": 193,
+      "p90": 294,
+      "max": 404
+    },
+    "full_labels": {
+      "min": 14,
+      "p50": 56,
+      "p90": 115,
+      "max": 198
+    },
+    "kept_labels": {
+      "min": 14,
+      "p50": 56,
+      "p90": 115,
+      "max": 198
+    },
+    "over_block_size": 0,
+    "full_labels_kept": 98,
+    "partial_after_truncation": 0,
+    "zero_after_truncation": 0
+  },
+  "block_size": 512
+}
