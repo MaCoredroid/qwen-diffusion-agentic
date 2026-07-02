@@ -19,4 +19,5 @@ This corpus is for the SFT warm-start stage only. Tool-call rows are self-genera
 ## SFT Settings
 
 - Train with `CONVERSATION_TEMPLATE=fast_dllm_v2_native` so the tool schema prompt and assistant targets use the native function/parameter contract.
+- Point `DATASET_DIR` at `data/multiturn_sft_warmstart/lmflow_dataset` so LMFlow only sees the conversation JSON.
 - The next gate is GSM8K retention accuracy `>=0.70`; stop before RL if it fails.

@@ -63,6 +63,12 @@ def load_conversation_instances(path: Path) -> list[dict[str, Any]]:
     return [item for item in instances if isinstance(item, dict)]
 
 
+def write_conversation_json(path: Path, instances: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {"type": "conversation", "instances": instances}
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
 def assistant_text_from_instance(instance: dict[str, Any]) -> str:
     return "\n".join(
         str(message.get("content") or "")
@@ -460,6 +466,7 @@ def write_report(path: Path, manifest: dict[str, Any]) -> None:
         "## SFT Settings",
         "",
         "- Train with `CONVERSATION_TEMPLATE=fast_dllm_v2_native` so the tool schema prompt and assistant targets use the native function/parameter contract.",
+        f"- Point `DATASET_DIR` at `{manifest['lmflow_dataset_dir']}` so LMFlow only sees the conversation JSON.",
         "- The next gate is GSM8K retention accuracy `>=0.70`; stop before RL if it fails.",
         "",
     ]
@@ -546,13 +553,15 @@ def main() -> int:
     rng.shuffle(final_instances)
 
     train_path = args.out_dir / "train_agentic_mix.json"
+    lmflow_train_path = args.out_dir / "lmflow_dataset" / "train_agentic_mix.json"
     audit_path = args.out_dir / "train_agentic_mix.audit.jsonl"
     manifest_path = args.out_dir / "manifest.json"
     report_path = args.out_dir / "report.md"
     projection_audit_path = args.out_dir / "projection_value_audit.json"
     projection_audit_detail_path = args.out_dir / "projection_value_audit.jsonl"
 
-    write_json(train_path, {"type": "conversation", "instances": final_instances})
+    write_conversation_json(train_path, final_instances)
+    write_conversation_json(lmflow_train_path, final_instances)
     write_jsonl(audit_path, rollout_audit_rows)
     tokenizer = AutoTokenizer.from_pretrained(str(args.tokenizer_path), trust_remote_code=True)
     tool_train_rows = [
@@ -586,6 +595,8 @@ def main() -> int:
     manifest = {
         "created_by": "scripts/build_multiturn_sft_warmstart.py",
         "train_path": str(train_path),
+        "lmflow_dataset_dir": str(lmflow_train_path.parent),
+        "lmflow_train_path": str(lmflow_train_path),
         "audit_path": str(audit_path),
         "final_count": len(final_instances),
         "tool_count": len(tool_examples),

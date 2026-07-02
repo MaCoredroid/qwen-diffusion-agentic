@@ -146,6 +146,8 @@
     ],
     "rejected_rows": 199
   },
+  "lmflow_dataset_dir": "data/multiturn_sft_warmstart/lmflow_dataset",
+  "lmflow_train_path": "data/multiturn_sft_warmstart/lmflow_dataset/train_agentic_mix.json",
   "mix": "50/50 tool self-generated audited turns and retention examples",
   "next_gate": {
     "gsm8k_retention": ">= 0.70 before RL",
