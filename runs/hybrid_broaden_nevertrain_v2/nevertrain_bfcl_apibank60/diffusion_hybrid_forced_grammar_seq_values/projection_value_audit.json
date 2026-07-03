@@ -1,0 +1,27 @@
+{
+  "per_row_jsonl": "runs/hybrid_broaden_nevertrain_v2/nevertrain_bfcl_apibank60/diffusion_hybrid_forced_grammar_seq_values/projection_value_audit.jsonl",
+  "rows": "runs/hybrid_broaden_nevertrain_v2/nevertrain_bfcl_apibank60/diffusion_hybrid_forced_grammar_seq_values/turns.jsonl",
+  "tokenizer": "models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "totals": {
+    "exact_args": 83,
+    "exact_rows_dependent_on_projected_values": 0,
+    "offset_source:no_projected_token_records": 184,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 0,
+    "projected_true_value_tokens_lower_bound": 0,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 2932,
+    "rows": 184,
+    "rows_with_projected_token_records": 0,
+    "rows_with_projected_true_value_tokens_lower_bound": 0,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 1397,
+    "verification_mode": "no_projection_events",
+    "wave1_projected_tokens": 0,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 0,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  }
+}
