@@ -1,0 +1,36 @@
+{
+  "duplicate_counts_selected": {
+    "id_duplicates": 0,
+    "public_eval_hash_duplicates": 0
+  },
+  "easy_fraction": 0.27636363636363637,
+  "easy_solved_reintroduced_records": 76,
+  "episode_set_hash": "c774c963d2c4d8838c9f53605dc5851b76038720ed48a373d51bcc0a802b8a2e",
+  "group_size4_easy_count_histogram": {
+    "1": 61,
+    "2": 7
+  },
+  "hard_records": 199,
+  "inputs": {
+    "easy_solved_source": "/home/mark/qwen_diffusion/data/rl_multiturn_v3_frontier_pool/dropped_solved4.jsonl",
+    "hard_frontier_fresh": "/home/mark/qwen_diffusion/data/rl_multiturn_v3_frontier_pool/episodes.jsonl"
+  },
+  "ordering_rule": "deterministic interleave to distribute easy rows through adjacent mixed-episode GRPO groups",
+  "out_jsonl": "/home/mark/qwen_diffusion/data/rl_multiturn_v4_mixed_pool/episodes.jsonl",
+  "records": 275,
+  "role_counts": {
+    "easy_solved_reintroduced": 76,
+    "hard_frontier_fresh": 199
+  },
+  "seed": 20260703,
+  "selection_rule": "all 199 v3 hard/frontier/fresh rows plus 76 deterministic sampled solved/easy rows, giving 27.6% easy rows",
+  "source_family_counts": {
+    "ToolACE-derived": 253,
+    "public-native-warmstart": 22
+  },
+  "turn_count_histogram": {
+    "2": 227,
+    "3": 41,
+    "4": 7
+  }
+}

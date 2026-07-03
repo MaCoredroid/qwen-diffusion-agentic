@@ -467,6 +467,8 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
             "temperature": float(args.kl_to_base_temperature),
             "reference": "initial trainable LoRA adapter tensor snapshot on CPU",
             "positions": "same parameter-value/free assistant tokens as policy loss",
+            "early_stop_window": int(args.kl_early_stop_window),
+            "early_stop_mean_threshold": float(args.kl_early_stop_mean_threshold),
         },
         "retention_probe": {
             "every_steps": int(args.retention_probe_every_steps),
@@ -563,6 +565,34 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
             f"rollout_s={row['rollout_seconds']:.2f} update_s={row['update_seconds']:.2f}",
             flush=True,
         )
+        kl_window = int(args.kl_early_stop_window)
+        kl_threshold = float(args.kl_early_stop_mean_threshold)
+        if kl_window > 0 and kl_threshold > 0 and len(step_rows) >= kl_window:
+            recent_kl = [float(item.get("kl_to_base_loss") or 0.0) for item in step_rows[-kl_window:]]
+            kl_mean = sum(recent_kl) / float(kl_window)
+            row["kl_early_stop_window"] = kl_window
+            row["kl_early_stop_mean"] = kl_mean
+            row["kl_early_stop_mean_threshold"] = kl_threshold
+            if kl_mean > kl_threshold:
+                row["early_stop_reason"] = "kl_last_window_mean"
+                append_jsonl(
+                    metrics_path,
+                    {
+                        "step": step,
+                        "event": "early_stop",
+                        "early_stop_reason": row["early_stop_reason"],
+                        "kl_window": kl_window,
+                        "kl_mean": kl_mean,
+                        "kl_mean_threshold": kl_threshold,
+                    },
+                )
+                print(
+                    "[early-stop] "
+                    f"step={step} kl_last_{kl_window}_mean={kl_mean:.4g} "
+                    f"> threshold={kl_threshold:.4g}",
+                    flush=True,
+                )
+                break
         if int(args.retention_probe_every_steps) > 0 and step % int(args.retention_probe_every_steps) == 0:
             probe = run_retention_probe(env, args, step)
             row["retention_probe"] = probe
@@ -594,6 +624,8 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         "early_stopped": bool(step_rows and step_rows[-1].get("early_stop_reason")),
         "early_stop_reason": step_rows[-1].get("early_stop_reason") if step_rows else None,
         "kl_to_base_coeff": float(args.kl_to_base_coeff),
+        "kl_early_stop_window": int(args.kl_early_stop_window),
+        "kl_early_stop_mean_threshold": float(args.kl_early_stop_mean_threshold),
         "retention_probe_every_steps": int(args.retention_probe_every_steps),
         "adapter_out": str(adapter_out),
         "trainable_params": trainable,
@@ -612,6 +644,7 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         f"- Policy replay tokens: `{summary['policy_tokens']}`",
         f"- Grammar-forced tokens masked from policy loss: `{summary['grammar_forced_tokens_masked']}`",
         f"- KL-to-base coefficient: `{float(args.kl_to_base_coeff)}`",
+        f"- KL early stop: last `{int(args.kl_early_stop_window)}` mean > `{float(args.kl_early_stop_mean_threshold)}`",
         f"- Retention probe cadence: every `{int(args.retention_probe_every_steps)}` steps, limit `{int(args.retention_probe_limit)}`",
         f"- Early stopped: `{summary['early_stopped']}` ({summary['early_stop_reason']})",
         f"- Mean step reward: `{summary['mean_reward']:.4f}`",
@@ -660,6 +693,18 @@ def parse_args() -> argparse.Namespace:
         help="Explicit KL penalty to the initial trainable adapter snapshot; v2 starts at 0.05.",
     )
     parser.add_argument("--kl-to-base-temperature", type=float, default=1.0)
+    parser.add_argument(
+        "--kl-early-stop-window",
+        type=int,
+        default=0,
+        help="Stop after an update when the mean unscaled KL over this many recent steps exceeds the threshold.",
+    )
+    parser.add_argument(
+        "--kl-early-stop-mean-threshold",
+        type=float,
+        default=0.0,
+        help="Mean unscaled KL threshold for --kl-early-stop-window; disabled at <=0.",
+    )
     parser.add_argument("--replay-max-prompt-tokens", type=int, default=768)
     parser.add_argument("--replay-max-seq-tokens", type=int, default=1024)
     parser.add_argument("--retention-probe-every-steps", type=int, default=50)

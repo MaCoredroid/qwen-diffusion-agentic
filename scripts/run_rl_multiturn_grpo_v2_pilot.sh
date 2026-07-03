@@ -13,6 +13,8 @@ MAX_STEPS="${MAX_STEPS:-300}"
 GROUP_SIZE="${GROUP_SIZE:-4}"
 LEARNING_RATE="${LEARNING_RATE:-5e-6}"
 KL_TO_BASE_COEFF="${KL_TO_BASE_COEFF:-0.05}"
+KL_EARLY_STOP_WINDOW="${KL_EARLY_STOP_WINDOW:-0}"
+KL_EARLY_STOP_MEAN_THRESHOLD="${KL_EARLY_STOP_MEAN_THRESHOLD:-0}"
 RETENTION_PROBE_EVERY_STEPS="${RETENTION_PROBE_EVERY_STEPS:-50}"
 RETENTION_PROBE_LIMIT="${RETENTION_PROBE_LIMIT:-5}"
 RETENTION_COLLAPSE_FLEX_ACCURACY="${RETENTION_COLLAPSE_FLEX_ACCURACY:-0.40}"
@@ -30,6 +32,8 @@ exec "$PYTHON" scripts/rl_multiturn_grpo_pilot.py \
   --learning-rate "$LEARNING_RATE" \
   --mixed-episode-groups \
   --kl-to-base-coeff "$KL_TO_BASE_COEFF" \
+  --kl-early-stop-window "$KL_EARLY_STOP_WINDOW" \
+  --kl-early-stop-mean-threshold "$KL_EARLY_STOP_MEAN_THRESHOLD" \
   --retention-probe-every-steps "$RETENTION_PROBE_EVERY_STEPS" \
   --retention-probe-limit "$RETENTION_PROBE_LIMIT" \
   --retention-collapse-flex-accuracy "$RETENTION_COLLAPSE_FLEX_ACCURACY"
