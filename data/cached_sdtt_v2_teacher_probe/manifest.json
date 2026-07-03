@@ -1,0 +1,37 @@
+{
+  "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+  "chat_template_path": "/home/mark/shared/lumoFlyWheel_codex_fork/docker/chat_templates/qwen3-openai-codex.jinja",
+  "chat_template_sha256": "c166a05aaf5ad4b807a7c46497f92180e3df24e64d4b54d27fd26ec61bec38da",
+  "config": {
+    "block_size": 32,
+    "max_prompt_tokens": 768,
+    "max_seq_tokens": 1024,
+    "quality_rl_v5": "held",
+    "reverse_kl_caveat": true,
+    "target_clean_turns": 160,
+    "teacher_steps": 2,
+    "top_k": 256
+  },
+  "elapsed_seconds": 1452.3610062599182,
+  "filtered_public_episodes": "data/cached_sdtt_v2_teacher_probe/rollouts/filtered_public_episodes.jsonl",
+  "git_head": "74e0c145d5aedf899c7f9b7ee3b008d55a0e4928",
+  "input_jsonl": "/home/mark/qwen_diffusion/data/rl_multiturn_v2_public_pool/episodes.jsonl",
+  "leak_filter_manifest": "data/cached_sdtt_v2_teacher_probe/rollouts/leak_filter_manifest.json",
+  "records_jsonl": "data/cached_sdtt_v2_teacher_probe/cached_sdtt_records.jsonl",
+  "script_sha256": "213452761b772df70c6d9d8c62875a46170b60c8e72371aa7d1eb98e750df23f",
+  "status": "ok",
+  "teacher_adapter": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model",
+  "teacher_rollout_rewards_jsonl": "data/cached_sdtt_v2_teacher_probe/teacher_rollout_rewards.jsonl",
+  "teacher_rollout_turns_jsonl": "data/cached_sdtt_v2_teacher_probe/teacher_rollout_turns.jsonl",
+  "tokenizer_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "totals": {
+    "cached_records": 160,
+    "cached_target_tokens": 1146,
+    "episodes_rolled_out": 130,
+    "exact_audit_clean_turns": 223,
+    "rejected_inexact_or_contaminated_turns": 46,
+    "rejected_targetless_exact_turns": 63,
+    "student_mask_tokens": 1703,
+    "turns_seen": 269
+  }
+}
