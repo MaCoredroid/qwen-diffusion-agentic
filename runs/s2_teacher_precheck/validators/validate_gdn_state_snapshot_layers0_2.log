@@ -1,0 +1,9 @@
+GDN state-snapshot validation harness
+model_dir=/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init
+device=cpu dtype=torch.float32 threads=4
+prompt_len=5 block_size=32 atol=0.001
+layers=[0, 2]
+layer	out_max_abs	state_max_abs	native_manual_full_max_abs	shortconv_tail_max_abs	shortconv_zero_first_lags_max_abs	shortconv_zero_after_lags_max_abs	nested_seed_readonly_max_abs	nested_repeat_out_max_abs	nested_repeat_state_max_abs	noisy_state_commit_sensitivity_max_abs	status
+0	1.86265e-07	1.04308e-07	0	5.96046e-08	1.28582	5.96046e-08	0	0	0	0.301438	MATCH
+2	1.60187e-07	7.82311e-08	0	5.96046e-08	0.894027	5.96046e-08	0	0	0	0.265678	MATCH
+FINAL: MATCH (GDN causal-within-block + nested-view state discipline, gate cleared)

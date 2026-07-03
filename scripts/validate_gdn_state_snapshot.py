@@ -29,6 +29,10 @@ class LayerResult:
     shortconv_tail_match_max_abs_diff: float
     shortconv_zero_first_lags_max_abs_diff: float
     shortconv_zero_after_lags_max_abs_diff: float
+    nested_seed_readonly_max_abs_diff: float
+    nested_repeat_output_max_abs_diff: float
+    nested_repeat_state_max_abs_diff: float
+    noisy_state_commit_sensitivity_max_abs_diff: float
     match: bool
     diagnosis: str
 
@@ -250,6 +254,35 @@ def validate_layer(
             initial_state=prefix_state,
             conv_tail=conv_tail,
         )
+        nested_seed_before = prefix_state.detach().clone()
+        nested_tail_before = conv_tail.detach().clone()
+        nested_student = hidden_states[:, prefix_len:].flip(1).contiguous()
+        nested_teacher = hidden_states[:, prefix_len:].clone()
+        nested_teacher[:, : max(1, block_size // 2)] = nested_student[:, : max(1, block_size // 2)]
+        teacher_out_0, teacher_state_0, _, _ = run_gdn_manual(
+            layer,
+            modeling_module,
+            nested_teacher,
+            chunk_size=block_size,
+            initial_state=prefix_state,
+            conv_tail=conv_tail,
+        )
+        student_out, student_state, _, _ = run_gdn_manual(
+            layer,
+            modeling_module,
+            nested_student,
+            chunk_size=block_size,
+            initial_state=prefix_state,
+            conv_tail=conv_tail,
+        )
+        teacher_out_1, teacher_state_1, _, _ = run_gdn_manual(
+            layer,
+            modeling_module,
+            nested_teacher,
+            chunk_size=block_size,
+            initial_state=prefix_state,
+            conv_tail=conv_tail,
+        )
         _, _, _, conv_qkv_block_zero = run_gdn_manual(
             layer,
             modeling_module,
@@ -275,6 +308,16 @@ def validate_layer(
         conv_qkv_block_tail[:, conv_lag:],
         conv_qkv_block_zero[:, conv_lag:],
     )
+    nested_seed_readonly_diff = max(
+        max_abs_diff(prefix_state, nested_seed_before),
+        max_abs_diff(conv_tail, nested_tail_before),
+    )
+    nested_repeat_output_diff = max_abs_diff(teacher_out_0, teacher_out_1)
+    nested_repeat_state_diff = max_abs_diff(teacher_state_0, teacher_state_1)
+    noisy_state_commit_sensitivity = max(
+        max_abs_diff(block_state, teacher_state_0),
+        max_abs_diff(block_state, student_state),
+    )
 
     output_ok = output_diff <= atol
     state_ok = state_diff <= atol
@@ -282,7 +325,21 @@ def validate_layer(
     conv_tail_ok = shortconv_tail_diff <= conv_atol
     conv_reads_prefix = shortconv_zero_first_diff > conv_atol
     conv_after_ok = shortconv_zero_after_diff <= conv_atol
-    match = output_ok and state_ok and native_ok and conv_tail_ok and conv_reads_prefix and conv_after_ok
+    nested_ok = (
+        nested_seed_readonly_diff <= conv_atol
+        and nested_repeat_output_diff <= atol
+        and nested_repeat_state_diff <= atol
+        and noisy_state_commit_sensitivity > atol * 10
+    )
+    match = (
+        output_ok
+        and state_ok
+        and native_ok
+        and conv_tail_ok
+        and conv_reads_prefix
+        and conv_after_ok
+        and nested_ok
+    )
 
     if match:
         diagnosis = "MATCH"
@@ -290,6 +347,8 @@ def validate_layer(
         diagnosis = "MISMATCH: manual wrapper diverges from local GDN forward"
     elif not conv_tail_ok or not conv_reads_prefix or not conv_after_ok:
         diagnosis = "MISMATCH: ShortConv boundary bug"
+    elif not nested_ok:
+        diagnosis = "MISMATCH: nested-view GDN state discipline bug"
     else:
         diagnosis = "MISMATCH: GDN recurrence state snapshot mismatch"
 
@@ -301,6 +360,10 @@ def validate_layer(
         shortconv_tail_match_max_abs_diff=shortconv_tail_diff,
         shortconv_zero_first_lags_max_abs_diff=shortconv_zero_first_diff,
         shortconv_zero_after_lags_max_abs_diff=shortconv_zero_after_diff,
+        nested_seed_readonly_max_abs_diff=nested_seed_readonly_diff,
+        nested_repeat_output_max_abs_diff=nested_repeat_output_diff,
+        nested_repeat_state_max_abs_diff=nested_repeat_state_diff,
+        noisy_state_commit_sensitivity_max_abs_diff=noisy_state_commit_sensitivity,
         match=match,
         diagnosis=diagnosis,
     )
@@ -338,7 +401,9 @@ def main() -> int:
     print(
         "layer\tout_max_abs\tstate_max_abs\tnative_manual_full_max_abs\t"
         "shortconv_tail_max_abs\tshortconv_zero_first_lags_max_abs\t"
-        "shortconv_zero_after_lags_max_abs\tstatus"
+        "shortconv_zero_after_lags_max_abs\tnested_seed_readonly_max_abs\t"
+        "nested_repeat_out_max_abs\tnested_repeat_state_max_abs\t"
+        "noisy_state_commit_sensitivity_max_abs\tstatus"
     )
 
     results = []
@@ -364,13 +429,17 @@ def main() -> int:
             f"{result.shortconv_tail_match_max_abs_diff:.6g}\t"
             f"{result.shortconv_zero_first_lags_max_abs_diff:.6g}\t"
             f"{result.shortconv_zero_after_lags_max_abs_diff:.6g}\t"
+            f"{result.nested_seed_readonly_max_abs_diff:.6g}\t"
+            f"{result.nested_repeat_output_max_abs_diff:.6g}\t"
+            f"{result.nested_repeat_state_max_abs_diff:.6g}\t"
+            f"{result.noisy_state_commit_sensitivity_max_abs_diff:.6g}\t"
             f"{result.diagnosis}",
             flush=True,
         )
 
     all_match = all(result.match for result in results)
     if all_match:
-        print("FINAL: MATCH (GDN causal-within-block, gate cleared)")
+        print("FINAL: MATCH (GDN causal-within-block + nested-view state discipline, gate cleared)")
         return 0
 
     print("FINAL: MISMATCH")

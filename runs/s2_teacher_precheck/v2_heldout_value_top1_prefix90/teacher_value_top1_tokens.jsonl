@@ -1,0 +1,180 @@
+{"absolute_token_pos": 1063, "cropped_token_pos": 1063, "gold_id": 16, "gold_text": "1", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 16, "pred_text": "1", "row_idx": 0}
+{"absolute_token_pos": 1087, "cropped_token_pos": 1087, "gold_id": 42546, "gold_text": "bnb", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 42546, "pred_text": "bnb", "row_idx": 0}
+{"absolute_token_pos": 1088, "cropped_token_pos": 1088, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0000", "match": false, "pred_id": 42546, "pred_text": "bnb", "row_idx": 0}
+{"absolute_token_pos": 1128, "cropped_token_pos": 1128, "gold_id": 12, "gold_text": "-", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 12, "pred_text": "-", "row_idx": 0}
+{"absolute_token_pos": 1129, "cropped_token_pos": 1129, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0000", "match": false, "pred_id": 12, "pred_text": "-", "row_idx": 0}
+{"absolute_token_pos": 1130, "cropped_token_pos": 1130, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0000", "match": false, "pred_id": 12, "pred_text": "-", "row_idx": 0}
+{"absolute_token_pos": 1131, "cropped_token_pos": 1131, "gold_id": 8934, "gold_text": "\"}", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 8934, "pred_text": "\"}", "row_idx": 0}
+{"absolute_token_pos": 1166, "cropped_token_pos": 1166, "gold_id": 16, "gold_text": "1", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 16, "pred_text": "1", "row_idx": 0}
+{"absolute_token_pos": 1180, "cropped_token_pos": 1180, "gold_id": 2434, "gold_text": "True", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 2434, "pred_text": "True", "row_idx": 0}
+{"absolute_token_pos": 1194, "cropped_token_pos": 1194, "gold_id": 2434, "gold_text": "True", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 2434, "pred_text": "True", "row_idx": 0}
+{"absolute_token_pos": 1227, "cropped_token_pos": 1227, "gold_id": 16, "gold_text": "1", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 16, "pred_text": "1", "row_idx": 0}
+{"absolute_token_pos": 1258, "cropped_token_pos": 1258, "gold_id": 19, "gold_text": "4", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 19, "pred_text": "4", "row_idx": 0}
+{"absolute_token_pos": 1259, "cropped_token_pos": 1259, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 1293, "pred_text": "\"]", "row_idx": 0}
+{"absolute_token_pos": 1271, "cropped_token_pos": 1271, "gold_id": 11553, "gold_text": "high", "id": "heldout_seed_multicall_0000", "match": true, "pred_id": 11553, "pred_text": "high", "row_idx": 0}
+{"absolute_token_pos": 1216, "cropped_token_pos": 1216, "gold_id": 3697, "gold_text": "GL", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 3697, "pred_text": "GL", "row_idx": 1}
+{"absolute_token_pos": 1217, "cropped_token_pos": 1217, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 1293, "pred_text": "\"]", "row_idx": 1}
+{"absolute_token_pos": 1238, "cropped_token_pos": 1238, "gold_id": 16, "gold_text": "1", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 16, "pred_text": "1", "row_idx": 1}
+{"absolute_token_pos": 1259, "cropped_token_pos": 1259, "gold_id": 16, "gold_text": "1", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 16, "pred_text": "1", "row_idx": 1}
+{"absolute_token_pos": 1298, "cropped_token_pos": 1298, "gold_id": 3697, "gold_text": "GL", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 3697, "pred_text": "GL", "row_idx": 1}
+{"absolute_token_pos": 1299, "cropped_token_pos": 1299, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 1293, "pred_text": "\"]", "row_idx": 1}
+{"absolute_token_pos": 1353, "cropped_token_pos": 1353, "gold_id": 8973, "gold_text": "_rate", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 8973, "pred_text": "_rate", "row_idx": 1}
+{"absolute_token_pos": 1354, "cropped_token_pos": 1354, "gold_id": 763, "gold_text": "\":", "id": "heldout_seed_multicall_0002", "match": false, "pred_id": 8973, "pred_text": "_rate", "row_idx": 1}
+{"absolute_token_pos": 1355, "cropped_token_pos": 1355, "gold_id": 220, "gold_text": " ", "id": "heldout_seed_multicall_0002", "match": false, "pred_id": 763, "pred_text": "\":", "row_idx": 1}
+{"absolute_token_pos": 1356, "cropped_token_pos": 1356, "gold_id": 21, "gold_text": "6", "id": "heldout_seed_multicall_0002", "match": false, "pred_id": 24634, "pred_text": "}]", "row_idx": 1}
+{"absolute_token_pos": 1357, "cropped_token_pos": 1357, "gold_id": 24634, "gold_text": "}]", "id": "heldout_seed_multicall_0002", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 1}
+{"absolute_token_pos": 1434, "cropped_token_pos": 1434, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 1}
+{"absolute_token_pos": 1435, "cropped_token_pos": 1435, "gold_id": 13, "gold_text": ".", "id": "heldout_seed_multicall_0002", "match": false, "pred_id": 18, "pred_text": "3", "row_idx": 1}
+{"absolute_token_pos": 1436, "cropped_token_pos": 1436, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 18, "pred_text": "3", "row_idx": 1}
+{"absolute_token_pos": 1437, "cropped_token_pos": 1437, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0002", "match": false, "pred_id": 24634, "pred_text": "}]", "row_idx": 1}
+{"absolute_token_pos": 1438, "cropped_token_pos": 1438, "gold_id": 19, "gold_text": "4", "id": "heldout_seed_multicall_0002", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 1}
+{"absolute_token_pos": 1439, "cropped_token_pos": 1439, "gold_id": 24634, "gold_text": "}]", "id": "heldout_seed_multicall_0002", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 1}
+{"absolute_token_pos": 1453, "cropped_token_pos": 1453, "gold_id": 49, "gold_text": "R", "id": "heldout_seed_multicall_0002", "match": true, "pred_id": 49, "pred_text": "R", "row_idx": 1}
+{"absolute_token_pos": 1047, "cropped_token_pos": 1047, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 18, "pred_text": "3", "row_idx": 2}
+{"absolute_token_pos": 1081, "cropped_token_pos": 1081, "gold_id": 17, "gold_text": "2", "id": "heldout_seed_multicall_0003", "match": false, "pred_id": 16, "pred_text": "1", "row_idx": 2}
+{"absolute_token_pos": 1094, "cropped_token_pos": 1094, "gold_id": 27727, "gold_text": "_light", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 27727, "pred_text": "_light", "row_idx": 2}
+{"absolute_token_pos": 1124, "cropped_token_pos": 1124, "gold_id": 46825, "gold_text": " Saving", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 46825, "pred_text": " Saving", "row_idx": 2}
+{"absolute_token_pos": 1141, "cropped_token_pos": 1141, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 18, "pred_text": "3", "row_idx": 2}
+{"absolute_token_pos": 1155, "cropped_token_pos": 1155, "gold_id": 74669, "gold_text": "_above", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 74669, "pred_text": "_above", "row_idx": 2}
+{"absolute_token_pos": 1169, "cropped_token_pos": 1169, "gold_id": 19, "gold_text": "4", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 19, "pred_text": "4", "row_idx": 2}
+{"absolute_token_pos": 1186, "cropped_token_pos": 1186, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 18, "pred_text": "3", "row_idx": 2}
+{"absolute_token_pos": 1200, "cropped_token_pos": 1200, "gold_id": 51729, "gold_text": "_temperature", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 51729, "pred_text": "_temperature", "row_idx": 2}
+{"absolute_token_pos": 1214, "cropped_token_pos": 1214, "gold_id": 17, "gold_text": "2", "id": "heldout_seed_multicall_0003", "match": true, "pred_id": 17, "pred_text": "2", "row_idx": 2}
+{"absolute_token_pos": 1178, "cropped_token_pos": 1178, "gold_id": 52173, "gold_text": " Bottle", "id": "heldout_seed_multicall_0004", "match": true, "pred_id": 52173, "pred_text": " Bottle", "row_idx": 3}
+{"absolute_token_pos": 1324, "cropped_token_pos": 1324, "gold_id": 763, "gold_text": "\":", "id": "heldout_seed_multicall_0004", "match": true, "pred_id": 763, "pred_text": "\":", "row_idx": 3}
+{"absolute_token_pos": 1325, "cropped_token_pos": 1325, "gold_id": 328, "gold_text": " \"", "id": "heldout_seed_multicall_0004", "match": true, "pred_id": 328, "pred_text": " \"", "row_idx": 3}
+{"absolute_token_pos": 1326, "cropped_token_pos": 1326, "gold_id": 17, "gold_text": "2", "id": "heldout_seed_multicall_0004", "match": true, "pred_id": 17, "pred_text": "2", "row_idx": 3}
+{"absolute_token_pos": 1327, "cropped_token_pos": 1327, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 12, "pred_text": "-", "row_idx": 3}
+{"absolute_token_pos": 1328, "cropped_token_pos": 1328, "gold_id": 17, "gold_text": "2", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 3}
+{"absolute_token_pos": 1329, "cropped_token_pos": 1329, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 3}
+{"absolute_token_pos": 1330, "cropped_token_pos": 1330, "gold_id": 12, "gold_text": "-", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 3}
+{"absolute_token_pos": 1331, "cropped_token_pos": 1331, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1332, "cropped_token_pos": 1332, "gold_id": 22, "gold_text": "7", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1333, "cropped_token_pos": 1333, "gold_id": 12, "gold_text": "-", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1334, "cropped_token_pos": 1334, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1335, "cropped_token_pos": 1335, "gold_id": 23, "gold_text": "8", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1336, "cropped_token_pos": 1336, "gold_id": 8934, "gold_text": "\"}", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1337, "cropped_token_pos": 1337, "gold_id": 13587, "gold_text": "]}", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1338, "cropped_token_pos": 1338, "gold_id": 60, "gold_text": "]", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1370, "cropped_token_pos": 1370, "gold_id": 52173, "gold_text": " Bottle", "id": "heldout_seed_multicall_0004", "match": true, "pred_id": 52173, "pred_text": " Bottle", "row_idx": 3}
+{"absolute_token_pos": 1514, "cropped_token_pos": 1514, "gold_id": 763, "gold_text": "\":", "id": "heldout_seed_multicall_0004", "match": true, "pred_id": 763, "pred_text": "\":", "row_idx": 3}
+{"absolute_token_pos": 1515, "cropped_token_pos": 1515, "gold_id": 328, "gold_text": " \"", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 17, "pred_text": "2", "row_idx": 3}
+{"absolute_token_pos": 1516, "cropped_token_pos": 1516, "gold_id": 17, "gold_text": "2", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 3}
+{"absolute_token_pos": 1517, "cropped_token_pos": 1517, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 12, "pred_text": "-", "row_idx": 3}
+{"absolute_token_pos": 1518, "cropped_token_pos": 1518, "gold_id": 17, "gold_text": "2", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 3}
+{"absolute_token_pos": 1519, "cropped_token_pos": 1519, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 3}
+{"absolute_token_pos": 1520, "cropped_token_pos": 1520, "gold_id": 12, "gold_text": "-", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 92, "pred_text": "}", "row_idx": 3}
+{"absolute_token_pos": 1521, "cropped_token_pos": 1521, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 92, "pred_text": "}", "row_idx": 3}
+{"absolute_token_pos": 1522, "cropped_token_pos": 1522, "gold_id": 22, "gold_text": "7", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1523, "cropped_token_pos": 1523, "gold_id": 12, "gold_text": "-", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1524, "cropped_token_pos": 1524, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1525, "cropped_token_pos": 1525, "gold_id": 24, "gold_text": "9", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1526, "cropped_token_pos": 1526, "gold_id": 8934, "gold_text": "\"}", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1527, "cropped_token_pos": 1527, "gold_id": 13587, "gold_text": "]}", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1528, "cropped_token_pos": 1528, "gold_id": 60, "gold_text": "]", "id": "heldout_seed_multicall_0004", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 3}
+{"absolute_token_pos": 1223, "cropped_token_pos": 1223, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 4}
+{"absolute_token_pos": 1224, "cropped_token_pos": 1224, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 18, "pred_text": "3", "row_idx": 4}
+{"absolute_token_pos": 1225, "cropped_token_pos": 1225, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0005", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 4}
+{"absolute_token_pos": 1248, "cropped_token_pos": 1248, "gold_id": 8973, "gold_text": "_rate", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 8973, "pred_text": "_rate", "row_idx": 4}
+{"absolute_token_pos": 1249, "cropped_token_pos": 1249, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0005", "match": false, "pred_id": 8973, "pred_text": "_rate", "row_idx": 4}
+{"absolute_token_pos": 1289, "cropped_token_pos": 1289, "gold_id": 12, "gold_text": "-", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 12, "pred_text": "-", "row_idx": 4}
+{"absolute_token_pos": 1290, "cropped_token_pos": 1290, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0005", "match": false, "pred_id": 8934, "pred_text": "\"}", "row_idx": 4}
+{"absolute_token_pos": 1291, "cropped_token_pos": 1291, "gold_id": 16, "gold_text": "1", "id": "heldout_seed_multicall_0005", "match": false, "pred_id": 8934, "pred_text": "\"}", "row_idx": 4}
+{"absolute_token_pos": 1292, "cropped_token_pos": 1292, "gold_id": 8934, "gold_text": "\"}", "id": "heldout_seed_multicall_0005", "match": false, "pred_id": 29, "pred_text": ">", "row_idx": 4}
+{"absolute_token_pos": 1339, "cropped_token_pos": 1339, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 4}
+{"absolute_token_pos": 1340, "cropped_token_pos": 1340, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 18, "pred_text": "3", "row_idx": 4}
+{"absolute_token_pos": 1341, "cropped_token_pos": 1341, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0005", "match": false, "pred_id": 60, "pred_text": "]", "row_idx": 4}
+{"absolute_token_pos": 1372, "cropped_token_pos": 1372, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 4}
+{"absolute_token_pos": 1373, "cropped_token_pos": 1373, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 4}
+{"absolute_token_pos": 1374, "cropped_token_pos": 1374, "gold_id": 60, "gold_text": "]", "id": "heldout_seed_multicall_0005", "match": true, "pred_id": 60, "pred_text": "]", "row_idx": 4}
+{"absolute_token_pos": 874, "cropped_token_pos": 874, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0006", "match": true, "pred_id": 18, "pred_text": "3", "row_idx": 5}
+{"absolute_token_pos": 875, "cropped_token_pos": 875, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0006", "match": true, "pred_id": 1293, "pred_text": "\"]", "row_idx": 5}
+{"absolute_token_pos": 907, "cropped_token_pos": 907, "gold_id": 40003, "gold_text": "_hours", "id": "heldout_seed_multicall_0006", "match": true, "pred_id": 40003, "pred_text": "_hours", "row_idx": 5}
+{"absolute_token_pos": 920, "cropped_token_pos": 920, "gold_id": 528, "gold_text": "all", "id": "heldout_seed_multicall_0006", "match": true, "pred_id": 528, "pred_text": "all", "row_idx": 5}
+{"absolute_token_pos": 949, "cropped_token_pos": 949, "gold_id": 24455, "gold_text": " Challenge", "id": "heldout_seed_multicall_0007", "match": true, "pred_id": 24455, "pred_text": " Challenge", "row_idx": 6}
+{"absolute_token_pos": 963, "cropped_token_pos": 963, "gold_id": 20, "gold_text": "5", "id": "heldout_seed_multicall_0007", "match": true, "pred_id": 20, "pred_text": "5", "row_idx": 6}
+{"absolute_token_pos": 984, "cropped_token_pos": 984, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0007", "match": true, "pred_id": 1293, "pred_text": "\"]", "row_idx": 6}
+{"absolute_token_pos": 996, "cropped_token_pos": 996, "gold_id": 25252, "gold_text": "medium", "id": "heldout_seed_multicall_0007", "match": true, "pred_id": 25252, "pred_text": "medium", "row_idx": 6}
+{"absolute_token_pos": 1032, "cropped_token_pos": 1032, "gold_id": 11963, "gold_text": "_session", "id": "heldout_seed_multicall_0007", "match": true, "pred_id": 11963, "pred_text": "_session", "row_idx": 6}
+{"absolute_token_pos": 1045, "cropped_token_pos": 1045, "gold_id": 5366, "gold_text": "witch", "id": "heldout_seed_multicall_0007", "match": true, "pred_id": 5366, "pred_text": "witch", "row_idx": 6}
+{"absolute_token_pos": 1061, "cropped_token_pos": 1061, "gold_id": 10834, "gold_text": " Live", "id": "heldout_seed_multicall_0007", "match": true, "pred_id": 10834, "pred_text": " Live", "row_idx": 6}
+{"absolute_token_pos": 1073, "cropped_token_pos": 1073, "gold_id": 860, "gold_text": "public", "id": "heldout_seed_multicall_0007", "match": true, "pred_id": 860, "pred_text": "public", "row_idx": 6}
+{"absolute_token_pos": 1378, "cropped_token_pos": 1378, "gold_id": 55, "gold_text": "X", "id": "heldout_seed_multicall_0008", "match": true, "pred_id": 55, "pred_text": "X", "row_idx": 7}
+{"absolute_token_pos": 1397, "cropped_token_pos": 1397, "gold_id": 39, "gold_text": "H", "id": "heldout_seed_multicall_0008", "match": true, "pred_id": 39, "pred_text": "H", "row_idx": 7}
+{"absolute_token_pos": 1411, "cropped_token_pos": 1411, "gold_id": 25458, "gold_text": "-Fi", "id": "heldout_seed_multicall_0008", "match": true, "pred_id": 25458, "pred_text": "-Fi", "row_idx": 7}
+{"absolute_token_pos": 1445, "cropped_token_pos": 1445, "gold_id": 34, "gold_text": "C", "id": "heldout_seed_multicall_0008", "match": true, "pred_id": 34, "pred_text": "C", "row_idx": 7}
+{"absolute_token_pos": 1493, "cropped_token_pos": 1493, "gold_id": 11055, "gold_text": "PG", "id": "heldout_seed_multicall_0008", "match": true, "pred_id": 11055, "pred_text": "PG", "row_idx": 7}
+{"absolute_token_pos": 1494, "cropped_token_pos": 1494, "gold_id": 12, "gold_text": "-", "id": "heldout_seed_multicall_0008", "match": false, "pred_id": 16, "pred_text": "1", "row_idx": 7}
+{"absolute_token_pos": 1495, "cropped_token_pos": 1495, "gold_id": 16, "gold_text": "1", "id": "heldout_seed_multicall_0008", "match": false, "pred_id": 12, "pred_text": "-", "row_idx": 7}
+{"absolute_token_pos": 1496, "cropped_token_pos": 1496, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0008", "match": false, "pred_id": 29958, "pred_text": "\"}}", "row_idx": 7}
+{"absolute_token_pos": 1497, "cropped_token_pos": 1497, "gold_id": 29958, "gold_text": "\"}}", "id": "heldout_seed_multicall_0008", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 7}
+{"absolute_token_pos": 1527, "cropped_token_pos": 1527, "gold_id": 77690, "gold_text": "Netflix", "id": "heldout_seed_multicall_0008", "match": true, "pred_id": 77690, "pred_text": "Netflix", "row_idx": 7}
+{"absolute_token_pos": 1539, "cropped_token_pos": 1539, "gold_id": 1315, "gold_text": "play", "id": "heldout_seed_multicall_0008", "match": true, "pred_id": 1315, "pred_text": "play", "row_idx": 7}
+{"absolute_token_pos": 1556, "cropped_token_pos": 1556, "gold_id": 68192, "gold_text": "SCI", "id": "heldout_seed_multicall_0008", "match": true, "pred_id": 68192, "pred_text": "SCI", "row_idx": 7}
+{"absolute_token_pos": 1157, "cropped_token_pos": 1157, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0009", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 8}
+{"absolute_token_pos": 1176, "cropped_token_pos": 1176, "gold_id": 21, "gold_text": "6", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 21, "pred_text": "6", "row_idx": 8}
+{"absolute_token_pos": 1199, "cropped_token_pos": 1199, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 18, "pred_text": "3", "row_idx": 8}
+{"absolute_token_pos": 1200, "cropped_token_pos": 1200, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 1293, "pred_text": "\"]", "row_idx": 8}
+{"absolute_token_pos": 1213, "cropped_token_pos": 1213, "gold_id": 95389, "gold_text": "VIP", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 95389, "pred_text": "VIP", "row_idx": 8}
+{"absolute_token_pos": 1266, "cropped_token_pos": 1266, "gold_id": 328, "gold_text": " \"", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 328, "pred_text": " \"", "row_idx": 8}
+{"absolute_token_pos": 1267, "cropped_token_pos": 1267, "gold_id": 21, "gold_text": "6", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 21, "pred_text": "6", "row_idx": 8}
+{"absolute_token_pos": 1268, "cropped_token_pos": 1268, "gold_id": 22, "gold_text": "7", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 22, "pred_text": "7", "row_idx": 8}
+{"absolute_token_pos": 1269, "cropped_token_pos": 1269, "gold_id": 23, "gold_text": "8", "id": "heldout_seed_multicall_0009", "match": false, "pred_id": 92, "pred_text": "}", "row_idx": 8}
+{"absolute_token_pos": 1270, "cropped_token_pos": 1270, "gold_id": 8934, "gold_text": "\"}", "id": "heldout_seed_multicall_0009", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 8}
+{"absolute_token_pos": 1308, "cropped_token_pos": 1308, "gold_id": 21, "gold_text": "6", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 21, "pred_text": "6", "row_idx": 8}
+{"absolute_token_pos": 1327, "cropped_token_pos": 1327, "gold_id": 19, "gold_text": "4", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 19, "pred_text": "4", "row_idx": 8}
+{"absolute_token_pos": 1340, "cropped_token_pos": 1340, "gold_id": 8610, "gold_text": "full", "id": "heldout_seed_multicall_0009", "match": true, "pred_id": 8610, "pred_text": "full", "row_idx": 8}
+{"absolute_token_pos": 1058, "cropped_token_pos": 1058, "gold_id": 24, "gold_text": "9", "id": "heldout_seed_multicall_0010", "match": true, "pred_id": 24, "pred_text": "9", "row_idx": 9}
+{"absolute_token_pos": 1079, "cropped_token_pos": 1079, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0010", "match": true, "pred_id": 1293, "pred_text": "\"]", "row_idx": 9}
+{"absolute_token_pos": 1111, "cropped_token_pos": 1111, "gold_id": 21353, "gold_text": " Mort", "id": "heldout_seed_multicall_0010", "match": true, "pred_id": 21353, "pred_text": " Mort", "row_idx": 9}
+{"absolute_token_pos": 1112, "cropped_token_pos": 1112, "gold_id": 88, "gold_text": "y", "id": "heldout_seed_multicall_0010", "match": false, "pred_id": 21353, "pred_text": " Mort", "row_idx": 9}
+{"absolute_token_pos": 1113, "cropped_token_pos": 1113, "gold_id": 1293, "gold_text": "\"]", "id": "heldout_seed_multicall_0010", "match": false, "pred_id": 21353, "pred_text": " Mort", "row_idx": 9}
+{"absolute_token_pos": 1149, "cropped_token_pos": 1149, "gold_id": 24, "gold_text": "9", "id": "heldout_seed_multicall_0010", "match": true, "pred_id": 24, "pred_text": "9", "row_idx": 9}
+{"absolute_token_pos": 1196, "cropped_token_pos": 1196, "gold_id": 321, "gold_text": " and", "id": "heldout_seed_multicall_0010", "match": true, "pred_id": 321, "pred_text": " and", "row_idx": 9}
+{"absolute_token_pos": 1197, "cropped_token_pos": 1197, "gold_id": 21353, "gold_text": " Mort", "id": "heldout_seed_multicall_0010", "match": false, "pred_id": 321, "pred_text": " and", "row_idx": 9}
+{"absolute_token_pos": 1198, "cropped_token_pos": 1198, "gold_id": 88, "gold_text": "y", "id": "heldout_seed_multicall_0010", "match": false, "pred_id": 21353, "pred_text": " Mort", "row_idx": 9}
+{"absolute_token_pos": 1199, "cropped_token_pos": 1199, "gold_id": 89254, "gold_text": "\"]}", "id": "heldout_seed_multicall_0010", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 9}
+{"absolute_token_pos": 977, "cropped_token_pos": 977, "gold_id": 23, "gold_text": "8", "id": "heldout_seed_multicall_0011", "match": true, "pred_id": 23, "pred_text": "8", "row_idx": 10}
+{"absolute_token_pos": 1075, "cropped_token_pos": 1075, "gold_id": 25, "gold_text": ":", "id": "heldout_seed_multicall_0011", "match": true, "pred_id": 25, "pred_text": ":", "row_idx": 10}
+{"absolute_token_pos": 1076, "cropped_token_pos": 1076, "gold_id": 43320, "gold_text": " Streaming", "id": "heldout_seed_multicall_0011", "match": true, "pred_id": 43320, "pred_text": " Streaming", "row_idx": 10}
+{"absolute_token_pos": 1077, "cropped_token_pos": 1077, "gold_id": 2393, "gold_text": " service", "id": "heldout_seed_multicall_0011", "match": false, "pred_id": 25, "pred_text": ":", "row_idx": 10}
+{"absolute_token_pos": 1078, "cropped_token_pos": 1078, "gold_id": 359, "gold_text": " '", "id": "heldout_seed_multicall_0011", "match": false, "pred_id": 2393, "pred_text": " service", "row_idx": 10}
+{"absolute_token_pos": 1079, "cropped_token_pos": 1079, "gold_id": 77690, "gold_text": "Netflix", "id": "heldout_seed_multicall_0011", "match": false, "pred_id": 43320, "pred_text": " Streaming", "row_idx": 10}
+{"absolute_token_pos": 1080, "cropped_token_pos": 1080, "gold_id": 6, "gold_text": "'", "id": "heldout_seed_multicall_0011", "match": false, "pred_id": 43320, "pred_text": " Streaming", "row_idx": 10}
+{"absolute_token_pos": 1081, "cropped_token_pos": 1081, "gold_id": 3511, "gold_text": " connection", "id": "heldout_seed_multicall_0011", "match": false, "pred_id": 43320, "pred_text": " Streaming", "row_idx": 10}
+{"absolute_token_pos": 1082, "cropped_token_pos": 1082, "gold_id": 24382, "gold_text": " timed", "id": "heldout_seed_multicall_0011", "match": false, "pred_id": 43320, "pred_text": " Streaming", "row_idx": 10}
+{"absolute_token_pos": 1083, "cropped_token_pos": 1083, "gold_id": 680, "gold_text": " out", "id": "heldout_seed_multicall_0011", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 10}
+{"absolute_token_pos": 1084, "cropped_token_pos": 1084, "gold_id": 13, "gold_text": ".", "id": "heldout_seed_multicall_0011", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 10}
+{"absolute_token_pos": 1116, "cropped_token_pos": 1116, "gold_id": 77690, "gold_text": "Netflix", "id": "heldout_seed_multicall_0011", "match": true, "pred_id": 77690, "pred_text": "Netflix", "row_idx": 10}
+{"absolute_token_pos": 1138, "cropped_token_pos": 1138, "gold_id": 23, "gold_text": "8", "id": "heldout_seed_multicall_0011", "match": true, "pred_id": 23, "pred_text": "8", "row_idx": 10}
+{"absolute_token_pos": 1155, "cropped_token_pos": 1155, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0011", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 10}
+{"absolute_token_pos": 1602, "cropped_token_pos": 1602, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 11}
+{"absolute_token_pos": 1614, "cropped_token_pos": 1614, "gold_id": 25895, "gold_text": "USD", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 25895, "pred_text": "USD", "row_idx": 11}
+{"absolute_token_pos": 1627, "cropped_token_pos": 1627, "gold_id": 31273, "gold_text": "-US", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 31273, "pred_text": "-US", "row_idx": 11}
+{"absolute_token_pos": 1640, "cropped_token_pos": 1640, "gold_id": 1966, "gold_text": "US", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 1966, "pred_text": "US", "row_idx": 11}
+{"absolute_token_pos": 1658, "cropped_token_pos": 1658, "gold_id": 24606, "gold_text": "ABC", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 24606, "pred_text": "ABC", "row_idx": 11}
+{"absolute_token_pos": 1815, "cropped_token_pos": 1815, "gold_id": 763, "gold_text": "\":", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 763, "pred_text": "\":", "row_idx": 11}
+{"absolute_token_pos": 1816, "cropped_token_pos": 1816, "gold_id": 220, "gold_text": " ", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 23, "pred_text": "8", "row_idx": 11}
+{"absolute_token_pos": 1817, "cropped_token_pos": 1817, "gold_id": 19, "gold_text": "4", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 11}
+{"absolute_token_pos": 1818, "cropped_token_pos": 1818, "gold_id": 23, "gold_text": "8", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 15, "pred_text": "0", "row_idx": 11}
+{"absolute_token_pos": 1819, "cropped_token_pos": 1819, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 11}
+{"absolute_token_pos": 1820, "cropped_token_pos": 1820, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 19, "pred_text": "4", "row_idx": 11}
+{"absolute_token_pos": 1821, "cropped_token_pos": 1821, "gold_id": 11, "gold_text": ",", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 19, "pred_text": "4", "row_idx": 11}
+{"absolute_token_pos": 1822, "cropped_token_pos": 1822, "gold_id": 328, "gold_text": " \"", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 19, "pred_text": "4", "row_idx": 11}
+{"absolute_token_pos": 1823, "cropped_token_pos": 1823, "gold_id": 4873, "gold_text": "total", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 19, "pred_text": "4", "row_idx": 11}
+{"absolute_token_pos": 1824, "cropped_token_pos": 1824, "gold_id": 23803, "gold_text": "_tax", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 19, "pred_text": "4", "row_idx": 11}
+{"absolute_token_pos": 1825, "cropped_token_pos": 1825, "gold_id": 13083, "gold_text": "_amount", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 13083, "pred_text": "_amount", "row_idx": 11}
+{"absolute_token_pos": 1826, "cropped_token_pos": 1826, "gold_id": 763, "gold_text": "\":", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 13083, "pred_text": "_amount", "row_idx": 11}
+{"absolute_token_pos": 1827, "cropped_token_pos": 1827, "gold_id": 220, "gold_text": " ", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 24634, "pred_text": "}]", "row_idx": 11}
+{"absolute_token_pos": 1828, "cropped_token_pos": 1828, "gold_id": 18, "gold_text": "3", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 19, "pred_text": "4", "row_idx": 11}
+{"absolute_token_pos": 1829, "cropped_token_pos": 1829, "gold_id": 23, "gold_text": "8", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 11}
+{"absolute_token_pos": 1830, "cropped_token_pos": 1830, "gold_id": 19, "gold_text": "4", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 11}
+{"absolute_token_pos": 1831, "cropped_token_pos": 1831, "gold_id": 24634, "gold_text": "}]", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 198, "pred_text": "\n", "row_idx": 11}
+{"absolute_token_pos": 1881, "cropped_token_pos": 1881, "gold_id": 69337, "gold_text": "@email", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 69337, "pred_text": "@email", "row_idx": 11}
+{"absolute_token_pos": 1882, "cropped_token_pos": 1882, "gold_id": 877, "gold_text": ".com", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 69337, "pred_text": "@email", "row_idx": 11}
+{"absolute_token_pos": 1883, "cropped_token_pos": 1883, "gold_id": 8934, "gold_text": "\"}", "id": "heldout_seed_multicall_0012", "match": false, "pred_id": 2256, "pred_text": "email", "row_idx": 11}
+{"absolute_token_pos": 1896, "cropped_token_pos": 1896, "gold_id": 1966, "gold_text": "US", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 1966, "pred_text": "US", "row_idx": 11}
+{"absolute_token_pos": 1909, "cropped_token_pos": 1909, "gold_id": 31273, "gold_text": "-US", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 31273, "pred_text": "-US", "row_idx": 11}
+{"absolute_token_pos": 1947, "cropped_token_pos": 1947, "gold_id": 24, "gold_text": "9", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 24, "pred_text": "9", "row_idx": 11}
+{"absolute_token_pos": 1962, "cropped_token_pos": 1962, "gold_id": 15, "gold_text": "0", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 15, "pred_text": "0", "row_idx": 11}
+{"absolute_token_pos": 1979, "cropped_token_pos": 1979, "gold_id": 32186, "gold_text": " jeans", "id": "heldout_seed_multicall_0012", "match": true, "pred_id": 32186, "pred_text": " jeans", "row_idx": 11}

@@ -1082,6 +1082,106 @@ def test_route_ii_shortconv_tail_control(modeling_module, config_module, *, seed
     return TestResult("Route-II ShortConv tail control", passed, detail)
 
 
+def test_nested_view_gdn_state_discipline(
+    modeling_module,
+    config_module,
+    *,
+    seed: int,
+    block_size: int,
+    atol: float,
+) -> TestResult:
+    torch.manual_seed(seed + 251)
+    config = make_tiny_config(config_module, block_size=block_size)
+    gdn = modeling_module.Fast_dLLM_Qwen3_5GatedDeltaNet(config, layer_idx=0)
+    gdn.eval()
+    clean_hidden = torch.randn(1, block_size * 2, config.hidden_size)
+    student_noisy = torch.randn(1, block_size * 2, config.hidden_size)
+    teacher_noisy = student_noisy.clone()
+    teacher_noisy[:, block_size : block_size + 1] = clean_hidden[:, block_size : block_size + 1]
+    nested_noisy = torch.cat([student_noisy, teacher_noisy], dim=0)
+    doc_ids = torch.zeros(1, block_size * 2, dtype=torch.long)
+    noisy_doc_ids = torch.cat([doc_ids, doc_ids], dim=0)
+
+    with torch.inference_mode():
+        _, clean_boundary_states, clean_raw_qkv = clean_gdn_docwise_with_boundaries(
+            gdn,
+            modeling_module,
+            clean_hidden,
+            doc_ids,
+            block_size,
+        )
+        seed_state = clean_boundary_states[(0, block_size)]
+        seed_before = seed_state.detach().clone()
+        conv_tail = clean_raw_qkv[:, :block_size].contiguous()
+        conv_tail_before = conv_tail.detach().clone()
+        route_out = noisy_gdn_route_i(
+            gdn,
+            modeling_module,
+            nested_noisy,
+            noisy_doc_ids,
+            doc_ids,
+            clean_boundary_states,
+            clean_raw_qkv,
+            block_size,
+        )
+        manual_student, _, _, _ = run_gdn_manual(
+            gdn,
+            modeling_module,
+            student_noisy[:, block_size : block_size * 2],
+            chunk_size=block_size,
+            initial_state=seed_state,
+            conv_tail=conv_tail,
+        )
+        manual_teacher, _, _, _ = run_gdn_manual(
+            gdn,
+            modeling_module,
+            teacher_noisy[:, block_size : block_size * 2],
+            chunk_size=block_size,
+            initial_state=seed_state,
+            conv_tail=conv_tail,
+        )
+        clean_commit, clean_commit_state, _, _ = run_gdn_manual(
+            gdn,
+            modeling_module,
+            clean_hidden[:, block_size : block_size * 2],
+            chunk_size=block_size,
+            initial_state=seed_state,
+            conv_tail=conv_tail,
+        )
+        full_clean, full_clean_state = gdn(
+            clean_hidden,
+            chunk_size=block_size,
+            output_final_state=True,
+        )
+
+    route_student_diff = max_abs_diff(route_out[:1, block_size : block_size * 2], manual_student)
+    route_teacher_diff = max_abs_diff(route_out[1:2, block_size : block_size * 2], manual_teacher)
+    seed_readonly_diff = max(
+        max_abs_diff(seed_state, seed_before),
+        max_abs_diff(conv_tail, conv_tail_before),
+    )
+    commit_output_diff = max_abs_diff(full_clean[:, block_size : block_size * 2], clean_commit)
+    commit_state_diff = max_abs_diff(full_clean_state, clean_commit_state)
+    nested_views_differ = max_abs_diff(manual_student, manual_teacher)
+    passed = (
+        route_student_diff <= atol
+        and route_teacher_diff <= atol
+        and seed_readonly_diff <= atol
+        and commit_output_diff <= atol
+        and commit_state_diff <= atol
+        and nested_views_differ > atol * 10
+    )
+    detail = (
+        f"route_student={route_student_diff:.6g} "
+        f"route_teacher={route_teacher_diff:.6g} "
+        f"seed_readonly={seed_readonly_diff:.6g} "
+        f"clean_commit_out={commit_output_diff:.6g} "
+        f"clean_commit_state={commit_state_diff:.6g} "
+        f"nested_view_sensitivity={nested_views_differ:.6g}"
+    )
+    return TestResult("nested-view GDN state discipline", passed, detail)
+
+
 def test_route_ii_sensitivity_controls(
     config_module,
     modeling_module,
@@ -1200,6 +1300,15 @@ def main() -> int:
             config_module,
             seed=args.seed,
             block_size=block_size,
+        )
+    )
+    results.append(
+        test_nested_view_gdn_state_discipline(
+            modeling_module,
+            config_module,
+            seed=args.seed,
+            block_size=block_size,
+            atol=args.atol,
         )
     )
     results.extend(

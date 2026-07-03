@@ -1,0 +1,51 @@
+{
+  "adapter_active_proof": {
+    "active_adapters": [
+      "s2_teacher"
+    ],
+    "all_parameters_frozen": true,
+    "disable_adapter_used": false,
+    "expected_adapter": "s2_teacher",
+    "peft_model": true,
+    "quantization": "nf4_4bit"
+  },
+  "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+  "block_size": 32,
+  "chat_template_path": "/home/mark/shared/lumoFlyWheel_codex_fork/docker/chat_templates/qwen3-openai-codex.jinja",
+  "chat_template_sha256": "c166a05aaf5ad4b807a7c46497f92180e3df24e64d4b54d27fd26ec61bec38da",
+  "elapsed_sec": 11.802342414855957,
+  "git_head": "d5a6b86b03a15dc5c14ea61fff47249f1293aaa7",
+  "input_jsonl": "/home/mark/qwen_diffusion/data/toolcall_eval_native/heldout_seed_multicall_policy_targets_qwen_native.jsonl",
+  "limit": 12,
+  "mask_id": 248077,
+  "max_seq_tokens": 1024,
+  "partial_prefix_fraction": 0.5,
+  "pass": false,
+  "row_summary_jsonl": "runs/s2_teacher_precheck/v2_heldout_value_top1/teacher_value_top1_rows.jsonl",
+  "rows_loaded": 12,
+  "script_sha256": "3df71bdbfb33aeed69f85e304455366ef06cd57cf764306fa4230f01766145f7",
+  "span_exact_accuracy": 0.3333333333333333,
+  "teacher_adapter": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model",
+  "teacher_adapter_name": "s2_teacher",
+  "threshold": 0.6,
+  "token_records_jsonl": "runs/s2_teacher_precheck/v2_heldout_value_top1/teacher_value_top1_tokens.jsonl",
+  "tokenizer": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "top1_accuracy": 0.25872093023255816,
+  "totals": {
+    "assistant_tokens_total": 2775,
+    "cropped_rows": 11,
+    "masked_suffix_tokens_before_crop": 688,
+    "prompt_tokens_total": 13419,
+    "revealed_prefix_tokens": 643,
+    "rows": 12,
+    "scored_rows": 12,
+    "scored_tokens": 688,
+    "scored_value_spans": 84,
+    "seq_tokens_after_crop_total": 12195,
+    "single_token_spans": 15,
+    "top1_correct_tokens": 178,
+    "top1_exact_value_spans": 28,
+    "value_spans": 84,
+    "value_tokens": 1331
+  }
+}
