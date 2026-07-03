@@ -125,10 +125,22 @@ def ban_mask_token_logits(logits: torch.Tensor, mask_id: int) -> torch.Tensor:
     return logits
 
 
+def unwrap_lm_model(model):
+    if hasattr(model, "get_base_model"):
+        try:
+            return model.get_base_model()
+        except Exception:
+            pass
+    return model
+
+
 def shifted_full_context_logits(model, sequence: torch.Tensor, active_len: int, mask_id: int) -> torch.Tensor:
-    output = model(input_ids=sequence, use_cache=False)
-    logits = torch.cat([output.logits[:, :1, :], output.logits[:, :-1, :]], dim=1)
-    logits = logits[:, -active_len:, :].float()
+    lm_model = unwrap_lm_model(model)
+    source_start = max(0, int(sequence.shape[1]) - int(active_len) - 1)
+    source_end = int(sequence.shape[1]) - 1
+    output = lm_model.model(input_ids=sequence, use_cache=False)
+    hidden = output.last_hidden_state if hasattr(output, "last_hidden_state") else output[0]
+    logits = lm_model.lm_head(hidden[:, source_start:source_end, :]).float()
     return ban_mask_token_logits(logits, mask_id)
 
 
