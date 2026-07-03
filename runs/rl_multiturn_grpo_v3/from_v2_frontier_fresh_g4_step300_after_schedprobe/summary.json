@@ -1,0 +1,128 @@
+{
+  "adapter_out": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v3/from_v2_frontier_fresh_g4_step300_after_schedprobe/adapter_model",
+  "early_stop_reason": null,
+  "early_stopped": false,
+  "elapsed_seconds": 15028.788434015005,
+  "gate_note": "SFT warm-start is abandoned; this pilot starts from Run-1 copy-grounded checkpoint.",
+  "grammar_forced_tokens_masked": 83447,
+  "group_size": 4,
+  "kl_to_base_coeff": 0.05,
+  "last_step": {
+    "advantages": [
+      0.5773501396179199,
+      -1.7320512533187866,
+      0.5773501396179199,
+      0.5773501396179199
+    ],
+    "episode_id": "toolace_train_000367",
+    "examples": 7,
+    "grad_norm": 27.190824508666992,
+    "grammar_forced_tokens_masked": 240,
+    "group_episode_ids": [
+      "toolace_train_000367",
+      "toolace_train_000368",
+      "toolace_train_000369",
+      "toolace_train_000370"
+    ],
+    "kl_to_base_coeff": 0.05,
+    "kl_to_base_loss": 0.31013599038124084,
+    "kl_to_base_loss_scaled_per_policy_token": 0.015506799332797527,
+    "kl_to_base_tokens": 55,
+    "loss": -0.5184289216995239,
+    "mean_logprob": -0.35348641872406006,
+    "policy_loss": -0.5339356064796448,
+    "policy_tokens": 55,
+    "retention_probe": {
+      "adapter": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model",
+      "collapse_threshold_flex_accuracy": 0.4,
+      "early_stop_collapse": false,
+      "elapsed_seconds": 76.96905644796789,
+      "examples": 5,
+      "flex_accuracy": 0.8,
+      "flex_correct": 4,
+      "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v3/from_v2_frontier_fresh_g4_step300_after_schedprobe/retention_probe_step_0300",
+      "step": 300,
+      "strict_accuracy": 0.8,
+      "strict_correct": 4
+    },
+    "reward_mean": 0.95625,
+    "rewards": [
+      1.0,
+      0.825,
+      1.0,
+      1.0
+    ],
+    "rollout_seconds": 36.766294886008836,
+    "rollouts": [
+      {
+        "advantage": 0.5773501396179199,
+        "audit_clean": true,
+        "episode_exact_all_turns": true,
+        "episode_id": "toolace_train_000367",
+        "exact_turns": 2,
+        "group_idx": 0,
+        "reward": 1.0,
+        "turn_rewards": [
+          1.0,
+          1.0
+        ],
+        "turns": 2
+      },
+      {
+        "advantage": -1.7320512533187866,
+        "audit_clean": true,
+        "episode_exact_all_turns": false,
+        "episode_id": "toolace_train_000368",
+        "exact_turns": 1,
+        "group_idx": 1,
+        "reward": 0.825,
+        "turn_rewards": [
+          1.0,
+          0.65
+        ],
+        "turns": 2
+      },
+      {
+        "advantage": 0.5773501396179199,
+        "audit_clean": true,
+        "episode_exact_all_turns": true,
+        "episode_id": "toolace_train_000369",
+        "exact_turns": 2,
+        "group_idx": 2,
+        "reward": 1.0,
+        "turn_rewards": [
+          1.0,
+          1.0
+        ],
+        "turns": 2
+      },
+      {
+        "advantage": 0.5773501396179199,
+        "audit_clean": true,
+        "episode_exact_all_turns": true,
+        "episode_id": "toolace_train_000370",
+        "exact_turns": 2,
+        "group_idx": 3,
+        "reward": 1.0,
+        "turn_rewards": [
+          1.0,
+          1.0
+        ],
+        "turns": 2
+      }
+    ],
+    "step": 300,
+    "step_seconds": 42.64725506398827,
+    "turns": 2,
+    "update_seconds": 5.880880668992177,
+    "zero_advantage": false
+  },
+  "mean_reward": 0.8893618055555564,
+  "nonzero_advantage_steps": 289,
+  "policy_tokens": 18122,
+  "retention_probe_every_steps": 50,
+  "status": "pilot_complete",
+  "steps": 300,
+  "trainable_params": 18112512,
+  "warm_start": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model"
+}

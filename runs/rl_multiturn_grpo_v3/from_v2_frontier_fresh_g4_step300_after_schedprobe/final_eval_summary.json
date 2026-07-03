@@ -1,0 +1,52 @@
+{
+  "status": "retention_failed_not_promoted",
+  "warm_start": "runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model",
+  "training": {
+    "adapter_out": "runs/rl_multiturn_grpo_v3/from_v2_frontier_fresh_g4_step300_after_schedprobe/adapter_model",
+    "steps": 300,
+    "nonzero_advantage_steps": 289,
+    "zero_advantage_steps": 11,
+    "mean_reward": 0.8893618055555556,
+    "mean_reward_last20": 0.9340208333333333,
+    "policy_tokens": 18122,
+    "grammar_forced_tokens_masked": 83447,
+    "kl_to_base_coeff": 0.05,
+    "kl_to_base_loss_mean": 0.06467722733850363,
+    "kl_to_base_loss_max": 0.5729302763938904,
+    "kl_to_base_loss_last": 0.31013599038124084,
+    "kl_to_base_loss_last50_mean": 0.2282036556303501,
+    "kl_ge_0_1_steps": 64,
+    "kl_ge_0_2_steps": 34,
+    "grad_norm_max": 43.20827865600586,
+    "elapsed_seconds": 15028.788434015005
+  },
+  "quick_retention_probes": [
+    {"step": 50, "strict_correct": 4, "examples": 5, "strict_accuracy": 0.8, "flex_accuracy": 0.8},
+    {"step": 100, "strict_correct": 4, "examples": 5, "strict_accuracy": 0.8, "flex_accuracy": 0.8},
+    {"step": 150, "strict_correct": 4, "examples": 5, "strict_accuracy": 0.8, "flex_accuracy": 0.8},
+    {"step": 200, "strict_correct": 4, "examples": 5, "strict_accuracy": 0.8, "flex_accuracy": 0.8},
+    {"step": 250, "strict_correct": 4, "examples": 5, "strict_accuracy": 0.8, "flex_accuracy": 0.8},
+    {"step": 300, "strict_correct": 4, "examples": 5, "strict_accuracy": 0.8, "flex_accuracy": 0.8}
+  ],
+  "gsm8k_gate": {
+    "examples": 20,
+    "strict_correct": 11,
+    "strict_accuracy": 0.55,
+    "flex_correct": 11,
+    "flex_accuracy": 0.55,
+    "required_accuracy": 0.65,
+    "pass": false,
+    "elapsed_seconds": 458.32099736703094,
+    "generated_tokens_per_second": 6.896912902003963
+  },
+  "matched20": {
+    "status": "skipped_retention_gate_failed",
+    "promotion_bar_exact_args": 50,
+    "reference_v2_exact_args": "44/63"
+  },
+  "harness": {
+    "git_hash_at_run": "24f0645ac05c9faa048fcfea5103a7453ea7fc6c",
+    "train_script_sha256": "cf58932d16caf8092fc3788fe66bb8e862e00b1bfcdbaa5acf32acc11b2b8066",
+    "gsm8k_gate_script_sha256": "eaa78d7a9abfb32b7ab73c7753cf87026741e372ef13a1c0f8e44ead79b5e503"
+  }
+}
