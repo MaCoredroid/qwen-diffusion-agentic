@@ -1,0 +1,27 @@
+{
+  "per_row_jsonl": "runs/constrained_parallel_fixedk_v2/matched20/k8/diffusion_schedule_fixedk_constrained_k8/projection_value_audit.jsonl",
+  "rows": "runs/constrained_parallel_fixedk_v2/matched20/k8/diffusion_schedule_fixedk_constrained_k8/turns.jsonl",
+  "tokenizer": "models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "totals": {
+    "exact_args": 0,
+    "exact_rows_dependent_on_projected_values": 0,
+    "offset_source:no_projected_token_records": 63,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 0,
+    "projected_true_value_tokens_lower_bound": 0,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 7884,
+    "rows": 63,
+    "rows_with_projected_token_records": 0,
+    "rows_with_projected_true_value_tokens_lower_bound": 0,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 1932,
+    "verification_mode": "no_projection_events",
+    "wave1_projected_tokens": 0,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 0,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  }
+}
