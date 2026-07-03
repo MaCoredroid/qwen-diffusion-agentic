@@ -1,0 +1,382 @@
+{
+  "status": "retention_passed_matched20_bar_failed_not_promoted",
+  "run1_base": "runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+  "run1_anchor": {
+    "gsm8k_corrected_careful": 0.75,
+    "matched20_careful_exact_args": "34/63"
+  },
+  "training": {
+    "adapter_out": "runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model",
+    "early_stop_reason": null,
+    "early_stopped": false,
+    "elapsed_seconds": 14342.049663832993,
+    "gate_note": "SFT warm-start is abandoned; this pilot starts from Run-1 copy-grounded checkpoint.",
+    "grammar_forced_tokens_masked": 58886,
+    "group_size": 4,
+    "kl_to_base_coeff": 0.05,
+    "last_step": {
+      "advantages": [
+        0.11547014862298965,
+        -0.34641045331954956,
+        -1.2701706886291504,
+        1.5011100769042969
+      ],
+      "episode_id": "toolace_train_000014",
+      "examples": 6,
+      "grad_norm": 3.378183126449585,
+      "grammar_forced_tokens_masked": 222,
+      "group_episode_ids": [
+        "toolace_train_000014",
+        "toolace_train_000016",
+        "toolace_train_000017",
+        "toolace_train_000018"
+      ],
+      "kl_to_base_coeff": 0.05,
+      "kl_to_base_loss": 0.0319603756070137,
+      "kl_to_base_loss_scaled_per_policy_token": 0.0015980189200490713,
+      "kl_to_base_tokens": 83,
+      "loss": -0.12149061262607574,
+      "mean_logprob": -0.12252719700336456,
+      "policy_loss": -0.12308863550424576,
+      "policy_tokens": 83,
+      "retention_probe": {
+        "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+        "collapse_threshold_flex_accuracy": 0.4,
+        "early_stop_collapse": false,
+        "elapsed_seconds": 127.08875544008333,
+        "examples": 5,
+        "flex_accuracy": 0.6,
+        "flex_correct": 3,
+        "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/retention_probe_step_0300",
+        "step": 300,
+        "strict_accuracy": 0.6,
+        "strict_correct": 3
+      },
+      "reward_mean": 0.9052083333333334,
+      "rewards": [
+        0.9125,
+        0.8833333333333333,
+        0.825,
+        1.0
+      ],
+      "rollout_seconds": 38.45618773601018,
+      "rollouts": [
+        {
+          "advantage": 0.11547014862298965,
+          "audit_clean": true,
+          "episode_exact_all_turns": false,
+          "episode_id": "toolace_train_000014",
+          "exact_turns": 1,
+          "group_idx": 0,
+          "reward": 0.9125,
+          "turn_rewards": [
+            0.825,
+            1.0
+          ],
+          "turns": 2
+        },
+        {
+          "advantage": -0.34641045331954956,
+          "audit_clean": true,
+          "episode_exact_all_turns": false,
+          "episode_id": "toolace_train_000016",
+          "exact_turns": 1,
+          "group_idx": 1,
+          "reward": 0.8833333333333333,
+          "turn_rewards": [
+            0.7666666666666667,
+            1.0
+          ],
+          "turns": 2
+        },
+        {
+          "advantage": -1.2701706886291504,
+          "audit_clean": true,
+          "episode_exact_all_turns": false,
+          "episode_id": "toolace_train_000017",
+          "exact_turns": 1,
+          "group_idx": 2,
+          "reward": 0.825,
+          "turn_rewards": [
+            0.65,
+            1.0
+          ],
+          "turns": 2
+        },
+        {
+          "advantage": 1.5011100769042969,
+          "audit_clean": true,
+          "episode_exact_all_turns": true,
+          "episode_id": "toolace_train_000018",
+          "exact_turns": 2,
+          "group_idx": 3,
+          "reward": 1.0,
+          "turn_rewards": [
+            1.0,
+            1.0
+          ],
+          "turns": 2
+        }
+      ],
+      "step": 300,
+      "step_seconds": 43.46626746596303,
+      "turns": 2,
+      "update_seconds": 5.00999625492841,
+      "zero_advantage": false
+    },
+    "mean_reward": 0.9556199074074084,
+    "nonzero_advantage_steps": 214,
+    "policy_tokens": 13858,
+    "retention_probe_every_steps": 50,
+    "status": "pilot_complete",
+    "steps": 300,
+    "trainable_params": 18112512,
+    "warm_start": "runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+    "aggregate": {
+      "metrics_rows": 300,
+      "zero_advantage_steps": 86,
+      "nonzero_advantage_steps": 214,
+      "grad_norm_max": 43.74599838256836,
+      "grad_norm_last": 3.378183126449585,
+      "mean_reward_last20": 0.9795833333333335,
+      "kl_to_base_loss_max": 0.07482363283634186,
+      "kl_to_base_loss_last": 0.0319603756070137
+    },
+    "config_args": {
+      "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+      "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+      "block_size": 32,
+      "chat_template_path": "/home/mark/shared/lumoFlyWheel_codex_fork/docker/chat_templates/qwen3-openai-codex.jinja",
+      "episode_limit": 240,
+      "eval_battery_paths": [
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+      ],
+      "gpu_index": 0,
+      "gradient_checkpointing": true,
+      "group_size": 4,
+      "input_jsonl": "/home/mark/qwen_diffusion/data/rl_multiturn_v2_public_pool/episodes.jsonl",
+      "kl_to_base_coeff": 0.05,
+      "kl_to_base_temperature": 1.0,
+      "learning_rate": 5e-06,
+      "live_tool_json_topk": 128,
+      "max_grad_norm": 1.0,
+      "max_new_tokens": 192,
+      "max_steps": 300,
+      "max_turns": 6,
+      "min_turns": 2,
+      "mixed_episode_groups": true,
+      "no_merge_adapter": true,
+      "out_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300",
+      "prompt_tokenizer_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+      "replay_max_prompt_tokens": 768,
+      "replay_max_seq_tokens": 1024,
+      "retention_block_size": 32,
+      "retention_collapse_flex_accuracy": 0.4,
+      "retention_gsm8k_fewshot": 5,
+      "retention_gsm8k_fewshot_path": "/home/mark/qwen_diffusion/data/phaseA_retention/gsm8k_main_train_first5.jsonl",
+      "retention_gsm8k_path": "/home/mark/qwen_diffusion/data/phaseA_retention/gsm8k_main_test_first20.jsonl",
+      "retention_max_new_tokens": 384,
+      "retention_probe_every_steps": 50,
+      "retention_probe_limit": 5,
+      "retention_small_block_size": 32,
+      "retention_temperature": 0.0,
+      "retention_threshold": 0.9,
+      "retention_top_p": 0.95,
+      "seed": 20260702,
+      "small_block_size": 32,
+      "temperature": 0.7,
+      "threshold": 0.9,
+      "tokenizer_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+      "top_p": 0.95,
+      "weight_decay": 0.0
+    },
+    "leak_filter_manifest": {
+      "eval_battery_paths": [
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_nevertrain_bfcl_apibank.jsonl",
+        "/home/mark/qwen_diffusion/data/toolcall_eval_native/flare_broaden_public_toolace60.jsonl"
+      ],
+      "input_jsonl": "/home/mark/qwen_diffusion/data/rl_multiturn_v2_public_pool/episodes.jsonl",
+      "input_rows": 240,
+      "kept_rows": 240,
+      "rejected_preview": [],
+      "rejected_rows": 0
+    },
+    "retention_probe_history": [
+      {
+        "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+        "collapse_threshold_flex_accuracy": 0.4,
+        "early_stop_collapse": false,
+        "elapsed_seconds": 140.84669853397645,
+        "examples": 5,
+        "flex_accuracy": 0.8,
+        "flex_correct": 4,
+        "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/retention_probe_step_0050",
+        "step": 50,
+        "strict_accuracy": 0.8,
+        "strict_correct": 4
+      },
+      {
+        "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+        "collapse_threshold_flex_accuracy": 0.4,
+        "early_stop_collapse": false,
+        "elapsed_seconds": 124.91379654896446,
+        "examples": 5,
+        "flex_accuracy": 0.8,
+        "flex_correct": 4,
+        "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/retention_probe_step_0100",
+        "step": 100,
+        "strict_accuracy": 0.8,
+        "strict_correct": 4
+      },
+      {
+        "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+        "collapse_threshold_flex_accuracy": 0.4,
+        "early_stop_collapse": false,
+        "elapsed_seconds": 80.18281676899642,
+        "examples": 5,
+        "flex_accuracy": 0.6,
+        "flex_correct": 3,
+        "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/retention_probe_step_0150",
+        "step": 150,
+        "strict_accuracy": 0.6,
+        "strict_correct": 3
+      },
+      {
+        "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+        "collapse_threshold_flex_accuracy": 0.4,
+        "early_stop_collapse": false,
+        "elapsed_seconds": 128.7130052529974,
+        "examples": 5,
+        "flex_accuracy": 0.6,
+        "flex_correct": 3,
+        "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/retention_probe_step_0200",
+        "step": 200,
+        "strict_accuracy": 0.6,
+        "strict_correct": 3
+      },
+      {
+        "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+        "collapse_threshold_flex_accuracy": 0.4,
+        "early_stop_collapse": false,
+        "elapsed_seconds": 76.88576737302355,
+        "examples": 5,
+        "flex_accuracy": 0.6,
+        "flex_correct": 3,
+        "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/retention_probe_step_0250",
+        "step": 250,
+        "strict_accuracy": 0.6,
+        "strict_correct": 3
+      },
+      {
+        "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+        "collapse_threshold_flex_accuracy": 0.4,
+        "early_stop_collapse": false,
+        "elapsed_seconds": 127.08875544008333,
+        "examples": 5,
+        "flex_accuracy": 0.6,
+        "flex_correct": 3,
+        "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/retention_probe_step_0300",
+        "step": 300,
+        "strict_accuracy": 0.6,
+        "strict_correct": 3
+      }
+    ]
+  },
+  "gsm8k_gate": {
+    "examples": 20,
+    "strict_correct": 13,
+    "strict_accuracy": 0.65,
+    "flex_correct": 13,
+    "flex_accuracy": 0.65
+  },
+  "gsm8k_gate_required": 0.65,
+  "gsm8k_gate_pass": true,
+  "gsm8k_gate_elapsed_seconds": 470.44788068404887,
+  "gsm8k_gate_generated_tokens": 3210,
+  "gsm8k_gate_disjointness": {
+    "train_path": "data/flare_redesign_run1_copy_retention_mix/train_agentic_mix.json",
+    "heldout_path": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+    "train_count": 5055,
+    "heldout_count": 40,
+    "full_hash_overlap_count": 0,
+    "content_hash_overlap_count": 0,
+    "sources": {
+      "train": [
+        "None"
+      ],
+      "heldout": [
+        "None"
+      ]
+    }
+  },
+  "matched20": {
+    "backend": "diffusion_careful",
+    "adapter": "runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model",
+    "base_model": "models/qwen3.5-9b-fastdllm-init",
+    "input_jsonl": "data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+    "episode_set_hash": "72463dc9d7ac6afa5835fbc8ee0c2b9dcf31c2781104c7d9dd650b6507c8c362",
+    "episodes": 20,
+    "turns": 63,
+    "exact_args": 44,
+    "exact_args_accuracy": 0.6984126984126984,
+    "starting_baseline_exact_args": 34,
+    "starting_baseline_turns": 63,
+    "delta_vs_starting_baseline": 10,
+    "prior_rl_pilot_exact_args": 38,
+    "delta_vs_prior_rl_pilot": 6,
+    "promotion_bar_exact_args": 50,
+    "promotion_bar_met": false,
+    "episode_exact": 11,
+    "episode_exact_accuracy": 0.55,
+    "exact_tool_sequence": 57,
+    "valid_tool_json": 62,
+    "valid_tool_call": 62,
+    "schema_ok": 59,
+    "required_args_present": 61,
+    "turn_wall_seconds_total": 421.2011570930481,
+    "sec_per_turn": 6.685732652270604,
+    "denoise_forwards_total": 6017.0,
+    "forwards_per_turn": 95.5079365079365,
+    "generated_tokens": 6111,
+    "generated_tokens_per_turn": 97.0,
+    "prefix_cache_hit_turns": 42,
+    "prefix_cache_eligible_followup_turns": 43,
+    "projection_audit": {
+      "exact_args": 44,
+      "exact_rows_dependent_on_projected_values": 0,
+      "offset_source:generated_token_ids": 63,
+      "parallel_commit_forced_tokens_counter": 0,
+      "projected_token_record_count": 0,
+      "projected_true_value_tokens_lower_bound": 0,
+      "projected_value_tokens_exact": 0,
+      "reported_model_value_tokens": 1966,
+      "rows": 63,
+      "rows_with_projected_token_records": 63,
+      "rows_with_projected_true_value_tokens_lower_bound": 0,
+      "rows_with_projected_value_tokens_exact": 0,
+      "true_xml_value_tokens": 1974,
+      "verification_mode": "no_projection_events",
+      "wave1_projected_tokens": 0,
+      "wave1_value_tokens_counter": 0,
+      "wave2_forced_tokens_counter": 0,
+      "zero_forward_rows": 0,
+      "zero_forward_rows_with_values": 0,
+      "zero_projected_value_tokens_verified": 1
+    },
+    "harness": {
+      "git_hash_at_run": "bdc8001730c5c64443f8047e53e1bc20200a233a",
+      "sampler_function": "scripts/eval_flare_northstar_matched.py::run_diffusion -> scripts/eval_fastdllm_toolcall_cases.py::full_context_sample",
+      "decode_condition": "baseline_careful",
+      "block_size": 32,
+      "small_block_size": 32,
+      "script_sha256": {
+        "scripts/eval_flare_northstar_matched.py": "4cda3acf752c093a0ee3d3e1208c2cdc5deb064b027d984cdf54e8fa93b6203f",
+        "scripts/audit_value_projection_tokens.py": "7b203e3e8e2a7a7bbfa6f831be295543c728b08d9228bd241f0f07e35a620b40"
+      }
+    }
+  },
+  "s2_stop_point": "not reached automatically; matched-20 promotion bar 50/63 was not met, so no S2 launch was performed"
+}

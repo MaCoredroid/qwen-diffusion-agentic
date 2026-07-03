@@ -1,0 +1,16 @@
+{
+  "train_path": "data/flare_redesign_run1_copy_retention_mix/train_agentic_mix.json",
+  "heldout_path": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+  "train_count": 5055,
+  "heldout_count": 40,
+  "full_hash_overlap_count": 0,
+  "content_hash_overlap_count": 0,
+  "sources": {
+    "train": [
+      "None"
+    ],
+    "heldout": [
+      "None"
+    ]
+  }
+}
