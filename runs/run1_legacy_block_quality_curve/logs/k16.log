@@ -1,0 +1,1325 @@
+[disjointness] {"content_hash_overlap_count": 0, "full_hash_overlap_count": 0, "heldout_count": 40, "heldout_path": "data/flare_stage1_ab_pilot/heldout_nll.jsonl", "sources": {"heldout": ["None"], "train": ["None"]}, "train_count": 5055, "train_path": "data/flare_redesign_run1_copy_retention_mix/train_agentic_mix.json"}
+[token_ids] {"mask_id": 248077, "stop_token_ids": [248046, 248044, 248045]}
+[fixed_masks] {"heldout_rows": 40, "max_length": 1024, "nll_batches": 40, "nll_block_size": 32, "nll_seed": 20260702, "total_eval_tokens": 4180, "view0_tokens": 2123, "view1_tokens": 2057}
+[load] A_diffusion_only adapter=runs/flare_redesign_run1_copy_grounded_qwen35_9b
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]/home/mark/qwen_diffusion/.venv-fastdllm/lib/python3.10/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:02,  1.04it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.83s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:02,  2.15s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.76s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.77s/it]
+[generation] A_diffusion_only
+[generation-batch] start=0 size=1 seconds=13.210
+[generation-batch] start=1 size=1 seconds=5.909
+[generation-batch] start=2 size=1 seconds=38.718
+[generation-batch] start=3 size=1 seconds=8.370
+[generation-batch] start=4 size=1 seconds=23.321
+[generation-batch] start=5 size=1 seconds=17.567
+[generation-batch] start=6 size=1 seconds=13.977
+[generation-batch] start=7 size=1 seconds=22.839
+[generation-batch] start=8 size=1 seconds=35.644
+[generation-batch] start=9 size=1 seconds=20.294
+[generation-batch] start=10 size=1 seconds=22.688
+[generation-batch] start=11 size=1 seconds=19.412
+[generation-batch] start=12 size=1 seconds=20.014
+[generation-batch] start=13 size=1 seconds=37.738
+[generation-batch] start=14 size=1 seconds=19.959
+[generation-batch] start=15 size=1 seconds=15.050
+[generation-batch] start=16 size=1 seconds=4.870
+[generation-batch] start=17 size=1 seconds=22.302
+[generation-batch] start=18 size=1 seconds=10.609
+[generation-batch] start=19 size=1 seconds=21.938
+[generation] A_diffusion_only gsm8k_flex=0.7500 mbpp=0.0000
+{
+  "args": {
+    "base_model": "models/qwen3.5-9b-fastdllm-init",
+    "adapter_a": "runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+    "adapter_b": "runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+    "model_names": "A_diffusion_only",
+    "train_path": "data/flare_redesign_run1_copy_retention_mix/train_agentic_mix.json",
+    "heldout_nll": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+    "gsm8k_path": "data/phaseA_retention/gsm8k_main_test_first20.jsonl",
+    "gsm8k_fewshot_path": "data/phaseA_retention/gsm8k_main_train_first5.jsonl",
+    "mbpp_path": "data/phaseA_retention/mbpp_full_test_first20.jsonl",
+    "out_dir": "runs/run1_legacy_block_quality_curve/k16",
+    "max_length": 1024,
+    "nll_block_size": 32,
+    "nll_seed": 20260702,
+    "generation_limit": 20,
+    "generation_batch_size": 1,
+    "generation_tasks": "gsm8k",
+    "full_context_generation": true,
+    "fresh_generation_blocks": true,
+    "gsm8k_fewshot": 5,
+    "block_size": 32,
+    "small_block_size": 16,
+    "max_new_tokens": 256,
+    "threshold": 0.9,
+    "temperature": 0.0,
+    "top_p": 0.95,
+    "mask_id": 248077,
+    "stop_token_id": 248046,
+    "mbpp_timeout": 5.0,
+    "gpu_index": 0,
+    "no_4bit": false,
+    "skip_generation": false,
+    "skip_nll": true,
+    "ar_reference_json": null,
+    "stop_token_ids": [
+      248046,
+      248044,
+      248045
+    ],
+    "_last_generation_sampler_metrics": [
+      {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 31,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 26,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 153,
+        "selected_mask_tokens": 0,
+        "natural_commits": 112,
+        "forced_commits": 43,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ],
+        "stop_token_hit": 248046,
+        "stop_offset": 154
+      }
+    ]
+  },
+  "disjointness": {
+    "train_path": "data/flare_redesign_run1_copy_retention_mix/train_agentic_mix.json",
+    "heldout_path": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+    "train_count": 5055,
+    "heldout_count": 40,
+    "full_hash_overlap_count": 0,
+    "content_hash_overlap_count": 0,
+    "sources": {
+      "train": [
+        "None"
+      ],
+      "heldout": [
+        "None"
+      ]
+    }
+  },
+  "fixed_mask_manifest": {
+    "heldout_rows": 40,
+    "nll_batches": 40,
+    "total_eval_tokens": 4180,
+    "view0_tokens": 2123,
+    "view1_tokens": 2057,
+    "nll_seed": 20260702,
+    "nll_block_size": 32,
+    "max_length": 1024
+  },
+  "ar_reference": {
+    "path": "/home/mark/qwen_diffusion/runs/phaseA_retention_snapshot_n5_t384/ar_qwen35_9b_bf16_thinkingoff/Qwen__Qwen3.5-9B/results_2026-06-28T22-41-27.782083.json",
+    "gsm8k_flex": 1.0,
+    "gsm8k_strict": 1.0,
+    "mbpp_pass_at_1": 0.2
+  },
+  "models": {
+    "A_diffusion_only": {
+      "adapter": "runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+      "generation": {
+        "summary": {
+          "gsm8k": {
+            "examples": 20,
+            "strict_correct": 14,
+            "strict_accuracy": 0.7,
+            "flex_correct": 15,
+            "flex_accuracy": 0.75
+          },
+          "mbpp": {
+            "examples": 0,
+            "passed": 0,
+            "pass_at_1": 0.0
+          },
+          "elapsed_seconds": 394.43129126902204,
+          "generated_tokens": 2755,
+          "generated_tokens_per_second": 6.984739955940643,
+          "unresolved_mask_examples": 0
+        },
+        "per_example": [
+          {
+            "task": "gsm8k",
+            "idx": 0,
+            "id": "gsm8k-0",
+            "gold": "18",
+            "strict_pred": "18",
+            "flex_pred": "18",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 92,
+            "seconds": 13.210207328898832,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 28,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 92,
+              "selected_mask_tokens": 0,
+              "natural_commits": 70,
+              "forced_commits": 23,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 91
+            },
+            "generated": "Janet's ducks lay 16 eggs per day.\nShe eats 3 eggs for breakfast and uses 4 eggs for muffins, so she uses 3 + 4 = 7 eggs.daily.\nThe remaining eggs she sells are 16 - 7 = 9 eggs.\nSince she sells them for $2 each, she makes 9 * 2 = $18 every day.\n#### 18"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 1,
+            "id": "gsm8k-1",
+            "gold": "3",
+            "strict_pred": null,
+            "flex_pred": "3",
+            "strict_correct": false,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 47,
+            "seconds": 5.908718588994816,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 14,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 44,
+              "selected_mask_tokens": 0,
+              "natural_commits": 28,
+              "forced_commits": 19,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 46
+            },
+            "generated": "The robe takes 2/2 = <<2/2=1>>1 bolt of white white fiber.\nSo total bolts =  2+1 = <<2+1=3>>3 bolts.\n 3"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 2,
+            "id": "gsm8k-2",
+            "gold": "70000",
+            "strict_pred": null,
+            "flex_pred": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "strict_correct": false,
+            "flex_correct": false,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 256,
+            "seconds": 38.71782639704179,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 256,
+              "selected_mask_tokens": 0,
+              "natural_commits": 215,
+              "forced_commits": 41,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ]
+            },
+            "generated": "Josh's initial000 + 50,000 = $100,000.\nThe repairs0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 3,
+            "id": "gsm8k-3",
+            "gold": "540",
+            "strict_pred": "540",
+            "flex_pred": "540",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 64,
+            "seconds": 8.369638988981023,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 61,
+              "selected_mask_tokens": 0,
+              "natural_commits": 46,
+              "forced_commits": 18,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 63
+            },
+            "generated": "James runs  3*3=<<3*3=9>>9 sprints a week.\nSince each sprint is 60 meters, he runs 9*0*9=<<60*9=540>>540 meters a week.\n#### 540"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 4,
+            "id": "gsm8k-4",
+            "gold": "20",
+            "strict_pred": "20",
+            "flex_pred": "20",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 154,
+            "seconds": 23.320642364909872,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 26,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 154,
+              "selected_mask_tokens": 0,
+              "natural_commits": 81,
+              "forced_commits": 73,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 153
+            },
+            "generated": "Wendi's flock consists of 20 chickens.\nIn the morning, she gives 15 cups of feed total, which 20 chickens * 3 cups/chicken = 60 cups. Wait, the problem states she gives 15 cups in the morning. Let's re-read carefully. \"She gives 15 cups in the morning.\nIn 25 cups in the afternoon.\nTotal total feed per day is20 chickens * 3 cups/chicken = 60 cups.\nShe has already given 15 + 25 = 40 cups.\nSo she needs to give 60 - 40 = 20 cups in the final meal.\n#### 20"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 5,
+            "id": "gsm8k-5",
+            "gold": "64",
+            "strict_pred": "64",
+            "flex_pred": "64",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 126,
+            "seconds": 17.566665392019786,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 29,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 124,
+              "selected_mask_tokens": 0,
+              "natural_commits": 77,
+              "forced_commits": 49,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 125
+            },
+            "generated": "Kylar buys 16 glasses in total. Since the price alternates, he buys 8 glasses at the full price and 8 glasses at at the discounted price (\nThe full price is $5.\nThe discounted price is $5 * 00% = $3.\nSo, the cost for the 8 full-price glasses is 8 * $5 = $40.\nThe cost for the 8 discounted glasses is 8 * $3 = $24.\nThe total cost is $40 + $24 = $64.\n#### 64"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 6,
+            "id": "gsm8k-6",
+            "gold": "260",
+            "strict_pred": "260",
+            "flex_pred": "260",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 104,
+            "seconds": 13.97722232004162,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 7,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 100,
+              "selected_mask_tokens": 0,
+              "natural_commits": 93,
+              "forced_commits": 11,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 103
+            },
+            "generated": "Seattle has 20 sheep.\nCharleston has  20 * 4 = <<20*4=88>>80 sheep.\nToulouse has has 80 * 2 = <<80*2=160>>160 sheep.\nTogether, they have 200 + 80 + 20 = <<160+80+20=260>>260 sheep.\n#### 260"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 7,
+            "id": "gsm8k-7",
+            "gold": "160",
+            "strict_pred": "196",
+            "flex_pred": "196",
+            "strict_correct": false,
+            "flex_correct": false,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 158,
+            "seconds": 22.838967827963643,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 155,
+              "selected_mask_tokens": 0,
+              "natural_commits": 98,
+              "forced_commits": 60,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 157
+            },
+            "generated": "Carla downloads downloads 200 / 2 = <<200/2=110>>110 minutes.\n4 40% of the way through the download, she has downloaded 110 * 0.4 = <<110*0.4=44>>44 minutes.\nThe remaining time to download is 1 110 - 44 = <<110-44=66>>66 minutes.\nThe restart takes 20 minutes.\nSo the total time is 66 + 20 + 110 = <<66+20+110=196>>196 minutes.\n#### 196"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 8,
+            "id": "gsm8k-8",
+            "gold": "45",
+            "strict_pred": "45",
+            "flex_pred": "45",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 232,
+            "seconds": 35.64422980800737,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 8,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 227,
+              "selected_mask_tokens": 0,
+              "natural_commits": 174,
+              "forced_commits": 58,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 231
+            },
+            "generated": "John drove away from home for 3 hours at 600 mph, so he traveled $3 \\times 60 = 180$ miles.\n\nOn his way back, he spent the first 2 hours in standstill traffic traffic, covering 0 miles.\nHe then spent the next half-hour (0.5 hours) driving at 30 mph, covering $ $0.5 \\times 30 = 15$ miles.\nThe total time he was trying 4 hours, so the remaining time is $4 - 2 - 0.5 = 1.5$ hours.\nDuring this remaining 1.5 hours, he drove at 80 mph, covering $1.5 \\times 80 = 120$ miles.\n\nThe total distance he drove back is $0 + 15 + 120 = 135$ miles.\nSince he started 180 miles miles away, the distance remaining is $180 - 135 = 45$ miles.\n\n#### 45"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 9,
+            "id": "gsm8k-9",
+            "gold": "460",
+            "strict_pred": "460",
+            "flex_pred": "460",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 145,
+            "seconds": 20.294105174951255,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 17,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 142,
+              "selected_mask_tokens": 0,
+              "natural_commits": 110,
+              "forced_commits": 35,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 144
+            },
+            "generated": "Eliza earns $10 per40 = $<<10*40=400>>400 for the first 40 hours.\nShe worked 45 - 4 5 hours of overtime.\nHer overtime rate is 10 * 1.2 = $<<10*1.2=12>>12 per hour.\nShe earned 5 * 12 = $<<5*12=60>>60 for overtime.\nHer total earnings for the week are 400 + 60 = $<<400+60=460>>460.\n#### 460"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 10,
+            "id": "gsm8k-10",
+            "gold": "366",
+            "strict_pred": "366",
+            "flex_pred": "366",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 161,
+            "seconds": 22.68786435306538,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 1,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 158,
+              "selected_mask_tokens": 0,
+              "natural_commits": 124,
+              "forced_commits": 37,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 160
+            },
+            "generated": "The program had 60 downloads in the first month.\nIn the second month month, it had 60 * 3 = <<<<60*3=180>>180 downloads.\nIn the third month, the downloads were reduced by 30%, so it had 180 * (1 - 0.30) = 180 * 0.7 = <<180*0.7=112.1126>>126 downloads.\nTotal downloads over the three months = 6 60 + 180 + 126 = <<60+180+126=366>>366.\n#### 366"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 11,
+            "id": "gsm8k-11",
+            "gold": "694",
+            "strict_pred": "694",
+            "flex_pred": "694",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 139,
+            "seconds": 19.41180706198793,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 11,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 136,
+              "selected_mask_tokens": 0,
+              "natural_commits": 124,
+              "forced_commits": 15,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 138
+            },
+            "generated": "Toula bought 3 dozen donuts at $68 per dozen, so the cost for donuts is 3 * 68 = $204.\nShe bought 2 dozen mini cupcakes at at $80 per dozen, so the cost for cupcakes is is 2 * 80 = $160.\nShe bought 6 dozen mini cheesecakes at $55 per dozen, so the cost for cheesecakes is 6 * 55 = $330.\nThe total cost is 204 + 160 + 330 = $694.\n#### 694"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 12,
+            "id": "gsm8k-12",
+            "gold": "13",
+            "strict_pred": "11",
+            "flex_pred": "11",
+            "strict_correct": false,
+            "flex_correct": false,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 142,
+            "seconds": 20.01398142601829,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 29,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 14,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 137,
+              "selected_mask_tokens": 0,
+              "natural_commits": 83,
+              "forced_commits": 59,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 141
+            },
+            "generated": "Carlos earns $1.5 *7 = $<<1.5*7=10.5>>11.5 per year from selling lemons.\nThe net profit per year is $11.5 - $3 = $<<11.5-3=8.5>>88.5.\nTo cover the initial cost of $90, it will take 90 / 8.5 = <<90/8.5=10.588...>>10.588 years years.\nSince he cannot earn money until the full cost is covered, it will take 11 years.\n#### 11"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 13,
+            "id": "gsm8k-13",
+            "gold": "18",
+            "strict_pred": null,
+            "flex_pred": "5",
+            "strict_correct": false,
+            "flex_correct": false,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 256,
+            "seconds": 37.7376635709079,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 29,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 249,
+              "selected_mask_tokens": 0,
+              "natural_commits": 205,
+              "forced_commits": 51,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ]
+            },
+            "generated": "Let $x$ be the number of vacuum cleaners cleaners Melanie started with.\n\n1.  **Sold at the green green house:** She sold $\\frac{1}{3}$ of her stock, so she has $\\frac{2}{3}x$ left.\n2.  **Sold at the red house:** She sold 2 more, so the remaining amount is is $\\frac{2}{3}x - 2$.\n3.  **Sold at the orange house:** She sold half of what was left.\n    *   Amount left left before orange house: $\\frac{2}{3}x - 2$\n    *   Amount sold sold at orange house: $\\frac{1}{2} \\times (\\frac{2}{3}x - 2)$\n    *   Amount remaining after orange house: $\\frac{1}{2} \\times (\\frac{2}{3}x - 2)$\n4.  **Final count:**:**:** We know she has 5 left left.\n    So, $\\frac{1}{2} \\times (\\frac{2}{3}x - 2) = 5$.\n\nNow.\n solve for $x$:\nMultiply both sides by"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 14,
+            "id": "gsm8k-14",
+            "gold": "60",
+            "strict_pred": "60",
+            "flex_pred": "60",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 143,
+            "seconds": 19.959172520088032,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 15,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 140,
+              "selected_mask_tokens": 0,
+              "natural_commits": 116,
+              "forced_commits": 27,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 142
+            },
+            "generated": "20% of 20 students enrolled in contemporary dance, which is 0.20 * 20 = 4 students.\nThe remaining number students are 20 - 4 = 16 students.\n25% of the remaining students enrolled in in jazz dance, which is 0.25 * 16 = 4 students.\nThe rest enrolled enrolled in hip-hop dance, which is 16 - 4 = 12 students.\nTo find the percentage of the entire class that enrolled in hip-hop dance, we calculate (12 / 20) * 100 = 60%.\n#### 60"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 15,
+            "id": "gsm8k-15",
+            "gold": "125",
+            "strict_pred": "125",
+            "flex_pred": "125",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 104,
+            "seconds": 15.049602482002228,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 8,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 104,
+              "selected_mask_tokens": 0,
+              "natural_commits": 71,
+              "forced_commits": 33,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 103
+            },
+            "generated": "If the merchant chooses jewelry00000 * 0.025 = $<<5000*0.025=125>>125 profitIf the merchant chooses electronic gadgets,000 * 0.012 = $<<8000*0.012=96>>96 profit.Since $125 > $96, the merchant should choose the jewelry to maximize profit.\n#### 125"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 16,
+            "id": "gsm8k-16",
+            "gold": "230",
+            "strict_pred": "230",
+            "flex_pred": "230",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 40,
+            "seconds": 4.869830165058374,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 5,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 36,
+              "selected_mask_tokens": 0,
+              "natural_commits": 33,
+              "forced_commits": 7,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 39
+            },
+            "generated": "Each train travels 80 + 150 = <<80+150=230>>230 miles in the two days.\n#### 230"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 17,
+            "id": "gsm8k-17",
+            "gold": "57500",
+            "strict_pred": "61000",
+            "flex_pred": "61000",
+            "strict_correct": false,
+            "flex_correct": false,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 158,
+            "seconds": 22.30209047300741,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 29,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 155,
+              "selected_mask_tokens": 0,
+              "natural_commits": 133,
+              "forced_commits": 27,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 157
+            },
+            "generated": "Jill earns $20 * 35 = $<<20*35=770>>770 per week as a teacher teacher.\nShe earns $30 * 15 = $<<30*15=450>>450 per week as a coach.\nHer total weekly earnings are 7770 + 450 = $<<770+450=1220>>1220.\nSince she works 50 weeks a year, her annual salary is 1220 * 50 = $<<1220*50=61000>>61000.\n#### 61000"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 18,
+            "id": "gsm8k-18",
+            "gold": "7",
+            "strict_pred": "7",
+            "flex_pred": "7",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 79,
+            "seconds": 10.608786605997011,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 15,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 78,
+              "selected_mask_tokens": 0,
+              "natural_commits": 45,
+              "forced_commits": 34,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 78
+            },
+            "generated": "Claire eats 3 eggs every morning.\nIn 4 weeks weeks, there are 4 * 7 = 28 days.\nSo she eats 3 * 28 = 84 eggs in 4 weeks.\nSince dozen means 12, she she will 84 / 12 = 7 dozens of eggs.\n#### 7"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 19,
+            "id": "gsm8k-19",
+            "gold": "6",
+            "strict_pred": "6",
+            "flex_pred": "6",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 155,
+            "seconds": 21.93821177096106,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 31,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 26,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 153,
+              "selected_mask_tokens": 0,
+              "natural_commits": 112,
+              "forced_commits": 43,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 154
+            },
+            "generated": "Mar total distance is 12 miles.\nShe walked walked 4 + 2 = 6 miles so far.\nThe remaining distance is 12 - 6 = 6 miles.\nTo achieve an average speed of 4 miles per hour for the entire 12-mile trail, the total time required is  12 / 4 = 3 hours.\nShe has already already spent 1 + 1 = 2 hours.\nSo she she has 3 - 2 = 1 hour left to cover the remaining 6 miles.\nTo cover 6 miles in 1 hour, she needs to walk at a speed of 6 / 1 = 6 miles per per hour.\n#### 6"
+          }
+        ],
+        "gpu": {
+          "samples": 387,
+          "gpu_peak_memory_mib": 18589,
+          "gpu_util_mean_pct": 98.85012919896641,
+          "gpu_util_max_pct": 100
+        },
+        "cuda_peak_allocated_gb": 8.258691787719727,
+        "cuda_peak_reserved_gb": 9.111328125
+      }
+    }
+  }
+}
