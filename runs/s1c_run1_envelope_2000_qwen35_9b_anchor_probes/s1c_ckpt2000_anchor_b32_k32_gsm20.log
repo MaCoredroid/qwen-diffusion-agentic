@@ -1,0 +1,105 @@
+[load] base=/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init adapter=/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b/checkpoint-2000/adapter_model
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]/home/mark/qwen_diffusion/.venv-fastdllm/lib/python3.10/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:02,  1.02it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.83s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:02,  2.16s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.76s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.78s/it]
+[token_ids] {"mask_id": 248077, "stop_token_ids": [248044, 248045, 248046]}
+[anchor] B=32 K=32 gsm8k_limit=20
+Current Python version 3.10 is below the recommended 3.11 version. It is recommended to upgrade to Python 3.11 or higher for the best experience.
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=0 correct=0 tokens=88 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=1 correct=0 tokens=51 forwards=64
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=2 correct=0 tokens=256 forwards=256
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=3 correct=0 tokens=36 forwards=64
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=4 correct=0 tokens=128 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=5 correct=0 tokens=256 forwards=256
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=6 correct=1 tokens=103 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=7 correct=0 tokens=256 forwards=256
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=8 correct=0 tokens=196 forwards=224
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=9 correct=1 tokens=111 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=10 correct=1 tokens=135 forwards=160
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=11 correct=1 tokens=144 forwards=160
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=12 correct=0 tokens=111 forwards=128
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=13 correct=0 tokens=148 forwards=160
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=14 correct=1 tokens=171 forwards=192
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=15 correct=0 tokens=147 forwards=160
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=16 correct=1 tokens=42 forwards=64
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=17 correct=0 tokens=150 forwards=160
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=18 correct=0 tokens=78 forwards=96
+[row] slice=gsm8k_first20_strict B=32 K=32 idx=19 correct=0 tokens=106 forwards=128
+[anchor] PASS strict=6/20 accuracy=0.3000
+{
+  "anchor_gate": {
+    "accuracy": 0.3,
+    "block_size": 32,
+    "correct": 6,
+    "denoise_steps": 32,
+    "examples": 20,
+    "min_accuracy": 0.0,
+    "passed": true,
+    "required": true
+  },
+  "ar_timing": null,
+  "args": {
+    "adapter": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b/checkpoint-2000/adapter_model",
+    "anchor_block_size": 32,
+    "anchor_denoise_steps": 32,
+    "anchor_min_strict_accuracy": 0.0,
+    "anchor_only": true,
+    "ar_timing_rows": 4,
+    "ar_timing_steps": 16,
+    "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+    "block_sizes": [
+      32
+    ],
+    "gsm8k_fewshot": 5,
+    "gsm8k_fewshot_jsonl": "/home/mark/qwen_diffusion/data/phaseA_retention/gsm8k_main_train_first5.jsonl",
+    "gsm8k_jsonl": "/home/mark/qwen_diffusion/data/phaseA_retention/gsm8k_main_test_first20.jsonl",
+    "gsm8k_limit": 20,
+    "k_values": [
+      32
+    ],
+    "max_new_tokens": 256,
+    "no_4bit": false,
+    "out_dir": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes",
+    "quality_tolerance": 0.05,
+    "run_name": "s1c_ckpt2000_anchor_b32_k32_gsm20",
+    "seed": 20260701,
+    "skip_anchor_gate": false,
+    "temperature": 0.0,
+    "toolcall_jsonl": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes/empty_toolcall.jsonl",
+    "toolcall_limit": 0,
+    "top_p": 0.95
+  },
+  "held_quality": [],
+  "mask_id": 248077,
+  "report_path": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes/s1c_ckpt2000_anchor_b32_k32_gsm20.report.md",
+  "rows_path": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes/s1c_ckpt2000_anchor_b32_k32_gsm20.jsonl",
+  "run_name": "s1c_ckpt2000_anchor_b32_k32_gsm20",
+  "stop_token_ids": [
+    248044,
+    248045,
+    248046
+  ],
+  "summaries": [
+    {
+      "accuracy": 0.3,
+      "block_size": 32,
+      "correct": 6,
+      "denoise_forwards": 3008,
+      "denoise_seconds": 322.49069436849095,
+      "denoise_steps": 32,
+      "elapsed_seconds": 323.40974759007804,
+      "examples": 20,
+      "generated_tokens": 2713,
+      "generated_tokens_per_forward_actual": 0.9019281914893617,
+      "generated_tokens_per_second": 8.38873911567665,
+      "is_anchor": true,
+      "mean_denoise_seconds_per_forward": 0.1072110021171845,
+      "mutable_token_changes": 9282,
+      "remasked_visible_tokens": 5863,
+      "slice": "gsm8k_first20_strict",
+      "tokens_per_forward_nominal": 1.0,
+      "unresolved_masks": 0
+    }
+  ],
+  "summary_path": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes/s1c_ckpt2000_anchor_b32_k32_gsm20.summary.json"
+}

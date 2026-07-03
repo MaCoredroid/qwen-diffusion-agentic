@@ -1,0 +1,15 @@
+{
+  "end_fragment": "</parameter>",
+  "end_token_ids": [
+    510,
+    15704,
+    29
+  ],
+  "start_fragment": "<parameter=",
+  "start_token_ids": [
+    27,
+    15704,
+    28
+  ],
+  "tokenizer": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init"
+}

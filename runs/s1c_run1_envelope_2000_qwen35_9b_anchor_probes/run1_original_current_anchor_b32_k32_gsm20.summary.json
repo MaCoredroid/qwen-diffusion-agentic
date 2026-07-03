@@ -1,0 +1,77 @@
+{
+  "anchor_gate": {
+    "accuracy": 0.15,
+    "block_size": 32,
+    "correct": 3,
+    "denoise_steps": 32,
+    "examples": 20,
+    "min_accuracy": 0.0,
+    "passed": true,
+    "required": true
+  },
+  "ar_timing": null,
+  "args": {
+    "adapter": "/home/mark/qwen_diffusion/runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+    "anchor_block_size": 32,
+    "anchor_denoise_steps": 32,
+    "anchor_min_strict_accuracy": 0.0,
+    "anchor_only": true,
+    "ar_timing_rows": 4,
+    "ar_timing_steps": 16,
+    "base_model": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+    "block_sizes": [
+      32
+    ],
+    "gsm8k_fewshot": 5,
+    "gsm8k_fewshot_jsonl": "/home/mark/qwen_diffusion/data/phaseA_retention/gsm8k_main_train_first5.jsonl",
+    "gsm8k_jsonl": "/home/mark/qwen_diffusion/data/phaseA_retention/gsm8k_main_test_first20.jsonl",
+    "gsm8k_limit": 20,
+    "k_values": [
+      32
+    ],
+    "max_new_tokens": 256,
+    "no_4bit": false,
+    "out_dir": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes",
+    "quality_tolerance": 0.05,
+    "run_name": "run1_original_current_anchor_b32_k32_gsm20",
+    "seed": 20260701,
+    "skip_anchor_gate": false,
+    "temperature": 0.0,
+    "toolcall_jsonl": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes/empty_toolcall.jsonl",
+    "toolcall_limit": 0,
+    "top_p": 0.95
+  },
+  "held_quality": [],
+  "mask_id": 248077,
+  "report_path": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes/run1_original_current_anchor_b32_k32_gsm20.report.md",
+  "rows_path": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes/run1_original_current_anchor_b32_k32_gsm20.jsonl",
+  "run_name": "run1_original_current_anchor_b32_k32_gsm20",
+  "stop_token_ids": [
+    248044,
+    248045,
+    248046
+  ],
+  "summaries": [
+    {
+      "accuracy": 0.15,
+      "block_size": 32,
+      "correct": 3,
+      "denoise_forwards": 4544,
+      "denoise_seconds": 502.71945051837247,
+      "denoise_steps": 32,
+      "elapsed_seconds": 504.02121546899434,
+      "examples": 20,
+      "generated_tokens": 4446,
+      "generated_tokens_per_forward_actual": 0.9784330985915493,
+      "generated_tokens_per_second": 8.821057256216832,
+      "is_anchor": true,
+      "mean_denoise_seconds_per_forward": 0.11063368189224747,
+      "mutable_token_changes": 5820,
+      "remasked_visible_tokens": 3404,
+      "slice": "gsm8k_first20_strict",
+      "tokens_per_forward_nominal": 1.0,
+      "unresolved_masks": 0
+    }
+  ],
+  "summary_path": "/home/mark/qwen_diffusion/runs/s1c_run1_envelope_2000_qwen35_9b_anchor_probes/run1_original_current_anchor_b32_k32_gsm20.summary.json"
+}
