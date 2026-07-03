@@ -630,7 +630,7 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         "adapter_out": str(adapter_out),
         "trainable_params": trainable,
         "warm_start": str(args.adapter),
-        "gate_note": "SFT warm-start is abandoned; this pilot starts from Run-1 copy-grounded checkpoint.",
+        "gate_note": f"Pilot starts from configured warm-start adapter: {args.adapter}",
     }
     write_json(args.out_dir / "summary.json", summary)
     report = [

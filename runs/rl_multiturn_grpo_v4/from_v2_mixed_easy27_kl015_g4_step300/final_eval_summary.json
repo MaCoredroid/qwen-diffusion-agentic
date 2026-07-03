@@ -1,0 +1,92 @@
+{
+  "adapter": "runs/rl_multiturn_grpo_v4/from_v2_mixed_easy27_kl015_g4_step300/adapter_model",
+  "backend": "diffusion_careful",
+  "gsm8k_gate": {
+    "examples": 20,
+    "flex_accuracy": 0.7,
+    "flex_correct": 14,
+    "passed": true,
+    "strict_accuracy": 0.7,
+    "strict_correct": 14
+  },
+  "harness": {
+    "block_size": 32,
+    "decode_condition": "baseline_careful",
+    "git_hash_at_run": "ee0e1ec08a059c5d67f222e3a75e22938d5c8ebc",
+    "sampler_function": "scripts/eval_flare_northstar_matched.py::run_diffusion -> scripts/eval_fastdllm_toolcall_cases.py::full_context_sample",
+    "script_sha256": {
+      "scripts/audit_value_projection_tokens.py": "7b203e3e8e2a7a7bbfa6f831be295543c728b08d9228bd241f0f07e35a620b40",
+      "scripts/eval_flare_northstar_matched.py": "4cda3acf752c093a0ee3d3e1208c2cdc5deb064b027d984cdf54e8fa93b6203f",
+      "scripts/eval_flare_stage1_ab_diffusion.py": "eaa78d7a9abfb32b7ab73c7753cf87026741e372ef13a1c0f8e44ead79b5e503",
+      "scripts/rl_multiturn_grpo_pilot.py": "593bcdf7ccc316f29e046a2a6409a7d58b546e311ef4cefb26163059ef3ad5ea"
+    },
+    "small_block_size": 32
+  },
+  "matched20": {
+    "delta_vs_v2": -7,
+    "episode_exact": 8,
+    "episode_exact_accuracy": 0.4,
+    "episodes": 20,
+    "exact_args": 37,
+    "exact_args_accuracy": 0.5873015873015873,
+    "exact_tool_sequence": 56,
+    "forwards_per_turn": 91.3015873015873,
+    "generated_tokens_per_turn": 93.4920634920635,
+    "input_jsonl": "data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+    "prefix_cache_eligible_followup_turns": 43,
+    "prefix_cache_hit_turns": 41,
+    "projection_audit": {
+      "exact_args": 37,
+      "exact_rows_dependent_on_projected_values": 0,
+      "offset_source:generated_token_ids": 63,
+      "parallel_commit_forced_tokens_counter": 0,
+      "projected_token_record_count": 0,
+      "projected_true_value_tokens_lower_bound": 0,
+      "projected_value_tokens_exact": 0,
+      "reported_model_value_tokens": 1966,
+      "rows": 63,
+      "rows_with_projected_token_records": 63,
+      "rows_with_projected_true_value_tokens_lower_bound": 0,
+      "rows_with_projected_value_tokens_exact": 0,
+      "true_xml_value_tokens": 1944,
+      "verification_mode": "no_projection_events",
+      "wave1_projected_tokens": 0,
+      "wave1_value_tokens_counter": 0,
+      "wave2_forced_tokens_counter": 0,
+      "zero_forward_rows": 0,
+      "zero_forward_rows_with_values": 0,
+      "zero_projected_value_tokens_verified": 1
+    },
+    "promotion_bar_exact_args": 50,
+    "promotion_bar_met": false,
+    "required_args_present": 59,
+    "schema_ok": 57,
+    "sec_per_turn": 6.469331533189804,
+    "turns": 63,
+    "v2_reference_exact_args": 44,
+    "valid_tool_call": 61,
+    "valid_tool_json": 61
+  },
+  "s2_teacher_selection": {
+    "reason": "v4 retention passed (14/20), but matched-20 was 37/63, below v2 44/63.",
+    "rule": "Use v4 only if retention held and matched-20 exact_args >= 44; otherwise use v2.",
+    "selected_teacher": "runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model"
+  },
+  "training": {
+    "early_stop_reason": "kl_last_window_mean",
+    "early_stopped": true,
+    "elapsed_seconds": 11138.528780446039,
+    "grammar_forced_tokens_masked": 56919,
+    "kl_early_stop_mean_threshold": 0.05,
+    "kl_early_stop_window": 50,
+    "last50_kl_mean_artifact_tail": 0.05025525791570544,
+    "last_step_kl_early_stop_mean": 0.05025525791570544,
+    "max_kl_to_base_loss": 0.1923331618309021,
+    "mean_reward": 0.9210710710710719,
+    "nonzero_advantage_steps": 214,
+    "policy_tokens": 12781,
+    "steps": 222,
+    "zero_advantage_steps": 8
+  },
+  "warm_start": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model"
+}

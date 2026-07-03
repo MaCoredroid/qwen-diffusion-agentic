@@ -1,0 +1,121 @@
+{
+  "adapter_out": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v4/from_v2_mixed_easy27_kl015_g4_step300/adapter_model",
+  "early_stop_reason": "kl_last_window_mean",
+  "early_stopped": true,
+  "elapsed_seconds": 11138.528780446039,
+  "gate_note": "SFT warm-start is abandoned; this pilot starts from Run-1 copy-grounded checkpoint.",
+  "grammar_forced_tokens_masked": 56919,
+  "group_size": 4,
+  "kl_early_stop_mean_threshold": 0.05,
+  "kl_early_stop_window": 50,
+  "kl_to_base_coeff": 0.15,
+  "last_step": {
+    "advantages": [
+      0.9045333862304688,
+      0.9045333862304688,
+      -1.5075575113296509,
+      -0.3015116751194
+    ],
+    "early_stop_reason": "kl_last_window_mean",
+    "episode_id": "toolace_train_000460",
+    "examples": 7,
+    "grad_norm": 2.532954454421997,
+    "grammar_forced_tokens_masked": 225,
+    "group_episode_ids": [
+      "toolace_train_000460",
+      "qwen35_9b_toolcall_multicall_curriculum_0167",
+      "toolace_train_000174",
+      "toolace_train_000130"
+    ],
+    "kl_early_stop_mean": 0.05025525791570544,
+    "kl_early_stop_mean_threshold": 0.05,
+    "kl_early_stop_window": 50,
+    "kl_to_base_coeff": 0.15,
+    "kl_to_base_loss": 0.03300553560256958,
+    "kl_to_base_loss_scaled_per_policy_token": 0.004950830712914467,
+    "kl_to_base_tokens": 33,
+    "loss": -0.20771390199661255,
+    "mean_logprob": -0.7062180638313293,
+    "policy_loss": -0.21266472339630127,
+    "policy_tokens": 33,
+    "reward_mean": 0.9343750000000001,
+    "rewards": [
+      1.0,
+      1.0,
+      0.825,
+      0.9125
+    ],
+    "rollout_seconds": 33.68026551406365,
+    "rollouts": [
+      {
+        "advantage": 0.9045333862304688,
+        "audit_clean": true,
+        "episode_exact_all_turns": true,
+        "episode_id": "toolace_train_000460",
+        "exact_turns": 2,
+        "group_idx": 0,
+        "reward": 1.0,
+        "turn_rewards": [
+          1.0,
+          1.0
+        ],
+        "turns": 2
+      },
+      {
+        "advantage": 0.9045333862304688,
+        "audit_clean": true,
+        "episode_exact_all_turns": true,
+        "episode_id": "qwen35_9b_toolcall_multicall_curriculum_0167",
+        "exact_turns": 2,
+        "group_idx": 1,
+        "reward": 1.0,
+        "turn_rewards": [
+          1.0,
+          1.0
+        ],
+        "turns": 2
+      },
+      {
+        "advantage": -1.5075575113296509,
+        "audit_clean": true,
+        "episode_exact_all_turns": false,
+        "episode_id": "toolace_train_000174",
+        "exact_turns": 1,
+        "group_idx": 2,
+        "reward": 0.825,
+        "turn_rewards": [
+          1.0,
+          0.65
+        ],
+        "turns": 2
+      },
+      {
+        "advantage": -0.3015116751194,
+        "audit_clean": true,
+        "episode_exact_all_turns": false,
+        "episode_id": "toolace_train_000130",
+        "exact_turns": 1,
+        "group_idx": 3,
+        "reward": 0.9125,
+        "turn_rewards": [
+          0.825,
+          1.0
+        ],
+        "turns": 2
+      }
+    ],
+    "step": 222,
+    "step_seconds": 39.51922861603089,
+    "turns": 2,
+    "update_seconds": 5.8388748549623415,
+    "zero_advantage": false
+  },
+  "mean_reward": 0.9210710710710719,
+  "nonzero_advantage_steps": 214,
+  "policy_tokens": 12781,
+  "retention_probe_every_steps": 50,
+  "status": "pilot_complete",
+  "steps": 222,
+  "trainable_params": 18112512,
+  "warm_start": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model"
+}
