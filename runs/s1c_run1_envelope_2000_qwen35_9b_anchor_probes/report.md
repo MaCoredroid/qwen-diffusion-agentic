@@ -1,5 +1,11 @@
 # S1c Run-1 Envelope Probe
 
+Superseded anchor note: the anchor probes in this report used the mutable-remask
+fixed-K sampler from `scripts/measure_block_quality_curve.py`. That path is now
+classified as an invalid third scale for GDN-state/serving continuity. Use
+`runs/eval_drift_rebaseline/report.md` for the corrected legacy full-context
+rebaseline.
+
 ## Verdict
 
 The S1c training run completed, but the decisive sanity gate failed.

@@ -1,0 +1,85 @@
+{
+  "correct_harness": {
+    "name": "legacy_full_context_fresh_maskban",
+    "script": "scripts/eval_flare_stage1_ab_diffusion.py",
+    "reason": "continuity with the reproduced 0.55 B@1000 result and compatible with GDN-state discipline"
+  },
+  "invalid_harness": {
+    "name": "mutable_remask_fixed_k",
+    "script": "scripts/measure_block_quality_curve.py",
+    "reason": "re-masks and resamples previously visible positions; not the serving/cache continuity scale"
+  },
+  "diff_pin": {
+    "reference_commit": "43f8366",
+    "measure_block_quality_curve_diff_from_reference": false,
+    "eval_flare_stage1_ab_diffusion_change": "tokenizer fallback only after 43f8366",
+    "s1_gate_change": "7f347e0 added run_s1_gate_eval.sh and called measure_block_quality_curve.py as the hard anchor despite report text calling it legacy"
+  },
+  "rebaseline": [
+    {
+      "model_state": "init-base",
+      "adapter": null,
+      "strict_correct": 0,
+      "examples": 20,
+      "strict_accuracy": 0.0,
+      "flex_correct": 0,
+      "flex_accuracy": 0.0,
+      "elapsed_seconds": 708.2094882570673,
+      "generated_tokens": 5120,
+      "unresolved_mask_examples": 0,
+      "summary_path": "runs/eval_drift_rebaseline/careful_init_b1000_run1/summary.json"
+    },
+    {
+      "model_state": "B@1000",
+      "adapter": "runs/flare_stage1_ab_pilot/two_stream_B_s1024_step1000",
+      "strict_correct": 11,
+      "examples": 20,
+      "strict_accuracy": 0.55,
+      "flex_correct": 11,
+      "flex_accuracy": 0.55,
+      "elapsed_seconds": 370.97749861201737,
+      "generated_tokens": 2670,
+      "unresolved_mask_examples": 0,
+      "summary_path": "runs/eval_drift_rebaseline/careful_init_b1000_run1/summary.json"
+    },
+    {
+      "model_state": "Run-1",
+      "adapter": "runs/flare_redesign_run1_copy_grounded_qwen35_9b",
+      "strict_correct": 14,
+      "examples": 20,
+      "strict_accuracy": 0.7,
+      "flex_correct": 14,
+      "flex_accuracy": 0.7,
+      "elapsed_seconds": 412.85966339707375,
+      "generated_tokens": 2845,
+      "unresolved_mask_examples": 0,
+      "summary_path": "runs/eval_drift_rebaseline/careful_init_b1000_run1/summary.json"
+    },
+    {
+      "model_state": "S1-final",
+      "adapter": "runs/s1_budget_retrain_r64_qwen35_9b",
+      "strict_correct": 6,
+      "examples": 20,
+      "strict_accuracy": 0.3,
+      "flex_correct": 6,
+      "flex_accuracy": 0.3,
+      "elapsed_seconds": 267.8201521799201,
+      "generated_tokens": 2178,
+      "unresolved_mask_examples": 0,
+      "summary_path": "runs/eval_drift_rebaseline/careful_s1final_s1cfinal/summary.json"
+    },
+    {
+      "model_state": "S1c-final",
+      "adapter": "runs/s1c_run1_envelope_2000_qwen35_9b",
+      "strict_correct": 9,
+      "examples": 20,
+      "strict_accuracy": 0.45,
+      "flex_correct": 9,
+      "flex_accuracy": 0.45,
+      "elapsed_seconds": 316.6540370020084,
+      "generated_tokens": 2550,
+      "unresolved_mask_examples": 0,
+      "summary_path": "runs/eval_drift_rebaseline/careful_s1final_s1cfinal/summary.json"
+    }
+  ]
+}
