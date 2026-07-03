@@ -1,0 +1,52 @@
+{
+  "out_jsonl": "/home/mark/qwen_diffusion/data/rl_multiturn_v3_frontier_pool/episodes.jsonl",
+  "episode_set_hash": "972bab02a3f930160d01c4be46c769752f8a8e6563b0c1db8f680bdd79d6dc7b",
+  "records": 199,
+  "turns": 447,
+  "source_family_counts": {
+    "ToolACE-derived": 191,
+    "public-native-warmstart": 8
+  },
+  "role_counts": {
+    "fresh_public_extended": 120,
+    "frontier_from_v2": 79
+  },
+  "turn_count_histogram": {
+    "2": 157,
+    "3": 35,
+    "4": 7
+  },
+  "difficulty_filter": {
+    "basis": "RL-v2 training metrics rollouts; final four observed visits per episode",
+    "drop_rule": "drop v2-pool episodes with episode_exact_all_turns true on all final 4 visits",
+    "v2_pool_rows": 240,
+    "v2_episodes_seen": 240,
+    "dropped_solved_4_of_4": 161,
+    "frontier_kept": 79,
+    "last4_exact_count_histogram": {
+      "0": 77,
+      "1": 2,
+      "4": 161
+    },
+    "visit_count_min": 4,
+    "visit_count_max": 8,
+    "dropped_jsonl": "/home/mark/qwen_diffusion/data/rl_multiturn_v3_frontier_pool/dropped_solved4.jsonl"
+  },
+  "fresh_public_extension": {
+    "candidate_extended_jsonl": "/home/mark/qwen_diffusion/data/rl_multiturn_v3_frontier_pool/candidate_extended_360.jsonl",
+    "candidate_extended_rows": 360,
+    "fresh_added_not_in_v2": 120,
+    "reason": "frontier-only pool had 79 rows, so all fresh leak-checked public rows from target-count 360 extension were added"
+  },
+  "duplicate_counts_selected": {
+    "id_duplicates": 0,
+    "fingerprint_duplicates": 0,
+    "user_fingerprint_duplicates": 0,
+    "public_eval_hash_duplicates": 0
+  },
+  "inputs": {
+    "v2_pool": "/home/mark/qwen_diffusion/data/rl_multiturn_v2_public_pool/episodes.jsonl",
+    "v2_training_metrics": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/metrics.jsonl",
+    "candidate_extended_manifest": "/home/mark/qwen_diffusion/data/rl_multiturn_v3_frontier_pool/candidate_extended_360.manifest.json"
+  }
+}
