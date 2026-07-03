@@ -18,6 +18,7 @@ from typing import Any
 
 import torch
 import torch.nn.functional as F
+import torch.utils.checkpoint
 from peft import PeftModel, prepare_model_for_kbit_training
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
@@ -49,7 +50,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--save-every", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=20260703)
     parser.add_argument("--gradient-checkpointing", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("--kbit-prepare", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--max-targets-per-record", type=int, default=0)
+    parser.add_argument("--max-train-seq-tokens", type=int, default=640)
+    parser.add_argument("--train-crop-tail-tokens", type=int, default=32)
     parser.add_argument("--gpu-index", type=int, default=0)
     return parser.parse_args()
 
@@ -102,12 +106,13 @@ def unwrap_lm_model(model):
     return model
 
 
-def differentiable_flare_noisy_logits(
+def differentiable_flare_noisy_hidden(
     model,
     clean_input_ids: torch.Tensor,
     noisy_input_ids: torch.Tensor,
     *,
     block_size: int,
+    checkpoint_layers: bool = False,
 ):
     lm_model = unwrap_lm_model(model)
     if clean_input_ids.shape != noisy_input_ids.shape:
@@ -127,21 +132,87 @@ def differentiable_flare_noisy_logits(
     noisy_position_ids = modeling_module.local_position_ids_from_doc_ids(noisy_doc_ids)
 
     for layer in lm_model.model.layers:
-        clean_hidden, noisy_hidden = lm_model._flare_two_stream_layer_forward(
-            layer,
-            clean_hidden,
-            noisy_hidden,
-            doc_ids=doc_ids,
-            noisy_doc_ids=noisy_doc_ids,
-            clean_mask=clean_mask,
-            two_stream_mask=two_stream_mask,
-            clean_position_ids=clean_position_ids,
-            noisy_position_ids=noisy_position_ids,
-            block_size=block_size,
-        )
+        def layer_forward(clean_state, noisy_state):
+            return lm_model._flare_two_stream_layer_forward(
+                layer,
+                clean_state,
+                noisy_state,
+                doc_ids=doc_ids,
+                noisy_doc_ids=noisy_doc_ids,
+                clean_mask=clean_mask,
+                two_stream_mask=two_stream_mask,
+                clean_position_ids=clean_position_ids,
+                noisy_position_ids=noisy_position_ids,
+                block_size=block_size,
+            )
+
+        if checkpoint_layers:
+            clean_hidden, noisy_hidden = torch.utils.checkpoint.checkpoint(
+                layer_forward,
+                clean_hidden,
+                noisy_hidden,
+                use_reentrant=False,
+            )
+        else:
+            clean_hidden, noisy_hidden = layer_forward(clean_hidden, noisy_hidden)
 
     noisy_hidden = lm_model.model.norm(noisy_hidden)
-    return lm_model.lm_head(noisy_hidden)
+    return noisy_hidden[:1]
+
+
+def crop_record_tensors(
+    record: dict[str, Any],
+    targets: list[dict[str, Any]],
+    args: argparse.Namespace,
+) -> tuple[list[int], list[int], list[dict[str, Any]], dict[str, Any]]:
+    input_ids = list(record["input_ids"])
+    noisy_ids = list(record["student_noisy_ids"])
+    if len(input_ids) != len(noisy_ids):
+        raise ValueError(f"record {record.get('record_id')} input/noisy length mismatch")
+    max_len = int(args.max_train_seq_tokens or 0)
+    if max_len <= 0 or len(input_ids) <= max_len:
+        return input_ids, noisy_ids, targets, {
+            "cropped": False,
+            "crop_start": 0,
+            "crop_end": len(input_ids),
+            "orig_seq_len": len(input_ids),
+        }
+
+    positions = [int(item["pos"]) for item in targets]
+    if not positions:
+        return input_ids, noisy_ids, targets, {
+            "cropped": False,
+            "crop_start": 0,
+            "crop_end": len(input_ids),
+            "orig_seq_len": len(input_ids),
+        }
+    span_start = min(positions)
+    span_end = max(positions) + 1
+    span_len = span_end - span_start
+    if span_len > max_len:
+        start = span_start
+        end = min(len(input_ids), start + max_len)
+    else:
+        tail = max(0, int(args.train_crop_tail_tokens or 0))
+        end = min(len(input_ids), span_end + tail)
+        start = max(0, end - max_len)
+        if start > span_start:
+            start = span_start
+            end = min(len(input_ids), start + max_len)
+    kept_targets: list[dict[str, Any]] = []
+    for item in targets:
+        pos = int(item["pos"])
+        if start <= pos < end:
+            copied = dict(item)
+            copied["pos"] = pos - start
+            kept_targets.append(copied)
+    return input_ids[start:end], noisy_ids[start:end], kept_targets, {
+        "cropped": True,
+        "crop_start": start,
+        "crop_end": end,
+        "orig_seq_len": len(input_ids),
+        "dropped_targets": len(targets) - len(kept_targets),
+    }
 
 
 def load_student(args: argparse.Namespace):
@@ -167,7 +238,8 @@ def load_student(args: argparse.Namespace):
         base.gradient_checkpointing_enable()
     elif hasattr(base, "gradient_checkpointing_disable"):
         base.gradient_checkpointing_disable()
-    base = prepare_model_for_kbit_training(base, use_gradient_checkpointing=bool(args.gradient_checkpointing))
+    if args.kbit_prepare:
+        base = prepare_model_for_kbit_training(base, use_gradient_checkpointing=bool(args.gradient_checkpointing))
     model = PeftModel.from_pretrained(base, str(args.student_init_adapter), is_trainable=True)
     model.config.use_cache = False
     repo_v2 = ROOT / "fast-dllm/v2"
@@ -191,23 +263,26 @@ def trainable_parameter_count(model) -> tuple[int, int]:
 
 def record_loss(model, record: dict[str, Any], args: argparse.Namespace) -> tuple[torch.Tensor, dict[str, Any]]:
     device = next(model.parameters()).device
-    input_ids = torch.tensor([record["input_ids"]], dtype=torch.long, device=device)
-    noisy_ids = torch.tensor([record["student_noisy_ids"]], dtype=torch.long, device=device)
     targets = list(record.get("targets") or [])
     if args.max_targets_per_record and len(targets) > int(args.max_targets_per_record):
         targets = targets[: int(args.max_targets_per_record)]
+    cropped_input_ids, cropped_noisy_ids, targets, crop_info = crop_record_tensors(record, targets, args)
     if not targets:
-        return torch.tensor(0.0, dtype=torch.float32, device=device), {"target_tokens": 0}
+        return torch.tensor(0.0, dtype=torch.float32, device=device), {"target_tokens": 0, **crop_info}
+    input_ids = torch.tensor([cropped_input_ids], dtype=torch.long, device=device)
+    noisy_ids = torch.tensor([cropped_noisy_ids], dtype=torch.long, device=device)
 
-    logits = differentiable_flare_noisy_logits(
+    noisy_hidden = differentiable_flare_noisy_hidden(
         model,
         input_ids,
         noisy_ids,
         block_size=int(args.block_size),
-    )[:1]
-    shifted = torch.cat([logits[:, :1, :], logits[:, :-1, :]], dim=1)
+        checkpoint_layers=bool(args.gradient_checkpointing),
+    )
     positions = torch.tensor([int(item["pos"]) for item in targets], dtype=torch.long, device=device)
-    row_logits = shifted[0].index_select(0, positions).float()
+    hidden_positions = torch.clamp(positions - 1, min=0)
+    row_hidden = noisy_hidden[0].index_select(0, hidden_positions)
+    row_logits = unwrap_lm_model(model).lm_head(row_hidden).float()
     target_ids = torch.tensor([item["top_ids"] for item in targets], dtype=torch.long, device=device)
     teacher_logprobs = torch.tensor([item["top_logprobs"] for item in targets], dtype=torch.float32, device=device)
     teacher_logprobs = teacher_logprobs - torch.logsumexp(teacher_logprobs, dim=-1, keepdim=True)
@@ -236,6 +311,7 @@ def record_loss(model, record: dict[str, Any], args: argparse.Namespace) -> tupl
         "reverse_kl": float(reverse_kl.detach().cpu().item()),
         "ce": float(ce_loss.detach().cpu().item()),
         "support_top1_match": support_top1_match,
+        **crop_info,
     }
 
 
@@ -301,6 +377,10 @@ def main() -> int:
         "block_size": int(args.block_size),
         "temperature": float(args.temperature),
         "ce_weight": float(args.ce_weight),
+        "max_train_seq_tokens": int(args.max_train_seq_tokens or 0),
+        "train_crop_tail_tokens": int(args.train_crop_tail_tokens or 0),
+        "gradient_checkpointing": bool(args.gradient_checkpointing),
+        "kbit_prepare": bool(args.kbit_prepare),
         "records": len(records),
         "trainable_params": trainable,
         "total_params": total,
@@ -359,6 +439,11 @@ def main() -> int:
             "ce": float(parts.get("ce") or 0.0),
             "target_tokens": target_tokens,
             "support_top1_match": int(parts.get("support_top1_match") or 0),
+            "cropped": bool(parts.get("cropped") or False),
+            "crop_start": parts.get("crop_start"),
+            "crop_end": parts.get("crop_end"),
+            "orig_seq_len": parts.get("orig_seq_len"),
+            "dropped_targets": int(parts.get("dropped_targets") or 0),
             "optimizer_step": did_step,
             "grad_norm": float(grad_norm.detach().cpu().item()) if did_step else None,
             "seconds": time.time() - step_start,
