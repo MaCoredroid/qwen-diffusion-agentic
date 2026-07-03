@@ -1,0 +1,17 @@
+{
+  "train_path": "data/flare_stage1_ab_pilot_train/train_agentic_mix.json",
+  "heldout_path": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+  "train_count": 256,
+  "heldout_count": 40,
+  "full_hash_overlap_count": 0,
+  "content_hash_overlap_count": 0,
+  "sources": {
+    "train": [
+      "google-research-datasets/mbpp:full:train",
+      "openai/gsm8k:main:train"
+    ],
+    "heldout": [
+      "None"
+    ]
+  }
+}

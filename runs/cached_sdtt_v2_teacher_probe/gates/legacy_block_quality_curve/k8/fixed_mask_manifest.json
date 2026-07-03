@@ -1,0 +1,10 @@
+{
+  "heldout_rows": 40,
+  "nll_batches": 40,
+  "total_eval_tokens": 4180,
+  "view0_tokens": 2123,
+  "view1_tokens": 2057,
+  "nll_seed": 20260702,
+  "nll_block_size": 32,
+  "max_length": 1024
+}

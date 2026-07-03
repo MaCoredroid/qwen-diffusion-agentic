@@ -1,0 +1,77 @@
+{
+  "status": "fail_s2_cached_sdtt_dead",
+  "verdict": "Cached-SDTT fallback does not move either S2 movement gate and fails retention.",
+  "corpus": {
+    "cached_records": 160,
+    "cached_target_tokens": 1146,
+    "episodes_rolled_out": 130,
+    "turns_seen": 269,
+    "exact_audit_clean_turns": 223,
+    "rejected_inexact_or_contaminated_turns": 46,
+    "rejected_targetless_exact_turns": 63
+  },
+  "training": {
+    "adapter": "runs/cached_sdtt_v2_teacher_probe/round1/adapter_model",
+    "micro_steps_completed": 4000,
+    "optimizer_steps": 4000,
+    "mean_reverse_kl": 0.7726649581921811,
+    "target_tokens_seen": 28650,
+    "max_train_seq_tokens": 240,
+    "peak_cuda_allocated_gib": 20.66533088684082,
+    "caveats": [
+      "sparse top-k reverse-KL over cached teacher support",
+      "target-preserving 240-token training crop because the 5090 desktop session left insufficient headroom for full 1024-token two-stream training"
+    ]
+  },
+  "legacy_block_quality_curve": {
+    "sampler": "scripts/eval_flare_stage1_ab_diffusion.py::full_context_sample_one",
+    "gate": "block-quality movement plus retention on corrected legacy continuity scale",
+    "retention_gate": {
+      "threshold_flex_accuracy": 0.65,
+      "k32_flex_accuracy": 0.5,
+      "passed": false
+    },
+    "run1_reference_flex_correct_first20": {
+      "k32": 14,
+      "k16": 15,
+      "k8": 15,
+      "k4": 11
+    },
+    "sdtt_round1_flex_correct_first20": {
+      "k32": 10,
+      "k16": 10,
+      "k8": 10,
+      "k4": 11
+    },
+    "movement": "null_or_negative"
+  },
+  "fixed_k_cliff": {
+    "sampler": "scripts/eval_flare_northstar_schedule_fixedk.py via scripts/measure_block_quality_curve.py::sample_fixed_k_block_diffusion",
+    "implementation_note": "Rerun used sparse active-position lm_head projection after full-sequence logits OOM; sampler schedule and decisions are unchanged.",
+    "input_jsonl": "data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+    "episode_set_hash": "72463dc9d7ac6afa5835fbc8ee0c2b9dcf31c2781104c7d9dd650b6507c8c362",
+    "k16": {
+      "turns": 63,
+      "episodes": 20,
+      "exact_args": 0,
+      "episode_exact": 0,
+      "valid_tool_call": 23,
+      "schema_ok": 1,
+      "required_args_present": 3,
+      "sec_per_turn": 25.65242746519664,
+      "forwards_per_turn": 108.95238095238095,
+      "tokens_per_forward": 1.8993298368298368,
+      "generated_tokens_per_turn": 206.93650793650792,
+      "nominal_tokens_per_forward": 2.0
+    },
+    "movement": "null",
+    "k8_run": "skipped because K=16 already satisfies value_tpf>=1.5 and scored 0/63 exact_args"
+  },
+  "kill_criteria": {
+    "block_quality_movement_null": true,
+    "cliff_movement_null": true,
+    "retention_passed": false,
+    "s2_dead": true
+  },
+  "next": "Proceed to quality-only decision path; v5 is queued after this gate per user decision."
+}
