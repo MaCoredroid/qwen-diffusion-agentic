@@ -378,6 +378,21 @@ def zero_projected_ok(totals: dict[str, Any]) -> bool:
     )
 
 
+def grammar_value_projection_count(metrics: dict[str, Any] | None) -> int:
+    """Number of tokens the grammar FSM emitted/replaced at a parameter-VALUE
+    position (``grammar_replacement_value_tokens``).
+
+    This is the direct measure of the "FSM must never emit value tokens"
+    invariant: a correct hybrid-clean run leaves the grammar inactive inside
+    free-form values, so this counter is 0. Any non-zero value is a value
+    projection leak the promotion gate must catch. The audit battery
+    (avpt.audit_rows) only tracks the two-wave projection channel and is blind
+    to this grammar-replacement channel, so it is gated separately."""
+    if not metrics:
+        return 0
+    return int(metrics.get("grammar_replacement_value_tokens") or 0)
+
+
 # ---------------------------------------------------------------------------
 # Engine adapter interface  (the seam to the future vLLM Qwen3_5FlareModelState)
 # ---------------------------------------------------------------------------
@@ -577,22 +592,38 @@ def build_engine_adapter(name: str, *, vllm_workspace: Path) -> EngineAdapter:
 # ---------------------------------------------------------------------------
 def hybrid_schedule_events(metrics: dict[str, Any]) -> dict[str, Any]:
     """Mirror the schedule-events shape the reference eval writes into backend_meta,
-    so avpt.audit_rows consumes it identically."""
+    so avpt.audit_rows consumes it identically.
+
+    The projection / forced-commit counters (and per-token records) are PASSED
+    THROUGH from ``metrics`` rather than hard-coded to 0: the hybrid-clean
+    reference is single-wave and never sets those keys, so it still defaults to
+    0 (faithful), but a real engine that projects a value token MUST be able to
+    surface it here or gate #3 (zero projected values) becomes a tautology that
+    can never fail on the engine side."""
     denoise = int(metrics.get("denoise_forwards") or 0)
-    return {
+    events = {
         "denoise_forwards_total": denoise,
         "hybrid_model_forwards": denoise,
         "hybrid_forced_grammar_tokens": int(metrics.get("forced_grammar_tokens") or 0),
         "hybrid_model_value_tokens": int(metrics.get("model_value_tokens") or 0),
         "hybrid_model_structural_tokens": int(metrics.get("model_structural_tokens") or 0),
         "hybrid_value_close_timing_tokens": int(metrics.get("value_close_timing_tokens") or 0),
+        "hybrid_grammar_replacement_value_tokens": int(metrics.get("grammar_replacement_value_tokens") or 0),
+        "hybrid_grammar_unsafe_fallback_tokens": int(metrics.get("grammar_unsafe_fallback_tokens") or 0),
         "parallel_commit_value_tokens": int(metrics.get("model_value_tokens") or 0),
-        "parallel_commit_forced_tokens": 0,
-        "two_wave_wave1_projected_tokens": 0,
-        "two_wave_wave1_value_tokens": 0,
-        "two_wave_wave2_value_tokens": 0,
-        "two_wave_wave2_forced_tokens": 0,
+        "parallel_commit_forced_tokens": int(metrics.get("parallel_commit_forced_tokens") or 0),
+        "two_wave_wave1_projected_tokens": int(metrics.get("two_wave_wave1_projected_tokens") or 0),
+        "two_wave_wave1_value_tokens": int(metrics.get("two_wave_wave1_value_tokens") or 0),
+        "two_wave_wave2_value_tokens": int(metrics.get("two_wave_wave2_value_tokens") or 0),
+        "two_wave_wave2_forced_tokens": int(metrics.get("two_wave_wave2_forced_tokens") or 0),
     }
+    records = metrics.get("two_wave_wave1_projected_token_records")
+    if isinstance(records, list):
+        # Per-token projection records: avpt.audit_rows uses these to compute the
+        # EXACT projected-value count (value-position intersection), which is the
+        # strongest arm of the zero-projected verification.
+        events["two_wave_wave1_projected_token_records"] = records
+    return events
 
 
 def build_audit_row(*, backend: str, generated_ids: list[int], assistant_text: str, exact_arguments: bool, metrics: dict[str, Any]) -> dict[str, Any]:
@@ -804,6 +835,8 @@ def run_turn_mode(args) -> dict[str, Any]:
             "generated_token_count": len(ref_final["new_ids"]),
             "exact_arguments": ref_final["exact_arguments"],
             "value_token_count": ref_final["value_token_count"],
+            "grammar_replacement_value_tokens": grammar_value_projection_count(ref_res.metrics),
+            "grammar_unsafe_fallback_tokens": int(ref_res.metrics.get("grammar_unsafe_fallback_tokens") or 0),
             "stop_reason": ref_res.metrics.get("stop_reason"),
             "cache_stats": ref_res.metrics.get("cache_stats"),
             "num_block_boundaries": len(ref_res.block_snapshots),
@@ -819,6 +852,7 @@ def run_turn_mode(args) -> dict[str, Any]:
         report["engine_error"] = engine_error
         report["gates"] = {
             "reference_zero_projected_values": zero_projected_ok(ref_totals),
+            "reference_no_grammar_value_projection": grammar_value_projection_count(ref_res.metrics) == 0,
             "byte_identical": None,
             "value_token_counts_equal": None,
             "engine_zero_projected_values": None,
@@ -840,17 +874,22 @@ def run_turn_mode(args) -> dict[str, Any]:
         int(ref_totals.get("reported_model_value_tokens") or 0)
         == int(eng_totals.get("reported_model_value_tokens") or 0)
     )
+    ref_grammar_value_proj = grammar_value_projection_count(ref_res.metrics)
+    eng_grammar_value_proj = grammar_value_projection_count(eng_res.metrics)
     gates = {
         "byte_identical": bool(byte_report["byte_exact"] and byte_report["token_exact"]),
         "value_token_counts_equal": bool(value_counts_equal),
         "reference_zero_projected_values": zero_projected_ok(ref_totals),
         "engine_zero_projected_values": zero_projected_ok(eng_totals),
+        "no_grammar_value_projection": bool(ref_grammar_value_proj == 0 and eng_grammar_value_proj == 0),
         "state_snapshot_equality": bool(snap_report["ok"]),
     }
     report["engine_result"] = {
         "generated_token_count": len(eng_final["new_ids"]),
         "exact_arguments": eng_final["exact_arguments"],
         "value_token_count": eng_final["value_token_count"],
+        "grammar_replacement_value_tokens": eng_grammar_value_proj,
+        "grammar_unsafe_fallback_tokens": int(eng_res.metrics.get("grammar_unsafe_fallback_tokens") or 0),
         "stop_reason": eng_res.metrics.get("stop_reason"),
         "cache_stats": eng_res.metrics.get("cache_stats"),
         "num_block_boundaries": len(eng_res.block_snapshots),
@@ -1041,6 +1080,19 @@ def run_selftest_mode(args) -> dict[str, Any]:
     rep = token_bytes_identical([1, 2, 3, 4], [1, 2, 9, 4], tokenizer=None)
     record("byte_identity_divergent_fails", not rep["token_exact"] and rep["first_divergence"]["index"] == 2, json.dumps(rep["first_divergence"]))
 
+    # --- grammar-value-projection channel: clean=0, leak detected ---
+    record("grammar_value_projection_clean_zero", grammar_value_projection_count({"model_value_tokens": 4}) == 0)
+    record("grammar_value_projection_leak_detected", grammar_value_projection_count({"grammar_replacement_value_tokens": 2}) == 2)
+
+    # --- projection counters flow through hybrid_schedule_events into the audit ---
+    proj_events = hybrid_schedule_events({"denoise_forwards": 3, "two_wave_wave1_projected_tokens": 5, "parallel_commit_forced_tokens": 1})
+    record("projection_counters_flow_through",
+           proj_events["two_wave_wave1_projected_tokens"] == 5 and proj_events["parallel_commit_forced_tokens"] == 1,
+           json.dumps({k: proj_events[k] for k in ("two_wave_wave1_projected_tokens", "parallel_commit_forced_tokens")}))
+    clean_events = hybrid_schedule_events({"denoise_forwards": 3, "model_value_tokens": 4})
+    record("reference_projection_counters_default_zero",
+           clean_events["two_wave_wave1_projected_tokens"] == 0 and clean_events["parallel_commit_forced_tokens"] == 0)
+
     # --- audit battery (needs a real tokenizer) ---
     tokenizer = _load_selftest_tokenizer(args)
     audit_detail: dict[str, Any] = {"tokenizer_loaded": tokenizer is not None}
@@ -1077,6 +1129,28 @@ def run_selftest_mode(args) -> dict[str, Any]:
                f"exact={dirty_totals.get('projected_value_tokens_exact')} mode={dirty_totals.get('verification_mode')}")
         audit_detail["dirty_totals"] = dirty_totals
         audit_detail["value_rel_idx"] = value_rel_idx
+
+        # END-TO-END: the SAME projection routed through the turn-mode path
+        # (metrics -> build_audit_row -> hybrid_schedule_events -> audit) must
+        # also be caught. This is the regression guard for the fixed tautology:
+        # before the fix, hybrid_schedule_events hard-coded projected=0 and this
+        # row would have (wrongly) passed zero_projected_ok.
+        engine_like_row = build_audit_row(
+            backend="engine_like",
+            generated_ids=gen_ids,
+            assistant_text=xml,
+            exact_arguments=True,
+            metrics={
+                "denoise_forwards": 12,
+                "model_value_tokens": 4,
+                "two_wave_wave1_projected_tokens": 1,
+                "two_wave_wave1_projected_token_records": [{"rel_idx": value_rel_idx}],
+            },
+        )
+        engine_like_totals = audit_totals_for_rows(tokenizer, [engine_like_row])
+        record("turn_path_projected_value_detected_fails", not zero_projected_ok(engine_like_totals),
+               f"exact={engine_like_totals.get('projected_value_tokens_exact')} mode={engine_like_totals.get('verification_mode')}")
+        audit_detail["engine_like_totals"] = engine_like_totals
     else:
         record("audit_battery_skipped_no_tokenizer", True, "tokenizer not found; audit checks skipped")
 
