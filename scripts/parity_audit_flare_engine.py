@@ -757,12 +757,30 @@ class VllmFlareEngineAdapter(EngineAdapter):
 
         prompt_ids = [int(x) for x in ctx.prompt_input_ids.reshape(-1).tolist()]
         greedy = float(ctx.temperature) <= 0.0
+        # Feed the engine hybrid_clean FSM the SAME tool schemas + grammar_topk
+        # the reference uses (``parse_hybrid_clean_request`` reads extra_args),
+        # so both sides run the identical grammar. ``ctx.schemas`` is
+        # ``{name: parameters_schema}``; reconstruct the OpenAI tool dicts
+        # ``tool_schema_by_name`` expects so the engine compiles a byte-identical
+        # schema map.
+        extra_args: dict[str, Any] = {}
+        if self.decode_mode == "hybrid_clean":
+            tools = [
+                {"type": "function", "function": {"name": n, "parameters": p}}
+                for n, p in (ctx.schemas or {}).items()
+            ]
+            extra_args = {
+                "decode_policy": "hybrid_clean",
+                "tools": tools,
+                "grammar_topk": int(ctx.grammar_topk),
+            }
         sp = SamplingParams(
             max_tokens=int(ctx.max_new_tokens),
             temperature=float(ctx.temperature),
             top_p=1.0 if greedy else float(ctx.top_p),
             seed=self.seed,
             stop_token_ids=sorted(int(x) for x in ctx.stop_token_ids),
+            extra_args=extra_args or None,
         )
         t0 = time.time()
         req_out = self._engine_generate(engine, prompt_ids, sp)
