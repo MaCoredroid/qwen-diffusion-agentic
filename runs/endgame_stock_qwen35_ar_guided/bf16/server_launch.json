@@ -1,0 +1,18 @@
+{
+  "model": "/home/mark/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "served_model_name": "qwen3.5-9b-stock-bf16",
+  "base_url": "http://127.0.0.1:9963",
+  "dtype": "bfloat16",
+  "quantization": "none",
+  "vllm_bin": "/home/mark/qwen_diffusion/.venv-vllm/bin/vllm",
+  "max_model_len": 4096,
+  "gpu_memory_utilization": 0.66,
+  "enable_prefix_caching": true,
+  "enforce_eager": true,
+  "matched20_max_turns": 6,
+  "nevertrain_max_turns": 8,
+  "mamba_cache_mode": "align",
+  "mamba_block_size": 1024,
+  "gdn_prefill_backend": "triton",
+  "note": "Stock Qwen/Qwen3.5-9B cached snapshot. bf16 arm is not NVFP4; FP8 arm uses vLLM --quantization fp8."
+}

@@ -1,0 +1,160 @@
+{
+  "artifacts": {
+    "merged_ar_matched": "runs/hybrid_broaden_nevertrain_v2/matched20/ar-vllm-guided/turns.jsonl",
+    "merged_ar_nevertrain": "runs/hybrid_broaden_nevertrain_v2/nevertrain_bfcl_apibank60/ar-vllm-guided/turns.jsonl",
+    "stock_bf16_root": "/home/mark/qwen_diffusion/runs/endgame_stock_qwen35_ar_guided/bf16",
+    "stock_fp8_root": "/home/mark/qwen_diffusion/runs/endgame_stock_qwen35_ar_guided/fp8",
+    "stock_root": "/home/mark/qwen_diffusion/runs/endgame_stock_qwen35_ar_guided",
+    "v6_gates_root": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v6/from_v2_hybrid_mixed35_kl005_g4_step300_gates"
+  },
+  "git_hash": "057f5853d56008a6dc86e8f6240141ed10fcc205",
+  "hybrid_selection": {
+    "candidates": [
+      {
+        "aggregate_exact": 130,
+        "matched_exact": 47,
+        "name": "v2_hybrid_clean",
+        "never_exact": 83,
+        "reason": "accepted v2 hybrid-clean baseline",
+        "valid": true
+      },
+      {
+        "aggregate_exact": 97,
+        "matched_exact": 47,
+        "name": "v6_hybrid_clean",
+        "never_exact": 50,
+        "reason": "retention/audit passed",
+        "valid": true
+      }
+    ],
+    "rule": "highest aggregate exact_args among retention-valid, zero-value-projection hybrid candidates",
+    "selected": "v2_hybrid_clean"
+  },
+  "quant_comparison": {
+    "aggregate": {
+      "exact_args_delta_fp8_minus_bf16": 5,
+      "fp8_speedup_vs_bf16": 0.8136219823850326,
+      "sec_per_turn_delta_fp8_minus_bf16": 0.16967983960140087
+    },
+    "matched20": {
+      "exact_args_delta_fp8_minus_bf16": 0,
+      "fp8_speedup_vs_bf16": 0.8670993655169906,
+      "sec_per_turn_delta_fp8_minus_bf16": 0.18594901523892848
+    },
+    "nevertrain": {
+      "exact_args_delta_fp8_minus_bf16": 5,
+      "fp8_speedup_vs_bf16": 0.7791446055783295,
+      "sec_per_turn_delta_fp8_minus_bf16": 0.16410941533420387
+    }
+  },
+  "rows": [
+    {
+      "aggregate": {
+        "episode_exact": "33/80",
+        "exact_args": "124/247",
+        "sec_per_turn": 0.7407270945035495,
+        "steps_per_turn": 49.06072874493927,
+        "valid": "247/247"
+      },
+      "label": "stock-bf16-AR-guided",
+      "matched20": {
+        "episode_exact": "14/20",
+        "exact_args": "51/63",
+        "sec_per_turn": 1.213209205203586,
+        "steps_per_turn": 82.23809523809524,
+        "valid": "63/63"
+      },
+      "nevertrain": {
+        "episode_exact": "19/60",
+        "exact_args": "73/184",
+        "sec_per_turn": 0.57895332833995,
+        "steps_per_turn": 37.70108695652174,
+        "valid": "184/184"
+      },
+      "runtime": "vLLM bf16 guided",
+      "steps_label": "decode tokens/turn"
+    },
+    {
+      "aggregate": {
+        "episode_exact": "33/80",
+        "exact_args": "129/247",
+        "sec_per_turn": 0.9104069341049503,
+        "steps_per_turn": 49.51012145748988,
+        "valid": "247/247"
+      },
+      "label": "stock-FP8-AR-guided",
+      "matched20": {
+        "episode_exact": "14/20",
+        "exact_args": "51/63",
+        "sec_per_turn": 1.3991582204425146,
+        "steps_per_turn": 77.11111111111111,
+        "valid": "63/63"
+      },
+      "nevertrain": {
+        "episode_exact": "19/60",
+        "exact_args": "78/184",
+        "sec_per_turn": 0.7430627436741538,
+        "steps_per_turn": 40.05978260869565,
+        "valid": "184/184"
+      },
+      "runtime": "vLLM fp8 guided",
+      "steps_label": "decode tokens/turn"
+    },
+    {
+      "aggregate": {
+        "episode_exact": "32/80",
+        "exact_args": "127/247",
+        "sec_per_turn": 0.739041448122094,
+        "steps_per_turn": 48.88663967611336,
+        "valid": "247/247"
+      },
+      "label": "merged-AR guided",
+      "matched20": {
+        "episode_exact": "13/20",
+        "exact_args": "50/63",
+        "sec_per_turn": 1.1580773043254065,
+        "steps_per_turn": 77.61904761904762,
+        "valid": "63/63"
+      },
+      "nevertrain": {
+        "episode_exact": "19/60",
+        "exact_args": "77/184",
+        "sec_per_turn": 0.5955672147481338,
+        "steps_per_turn": 39.04891304347826,
+        "valid": "184/184"
+      },
+      "runtime": "vLLM bf16 guided",
+      "steps_label": "decode tokens/turn"
+    },
+    {
+      "aggregate": {
+        "episode_exact": "32/80",
+        "exact_args": "130/247",
+        "sec_per_turn": 2.577292352552839,
+        "steps_per_turn": 32.83805668016194,
+        "valid": "247/247"
+      },
+      "label": "OUR SYSTEM hybrid-clean (v2_hybrid_clean)",
+      "matched20": {
+        "episode_exact": "13/20",
+        "exact_args": "47/63",
+        "sec_per_turn": 3.903874980078803,
+        "steps_per_turn": 56.82539682539682,
+        "valid": "63/63"
+      },
+      "nevertrain": {
+        "episode_exact": "19/60",
+        "exact_args": "83/184",
+        "sec_per_turn": 2.1230819963890575,
+        "steps_per_turn": 24.625,
+        "valid": "184/184"
+      },
+      "runtime": "HF diffusion hybrid-clean",
+      "steps_label": "denoise forwards/turn"
+    }
+  ],
+  "stock_bar_note": "Stock bf16 matched-20 exact_args is 51/63; merged-AR guided is 50/63. The maintains-AR bar rises to the stock result.",
+  "stock_note": "Qwen/Qwen3.5-9B cached snapshot served on vLLM as bf16 and as online FP8; bf16 is not NVFP4.",
+  "stock_snapshot": "/home/mark/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "wall_clock_note": "AR rows are vLLM engine measurements; the hybrid row is the current HF diffusion stack. The hybrid wall-clock column is intentionally honest and remains the P2 engine deliverable."
+}

@@ -13,12 +13,16 @@ BASE_URL="http://${HOST}:${PORT}"
 OUT_ROOT="${OUT_ROOT:-$ROOT/runs/endgame_stock_qwen35_ar_guided}"
 
 MAX_MODEL_LEN="${MAX_MODEL_LEN:-4096}"
-GPU_MEMORY_UTILIZATION="${GPU_MEMORY_UTILIZATION:-0.68}"
+GPU_MEMORY_UTILIZATION="${GPU_MEMORY_UTILIZATION:-0.66}"
 MAMBA_BLOCK_SIZE="${MAMBA_BLOCK_SIZE:-1024}"
+ENFORCE_EAGER="${ENFORCE_EAGER:-1}"
+MATCHED20_MAX_TURNS="${MATCHED20_MAX_TURNS:-6}"
+NEVERTRAIN_MAX_TURNS="${NEVERTRAIN_MAX_TURNS:-8}"
 
 mkdir -p "$OUT_ROOT/logs"
 
 export VLLM_USE_V1="${VLLM_USE_V1:-1}"
+export VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-0}"
 export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
 
 SERVER_PID=""
@@ -59,6 +63,9 @@ run_arm() {
   if [[ "$quantization" != "none" ]]; then
     serve_args+=(--quantization "$quantization")
   fi
+  if [[ "$ENFORCE_EAGER" == "1" ]]; then
+    serve_args+=(--enforce-eager)
+  fi
 
   "$VLLM_BIN" "${serve_args[@]}" >"$log_path" 2>&1 &
   SERVER_PID=$!
@@ -94,6 +101,9 @@ run_arm() {
   "max_model_len": $MAX_MODEL_LEN,
   "gpu_memory_utilization": $GPU_MEMORY_UTILIZATION,
   "enable_prefix_caching": true,
+  "enforce_eager": $([[ "$ENFORCE_EAGER" == "1" ]] && echo true || echo false),
+  "matched20_max_turns": $MATCHED20_MAX_TURNS,
+  "nevertrain_max_turns": $NEVERTRAIN_MAX_TURNS,
   "mamba_cache_mode": "align",
   "mamba_block_size": $MAMBA_BLOCK_SIZE,
   "gdn_prefill_backend": "triton",
@@ -107,7 +117,7 @@ EOF
     --out-dir "$arm_root/matched20" \
     --episode-limit 20 \
     --min-turns 3 \
-    --max-turns 6 \
+    --max-turns "$MATCHED20_MAX_TURNS" \
     --prompt-tokenizer-path "$STOCK_MODEL" \
     --ar-model-path "$STOCK_MODEL" \
     --ar-base-url "$BASE_URL" \
@@ -120,7 +130,7 @@ EOF
     --out-dir "$arm_root/nevertrain_bfcl_apibank60" \
     --episode-limit 60 \
     --min-turns 1 \
-    --max-turns 6 \
+    --max-turns "$NEVERTRAIN_MAX_TURNS" \
     --prompt-tokenizer-path "$STOCK_MODEL" \
     --ar-model-path "$STOCK_MODEL" \
     --ar-base-url "$BASE_URL" \
