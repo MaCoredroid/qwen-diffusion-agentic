@@ -4,7 +4,24 @@ Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones
 Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
 IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
-> **UPDATE (§0.D, vLLM pin `58cfe2c` = GAP-5A windowed-probe + OPT-1 GPU-native sampling): the first
+> **UPDATE (§0.E, vLLM pin `d2fccab` = OPT-3 sync-scheduler fix): the FIRST COMPLETE full-63 battery now
+> exists — the engine is MEASURABLE end-to-end, but NOT PROMOTED.** The OPT-3 fix closes both §0.D blockers:
+> all 63 turns complete, **zero stalls**, and the async-rollback divergence@33 is gone (**0/11 breaks at
+> pos-33**; gt12/16/18/20 byte-parity again). This is the first honest, complete, uncapped full-battery
+> wall-clock. **But the 63/63 byte-parity promotable gate is NOT met — measured 52/63** (11 divergences are
+> the *separate, author-flagged* windowed-**causal** vs reference windowed-**bidirectional** approximation,
+> all `proj=0`, `first_div` scattered {17,19,19,19,26,31,34,38,41,47,53}, **none at 33** — not the fixed
+> async/stall bug). Aggregate quality is **≥ HF but not byte-identical**: exact_args **48/63** (+1 vs HF 47),
+> episode_exact **13/20** (met), valid **62/63** (−1; the single invalid is gt19's non-stopping divergence),
+> `value_projection=0`, `verify_invariants 63/63`. Timing: **s/turn mean 1.681** (p50 1.427, p90 2.724, worst
+> 5.361 gt50), **TRUE 56.65 denoise fwd/turn** (HF 56.83), **2.32× under HF**. **M2/K3 are now ADJUDICABLE for
+> the first time — and MISSED on both axes:** speed 1.681 > 1.120 (1.39× *slower* than guided-AR 1.213;
+> §0.D's 1.250 was a short-turn subset), quality 48 < 55. temp=0.7 RL sanity holds (2 boots byte-reproducible,
+> `proj=0`). **Single next lever = OPT-4** (incremental KV+GDN 1-token decode → `fused_recurrent` + FULL CUDA
+> graph): profiler shows GDN on the prefill `chunk_gated_delta_rule` path (`fused_recurrent` absent), ~18 ms
+> GPU + ~11 ms host per forward, `enforce_eager`. Details §0.E; battery commit `61d1381` (pushed to origin/main).
+>
+> **PRIOR UPDATE (§0.D, vLLM pin `58cfe2c` = GAP-5A windowed-probe + OPT-1 GPU-native sampling): the first
 > honest matched-20 engine wall-clock now exists — OPT-1 is DONE and verified clean, but the full battery
 > STILL CANNOT COMPLETE and M2/K3 remain unadjudicated.** OPT-1 (P0) landed: A/B vs pre-OPT-1 `6b81154` is
 > **byte-identical on every turn** (incl. divergent ones) at **2.36× speedup** — a pure, behavior-preserving
@@ -667,6 +684,81 @@ adjudicated on the engine.
 - `diag_ep1*.py` — the per-step stall trace (grammar = 0.7%; stall at `valid_len` 32→13).
 - `matched20_temp07*.jsonl` — temp=0.7 RL sanity (5 rollouts, `proj=0`, same-seed reproducible).
 - `report.md` — full report. vLLM pin `58cfe2c` (windowed-probe + OPT-1); bench commit `7629a21`.
+
+---
+
+## 0.E OPT-3 SYNC-SCHEDULER FIX — FIRST COMPLETE full-63 battery; engine NOT promoted (2026-07-04, RTX 5090 / sm_120)
+
+§0.D produced the first honest engine wall-clock but the full battery **could not complete** (19/63 turns
+stalled) and byte-parity was **not universal**. The OPT-3 sync-scheduler fix (vLLM pin `d2fccab`) closes
+**both** liveness/rollback defects, so the P2 engine battery now runs **end-to-end for the first time** — the
+honest, complete, uncapped full-battery wall-clock the prior bench could not produce. Real export
+`qwen3.5-9b-fastdllm-rlv2-vllm-bf16` (block/canvas 32, mamba 1024, align+APC), RAM cage, greedy, uncapped
+`n_ref+16`, no harness patches. Source: `p2_engine_battery_result.md`; full report + artifacts
+`runs/p2_engine_battery_full/report.md`. Battery commit `61d1381`, pushed to origin/main; this doc-update follows.
+
+### The OPT-3 fix works — the battery completes end-to-end
+All 63 turns complete, **zero stalls** (the ex-stalls gt4/gt24/gt50 all finish), and the async-rollback
+boundary divergence is gone: **0/11 breaks at pos-33**, and the 4 formerly-async-divergent turns
+gt12/16/18/20 are byte-parity again. This is the first complete, uncapped full-battery run.
+
+### Required-check results (greedy, uncapped, no harness patches) — 63/63 byte-parity NOT met ⇒ NOT promoted
+| task check | required (promotable) | measured | verdict |
+|---|---|---|---|
+| (1) byte-parity/turn | **63/63** | **52/63** | **NOT met** |
+| (2) exact_args | == 47/63 (HF) | **48/63** | deviation **+1** |
+| (2) episode_exact | 13/20 | **13/20** | **met** |
+| (2) valid | 63/63 | **62/63** | deviation **−1** |
+| verify_invariants / value_projection | — / 0 | **63/63 / 0** | clean |
+
+**The 63/63 byte-parity promotable claim is NOT met (52/63), so the run was diagnosed rather than reported as
+a promotion.** The 11 divergences are the *separate, author-flagged* windowed-probe **causal** approximation of
+the reference's windowed-**bidirectional** read (all `value_projection=0`, mid-block value logits;
+`first_div` scattered at {17,19,19,19,26,31,34,38,41,47,53} — **none at pos-33**, i.e. NOT the fixed
+async/stall bug). The two eng≠hf turns: **gt60** (engine **+1**, correct where HF misses) and **gt19**
+(divergence → non-stopping run → the one invalid). The engine is **quality ≥ HF in aggregate but not
+byte-identical** to HF.
+
+### Timing (all 63 turns) — first honest full-battery s/turn
+- s/turn **mean 1.681**, **p50 1.427**, **p90 2.724**, min 0.512, **worst 5.361** (gt50, 207 tok / 190 fwd).
+- **TRUE denoise forwards/turn = 56.65** (HF 56.83), tokens/forward 1.360, **2.32× under HF**.
+- Full per-turn distribution in `runs/p2_engine_battery_full/aggregate.json`.
+
+### Honest table + M2/K3 adjudication — adjudicable for the first time, and MISSED on both axes
+| row | exact | ep | valid | s/turn | fwd/turn |
+|---|---:|---:|---:|---:|---:|
+| **ENGINE full-63 (this fix)** | **48/63** | **13/20** | 62/63 | **1.681** | 56.65 |
+| HF full-63 | 47/63 | 13/20 | 63/63 | 3.904 | 56.83 |
+| stock-AR-guided | 51/63 | — | 63/63 | 1.213 | 82.24 (tok) |
+| stock-AR aggregate | 124/247 | — | — | 0.741 | 49.06 (tok) |
+| M2/K3 target | ≥55 | — | — | <1.120 | — |
+
+**M2/K3 adjudicable for the first time — and MISSED on both axes:** **speed** 1.681 > 1.120 (1.39× *slower*
+than guided-AR 1.213; the §0.D bench's 1.250 was a short-turn subset excluding the 16 long turns), **quality**
+48 < 55. But the engine is **2.32× under HF** and, critically, now *measurable*. So M2 is **MISSED** (not
+UNADJUDICATED as in §0.D), K3 speed is **MISSED**. No promotion.
+
+### temp=0.7 RL sanity — contract holds
+5 seeded rollouts (gt0/7/17/29/51): **two boots byte-reproducible**; all `finish=stop`, valid, `proj=0`;
+peaked value distributions collapse to greedy. The RL contract holds.
+
+### Next lever — OPT-4 (measured, `torch.profiler` kernel-level, 3 turns)
+Kernel breakdown: gemm **~62%** (MLP+proj+lm_head, computed over CL=32 rows to read 1 probe logit) > copy
+~21% > full-attn 6–9% > **GDN chunk path ~5%** > sampling 0.5% (OPT-1 confirmed). GDN runs the **prefill
+`chunk_gated_delta_rule` kernels** (`chunk_gated_delta_rule_fwd_kernel_h`, `chunk_fwd_kernel_o`,
+`chunk_scaled_dot_kkt`, `recompute_w_u`, `_causal_conv1d`) — **`fused_recurrent` is absent**. Per-forward
+~18 ms GPU + ~11 ms host (`enforce_eager=True`, no CUDA graph). **OPT-4 = incremental KV+GDN 1-token decode →
+`fused_recurrent` + FULL CUDA graph** (the gemm win is bounded by weight-bandwidth at batch=1; the real levers
+are the recurrent decode kernel + graphing out the ~11 ms host per forward). This is the single next lever for
+the speed bar; the residual 11-turn parity gap is the windowed-**bidirectional** refinement, which also
+tightens exact_args toward the ≥55 quality bar.
+
+### Artifacts — `runs/p2_engine_battery_full/` (committed `61d1381`, pushed to origin/main)
+- `report.md` — full writeup; `matched20_turns.jsonl` — engine greedy per-turn run.
+- `aggregate.json` — full per-turn timing + check distribution.
+- `matched20_temp07a.jsonl`, `matched20_temp07b.jsonl` — temp=0.7 RL sanity (2 byte-reproducible boots).
+- `profile_opt4.py`, `opt4_breakdown.json` — the `torch.profiler` kernel-level OPT-4 breakdown.
+- vLLM pin `d2fccab` (OPT-3 sync scheduler). `p2_engine_battery_result.md` — tracked summary.
 
 ---
 

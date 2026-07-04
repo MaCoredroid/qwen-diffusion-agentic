@@ -17,42 +17,48 @@ P0 / P1 / P2 against the two bars.
   on CPython and re-scaled to the true vocab below. Each item carries a
   GPU-verification step to convert its estimate to a measured number.
 
-## STATUS (2026-07-04, after the P2 engine bench — vLLM pin `58cfe2c`)
+## STATUS (2026-07-04, after the FULL-63 engine battery — vLLM pin `d2fccab`, OPT-3 sync scheduler)
 
-> **P0 progress:** **OPT-1 DONE + verified clean** (GPU-native batched sampling; A/B vs pre-OPT-1 `6b81154`
-> **byte-identical on every turn** at **2.36× speedup**, engine **2.27× under HF** on the identical completed
-> subset). **OPT-2 landed** (`cg_mode` counter + fail-closed config assert); no eager fallback was observed in
-> the bench, so its contingent +0.2–0.6 s gain was not triggered/measured. **OPT-3 OPEN — and it is now the
-> single frontier item**: the bench proved it is a *correctness/liveness* blocker, not merely efficiency — it
-> gates **both** open failures at once (see below). **OPT-5 DISPROVEN → do NOT do**: a per-step trace measured
-> cumulative grammar at **0.017 s = 0.7%** of turn time, so the ">9 min O(committed²) grammar" hypothesis is
-> false; the real liveness blocker is a partial-canvas forward **STALL** (OPT-3 territory), not grammar.
+> **P0 progress:** **OPT-1 DONE + verified clean** (GPU-native batched sampling; byte-identical A/B, 2.36×).
+> **OPT-2 landed** (`cg_mode` counter + fail-closed config assert). **OPT-3 core blockers LANDED** (sync
+> scheduler): the full 63-turn battery now **completes end-to-end for the first time** — **zero stalls**,
+> async-rollback divergence@33 gone (0/11 breaks at pos-33). **OPT-5 DISPROVEN → do NOT do** (grammar =
+> 0.7% of turn). **OPT-4 is now the single next lever.**
 >
-> **First honest engine wall-clock (partial):** on **44 completed turns** (a short-turn subset, mean 60 tok)
-> the engine runs **1.250 s/turn mean** (p50 1.185), at the stock-AR-guided level. **But M2 is UNADJUDICATED**:
-> the full 63-turn battery **cannot complete** — 19 turns stall — and byte-parity is **not universal** (9/44
-> completed turns diverge, all `proj=0`). Both failures are **pre-OPT-1** (proven by the A/B). Source:
-> `p2_engine_bench_result.md`, `runs/p2_engine_bench/report.md`; build-status §0.D.
+> **FIRST COMPLETE full-63 engine wall-clock — engine NOT promoted; M2/K3 now ADJUDICABLE and MISSED on both
+> axes.** The 63/63 byte-parity promotable gate is **NOT met — measured 52/63** (the 11 divergences are the
+> *separate, author-flagged* windowed-**causal** vs reference windowed-**bidirectional** approximation, all
+> `proj=0`, `first_div` scattered {17,19,19,19,26,31,34,38,41,47,53}, **none at 33**). Aggregate quality is
+> **≥ HF but not byte-identical**: exact_args **48/63** (+1 vs HF 47), episode_exact **13/20** (met), valid
+> **62/63** (−1). Timing: **s/turn mean 1.681** (p50 1.427, p90 2.724, worst 5.361), **56.65 TRUE denoise
+> fwd/turn** (HF 56.83), **2.32× under HF**. **M2 (quality ≥55, speed <1.120) MISSED both:** speed 1.681 >
+> 1.120 (1.39× *slower* than guided-AR 1.213), quality 48 < 55. **K3 speed MISSED.** But it is now measurable.
+> Next lever = **OPT-4** (incremental KV+GDN 1-token decode → `fused_recurrent` + FULL graph): profiler shows
+> GDN on the prefill `chunk_gated_delta_rule` path (`fused_recurrent` absent), ~18 ms GPU + ~11 ms host/forward,
+> `enforce_eager`. Source: `p2_engine_battery_result.md`, `runs/p2_engine_battery_full/report.md`; build-status
+> §0.E; battery commit `61d1381`.
 
 ## Bars and the current budget
 
-| row (matched-20 reference, `runs/endgame_scoreboard`, NOT the engine) | s/turn | fwd-or-tok/turn |
-|---|---|---|
-| **ENGINE (this bench, 44 completed turns — short-turn subset, NOT full-63)** | **1.250** (p50 1.185) | 40.95 denoise fwd/turn |
-| OUR HF hybrid-clean (v2) | 3.904 | 56.83 denoise fwd/turn |
-| stock-bf16-AR-guided | 1.213 | 82.24 tok/turn |
-| **stock-AR aggregate** | **0.741** | 49.06 tok/turn |
+| row (matched-20, full-63 unless noted) | exact | s/turn | fwd-or-tok/turn |
+|---|---:|---|---|
+| **ENGINE full-63 (OPT-3 sync scheduler, `d2fccab`)** | **48/63** | **1.681** (p50 1.427, p90 2.724, worst 5.361) | 56.65 TRUE denoise fwd/turn |
+| OUR HF hybrid-clean (v2) | 47/63 | 3.904 | 56.83 denoise fwd/turn |
+| stock-bf16-AR-guided | 51/63 | 1.213 | 82.24 tok/turn |
+| **stock-AR aggregate** | 124/247 | **0.741** | 49.06 tok/turn |
 
-- **M2 / K3 target:** **< 1.120 s/turn** (just under guided-AR). — the P0 bar.
-  **Status: UNADJUDICATED.** The completed-subset 1.250 sits at guided-AR (1.213) but is a short-turn subset,
-  not a full-63 number; the battery can't complete and parity isn't universal, so M2 is not yet met or missed.
+- **M2 / K3 target:** **quality ≥55/63 AND < 1.120 s/turn** (just under guided-AR). — the P0 bar.
+  **Status: ADJUDICABLE for the first time (full-63 battery completes) — and MISSED on both axes:** speed
+  1.681 > 1.120 (1.39× *slower* than guided-AR 1.213; the prior bench's 1.250 was a short-turn subset), quality
+  48 < 55. But the engine is **2.32× under HF** and now measurable.
 - **Beyond-AR / thesis KPI:** **< 0.741 s/turn** at equal quality via
   forwards-saved. — the P2 bar.
-- The engine wall-clock is now **partially honest but incomplete**: OPT-1 removed the host-sampling wall
-  (2.36×), but **GAP 5A / OPT-3 is still the blocker** — its causal-windowed approximation both diverges
-  byte-parity (9/44 turns) and, when the staged canvas `valid_len` drops below block width (32→13 at committed
-  ≈95), **stalls a denoise forward indefinitely** (19/63 turns uncompletable). **OPT-3 is therefore a
-  correctness AND liveness gate AND the largest forward-compute waste** — one fix clears all three.
+- The engine wall-clock is now **fully honest and complete**: OPT-1 removed the host-sampling wall (2.36×) and
+  the **OPT-3 sync-scheduler fix removed the stall + async-rollback divergence** (63/63 complete, 0 stalls, 0/11
+  breaks at pos-33). The residual gap is (a) **speed** — the forward is on the prefill GDN chunk path (`enforce_eager`,
+  no CUDA graph), the OPT-4 target; and (b) **11/63 residual byte-parity divergences** — the separate
+  windowed-**causal** vs reference windowed-**bidirectional** approximation (all `proj=0`, none at pos-33),
+  which OPT-3's bidirectional refinement + OPT-4 must close to reach the ≥55 quality bar.
 
 ### Scale anchors used below (all UNVERIFIED for GPU wall-clock)
 
@@ -98,9 +104,9 @@ cost, folds into OPT-1 as a batched-topk requirement (call it OPT-1b); and the
 |---|---|---|---|---|---|---|
 | 1 | **OPT-1** GPU-native sampling | **~1.3–2.3 s** (host, MEASURED-scaled) → measured **2.36× A/B**, byte-identical | M | **Highest** | P0 | **DONE + verified** |
 | 2 | **OPT-2** graph guard + `cg_mode` log | avoids contingent **+0.2–0.6 s** eager fallback; enables honest measurement | **S** | Very high | P0 | **landed** (no eager fallback seen; gain not triggered) |
-| 3 | **OPT-3** variable single-[MASK] width (windowed-**bidirectional**) | correctness+liveness gate (unblocks M2 at all; fixes divergence AND stall) + **~2–6×** forward-compute cut | M–L | High | P0 | **OPEN — frontier #1** |
+| 3 | **OPT-3** variable single-[MASK] width (windowed-**bidirectional**) | liveness+rollback gate — sync-scheduler fix landed (63/63 complete, 0 stalls, 0/11 @33); residual **11/63** causal-vs-bidirectional divergence left | M–L | High | P0 | **CORE LANDED** (`d2fccab`); bidirectional refinement open |
 | 4 | **OPT-5** incremental detok/FSM | ~~~15–75 ms~~ **DISPROVEN: grammar = 0.7% of turn** | L | ~~Medium~~ | ~~P1~~ | **DO NOT DO** |
-| 5 | **OPT-4** incremental KV/GDN 1-wide decode | closes residual GPU gap to AR (recurrent kernel + full graph) | L | Medium | P1 | OPEN (after OPT-3) |
+| 5 | **OPT-4** incremental KV/GDN 1-wide decode | closes residual GPU gap to AR (`fused_recurrent` + FULL graph); the speed bar (1.681 → <1.120) | L | High | P1 | **OPEN — single next lever** (profiled) |
 | 6 | **OPT-6** multi-token bulk commits | fewer forwards than AR → sub-0.741 s | M–L | Beyond-AR | P2 | OPEN |
 
 Numbers are UNVERIFIED for GPU components; the host components of OPT-1/OPT-5 are
@@ -213,9 +219,21 @@ currently tripping — that is exactly what this item measures.
 `cg_mode == FULL` on ≥99% of decode steps. Deliberately mis-set
 `hf_config.canvas_length` and confirm the startup assert fires (fail-closed test).
 
-## P0-C · OPT-3 — Variable single-[MASK] forward width (also the GAP-5A fix)  ◑ CORE BLOCKERS LANDED (sync scheduler, pin `d2fccab`)
+## P0-C · OPT-3 — Variable single-[MASK] forward width (also the GAP-5A fix)  ◑ CORE LANDED (sync scheduler, `d2fccab`); full-63 battery completes; M2/K3 MISSED; bidirectional refinement open
 
-> **UPDATE (2026-07-04, pin `d2fccab`): both named defect classes were RE-DIAGNOSED to the ASYNC scheduler
+> **BATTERY UPDATE (2026-07-04, full-63 on `d2fccab`, build-status §0.E): the sync-scheduler fix WORKS — the
+> full 63-turn battery runs end-to-end for the FIRST time.** Zero stalls (ex-stalls gt4/gt24/gt50 finish),
+> async-rollback divergence@33 gone (**0/11 breaks at pos-33**; gt12/16/18/20 byte-parity again). This produced
+> the first honest full-battery wall-clock and made **M2/K3 adjudicable — MISSED on both axes** (speed 1.681 >
+> 1.120, quality 48 < 55; **52/63** byte-parity so the 63/63 promotable gate is NOT met). **Residual (the
+> bidirectional refinement, still OPT-3 territory):** 11/63 turns diverge via the windowed-**causal**
+> approximation of the reference's windowed-**bidirectional** read (all `proj=0`, `first_div` scattered
+> {17,19,19,19,26,31,34,38,41,47,53}, **none at pos-33** — NOT the fixed async/stall bug). The engine is quality
+> **≥ HF in aggregate** (exact 48 vs 47, +1) but not byte-identical. **The speed bar is now OPT-4's job** (see
+> P1-A): the forward runs the prefill `chunk_gated_delta_rule` GDN path with `fused_recurrent` absent and no
+> CUDA graph (~18 ms GPU + ~11 ms host/forward, profiled). Battery commit `61d1381`.
+>
+> **PRIOR UPDATE (2026-07-04, pin `d2fccab`): both named defect classes were RE-DIAGNOSED to the ASYNC scheduler
 > (not the windowed-probe read) and FIXED by forcing the SYNC scheduler.** A per-step harness
 > (`runs/p2_engine_bench/diag_opt3.py`) replaying the reproducers showed: (A) the divergence@33 is the async
 > scheduler *rolling back a committed forward* (observed `committed 6→5` then re-decode) and re-running the
@@ -423,19 +441,22 @@ it *measurable* on a real turn.
    **2.36× A/B**, byte-identical; engine 2.27× under HF on the completed subset. It removed the host-sampling
    wall as designed — but because the battery can't complete (OPT-3 stall), the **M2-met checkpoint is NOT yet
    reached**: the honest number is 1.250 s/turn on a short-turn subset only.
-3. **OPT-3 (P0-C, M–L) — NEXT, the single blocker.** Byte-EXACT windowed-**bidirectional** variable-width
-   single-`[MASK]` forward. It is now proven a **correctness AND liveness** gate: it fixes the 9/44-turn
-   byte-parity divergence AND the partial-canvas stall that makes 19/63 turns uncompletable. Nothing downstream
-   is measurable — and M2/K3 cannot be adjudicated — until it lands. **Expected checkpoint: full battery
-   completes at universal parity → first real full-63 s/turn → M2 adjudicable.**
+3. ~~**OPT-3 (P0-C, M–L)**~~ — **CORE LANDED** (`d2fccab`, sync scheduler): the full 63-turn battery now
+   completes end-to-end (0 stalls, 0/11 breaks at pos-33), so **M2/K3 are adjudicable — and MISSED** (speed
+   1.681 > 1.120, quality 48 < 55). Residual open: the **11/63** windowed-**causal** vs reference
+   windowed-**bidirectional** divergences (all `proj=0`), the bidirectional-refinement follow-up that tightens
+   quality toward ≥55.
 4. ~~**OPT-5 (P1-B, L)**~~ — **DROPPED.** Grammar is 0.7% of turn time (measured); no host-grammar bottleneck
    exists. Do not do.
-5. **OPT-4 (P1-A, L)** — incremental KV/GDN 1-token decode: takes the forward from 1-wide-prefill-classed to
-   AR-identical (recurrent kernel + FULL graph). **Expected checkpoint: ~0.741 s/turn (AR parity).**
+5. **OPT-4 (P1-A, L) — NEXT, the single lever for the speed bar.** Incremental KV/GDN 1-token decode: takes the
+   forward off the prefill `chunk_gated_delta_rule` path (`fused_recurrent` absent, measured) onto the recurrent
+   decode kernel + a FULL CUDA graph (kills the ~11 ms host/forward from `enforce_eager`). **Expected checkpoint:
+   1.681 → toward ~0.741 s/turn (AR parity).**
 6. **OPT-6 (P2-A, M–L)** — confidence-based multi-token bulk commits: amortize forwards below AR.
    **Expected checkpoint: < 0.741 s/turn (beyond-AR).**
 
-**One-line rationale (updated):** OPT-2 + OPT-1 are **done** (host wall removed, 2.36×) → the frontier is now
-solely **OPT-3** (windowed-bidirectional forward) to fix parity-divergence + the stall so the full battery
-runs and M2 is adjudicable → then residual GPU shape (4) to reach AR parity → amortize forwards (6) to beat
-AR. **OPT-5 is dropped (grammar 0.7%).**
+**One-line rationale (updated):** OPT-2 + OPT-1 + OPT-3-core are **done** → the full-63 battery is now
+measurable and M2/K3 are **MISSED** (1.681 s/turn > 1.120; 48 < 55, 52/63 byte-parity) → the single next lever
+is **OPT-4** (recurrent decode kernel + FULL graph) for the speed bar, with the windowed-**bidirectional**
+refinement to close the residual 11/63 divergences for quality → then amortize forwards (6) to beat AR.
+**OPT-5 is dropped (grammar 0.7%).**
