@@ -7,7 +7,7 @@
     "stock_root": "/home/mark/qwen_diffusion/runs/endgame_stock_qwen35_ar_guided",
     "v6_gates_root": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v6/from_v2_hybrid_mixed35_kl005_g4_step300_gates"
   },
-  "git_hash": "057f5853d56008a6dc86e8f6240141ed10fcc205",
+  "git_hash": "1cf488fc7a3d4692d7b70d2a513d8812c1076c15",
   "hybrid_selection": {
     "candidates": [
       {
@@ -19,15 +19,12 @@
         "valid": true
       },
       {
-        "aggregate_exact": 97,
-        "matched_exact": 47,
         "name": "v6_hybrid_clean",
-        "never_exact": 50,
-        "reason": "retention/audit passed",
-        "valid": true
+        "reason": "not eligible: final_gate_passed=False, retention_passed=True, matched_audit=True, never_audit=True",
+        "valid": false
       }
     ],
-    "rule": "highest aggregate exact_args among retention-valid, zero-value-projection hybrid candidates",
+    "rule": "highest aggregate exact_args among promoted/accepted, retention-valid, zero-value-projection hybrid candidates",
     "selected": "v2_hybrid_clean"
   },
   "quant_comparison": {

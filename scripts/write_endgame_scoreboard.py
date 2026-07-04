@@ -78,6 +78,7 @@ def choose_hybrid(v6_gates_root: Path) -> dict[str, Any]:
         reason="accepted v2 hybrid-clean baseline",
     )
     v6_retention = load_json(v6_gates_root / "retention_gate.json")
+    v6_final = load_json(v6_gates_root / "final_eval_summary.json")
     v6_matched_audit = (
         v6_gates_root
         / "matched20_hybrid/diffusion_hybrid_forced_grammar_seq_values/projection_value_audit.json"
@@ -87,7 +88,8 @@ def choose_hybrid(v6_gates_root: Path) -> dict[str, Any]:
         / "nevertrain_bfcl_apibank60_hybrid/diffusion_hybrid_forced_grammar_seq_values/projection_value_audit.json"
     )
     v6_valid = (
-        bool(v6_retention.get("passed"))
+        bool(v6_final.get("passed"))
+        and bool(v6_retention.get("passed"))
         and audit_clean(v6_matched_audit)
         and audit_clean(v6_never_audit)
     )
@@ -97,9 +99,10 @@ def choose_hybrid(v6_gates_root: Path) -> dict[str, Any]:
         v6_gates_root / "nevertrain_bfcl_apibank60_hybrid/diffusion_hybrid_forced_grammar_seq_values/turns.jsonl",
         valid=v6_valid,
         reason=(
-            "retention/audit passed"
+            "final gate, retention, and audits passed"
             if v6_valid
-            else f"not eligible: retention_passed={bool(v6_retention.get('passed'))}, "
+            else f"not eligible: final_gate_passed={bool(v6_final.get('passed'))}, "
+            f"retention_passed={bool(v6_retention.get('passed'))}, "
             f"matched_audit={audit_clean(v6_matched_audit)}, never_audit={audit_clean(v6_never_audit)}"
         ),
     )
@@ -288,7 +291,7 @@ def main() -> int:
         "hybrid_selection": {
             "selected": selected["name"],
             "candidates": hybrid["candidates"],
-            "rule": "highest aggregate exact_args among retention-valid, zero-value-projection hybrid candidates",
+            "rule": "highest aggregate exact_args among promoted/accepted, retention-valid, zero-value-projection hybrid candidates",
         },
         "rows": rows,
         "stock_bar_note": stock_bar_note,

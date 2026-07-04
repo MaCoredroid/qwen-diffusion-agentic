@@ -5,7 +5,7 @@ Rows are the user-defined comparison set with the added stock FP8 control: stock
 - Stock model: `/home/mark/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a`
 - Stock precision/runtime: vLLM bf16 guided decoding and vLLM `--quantization fp8` guided decoding. The bf16 stock row is not NVFP4; NVFP4 was only the 27B teacher context.
 - Hybrid selected: `v2_hybrid_clean`.
-- Selection rule: highest aggregate exact_args among retention-valid, zero-value-projection hybrid candidates.
+- Selection rule: highest aggregate exact_args among promoted/accepted, retention-valid, zero-value-projection hybrid candidates.
 - Stock bf16 matched-20 exact_args is 51/63; merged-AR guided is 50/63. The maintains-AR bar rises to the stock result.
 - Quant tax/speedup: FP8-vs-bf16 deltas are reported in `summary.json` under `quant_comparison`.
 - Wall-clock: hybrid-clean is still on the HF stack and is expected to be slower than vLLM AR here; closing that column is the P2 engine deliverable.
