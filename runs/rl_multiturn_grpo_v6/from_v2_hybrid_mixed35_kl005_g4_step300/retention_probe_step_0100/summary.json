@@ -1,0 +1,13 @@
+{
+  "adapter": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model",
+  "collapse_threshold_flex_accuracy": 0.65,
+  "early_stop_collapse": false,
+  "elapsed_seconds": 230.29397329501808,
+  "examples": 10,
+  "flex_accuracy": 0.8,
+  "flex_correct": 8,
+  "probe_dir": "/home/mark/qwen_diffusion/runs/rl_multiturn_grpo_v6/from_v2_hybrid_mixed35_kl005_g4_step300/retention_probe_step_0100",
+  "step": 100,
+  "strict_accuracy": 0.8,
+  "strict_correct": 8
+}

@@ -171,12 +171,32 @@ def table_lines(title: str, rows: list[dict[str, Any]], slice_name: str) -> list
     return lines
 
 
+def quant_lines(quant_comparison: dict[str, dict[str, Any]]) -> list[str]:
+    lines = [
+        "## Stock FP8 Quantization",
+        "",
+        "| slice | exact_args delta | sec/turn delta | FP8 speedup vs bf16 |",
+        "|---|---:|---:|---:|",
+    ]
+    for slice_name in ["matched20", "nevertrain", "aggregate"]:
+        item = quant_comparison[slice_name]
+        speedup = item["fp8_speedup_vs_bf16"]
+        speedup_text = f"{speedup:.3f}x" if isinstance(speedup, float) else "n/a"
+        lines.append(
+            f"| {slice_name} | {int(item['exact_args_delta_fp8_minus_bf16']):+d} "
+            f"| {float(item['sec_per_turn_delta_fp8_minus_bf16']):+.3f} | {speedup_text} |"
+        )
+    return lines
+
+
 def main() -> int:
     args = parse_args()
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
-    stock_matched = read_rows(args.stock_root / "matched20/ar-vllm-guided/turns.jsonl")
-    stock_never = read_rows(args.stock_root / "nevertrain_bfcl_apibank60/ar-vllm-guided/turns.jsonl")
+    stock_bf16_matched = read_rows(args.stock_root / "bf16/matched20/ar-vllm-guided/turns.jsonl")
+    stock_bf16_never = read_rows(args.stock_root / "bf16/nevertrain_bfcl_apibank60/ar-vllm-guided/turns.jsonl")
+    stock_fp8_matched = read_rows(args.stock_root / "fp8/matched20/ar-vllm-guided/turns.jsonl")
+    stock_fp8_never = read_rows(args.stock_root / "fp8/nevertrain_bfcl_apibank60/ar-vllm-guided/turns.jsonl")
     merged_matched = read_rows(ROOT / "runs/hybrid_broaden_nevertrain_v2/matched20/ar-vllm-guided/turns.jsonl")
     merged_never = read_rows(
         ROOT / "runs/hybrid_broaden_nevertrain_v2/nevertrain_bfcl_apibank60/ar-vllm-guided/turns.jsonl"
@@ -187,11 +207,28 @@ def main() -> int:
     rows = [
         row_metrics(
             {
-                "label": "stock Qwen3.5-9B guided",
+                "label": "stock-bf16-AR-guided",
                 "runtime": "vLLM bf16 guided",
                 "steps_label": "decode tokens/turn",
             },
-            {"matched20": stock_matched, "nevertrain": stock_never, "aggregate": stock_matched + stock_never},
+            {
+                "matched20": stock_bf16_matched,
+                "nevertrain": stock_bf16_never,
+                "aggregate": stock_bf16_matched + stock_bf16_never,
+            },
+            steps_key="generated_tokens_per_turn",
+        ),
+        row_metrics(
+            {
+                "label": "stock-FP8-AR-guided",
+                "runtime": "vLLM fp8 guided",
+                "steps_label": "decode tokens/turn",
+            },
+            {
+                "matched20": stock_fp8_matched,
+                "nevertrain": stock_fp8_never,
+                "aggregate": stock_fp8_matched + stock_fp8_never,
+            },
             steps_key="generated_tokens_per_turn",
         ),
         row_metrics(
@@ -218,10 +255,10 @@ def main() -> int:
         ),
     ]
 
-    stock_matched_summary = summarize_backend(stock_matched)
+    stock_matched_summary = summarize_backend(stock_bf16_matched)
     merged_matched_summary = summarize_backend(merged_matched)
     stock_bar_note = (
-        f"Stock matched-20 exact_args is {stock_matched_summary['exact_arguments']}/{stock_matched_summary['turns']}; "
+        f"Stock bf16 matched-20 exact_args is {stock_matched_summary['exact_arguments']}/{stock_matched_summary['turns']}; "
         f"merged-AR guided is {merged_matched_summary['exact_arguments']}/{merged_matched_summary['turns']}."
     )
     if int(stock_matched_summary["exact_arguments"]) > int(merged_matched_summary["exact_arguments"]):
@@ -229,9 +266,25 @@ def main() -> int:
     else:
         stock_bar_note += " The stock control does not raise the matched-20 bar above the merged-AR row."
 
+    def quant_delta(slice_name: str) -> dict[str, Any]:
+        bf16_row = next(row for row in rows if row["label"] == "stock-bf16-AR-guided")[slice_name]
+        fp8_row = next(row for row in rows if row["label"] == "stock-FP8-AR-guided")[slice_name]
+        bf16_exact = int(bf16_row["exact_args"].split("/")[0])
+        fp8_exact = int(fp8_row["exact_args"].split("/")[0])
+        bf16_sec = float(bf16_row["sec_per_turn"])
+        fp8_sec = float(fp8_row["sec_per_turn"])
+        return {
+            "exact_args_delta_fp8_minus_bf16": fp8_exact - bf16_exact,
+            "sec_per_turn_delta_fp8_minus_bf16": fp8_sec - bf16_sec,
+            "fp8_speedup_vs_bf16": (bf16_sec / fp8_sec) if fp8_sec > 0 else None,
+        }
+
+    quant_comparison = {name: quant_delta(name) for name in ["matched20", "nevertrain", "aggregate"]}
+
     summary = {
         "stock_snapshot": args.stock_snapshot,
-        "stock_note": "Qwen/Qwen3.5-9B cached snapshot served bf16 on vLLM; not NVFP4.",
+        "stock_note": "Qwen/Qwen3.5-9B cached snapshot served on vLLM as bf16 and as online FP8; bf16 is not NVFP4.",
+        "quant_comparison": quant_comparison,
         "hybrid_selection": {
             "selected": selected["name"],
             "candidates": hybrid["candidates"],
@@ -246,6 +299,8 @@ def main() -> int:
         "git_hash": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
         "artifacts": {
             "stock_root": str(args.stock_root),
+            "stock_bf16_root": str(args.stock_root / "bf16"),
+            "stock_fp8_root": str(args.stock_root / "fp8"),
             "v6_gates_root": str(args.v6_gates_root),
             "merged_ar_matched": "runs/hybrid_broaden_nevertrain_v2/matched20/ar-vllm-guided/turns.jsonl",
             "merged_ar_nevertrain": "runs/hybrid_broaden_nevertrain_v2/nevertrain_bfcl_apibank60/ar-vllm-guided/turns.jsonl",
@@ -256,13 +311,14 @@ def main() -> int:
     lines = [
         "# Endgame Scoreboard",
         "",
-        "Rows are exactly the user-defined comparison set: stock Qwen3.5-9B guided, merged-AR guided, and our best diffusion hybrid-clean system.",
+        "Rows are the user-defined comparison set with the added stock FP8 control: stock bf16 guided, stock FP8 guided, merged-AR guided, and our best diffusion hybrid-clean system.",
         "",
         f"- Stock model: `{args.stock_snapshot}`",
-        "- Stock precision/runtime: vLLM bf16 guided decoding. This is not NVFP4; NVFP4 was only the 27B teacher context.",
+        "- Stock precision/runtime: vLLM bf16 guided decoding and vLLM `--quantization fp8` guided decoding. The bf16 stock row is not NVFP4; NVFP4 was only the 27B teacher context.",
         f"- Hybrid selected: `{selected['name']}`.",
         f"- Selection rule: {summary['hybrid_selection']['rule']}.",
         f"- {stock_bar_note}",
+        "- Quant tax/speedup: FP8-vs-bf16 deltas are reported in `summary.json` under `quant_comparison`.",
         "- Wall-clock: hybrid-clean is still on the HF stack and is expected to be slower than vLLM AR here; closing that column is the P2 engine deliverable.",
         "",
     ]
@@ -272,11 +328,14 @@ def main() -> int:
     lines.append("")
     lines.extend(table_lines("Aggregate", rows, "aggregate"))
     lines.append("")
+    lines.extend(quant_lines(quant_comparison))
+    lines.append("")
     lines.extend(
         [
             "## Artifacts",
             "",
-            f"- Stock AR-guided root: `{args.stock_root}`",
+            f"- Stock bf16 AR-guided root: `{args.stock_root / 'bf16'}`",
+            f"- Stock FP8 AR-guided root: `{args.stock_root / 'fp8'}`",
             f"- v6 gates root: `{args.v6_gates_root}`",
             "- Merged-AR rows: `runs/hybrid_broaden_nevertrain_v2/.../ar-vllm-guided/turns.jsonl`",
             "- Hybrid rows: selected from v2/v6 retention-valid hybrid-clean artifacts.",

@@ -191,7 +191,7 @@ lines = [
     f"| GSM8K flex | {ret['flex_correct']}/{ret['examples']} = {ret['flex_accuracy']:.3f} | >=0.65 | {ret['flex_accuracy'] >= 0.65} |",
     f"| matched-20 hybrid exact_args | {summary['matched20_hybrid']['exact_args']}/{summary['matched20_hybrid']['turns']} | >=50/63 | {summary['matched20_hybrid']['passed_bar']} |",
     f"| matched-20 vs v2 hybrid | {summary['matched20_hybrid']['exact_args'] - 47:+d}/63 | >0 and bar 50 | {summary['matched20_hybrid']['passed_bar']} |",
-    f"| never-train hybrid exact_args | {summary['nevertrain_hybrid']['exact_args']}/{summary['nevertrain_hybrid']['turns']} | >=80/184 | {summary['nevertrain_hybrid']['passed_floor']} |",
+    f"| never-train hybrid exact_args | {summary['nevertrain_hybrid']['exact_args']}/{summary['nevertrain_hybrid']['turns']} | >=80 exact args (v2 floor) | {summary['nevertrain_hybrid']['passed_floor']} |",
     "",
     "Audit:",
     "",

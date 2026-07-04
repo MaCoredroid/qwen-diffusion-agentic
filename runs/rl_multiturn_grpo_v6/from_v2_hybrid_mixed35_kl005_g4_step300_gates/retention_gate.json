@@ -1,0 +1,9 @@
+{
+  "bar": 0.65,
+  "examples": 20,
+  "flex_accuracy": 0.7,
+  "flex_correct": 14,
+  "passed": true,
+  "strict_accuracy": 0.7,
+  "strict_correct": 14
+}
