@@ -249,10 +249,22 @@ def compare_snapshot_sequences(
 ) -> dict[str, Any]:
     """Compare block-boundary snapshots, ALIGNED BY ``block_start``.
 
-    Keying by block_start (not list position) is deliberate: the reference emits a
-    snapshot for every prefill AND generation advance, while the real engine may only
-    expose commit-time (generation) boundaries. The gate requires every block_start
-    present in BOTH to agree, and flags any boundary present in only one side."""
+    Keying by block_start (not list position) is deliberate, and the ref/eng
+    boundary sets are ASYMMETRIC by construction: the reference (a fresh
+    ``FlarePrefixCache`` per turn) emits a snapshot for every prefill AND
+    generation advance, while the real engine exposes only commit-time
+    (generation) boundaries. So the reference is a SUPERSET -- every engine
+    commit boundary must have a matching, agreeing reference boundary, but the
+    reference's extra prefill boundaries are EXPECTED and must not fail the gate.
+
+    Gate condition (the fix for the always-fail self-contradiction):
+      * there is at least one shared boundary, and every shared boundary agrees
+        within tolerance (``all(d.ok)``), AND
+      * no engine-only boundary exists (``not only_eng``): a commit boundary the
+        reference never reached is a real divergence.
+    Reference-only boundaries (``only_ref``; the prefill advances) are reported
+    for visibility but do NOT fail the gate -- requiring ``not only_ref`` made
+    ``state_snapshot_equality`` ALWAYS fail against the real engine."""
     ref_by = {s.block_start: s for s in ref}
     eng_by = {s.block_start: s for s in eng}
     shared = sorted(set(ref_by) & set(eng_by))
@@ -262,7 +274,7 @@ def compare_snapshot_sequences(
         compare_snapshots(ref_by[bs], eng_by[bs], gdn_atol=gdn_atol, logit_atol=logit_atol)
         for bs in shared
     ]
-    all_ok = bool(shared) and all(d.ok for d in diffs) and not only_ref and not only_eng
+    all_ok = bool(shared) and all(d.ok for d in diffs) and not only_eng
     max_gdn = 0.0
     max_conv = 0.0
     max_logit = 0.0
@@ -281,6 +293,10 @@ def compare_snapshot_sequences(
         "num_shared_boundaries": len(shared),
         "block_starts_only_in_ref": only_ref,
         "block_starts_only_in_eng": only_eng,
+        # only_ref (the reference's prefill boundaries) is expected asymmetry and
+        # tolerated; only_eng (a commit boundary the reference never reached) fails.
+        "reference_only_boundaries_tolerated": bool(only_ref),
+        "engine_only_boundaries_failed": bool(only_eng),
         "max_gdn_state_abs_diff": max_gdn,
         "max_conv_tail_abs_diff": max_conv,
         "max_last_logits_abs_diff": max_logit,
@@ -376,6 +392,34 @@ def zero_projected_ok(totals: dict[str, Any]) -> bool:
         and int(totals.get("projected_value_tokens_exact") or 0) == 0
         and int(totals.get("parallel_commit_forced_tokens_counter") or 0) == 0
     )
+
+
+def value_token_counts_gate(
+    ref_value_tokens: int,
+    eng_value_tokens: int,
+    ref_reported: int,
+    eng_reported: int,
+) -> bool:
+    """Gate #2: EQUAL true-XML value-token counts.
+
+    The load-bearing invariant is the LABEL-FREE, OUTPUT-derived value-token
+    count (``avpt.output_value_token_count`` over the emitted ``<parameter>``
+    tokens): both sides compute it identically from the generated tokens, so a
+    byte-identical engine trivially matches.
+
+    The self-reported ``reported_model_value_tokens`` counter, by contrast,
+    exists ONLY on the hybrid-clean reference -- the FLARE canvas sampler emits
+    no such counter. Requiring ``ref_reported == eng_reported`` unconditionally
+    made a byte-identical engine spuriously FAIL this gate (N != 0). So the
+    reported-counter equality is enforced only when the engine actually surfaces
+    one (``eng_reported > 0``); otherwise the output-derived equality alone
+    decides the gate. This removes the self-contradiction while still catching a
+    genuine mismatch if a future engine does report the counter."""
+    if int(ref_value_tokens) != int(eng_value_tokens):
+        return False
+    if int(eng_reported) > 0:
+        return int(ref_reported) == int(eng_reported)
+    return True
 
 
 def grammar_value_projection_count(metrics: dict[str, Any] | None) -> int:
@@ -870,9 +914,11 @@ def run_turn_mode(args) -> dict[str, Any]:
         gdn_atol=float(args.gdn_atol),
         logit_atol=float(args.logit_atol),
     )
-    value_counts_equal = ref_final["value_token_count"] == eng_final["value_token_count"] and (
-        int(ref_totals.get("reported_model_value_tokens") or 0)
-        == int(eng_totals.get("reported_model_value_tokens") or 0)
+    value_counts_equal = value_token_counts_gate(
+        ref_final["value_token_count"],
+        eng_final["value_token_count"],
+        int(ref_totals.get("reported_model_value_tokens") or 0),
+        int(eng_totals.get("reported_model_value_tokens") or 0),
     )
     ref_grammar_value_proj = grammar_value_projection_count(ref_res.metrics)
     eng_grammar_value_proj = grammar_value_projection_count(eng_res.metrics)
@@ -1070,9 +1116,20 @@ def run_selftest_mode(args) -> dict[str, Any]:
     rep = compare_snapshot_sequences(ref_seq, eng_lg, gdn_atol=gdn_atol, logit_atol=logit_atol)
     record("snapshot_logit_drift_fails", not rep["ok"], f"max_logit={rep['max_last_logits_abs_diff']:.3g}")
 
-    # --- snapshot comparator: boundary count mismatch fails ---
+    # --- snapshot comparator: ENGINE-only boundary fails (ASYMMETRIC gate) ---
+    # A commit boundary the reference never reached is a real divergence.
+    rep = compare_snapshot_sequences(ref_seq[:1], ref_seq, gdn_atol=gdn_atol, logit_atol=logit_atol)
+    record("snapshot_engine_only_boundary_fails",
+           (not rep["ok"]) and rep["engine_only_boundaries_failed"],
+           json.dumps(rep["block_starts_only_in_eng"]))
+
+    # --- snapshot comparator: REFERENCE-only (prefill) boundary tolerated ---
+    # The reference emits prefill boundaries the real engine never exposes; that
+    # asymmetry must NOT fail the gate (the always-fail self-contradiction fix).
     rep = compare_snapshot_sequences(ref_seq, ref_seq[:1], gdn_atol=gdn_atol, logit_atol=logit_atol)
-    record("snapshot_boundary_count_mismatch_fails", not rep["ok"], "")
+    record("snapshot_reference_only_prefill_boundary_tolerated",
+           rep["ok"] and rep["reference_only_boundaries_tolerated"],
+           json.dumps(rep["block_starts_only_in_ref"]))
 
     # --- byte identity: equal vs divergent ---
     rep = token_bytes_identical([1, 2, 3, 4], [1, 2, 3, 4], tokenizer=None)
@@ -1083,6 +1140,19 @@ def run_selftest_mode(args) -> dict[str, Any]:
     # --- grammar-value-projection channel: clean=0, leak detected ---
     record("grammar_value_projection_clean_zero", grammar_value_projection_count({"model_value_tokens": 4}) == 0)
     record("grammar_value_projection_leak_detected", grammar_value_projection_count({"grammar_replacement_value_tokens": 2}) == 2)
+
+    # --- value-token-count gate (#2): the label-free OUTPUT count decides; the
+    #     reference-only reported_model_value_tokens counter is compared only when
+    #     the engine actually surfaces one, so a byte-identical FLARE engine (which
+    #     reports none: 0 vs N) no longer spuriously fails. ---
+    record("value_gate_byte_identical_engine_passes",
+           value_token_counts_gate(4, 4, 4, 0))
+    record("value_gate_output_count_mismatch_fails",
+           not value_token_counts_gate(4, 3, 4, 0))
+    record("value_gate_reported_match_when_engine_reports_passes",
+           value_token_counts_gate(4, 4, 4, 4))
+    record("value_gate_reported_mismatch_when_engine_reports_fails",
+           not value_token_counts_gate(4, 4, 4, 5))
 
     # --- projection counters flow through hybrid_schedule_events into the audit ---
     proj_events = hybrid_schedule_events({"denoise_forwards": 3, "two_wave_wave1_projected_tokens": 5, "parallel_commit_forced_tokens": 1})
