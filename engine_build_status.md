@@ -1,33 +1,51 @@
 # P2 Engine-Fast Diffusion Serving — Build Status & GPU Smoke Checklist
 
 Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones, kill criteria).
-Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance.
+Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
+IMA-fix / sequential-decode-rebuild acceptance.
 
-**Bottom line (engine NOT promoted):** the entire M1 write-list (`Qwen3_5FlareModelState` + ops +
-hybrid-clean FSM reference + parity harness + flywheel serving surface) is implemented, CPU-tested, and
-committed. The gauntlet ran on the RTX 5090 (sm_120): b1000 smoke export (§0), the REAL
-diffusion-trained export (§0.R — `qwen3.5-9b-fastdllm-rlv2-vllm-bf16`), and then — after the three
-Step-5/6 structural blockers A/B/C were **wired** (§0.A) — a full acceptance re-run of Steps 5-6 on the
-real export. **Steps 1-4 PASS** (R1/R2/K1/K2 killed; §0.R Step-4 read-only-denoise now bit-identical,
-0 leaks 10/10, restore load-bearing under vLLM pin `af21dc8`). **The M1 substrate + GDN-state-discipline
-crux are PROVEN. But Steps 5-6 remain FAIL/BLOCKED even with A/B/C wired**, now for two *net-new,
-GPU-confirmed* reasons rather than "unwired":
-- **5A — algorithm divergence (not rounding):** the wired engine `hybrid_clean` mode sources
-  **block-parallel** canvas logits over all 32 positions, while the HF reference is **sequential,
-  one `[MASK]` at a time** (one forward per value token over `[clean_prefix, MASK]`). Byte-parity is
-  impossible *by construction*; on this trained export the engine emits **gibberish** while the HF
-  bridge on the identical weights is coherent (`" Paris"`). The wiring commit's own docstring flags
-  this as an unclosed integration seam.
-- **5B — decode-at-scale CUDA IMA:** real-length turns (turn-0 = 1041 tokens) hit a **deterministic
-  illegal-memory-access at the first decode step**, proven **independent of decode mode** (hybrid_clean
-  AND canvas), **of the read-only snapshot** (crashes with it OFF), and **of the mamba-block boundary**
-  (crashes with the whole prefix in one block). It is in the shared FLARE canvas/commit spec-decode
-  decode forward over a long multi-KV-block prefix.
+**Bottom line (engine NOT promoted — one blocker left, now isolated to the forward):** the entire M1
+write-list (`Qwen3_5FlareModelState` + ops + hybrid-clean FSM reference + parity harness + flywheel
+serving surface) is implemented, CPU-tested, and committed. The gauntlet ran on the RTX 5090 (sm_120):
+b1000 smoke export (§0), the REAL diffusion-trained export (§0.R — `qwen3.5-9b-fastdllm-rlv2-vllm-bf16`),
+a post-wiring acceptance after blockers A/B/C were wired (§0.A), and then — after the **decode-at-scale
+IMA (5B) was fixed and the sequential single-`[MASK]` decode was rebuilt on the engine (5A driver)** — a
+final acceptance re-run of Steps 5-6 (§0.B). **Steps 1-4 PASS** (R1/R2/K1/K2 killed; §0.R Step-4
+read-only-denoise bit-identical, 0 leaks 10/10, restore load-bearing under vLLM pin `af21dc8`). **The M1
+substrate + GDN-state-discipline crux are PROVEN, and 5B is now closed** — the engine decodes real-length
+turns (1041/1443/917-tok prompts, 300-tok canvas generations) without faulting. **Step 5 byte-parity
+still FAILs**, now for a **single, precisely-isolated** reason:
+- **5B — decode-at-scale CUDA IMA: FIXED** (vLLM pin `1e32dcd`). Root cause: `super().postprocess_state`
+  (the MambaHybrid align spec-decode state copy) read the accepted draft token's intermediate GDN state
+  from block-table column `src_col + (num_accepted−1)`, which assumes `num_accepted−1` **speculative**
+  checkpoint columns exist — allocated only under a real `speculative_config`. The FLARE path drives the
+  canvas as spec draft tokens **without** one (`num_speculative_blocks == 0`), so a commit crossing a
+  mamba-block boundary indexed `src_col + (A−1)` far past the width-8 table ⇒ IMA (localized to
+  `num_computed=1272` canvas / `1140` hybrid_clean, not the "first decode step" the pre-fix run guessed).
+  Fix: feed the align state machine a neutral `num_accepted == 1` (a FLARE commit's final GDN state
+  already lives in the running block; the real commit count is retained only for the counter). Verified:
+  canvas runs the full 300-token cap with zero IMA (was faulting ~231); 66/66 CPU tests green.
+- **5A — turn byte-parity: still FAIL, algorithmic, now moved into the FORWARD.** The sequential
+  single-`[MASK]` **driver** was rebuilt (vLLM pin `5e2fb53`) and is correct — with 5B fixed, engine and
+  HF bridge match **token-for-token through the first 12 grammar-forced tokens on the same dual-loadable
+  export**, proving the FSM wiring is live. But at pos-12 (the first logit-dependent choice) the engine's
+  **forward** output is wrong: top-5 logits diverge whole-distribution (ref `=num`=24.25 argmax; engine
+  argmax `>`=18.25, `=num` ~16 lower — not a bf16 near-tie, and identical at shifted/raw-MASK/last-clean
+  probes ⇒ not a +1-shift bug). Cause: the engine forward still runs over the **fixed 32-position
+  spec-draft canvas** (`num_draft_tokens_per_req == num_spec == 32`), so the probe `[MASK]` at the tail
+  attends to ~20 trailing `[MASK]`s — still a block-parallel read of a mostly-masked block, not the
+  reference's exact `[tail + 1 MASK]`. The block-parallel-vs-sequential gap was moved from the driver
+  into the forward, not closed.
 
-Consequently **Step 6 could not run on the engine: there is still no engine turn byte-parity and no
-honest engine wall-clock.** The only honest diffusion wall-clock is the HF stack (3.904 s/turn, ≈3.5×
-the K3 1.120 s/turn target, ≈5.3× stock-AR aggregate) — **not the engine.** K3 remains **unadjudicable
-on the engine path.** No sunk-cost engine number was invented. Details §0.A; full checklist §3.
+Consequently **Step 6 is NOT ADJUDICABLE at parity** (gated on Step 5, the first hard failure): with 5A
+open the engine's value logits are wrong, the grammar never sees `complete_tool_call`, and requests
+over-generate to `max_new_tokens`, so a matched-20 battery is quality-meaningless and infeasibly slow.
+**No engine wall-clock at real quality exists.** The only honest diffusion wall-clock remains the HF
+stack (3.904 s/turn, ≈3.5× the K3 1.120 s/turn target, ≈5.3× stock-AR aggregate) — **not the engine.**
+K3 remains **unadjudicable on the engine path.** No sunk-cost engine number was invented. **Remaining fix
+(5A) is a scheduler / model-runner change**, not a driver change: drive a **variable single-`[MASK]`
+forward width** (schedule `draft_len` spec tokens, not a fixed 32) so each probe forward is exactly
+`[tail + 1 MASK]`. Details §0.B; full checklist §3.
 
 ---
 
@@ -347,6 +365,123 @@ denoising. This should be reflected in the M-milestone plan.
 - (prior, `runs/p2_engine_gauntlet_real/`) `engine_smoke_adapter_short_hybrid_clean.json` (engine
   gibberish + live counters), `blockerB_hf_bridge_forward.json` (HF-bridge coherent `" Paris"`).
 - vLLM pin `e38a9ea` (blocker A), qwen_diffusion `ed479b3` (blockers B+C), acceptance commit `589a0dd`.
+
+---
+
+## 0.B IMA-FIX + SEQUENTIAL-DECODE-REBUILD ACCEPTANCE — Steps 5-6 (2026-07-04, RTX 5090)
+
+The §0.A acceptance left Steps 5-6 FAIL for two *unclosed* reasons: 5A (block-parallel vs sequential)
+and 5B (decode-at-scale IMA). Since then **5B was root-caused and FIXED** (vLLM pin `1e32dcd`) and **the
+sequential single-`[MASK]` decode was rebuilt on the engine** (vLLM pin `5e2fb53`, GAP-5A driver). This
+section is the final acceptance re-run of Steps 5-6 on those fixes, real export
+`models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16` (block/canvas 32, mamba 1024, align+APC), each GPU proc alone
+in the `systemd-run … MemoryMax=22G` cage. Source: `p2_engine_acceptance_result.md` (superseding update);
+qwen_diffusion commit `237fdcf`.
+
+### Per-step verdict (post-5B-fix + 5A-rebuild)
+| gap / step | verdict | one-line |
+|---|---|---|
+| 5B — decode-at-scale CUDA IMA | **FIXED** | align spec-decode state copy indexed non-existent speculative block-table columns; feed the align state machine a neutral `num_accepted==1`. Real turns now decode without faulting. |
+| 5A — turn byte-parity (engine hybrid_clean vs HF) | **FAIL — algorithmic (not numeric)** | driver rebuilt correct (12-token forced-prefix byte-match) but the engine **forward** still reads the fixed 32-position spec-draft canvas instead of `[tail + 1 MASK]`; the probe MASK attends ~20 trailing MASKs ⇒ forward logits diverge whole-distribution at the first real choice. |
+| 6 — matched-20 battery at parity | **NOT ADJUDICABLE** | gated on Step 5. 5B robustness demonstrated (engine now runs real-length turns without crashing); with 5A open the engine over-generates on wrong values, so no quality / wall-clock at parity exists. |
+
+### 5B — root cause + fix (GPU-localized, verified)
+The IMA is **not** at the first decode step (the §0.A guess): canvas mode decodes ~231 tokens then faults
+at `num_computed=1272`; hybrid_clean at `1140`. `_flare_bounds_check` on every named slot/block/GDN index
+tensor **passes** — the OOB is *inside a kernel*. An env-gated phase synchronize
+(`VLLM_FLARE_SYNC_DEBUG=1`) pinned the last clean phase before the fault to
+**`postprocess pre-super (align state copy)`** — i.e. `super().postprocess_state` (the MambaHybrid align
+spec-decode state copy), firing regardless of read-only-denoise. An align-kernel input dump made it exact:
+```
+A=32 N=1074 src_idx=2 bs=528 needs_copy=True token_bias=13 dest_col=1
+  src+bias=15  bt_stride(width)=8      <-- gather col 15 into a width-8 block table
+```
+- **Mechanism:** `postprocess_mamba_fused_kernel`'s temporal copy reads the accepted draft token's
+  intermediate GDN state from block-table column `src_col + (num_accepted−1)`. That assumes `num_accepted−1`
+  **speculative** checkpoint columns exist — allocated only when a real `speculative_config` sets
+  `num_speculative_blocks`. FLARE drives the canvas as spec draft tokens **without** a `speculative_config`
+  (`num_speculative_blocks == 0`), so the mamba block table has no such columns; a commit of `A` tokens
+  crossing a mamba-block boundary indexes `src_col + (A−1)` (2+13=15) past the width-8 table ⇒ IMA.
+- **Fix (`1e32dcd`, `Qwen3_5FlareModelState.postprocess_state`):** a FLARE commit is a single causal pass
+  whose final GDN state already lives in the running block — there are **no** per-token intermediate states
+  to select. `num_computed_tokens` is already advanced by `post_update` (consuming the real `num_sampled`)
+  *before* `postprocess_state`, so `num_sampled` here feeds ONLY the num_accepted scatter. Feed the align
+  state machine a neutral `num_accepted == 1` ⇒ the boundary migration is a plain running-block copy
+  (`token_bias == 0`, in-bounds); the real commit count is retained only for the commit counter.
+- **Verified:** canvas decode runs the full 300-token cap with zero IMA (was faulting ~231); the only
+  `needs_copy=True` is the clean prefill boundary at `token_bias=0`. **66/66 CPU tests green** (no
+  regression to the `af21dc8` read-only-denoise machinery).
+
+### 5A — byte-parity FAIL, diagnosed ALGORITHMIC (top-5 logits, both sides)
+With 5B fixed and the sequential single-`[MASK]` **driver** rebuilt (`5e2fb53`), both sides run the SAME
+dual-loadable export (HF `Fast_dLLM` bridge over the vLLM export, blocker B; mask id **248077** passed to
+the engine via `VLLM_QWEN3_5_FLARE_MASK`), and the engine adapter now wires tool schemas + `grammar_topk`
+to the engine FSM via `SamplingParams.extra_args`. Reference produces coherent bounded tool calls
+(ep0/turn0 42 tok `stop=complete_tool_call`). **Turn-0 (greedy, identical prompt/schemas/mask):** engine
+matches the reference **token-for-token for the first 12 tokens, then diverges at position 12** and
+degenerates. Those 12 are the tool-call scaffolding + tool name — all **grammar-forced**, so the match
+proves the FSM wiring is live, NOT that the forward is correct. Pos-12 is the first logit-dependent choice:
+```
+decoded:  ref  "<tool_call>\n<function=initialize_qubits>\n<parameter=num_qubits>\n2\n</parameter>\n<"
+          eng  "<tool_call>\n<function=initialize_qubits>\n<parameter=num_qubits>\n\n\n00\n\n..."
+```
+| token | text | REFERENCE (HF bridge) | ENGINE (vLLM) |
+|---|---|---:|---:|
+| 29 | `>` | 17.625 | **18.25 (argmax)** |
+| 45334 | `=num` | **24.25 (argmax)** | 8.625 |
+| 28 | `=` | 19.75 | 9.625 |
+| 2334 | `num` | 12.5 | 16.125 |
+
+This is **not** a bf16 near-tie flip (whole distribution differs) and **not** a +1-shift/position bug
+(the shifted, raw-MASK, and last-clean probe positions all give the same wrong logit) — **the engine's
+forward output itself is wrong.**
+- **Root cause (algorithmic):** the `5e2fb53` rebuild fixed the *driver* (reads one probe logit, drives
+  the chain-rule schedule) but the engine *forward* still processes the **fixed 32-position spec-draft
+  canvas**. The scheduler sets `num_draft_tokens_per_req = num_spec == 32` (no variable-width spec
+  schedule), so every probe forward runs over `[clean tail, MASK, MASK×(31−tail_len)]`. The FLARE denoise
+  read is bidirectional, so the probe `[MASK]` at position `tail_len` attends to ~20 trailing `[MASK]`s —
+  still a partial **block-parallel** read of a mostly-masked block, not the reference's exact
+  `[tail + 1 MASK]`. **The block-parallel-vs-sequential gap was moved from the driver into the forward,
+  not closed.**
+- **Fix needed (NOT a driver change):** drive the diffusion decode with a **variable single-`[MASK]`
+  forward width** — schedule `draft_len` spec tokens, not a fixed 32 — so each probe forward is exactly
+  `[tail + 1 MASK]`. This is a **scheduler / model-runner** change (dynamic per-step spec-token count for
+  the diffusion path), plumbed through `num_draft_tokens_per_req` / `num_spec_tokens_to_schedule` (the
+  same lever standard spec-decode `dynamic_sd_lookup` uses). Until then byte-parity is impossible by
+  construction.
+
+### Step 6 — not adjudicable at parity; 5B robustness demonstrated; honest wall-clock unchanged
+Per "stop at first hard failure," Step 5 is the first hard failure, so the matched-20 quality/wall-clock
+battery is **not run at parity**. What IS newly true post-5B: the engine decodes **real-length turns
+(prompts 1041/1443/917 tok; 300-tok canvas generations) without crashing** — the substrate is live at
+scale. But with 5A open the engine's value logits are wrong, the grammar never observes a
+`complete_tool_call`, and the request over-generates to `max_new_tokens` (grammar cost grows with
+`committed`), so a full 63-turn battery is both quality-meaningless AND infeasibly slow. **No sunk-cost
+engine KPI was invented.** The only honest diffusion wall-clock remains the HF/stock reference below
+(`runs/endgame_scoreboard`, **NOT the engine** — there is still no engine row):
+
+| row | exact_args | episode_exact | valid | s/turn | fwd-or-tok/turn |
+|---|---:|---:|---:|---:|---:|
+| OUR HF hybrid-clean (v2) — diffusion, **not the engine** | 47/63 | 13/20 | 63/63 | **3.904** | 56.83 denoise fwd/turn |
+| stock-bf16-AR-guided (same build) | 51/63 | 14/20 | 63/63 | **1.213** | 82.24 tok/turn |
+| stock-AR aggregate | 124/247 | 33/80 | 247/247 | **0.741** | 49.06 tok/turn |
+
+**K3 cannot be adjudicated on the engine path.** The HF row's forward-savings (56.83 fwd/turn vs stock-AR
+~82 tok/turn) come **entirely from grammar-FSM bulk-commit of truly-forced structural tokens with zero
+forwards** — every value token is still decoded sequentially, one forward each. So the engine's
+block-parallel canvas is a **different algorithm**, not a faithful accelerator; its only legitimate speed
+lever over guided-AR is the same FSM zero-forward bulk-commit, not block-parallel value denoising. Reflect
+in the M-milestone plan.
+
+### Artifacts (this acceptance) — `runs/p2_engine_acceptance/`
+- `byte_parity_2proc.py` — two-process byte-parity driver (one 9B per process; reference vs engine on
+  identical prompt/schemas/mask; token + byte + top-k-logit diff at first divergence).
+- `ima_mamba_block_probe.py`, `step5_scheduler_dump_at_crash.txt`, and the three prior §0.A IMA isolation
+  boots (now superseded by the 5B fix).
+- vLLM pins: `5e2fb53` (sequential single-`[MASK]` driver, GAP 5A), `1e32dcd` (5B IMA fix +
+  `VLLM_QWEN3_5_FLARE_MASK` + `VLLM_FLARE_SYNC_DEBUG`). qwen_diffusion `237fdcf` (adapter passes tool
+  schemas via `extra_args`; this doc). Repro: engine env of §0.A + `VLLM_FLARE_SYNC_DEBUG=1` for the
+  decode-fault phase, `VLLM_FLARE_BOUNDS_CHECK=1` for the (passing) index-tensor checks.
 
 ---
 
