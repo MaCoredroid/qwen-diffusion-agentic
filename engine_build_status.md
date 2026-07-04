@@ -4,15 +4,29 @@ Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones
 Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
 IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
-> **UPDATE (§0.C, vLLM pin `6b81154`): the last blocker — the denoise FORWARD view — is now CLOSED, and
-> turn byte-parity PASSES.** The engine hybrid_clean decode byte-matches the HF Fast_dLLM reference
-> token-for-token on the parity turns (ep0 **42/42**, ep2 **36/36** full to `stop`; ep1 32/32 capped),
-> `value_projection_events == 0`, all counters pass `verify_invariants`, CPU `70 passed`, 5B IMA clear.
-> **Step 5 (byte-parity) → PASS; Step 6 quality is byte-parity-implied = HF 47/63.** What is NOT yet
-> won is **engine s/turn**: the model forward is fast (~1.5 s/turn) but end-to-end latency is dominated
-> by the *shared* grammar-FSM host code (`O(committed²)`; ep1's 110-tok turn > 9 min), the same cost the
-> HF stack carries — so K3 speed remains unadjudicated and the fix delivers **correctness, not a speed
-> win**. Details §0.C; the pre-fix bottom-line below is retained for provenance.
+> **UPDATE (§0.D, vLLM pin `58cfe2c` = GAP-5A windowed-probe + OPT-1 GPU-native sampling): the first
+> honest matched-20 engine wall-clock now exists — OPT-1 is DONE and verified clean, but the full battery
+> STILL CANNOT COMPLETE and M2/K3 remain unadjudicated.** OPT-1 (P0) landed: A/B vs pre-OPT-1 `6b81154` is
+> **byte-identical on every turn** (incl. divergent ones) at **2.36× speedup** — a pure, behavior-preserving
+> speedup. On 44 *completed* turns (a short-turn subset, mean 60 tok) the engine runs **1.250 s/turn mean**
+> (p50 1.185), **2.27× under HF** on the identical subset — a real OPT-1 win that sits at the stock-AR-guided
+> level. **But the battery is NOT complete: 19/63 turns are uncompletable** due to a **partial-canvas forward
+> STALL** (a single denoise forward hangs >10 min, non-terminating, when staged `valid_len` drops below block
+> width — measured 32→13 at committed ≈95). And **byte-parity is NOT universal**: 35/44 completed turns hold,
+> **9 diverge** (all `proj=0`) from the GAP-5A causal approximation of the reference's windowed-*bidirectional*
+> read. **Both blockers are pre-OPT-1 engine-forward defects (proven by the A/B), both are OPT-3 territory, both
+> are correctness/liveness — not optimization regressions.** The **prior ">9 min O(committed²) grammar"
+> hypothesis is DISPROVEN**: a per-step trace shows cumulative grammar = **0.017 s = 0.7%** of turn time, so
+> **OPT-5 is confirmed a non-issue and should NOT be done**; the stall is the real liveness blocker. So: M2
+> (<1.120) is **UNADJUDICATED** (can't complete the battery + parity not universal); K3 **UNADJUDICATED**;
+> **OPT-3 is the single frontier item** (fixes both blockers at once). Details §0.D.
+>
+> **PRIOR UPDATE (§0.C, vLLM pin `6b81154`): the denoise FORWARD view was CLOSED and per-turn byte-parity
+> PASSED on the 3 captured `gap5a_ref` turns.** The engine hybrid_clean decode byte-matched the HF Fast_dLLM
+> reference token-for-token there (ep0 **42/42**, ep2 **36/36** full to `stop`; ep1 32/32 capped),
+> `value_projection_events == 0`, CPU `70 passed`, 5B IMA clear. **CORRECTED by §0.D:** that pass held on the 3
+> hand-captured turns but does **NOT generalize** to the full 63-turn matched-20 battery (9/44 completed turns
+> diverge; 19 can't complete). Details §0.C; the pre-fix bottom-line below is retained for provenance.
 
 **Bottom line (PRE-§0.C: engine NOT promoted — one blocker left, now isolated to the forward):** the entire M1
 write-list (`Qwen3_5FlareModelState` + ops + hybrid-clean FSM reference + parity harness + flywheel
@@ -577,6 +591,82 @@ the quality blocker is gone. The remaining gap to a *promotable* engine is **spe
 mechanism is proven live (e.g. ep2: 36 tokens / 16 forwards, 20 forced tokens bulk-committed with zero
 forwards), but a net s/turn win over guided-AR requires making the grammar-FSM host cost cheap
 (incremental FSM state instead of re-parsing the growing prefix) — separate future work, not this fix.
+
+---
+
+## 0.D P2 ENGINE BENCH — first honest matched-20 engine wall-clock + OPT-1 landed (2026-07-04, RTX 5090 / sm_120)
+
+§0.C proved per-turn byte-parity on **3 hand-captured** turns and left K3 speed unadjudicated. This bench
+built the **full matched-20 battery** on the engine, landed **OPT-1** (GPU-native sampling, the P0 host-cost
+item), and produced the **first honest engine wall-clock** — while surfacing that the §0.C parity does NOT
+generalize. vLLM pin `58cfe2c` (GAP-5A windowed-probe forward + OPT-1; baseline pin `58cfe2c` intact, no
+regression to `af21dc8`/`1e32dcd`). Real export `qwen3.5-9b-fastdllm-rlv2-vllm-bf16` (block/canvas 32, mamba
+1024, align+APC), RAM cage, greedy. Source: `p2_engine_bench_result.md`; full report + artifacts
+`runs/p2_engine_bench/report.md`. Bench commit `7629a21`; this doc-update commit follows.
+
+### Prompt reconstruction (byte-faithful — PASS)
+The matched-20 eval is a *generated-history* loop, so its 63 per-turn prompts are the HF row's own
+teacher-forced history. All 63 prompts were reconstructed from the HF hybrid-clean row and **byte-verified**:
+every `prompt_sha256` + `prompt_tokens` matches; the 3 `gap5a_ref` records cross-check `prompt_ids` AND
+`ref_new_ids` exactly. The engine then ran greedy per turn with incremental per-turn JSONL.
+
+### Per-step verdict
+| step | verdict | one-line |
+|---|---|---|
+| prompts byte-faithful | **PASS** | all 63 matched-20 prompts reconstructed + byte-verified (sha + tokens); 3 `gap5a_ref` cross-check byte-for-byte. |
+| OPT-1 integrity (A/B vs pre-OPT-1 `6b81154`) | **PASS** | engine output **byte-identical** OPT-1 vs pre-OPT-1 on every turn (incl. the divergent ones) at **2.36× speedup** → OPT-1 is a pure, behavior-preserving speedup, zero parity change. |
+| full 63-turn battery end-to-end | **CANNOT COMPLETE** | 44/63 turns run; **19 uncompletable** (16 long turns n_ref≥95 + 3 short block-aligned turns, e.g. gt32 plen=1024=mamba block) due to a partial-canvas forward **STALL** (>10 min, non-terminating). |
+| byte-parity == HF 47/63 by construction | **DOES NOT GENERALIZE** | parity holds on **35/44** completed turns; **9 diverge** (all `proj=0`), systematically at the first denoise position after a block boundary (`first_div=33` recurs). NOT an optimization regression (present identically at `6b81154`, A/B). |
+| temp=0.7 RL sanity | **PASS** | 5 rollouts bounded/valid/`proj=0`, same-seed 2× reproducible. |
+
+### OPT-1 — DONE and verified clean (the P0 host-cost item)
+A/B vs a checked-out pre-OPT-1 `hybrid_clean.py` (`6b81154`): **engine output is byte-identical on every turn**
+(including the 9 divergent ones) at **2.36× mean speedup**. So OPT-1 (full-vocab host sampling → GPU-native
+batched top-k) is a pure, behavior-preserving speedup — it caused **zero** parity change; the divergences and
+the stall live at the `6b81154` "parity-PASSED" baseline, i.e. they are **pre-OPT-1 engine-forward defects**,
+not OPT-1 regressions. On the 35 parity-hold turns, **engine exact_args == HF exactly (31/31)**.
+
+### The two blockers (both pre-OPT-1, both OPT-3 territory, both correctness/liveness)
+1. **Partial-canvas forward STALL.** A single denoise forward **hangs indefinitely (>10 min, non-terminating)**
+   when the staged canvas `valid_len` drops below the full block width (measured **32→13 at committed ≈95**).
+   This makes **19/63 turns uncompletable** (16 long turns n_ref≥95 + 3 short turns on block-aligned prompts).
+   Per-step trace: steps to committed 95 are a flat **27 ms**; cumulative grammar time is **0.017 s = 0.7%** of
+   turn time — the prior ">9 min O(committed²) grammar" hypothesis (§0.C) is **DISPROVEN**, and **OPT-5 is
+   confirmed a non-issue**. The stall, not grammar, is the liveness blocker.
+2. **Non-universal byte-parity.** The GAP-5A windowed-probe fix is a *causal* approximation of the reference's
+   windowed-*bidirectional* read (author-flagged). On 44 completed turns, **35 hold byte-parity, 9 diverge**
+   (all `proj=0`), systematically at the first denoise position after a block boundary (`first_div=33` recurs).
+
+### Honest numbers (44 completed turns — a short-turn subset, mean 60 tok; NOT a full-battery number)
+| | engine | HF (same 44) | HF full-63 | stock-AR-guided 63 | stock-AR agg | M2 |
+|---|--:|--:|--:|--:|--:|--:|
+| s/turn mean | **1.250** | 2.835 | 3.904 | 1.213 | 0.741 | <1.120 |
+| s/turn p50 / worst | 1.185 / 2.201 | 2.756 | — | — | — | — |
+| denoise fwd/turn | 40.95 | 39.30 | 56.83 | 82.24 (tok) | 49.06 (tok) | — |
+| exact_args | 32/44 | 35/44 | 47/63 | 51/63 | 124/247 | ≥55/63 |
+
+Engine is **2.27× under HF** on the identical completed subset (a real OPT-1 win) and its completed-subset
+s/turn sits at the **stock-AR-guided level (1.250 vs 1.213)** — but **M2 (<1.120) is UNADJUDICATED**: the full
+battery cannot complete (stall) and byte-parity is not universal, so this 1.250 is a short-turn-subset number,
+not a full-63 s/turn. **K3 remains UNADJUDICATED on the engine path.** No sunk-cost full-battery number was
+invented.
+
+### Frontier answer: OPT-3 is the single frontier item — and it is a *correctness* fix, not merely efficiency
+A byte-EXACT windowed-**bidirectional** variable-width single-`[MASK]` forward (**OPT-3**) fixes **both**
+blockers at once: it removes the causal-approximation divergence (restores universal parity → the HF 47/63)
+**and** removes the partial-canvas stall (long turns + the full battery run → a real full-battery s/turn). It
+is a correctness/liveness blocker, not merely an efficiency lever. **OPT-4** second (residual GPU gap to AR,
+only after OPT-3). **OPT-1 is done + verified** (byte-identical, 2.36×). **OPT-5 should NOT be done** (grammar
+is 0.7% of turn time). **OPT-2** (`cg_mode` counter + fail-closed config assert) is not yet separately
+adjudicated on the engine.
+
+### Artifacts — `runs/p2_engine_bench/`
+- `build_matched20_ref.py`, `matched20_ref.json` — reconstructed + byte-verified 63-turn prompt battery.
+- `run_battery.py`, `matched20_turns.jsonl` — engine greedy per-turn run with incremental JSONL.
+- `ab_opt1.py`, `ab_A_opt1.json`, `ab_B_preopt1.json` — OPT-1 integrity A/B (byte-identical, 2.36×).
+- `diag_ep1*.py` — the per-step stall trace (grammar = 0.7%; stall at `valid_len` 32→13).
+- `matched20_temp07*.jsonl` — temp=0.7 RL sanity (5 rollouts, `proj=0`, same-seed reproducible).
+- `report.md` — full report. vLLM pin `58cfe2c` (windowed-probe + OPT-1); bench commit `7629a21`.
 
 ---
 

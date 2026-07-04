@@ -17,22 +17,42 @@ P0 / P1 / P2 against the two bars.
   on CPython and re-scaled to the true vocab below. Each item carries a
   GPU-verification step to convert its estimate to a measured number.
 
+## STATUS (2026-07-04, after the P2 engine bench — vLLM pin `58cfe2c`)
+
+> **P0 progress:** **OPT-1 DONE + verified clean** (GPU-native batched sampling; A/B vs pre-OPT-1 `6b81154`
+> **byte-identical on every turn** at **2.36× speedup**, engine **2.27× under HF** on the identical completed
+> subset). **OPT-2 landed** (`cg_mode` counter + fail-closed config assert); no eager fallback was observed in
+> the bench, so its contingent +0.2–0.6 s gain was not triggered/measured. **OPT-3 OPEN — and it is now the
+> single frontier item**: the bench proved it is a *correctness/liveness* blocker, not merely efficiency — it
+> gates **both** open failures at once (see below). **OPT-5 DISPROVEN → do NOT do**: a per-step trace measured
+> cumulative grammar at **0.017 s = 0.7%** of turn time, so the ">9 min O(committed²) grammar" hypothesis is
+> false; the real liveness blocker is a partial-canvas forward **STALL** (OPT-3 territory), not grammar.
+>
+> **First honest engine wall-clock (partial):** on **44 completed turns** (a short-turn subset, mean 60 tok)
+> the engine runs **1.250 s/turn mean** (p50 1.185), at the stock-AR-guided level. **But M2 is UNADJUDICATED**:
+> the full 63-turn battery **cannot complete** — 19 turns stall — and byte-parity is **not universal** (9/44
+> completed turns diverge, all `proj=0`). Both failures are **pre-OPT-1** (proven by the A/B). Source:
+> `p2_engine_bench_result.md`, `runs/p2_engine_bench/report.md`; build-status §0.D.
+
 ## Bars and the current budget
 
 | row (matched-20 reference, `runs/endgame_scoreboard`, NOT the engine) | s/turn | fwd-or-tok/turn |
 |---|---|---|
+| **ENGINE (this bench, 44 completed turns — short-turn subset, NOT full-63)** | **1.250** (p50 1.185) | 40.95 denoise fwd/turn |
 | OUR HF hybrid-clean (v2) | 3.904 | 56.83 denoise fwd/turn |
 | stock-bf16-AR-guided | 1.213 | 82.24 tok/turn |
 | **stock-AR aggregate** | **0.741** | 49.06 tok/turn |
 
 - **M2 / K3 target:** **< 1.120 s/turn** (just under guided-AR). — the P0 bar.
+  **Status: UNADJUDICATED.** The completed-subset 1.250 sits at guided-AR (1.213) but is a short-turn subset,
+  not a full-63 number; the battery can't complete and parity isn't universal, so M2 is not yet met or missed.
 - **Beyond-AR / thesis KPI:** **< 0.741 s/turn** at equal quality via
   forwards-saved. — the P2 bar.
-- There is **no honest engine wall-clock yet**: the engine path is blocked at
-  byte-parity (GAP 5A), so no valid matched-20 turn can be driven. The only
-  diffusion number is the HF stack's 3.904 s/turn. **GAP 5A is therefore both a
-  correctness gate and this plan's single largest forward-compute waste** — the
-  reports and the build-status doc converge on the same root cause (OPT-3).
+- The engine wall-clock is now **partially honest but incomplete**: OPT-1 removed the host-sampling wall
+  (2.36×), but **GAP 5A / OPT-3 is still the blocker** — its causal-windowed approximation both diverges
+  byte-parity (9/44 turns) and, when the staged canvas `valid_len` drops below block width (32→13 at committed
+  ≈95), **stalls a denoise forward indefinitely** (19/63 turns uncompletable). **OPT-3 is therefore a
+  correctness AND liveness gate AND the largest forward-compute waste** — one fix clears all three.
 
 ### Scale anchors used below (all UNVERIFIED for GPU wall-clock)
 
@@ -74,14 +94,14 @@ cost, folds into OPT-1 as a batched-topk requirement (call it OPT-1b); and the
 
 ## Ranking — expected ms/turn payoff per unit effort
 
-| Rank | Opt | Expected gain (per turn) | Effort | Payoff/effort | Tier |
-|---|---|---|---|---|---|
-| 1 | **OPT-1** GPU-native sampling | **~1.3–2.3 s** (host, MEASURED-scaled) | M | **Highest** | P0 |
-| 2 | **OPT-2** graph guard + `cg_mode` log | avoids contingent **+0.2–0.6 s** eager fallback; enables honest measurement | **S** | Very high | P0 |
-| 3 | **OPT-3** variable single-[MASK] width | correctness gate (unblocks M2 at all) + **~2–6×** forward-compute cut | M–L | High | P0 |
-| 4 | **OPT-5** incremental detok/FSM | **~15–75 ms**, O(n²)→O(n) (grows w/ turn len) | L | Medium | P1 |
-| 5 | **OPT-4** incremental KV/GDN 1-wide decode | closes residual GPU gap to AR (recurrent kernel + full graph) | L | Medium | P1 |
-| 6 | **OPT-6** multi-token bulk commits | fewer forwards than AR → sub-0.741 s | M–L | Beyond-AR | P2 |
+| Rank | Opt | Expected gain (per turn) | Effort | Payoff/effort | Tier | Status |
+|---|---|---|---|---|---|---|
+| 1 | **OPT-1** GPU-native sampling | **~1.3–2.3 s** (host, MEASURED-scaled) → measured **2.36× A/B**, byte-identical | M | **Highest** | P0 | **DONE + verified** |
+| 2 | **OPT-2** graph guard + `cg_mode` log | avoids contingent **+0.2–0.6 s** eager fallback; enables honest measurement | **S** | Very high | P0 | **landed** (no eager fallback seen; gain not triggered) |
+| 3 | **OPT-3** variable single-[MASK] width (windowed-**bidirectional**) | correctness+liveness gate (unblocks M2 at all; fixes divergence AND stall) + **~2–6×** forward-compute cut | M–L | High | P0 | **OPEN — frontier #1** |
+| 4 | **OPT-5** incremental detok/FSM | ~~~15–75 ms~~ **DISPROVEN: grammar = 0.7% of turn** | L | ~~Medium~~ | ~~P1~~ | **DO NOT DO** |
+| 5 | **OPT-4** incremental KV/GDN 1-wide decode | closes residual GPU gap to AR (recurrent kernel + full graph) | L | Medium | P1 | OPEN (after OPT-3) |
+| 6 | **OPT-6** multi-token bulk commits | fewer forwards than AR → sub-0.741 s | M–L | Beyond-AR | P2 | OPEN |
 
 Numbers are UNVERIFIED for GPU components; the host components of OPT-1/OPT-5 are
 MEASURED-CPU and re-scaled. The ranking is robust to the constants: OPT-1's host
@@ -96,7 +116,14 @@ Without all three of these there is either (a) no valid turn to measure (OPT-3),
 (b) a host cost that alone blows the budget (OPT-1), or (c) an unguarded eager
 fallback that silently blows it (OPT-2).
 
-## P0-A · OPT-1 — Move full-vocab sampling onto the GPU
+## P0-A · OPT-1 — Move full-vocab sampling onto the GPU  ✅ DONE + VERIFIED
+
+> **DONE (vLLM pin `58cfe2c`, bench §0.D).** Landed as GPU-native batched top-k sampling. Integrity A/B vs a
+> checked-out pre-OPT-1 `hybrid_clean.py` (`6b81154`): engine output **byte-identical on every turn** (incl.
+> the 9 divergent ones) at **2.36× mean speedup** — a pure, behavior-preserving speedup with **zero** parity
+> change. On the identical completed subset the engine is **2.27× under HF** (1.250 vs 2.835 s/turn). This
+> removed the host-sampling wall as designed; the remaining blocker to a full-battery number is OPT-3, not
+> sampling. Artifacts: `runs/p2_engine_bench/{ab_opt1.py,ab_A_opt1.json,ab_B_preopt1.json}`.
 
 **Evidence.** Per model-chosen token, `decode_model_token` runs the entire
 reduction in CPython over the full 248,320-wide vocab:
@@ -186,7 +213,17 @@ currently tripping — that is exactly what this item measures.
 `cg_mode == FULL` on ≥99% of decode steps. Deliberately mis-set
 `hf_config.canvas_length` and confirm the startup assert fires (fail-closed test).
 
-## P0-C · OPT-3 — Variable single-[MASK] forward width (also the GAP-5A fix)
+## P0-C · OPT-3 — Variable single-[MASK] forward width (also the GAP-5A fix)  ⛔ OPEN — FRONTIER #1
+
+> **Bench §0.D promoted this to the single frontier item and proved it is a CORRECTNESS + LIVENESS gate, not
+> merely efficiency.** The §0.C causal-windowed *approximation* of the reference's windowed-**bidirectional**
+> read fails two ways on the full battery, both **pre-OPT-1** (proven by the OPT-1 A/B): (1) **byte-parity
+> diverges** on 9/44 completed turns (all `proj=0`), systematically at the first denoise position after a block
+> boundary (`first_div=33` recurs); and (2) when the staged canvas `valid_len` drops below the full block width
+> (measured **32→13 at committed ≈95**), a single denoise forward **STALLS indefinitely (>10 min)** — making
+> **19/63 turns uncompletable**. A byte-EXACT windowed-**bidirectional** variable-width single-`[MASK]` forward
+> fixes **both at once** (restores universal parity → HF 47/63 **and** unblocks long turns → a real full-battery
+> s/turn). This is the precondition for adjudicating M2/K3 at all.
 
 **Evidence.** The scheduler pins a **uniform** `num_spec_tokens == canvas_length`
 draft width every step (`scheduler.py:986-989` `[-1]*self.num_spec_tokens`;
@@ -274,7 +311,13 @@ forward from "1-wide but prefill-classed" to "AR-identical decode step."
 bit-identity check to confirm state discipline is preserved. Compare per-forward
 GPU ms to the AR decode step.
 
-## P1-B · OPT-5 — Incremental detokenization + resumable FSM cursor
+## P1-B · OPT-5 — Incremental detokenization + resumable FSM cursor  ⛔ DO NOT DO (DISPROVEN)
+
+> **DISPROVEN by the bench §0.D — do NOT do.** The predicted O(n²) grammar cost is not real on the engine: a
+> per-step trace measured **cumulative grammar time = 0.017 s = 0.7%** of turn time (steps to committed 95 are a
+> flat 27 ms). The §0.C ">9 min / O(committed²) grammar" hypothesis is **false** — that pathology was actually
+> the partial-canvas forward **STALL** (OPT-3 territory), misattributed to grammar. There is no host-grammar
+> bottleneck to remove; effort here would be wasted. The evidence below is retained for provenance only.
 
 **Evidence.** `grammar.text(committed)` = `tokenizer.decode(list(committed))`
 over the **entire** generated region (`hybrid_clean.py:621-622`), called at
@@ -354,27 +397,25 @@ Ordered by unblock-value first, then payoff-per-effort. OPT-1 is CPU-testable an
 can be *developed* in parallel from day one; OPT-3 is the gate that makes any of
 it *measurable* on a real turn.
 
-1. **OPT-2 (P0-B, S)** — land the `cg_mode` counter + fail-closed config assert
-   *first*, so every subsequent GPU-verification number is trustworthy and a
-   silent eager fallback cannot masquerade as a real bottleneck.
-2. **OPT-3 (P0-C, M–L)** — variable single-[MASK] width. It is the correctness
-   gate (unblocks the entire M2 battery), the largest forward-compute cut, and a
-   hard prerequisite for OPT-4. Nothing downstream is measurable at quality
-   without it.
-3. **OPT-1 (P0-A, M)** — GPU-native batched sampling (incl. OPT-1b). The single
-   biggest number (~1.3–2.3 s/turn) and the item that actually puts the turn
-   under 1.120 s. Develop CPU-side in parallel with steps 1–2; GPU-verify on the
-   first valid turn that OPT-3 produces. **Expected checkpoint: < 1.120 s/turn
-   (M2 met).**
-4. **OPT-5 (P1-B, L)** — incremental detok/FSM: the next host bottleneck once
-   OPT-1 is gone; removes the O(n²) grammar cost.
-5. **OPT-4 (P1-A, L)** — incremental KV/GDN 1-token decode: takes the forward
-   from 1-wide-prefill-classed to AR-identical (recurrent kernel + FULL graph).
-   **Expected checkpoint: ~0.741 s/turn (AR parity).**
-6. **OPT-6 (P2-A, M–L)** — confidence-based multi-token bulk commits: amortize
-   forwards below AR. **Expected checkpoint: < 0.741 s/turn (beyond-AR).**
+1. ~~**OPT-2 (P0-B, S)**~~ — **DONE.** `cg_mode` counter + fail-closed config assert landed; no eager
+   fallback observed in the bench.
+2. ~~**OPT-1 (P0-A, M)**~~ — **DONE + verified** (GPU-native batched sampling, incl. OPT-1b). Measured
+   **2.36× A/B**, byte-identical; engine 2.27× under HF on the completed subset. It removed the host-sampling
+   wall as designed — but because the battery can't complete (OPT-3 stall), the **M2-met checkpoint is NOT yet
+   reached**: the honest number is 1.250 s/turn on a short-turn subset only.
+3. **OPT-3 (P0-C, M–L) — NEXT, the single blocker.** Byte-EXACT windowed-**bidirectional** variable-width
+   single-`[MASK]` forward. It is now proven a **correctness AND liveness** gate: it fixes the 9/44-turn
+   byte-parity divergence AND the partial-canvas stall that makes 19/63 turns uncompletable. Nothing downstream
+   is measurable — and M2/K3 cannot be adjudicated — until it lands. **Expected checkpoint: full battery
+   completes at universal parity → first real full-63 s/turn → M2 adjudicable.**
+4. ~~**OPT-5 (P1-B, L)**~~ — **DROPPED.** Grammar is 0.7% of turn time (measured); no host-grammar bottleneck
+   exists. Do not do.
+5. **OPT-4 (P1-A, L)** — incremental KV/GDN 1-token decode: takes the forward from 1-wide-prefill-classed to
+   AR-identical (recurrent kernel + FULL graph). **Expected checkpoint: ~0.741 s/turn (AR parity).**
+6. **OPT-6 (P2-A, M–L)** — confidence-based multi-token bulk commits: amortize forwards below AR.
+   **Expected checkpoint: < 0.741 s/turn (beyond-AR).**
 
-**One-line rationale:** instrument (2) → unblock correctness + cut the forward
-width (3) → kill the dominant host cost (1) to clear M2 → remove residual host
-O(n²) (5) and residual GPU shape (4) to reach AR parity → amortize forwards (6)
-to beat AR.
+**One-line rationale (updated):** OPT-2 + OPT-1 are **done** (host wall removed, 2.36×) → the frontier is now
+solely **OPT-3** (windowed-bidirectional forward) to fix parity-divergence + the stall so the full battery
+runs and M2 is adjudicable → then residual GPU shape (4) to reach AR parity → amortize forwards (6) to beat
+AR. **OPT-5 is dropped (grammar 0.7%).**
