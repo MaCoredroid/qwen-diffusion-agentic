@@ -1,24 +1,33 @@
 # P2 Engine-Fast Diffusion Serving — Build Status & GPU Smoke Checklist
 
 Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones, kill criteria).
-Date: 2026-07-03. Author: build+review sweep, four parallel agents.
+Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance.
 
-**Bottom line:** the entire M1 write-list (`Qwen3_5FlareModelState` + ops + hybrid-clean FSM
-reference + parity harness + flywheel serving surface) is implemented, CPU-tested, and committed
-locally in three repos. The gauntlet has now been **run twice on the RTX 5090 (sm_120): first on the
-b1000 smoke export (§0), then re-run steps 4-6 on the REAL diffusion-trained export** (§0.R —
-`qwen3.5-9b-fastdllm-rlv2-vllm-bf16`, RL-v2 adapter merged onto init). **Substrate PASS + M1 crux now
-PROVEN, but the engine is NOT promoted:** steps 1-3 pass (first-party dLLM decode path, sm_120
-attention/GDN kernels, MRV2×GDN default+align+APC all correct — R1/R2/K1/K2 killed). **Step 4 on the
-real export is now a clean PASS on the core M1 go/no-go:** after widening the read-only-denoise restore
-scope to the actual `{non_spec ∪ spec} ∪ checkpoint-slots` banded set (vLLM pin `af21dc8`), the whole
-GDN conv/ssm cache is **bit-identical around every denoise forward (0 leaks, 10/10, restore
-load-bearing)** — the GDN-state-discipline crux is empirically enforced. **But steps 5-6 stay BLOCKED
-(FAIL) for a structural, non-checkpoint reason:** the engine's served path is a canvas/renoise
-denoiser, a **different algorithm** than the `hybrid_clean` masked-diffusion the checkpoint was trained
-for, so it emits gibberish, and the parity-harness turn-adapter is unwired. There is therefore **still
-no engine-vs-HF turn byte-parity and no honest engine wall-clock number** — K3 cannot be adjudicated on
-the engine. All four reviews returned **fix-needed**. Full checklist with pass/kill criteria in §3.
+**Bottom line (engine NOT promoted):** the entire M1 write-list (`Qwen3_5FlareModelState` + ops +
+hybrid-clean FSM reference + parity harness + flywheel serving surface) is implemented, CPU-tested, and
+committed. The gauntlet ran on the RTX 5090 (sm_120): b1000 smoke export (§0), the REAL
+diffusion-trained export (§0.R — `qwen3.5-9b-fastdllm-rlv2-vllm-bf16`), and then — after the three
+Step-5/6 structural blockers A/B/C were **wired** (§0.A) — a full acceptance re-run of Steps 5-6 on the
+real export. **Steps 1-4 PASS** (R1/R2/K1/K2 killed; §0.R Step-4 read-only-denoise now bit-identical,
+0 leaks 10/10, restore load-bearing under vLLM pin `af21dc8`). **The M1 substrate + GDN-state-discipline
+crux are PROVEN. But Steps 5-6 remain FAIL/BLOCKED even with A/B/C wired**, now for two *net-new,
+GPU-confirmed* reasons rather than "unwired":
+- **5A — algorithm divergence (not rounding):** the wired engine `hybrid_clean` mode sources
+  **block-parallel** canvas logits over all 32 positions, while the HF reference is **sequential,
+  one `[MASK]` at a time** (one forward per value token over `[clean_prefix, MASK]`). Byte-parity is
+  impossible *by construction*; on this trained export the engine emits **gibberish** while the HF
+  bridge on the identical weights is coherent (`" Paris"`). The wiring commit's own docstring flags
+  this as an unclosed integration seam.
+- **5B — decode-at-scale CUDA IMA:** real-length turns (turn-0 = 1041 tokens) hit a **deterministic
+  illegal-memory-access at the first decode step**, proven **independent of decode mode** (hybrid_clean
+  AND canvas), **of the read-only snapshot** (crashes with it OFF), and **of the mamba-block boundary**
+  (crashes with the whole prefix in one block). It is in the shared FLARE canvas/commit spec-decode
+  decode forward over a long multi-KV-block prefix.
+
+Consequently **Step 6 could not run on the engine: there is still no engine turn byte-parity and no
+honest engine wall-clock.** The only honest diffusion wall-clock is the HF stack (3.904 s/turn, ≈3.5×
+the K3 1.120 s/turn target, ≈5.3× stock-AR aggregate) — **not the engine.** K3 remains **unadjudicable
+on the engine path.** No sunk-cost engine number was invented. Details §0.A; full checklist §3.
 
 ---
 
@@ -230,6 +239,114 @@ sunk-cost engine number was invented.
 - `p2_engine_parity_smoke_result.md` — the smoke-export step-5 structural-blocker analysis (re-verified).
 - `runs/p2_engine_gauntlet_real/` — `step4_real_probe.py`, `step4_real_on_default.json` (PASS, 0 leaks),
   `step4_real_on.json` (pre-fix FAIL), `step4_real_off.json`, `step4_measure/instrument.json`.
+
+---
+
+## 0.A POST-WIRING ACCEPTANCE — Steps 5-6 re-run after blockers A/B/C wired (2026-07-04, RTX 5090)
+
+The §0.R gauntlet FAILed Steps 5-6 on three *unwired* structural blockers. Those three were then wired
+and this acceptance re-ran Steps 5-6 against the wiring, on the real export
+`models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16` (block/canvas 32), engine venv `.venv-vllm-p2-main`, each
+GPU proc alone in the `systemd-run … MemoryMax=22G` cage. Source: `p2_engine_acceptance_result.md`.
+
+### Wiring done (the three blockers)
+- **Blocker A** (vLLM pin `qwen3_5-flare-modelstate` `e38a9ea`): `hybrid_clean` is now a **selectable
+  engine decode mode** (`VLLM_QWEN3_5_FLARE_DECODE=hybrid_clean`) driving the FSM/greedy
+  `HybridCleanBlockDecoder` — the previously-orphaned FSM is now invoked at both the block-decoder and
+  sampler seams (the assertion the orphaned-FSM bug lacked).
+- **Blocker B+C** (qwen_diffusion `ed479b3`): one **dual-loadable checkpoint** (HF-bridge loader over the
+  vLLM export, so both the `Fast_dLLM_Qwen3_5` bridge and the vLLM export read the same weights) + the
+  `VllmFlareEngineAdapter.run_turn` seam (the adapter now boots the real export and drives a short turn
+  instead of raising `EngineUnavailable`).
+
+### Verification (CPU wiring intact — PASS)
+`pytest tests/v1/sample/test_hybrid_clean.py tests/v1/sample/test_hybrid_clean_flare_decode.py
+tests/v1/worker/gpu/test_qwen3_5_flare_state_machine.py` → **61 passed** (23 hybrid_clean + 17
+hybrid_clean_flare_decode + 21 flare state-machine). Editable vLLM confirmed; the `af21dc8`
+read-only-denoise fix untouched; the `hybrid_clean` FSM now actually invoked on the decode path.
+
+### Per-step verdict (post-wiring)
+| step | verdict | one-line |
+|---|---|---|
+| pre — CPU wiring intact | **PASS** | 61/61 CPU tests green; no regression to the `af21dc8` machinery. |
+| 5 — turn byte-parity (engine hybrid_clean vs HF) | **FAIL (BLOCKED)** | TWO independent GPU-confirmed hard failures: **5A** block-parallel engine logits vs sequential single-`[MASK]` reference ⇒ byte-parity impossible by construction, engine emits gibberish while HF bridge on identical weights is coherent (`" Paris"`); **5B** deterministic CUDA IMA at the first decode step on real-length (1041-tok) turns ⇒ the 3 parity turns cannot even be driven. |
+| 6 — matched-20 M2 battery on the engine | **BLOCKED** | Gated on Step 5. Byte-parity fails and real turns crash, so `exact_args` / `episode_exact` / TRUE forwards-per-turn / s-per-turn **cannot be produced on the engine.** No honest engine wall-clock. |
+
+**5A — algorithm divergence (proven from both decoders' source).** HF `sample_hybrid_clean` (sha
+`a4c66751…`) decodes **sequentially, one `[MASK]` at a time**: append one mask, forward over
+`[committed_clean_prefix, MASK]`, read the single last-position shifted logit — one forward per
+non-forced value token; truly-forced structural tokens (`len(legal)==1`) are FSM bulk-committed with
+**zero** forwards. So the logit for output position *k* is conditioned on the actual committed clean
+tokens 0..k-1. The engine `Qwen3_5FlareSampler._hybrid_clean_step` instead runs **one denoise forward
+over the whole 32-position canvas** and `HybridCleanBlockDecoder.decode_block` walks all positions;
+positions 1..31 are conditioned on the **noisy canvas**, not the clean prefix. ⇒ For any block with >1
+model-decoded token the per-position logits differ by construction. Empirically: engine `hybrid_clean`
+on a working short prompt → gibberish (`"<tool_call>\n<function= .ер s ET …"`,
+`engine_smoke_adapter_short_hybrid_clean.json`) with its zero-value-projection tripwire holding; the
+HF-bridge forward on the **same** export → coherent top-1 `" Paris"` (`blockerB_hf_bridge_forward.json`).
+Same weights, tokenizer, mask id (248077) — the difference is the decode algorithm. **Fix scope: NOT
+small / NOT engine-side-trivial** — the engine must run the reference's sequential single-`[MASK]`
+schedule (or expose a forward-only logit seam feeding the shared `sample_hybrid_clean` driver), which
+also removes the block-parallel "fewer-forwards" mechanism for value tokens.
+
+**5B — deterministic decode-at-scale CUDA IMA.** Turn-0/episode-0 (1041 tokens) prefills fine
+(`num_computed_tokens=1041`) then faults at the first decode (1 real + 32 canvas draft tokens):
+`torch.AcceleratorError: CUDA error: an illegal memory access was encountered`. Isolated across GPU
+boots (`CUDA_LAUNCH_BLOCKING=1`, RAM cage):
+
+| decode mode | read-only-denoise | mamba_block_size | prompt | result |
+|---|---|---|---|---|
+| — (short smoke, prior) | on | 1024 | 10 tok | **OK** |
+| hybrid_clean | ON | 1024 | 1041 tok | **CRASH (IMA)** |
+| canvas | **OFF** | 1024 | 1041 tok | **CRASH (IMA)** |
+| canvas | on | **4096** (1041 in ONE mamba block) | 1041 tok | **CRASH (IMA)** |
+
+⇒ The IMA is independent of decode mode, of the read-only snapshot (rules out `af21dc8`), and of the
+mamba-block-1024 boundary. It lives in the **shared FLARE canvas/commit spec-decode DECODE forward over
+a long multi-KV-block prefix**. Exact faulting kernel needs `compute-sanitizer` (absent) or a
+`TORCH_USE_CUDA_DSA` rebuild — deferred. Engine-side, deterministic, **NOT small**.
+
+### Step 6 — no engine wall-clock; the only honest wall-clock is the HF/stock reference
+Step 6 **did not run on the engine** (blocked by Step 5): byte-parity fails and real turns crash, so no
+`exact_args`, `episode_exact`, TRUE forwards/turn or s/turn exist on the engine. The only engine signal
+is short-prompt substrate liveness (`read_advance_ratio ≈ 3.0`, `forced_grammar_tokens=5` FSM
+bulk-commit with zero forwards, `zero_forward_rows=2`, `projected_value_tokens_exact=0`) — i.e. the
+fewer-forwards + zero-value-projection mechanisms are live, but over **gibberish**. That is liveness,
+not the KPI. **No sunk-cost engine number was invented.** The honest wall-clock table below is the
+matched-20 reference (`runs/endgame_scoreboard`, **NOT the engine**):
+
+| row | exact_args | episode_exact | valid | s/turn | fwd-or-tok/turn |
+|---|---:|---:|---:|---:|---:|
+| OUR HF hybrid-clean (v2) — diffusion, **not the engine** | 47/63 | 13/20 | 63/63 | **3.904** | 56.83 denoise fwd/turn |
+| stock-bf16-AR-guided (same build) | 51/63 | 14/20 | 63/63 | **1.213** | 82.24 tok/turn |
+| stock-AR aggregate | 124/247 | 33/80 | 247/247 | **0.741** | 49.06 tok/turn |
+
+The winning HF row's forward-savings (56.83 fwd/turn vs stock-AR ~82 tok/turn) come **entirely from the
+grammar-FSM bulk-commit of truly-forced structural tokens with zero forwards** — every value token is
+still decoded sequentially with one forward. So the engine's block-parallel canvas is a **different
+algorithm**, not a faithful accelerator of the reference; on this checkpoint it is quality-dead. A
+byte-parity-and-quality engine path must run the sequential single-`[MASK]` value decode; its only
+legitimate speed lever over guided-AR is the same FSM zero-forward bulk-commit, not block-parallel value
+denoising. This should be reflected in the M-milestone plan.
+
+### What remains before Steps 5-6 can pass (net-new engineering, not a re-run)
+1. **Close the logit seam (5A):** drive the engine with the reference's sequential single-`[MASK]`
+   forward schedule, or expose a forward-only block-logit seam feeding the shared `sample_hybrid_clean`
+   driver, so both sides run the same algorithm. Precondition for any byte-parity.
+2. **Fix the decode-at-scale IMA (5B):** localize with `compute-sanitizer` / device-side asserts
+   (mode-, readonly-, mamba-block-independent; long multi-KV-block prefix, first decode), then fix in
+   the FLARE canvas/commit spec-decode forward.
+3. Then: 3-turn byte-parity (greedy, identical FSM, `projected_value_tokens_exact==0` both sides), then
+   the matched-20 M2 A/B vs guided-AR **re-baselined on the same pinned build** (R6 fairness).
+
+### Artifacts (acceptance) — `runs/p2_engine_acceptance/`
+- `step5_ima_hybrid_clean_ro_on_mamba1024.log`, `step5_ima_canvas_ro_off_mamba1024.log`,
+  `step5_ima_canvas_ro_on_mamba4096.{log,json}` — the three IMA isolation boots.
+- `step5_scheduler_dump_at_crash.txt` — faulting decode step (`num_computed_tokens=1041`).
+- `ima_mamba_block_probe.py` — parametric IMA isolation probe.
+- (prior, `runs/p2_engine_gauntlet_real/`) `engine_smoke_adapter_short_hybrid_clean.json` (engine
+  gibberish + live counters), `blockerB_hf_bridge_forward.json` (HF-bridge coherent `" Paris"`).
+- vLLM pin `e38a9ea` (blocker A), qwen_diffusion `ed479b3` (blockers B+C), acceptance commit `589a0dd`.
 
 ---
 
@@ -519,10 +636,16 @@ python/vllm from `/home/mark/qwen_diffusion/.venv-vllm-p2-main`.
   offline FSM + wave-1/wave-2 wiring + cross-turn APC counters, **against guided-AR re-baselined on the
   SAME pinned build** (identical align-APC flags — R6 fairness). Trigger-test the align-APC
   pathologies (#40696 / #45238 / #43587) on our multi-turn prompt shapes; apply the chunked lm_head cap.
-- **Pass (M2 gate, all of):** **< 1.120 s/turn** AND **≥ 55/63 exact-args**, **15/20 episodes**,
-  **63/63 exact_seq**, **63/63 valid_xml**, and **force-counters == 0 on values**. (Prerequisite: fix
+- **Pass (M2 engine-promotion gate, all of):** the **engine quality gate is PARITY with the HF
+  hybrid-clean row** — the engine runs the same weights + same algorithm, and Step-5 byte-parity
+  *implies* the same score, so the target is **ENGINE == HF row (47/63 exact-args, 13/20 episodes,
+  63/63 exact_seq, 63/63 valid_xml, value force-counters == 0)**, NOT a higher model-quality number.
+  Plus the speed target **< 1.120 s/turn** and **force-counters == 0 on values**. (Prerequisite: fix
   the `advance_calls` counter so the read/advance ratio is real before quoting the forwards-saved
-  metric.)
+  metric.) **Note:** the **55/63 / 15/20** figure is the *K3 thesis aspiration* for the diffusion
+  model's raw quality — a stronger, model-training target that gates the overall thesis, **not** the
+  engine's parity gate. Promoting the engine only requires reproducing the promoted HF row byte-for-byte
+  at `< 1.120 s/turn`; lifting the model to 55/63 is a separate, training-side milestone.
 - **Kill K3 (thesis-level):** if at M2 — with read-only O(block) denoise verified (step 4) and, after
   M3, graphs on — diffusion still **misses 1.120 s/turn by > 20% at healthy GPU util**, the
   ~13x-fewer-forwards ⇒ wall-clock-win thesis fails on this hardware. **Stop, publish the profile,
