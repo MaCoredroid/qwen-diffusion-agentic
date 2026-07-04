@@ -59,6 +59,27 @@ CASES = {
 
 def run_case(case_name: str, out_path: Path) -> int:
     case = CASES[case_name]
+    # Env overrides so a box whose desktop already holds several GiB of VRAM can
+    # fit the per-case gpu_memory_utilization budget under the free pool (the
+    # engine hard-guards desired_budget <= free_memory at startup) and drop
+    # CUDA-graph capture memory (the documented --enforce-eager run mode). Both
+    # default to the per-case value so behavior is unchanged when unset.
+    llm_kwargs = dict(case["llm_kwargs"])
+    _util = os.environ.get("VLLM_SMOKE_GPU_UTIL")
+    if _util:
+        llm_kwargs["gpu_memory_utilization"] = float(_util)
+    if os.environ.get("VLLM_SMOKE_ENFORCE_EAGER", "").lower() in ("1", "true", "yes"):
+        llm_kwargs["enforce_eager"] = True
+    # NvFP4-MoE backend override. The auto-selected FLASHINFER_CUTLASS backend
+    # JIT-compiles an sm120 cutlass MoE module via nvcc; on a box without a
+    # matching CUDA toolkit (or with a flashinfer/CUDA header-version clash) that
+    # build fails. Forcing a precompiled/non-JIT backend (e.g. "marlin",
+    # "cutlass" = VLLM_CUTLASS, or "emulation") lets the diffusiongemma smoke
+    # exercise the dLLM decode path without the flashinfer JIT toolchain. Only
+    # affects MoE models; the FLARE Qwen3.5-9B target is dense and never hits it.
+    _moe = os.environ.get("VLLM_SMOKE_MOE_BACKEND")
+    if _moe:
+        llm_kwargs["moe_backend"] = _moe
     result = {
         "case": case_name,
         "model": case["model"],
@@ -68,9 +89,12 @@ def run_case(case_name: str, out_path: Path) -> int:
                 "VLLM_USE_V2_MODEL_RUNNER",
                 "CUDA_VISIBLE_DEVICES",
                 "VLLM_WORKER_MULTIPROC_METHOD",
+                "VLLM_SMOKE_GPU_UTIL",
+                "VLLM_SMOKE_ENFORCE_EAGER",
+                "VLLM_SMOKE_MOE_BACKEND",
             ]
         },
-        "llm_kwargs": case["llm_kwargs"],
+        "llm_kwargs": llm_kwargs,
     }
     try:
         from vllm import LLM, SamplingParams
@@ -86,14 +110,24 @@ def run_case(case_name: str, out_path: Path) -> int:
             result["gpu_capability"] = list(torch.cuda.get_device_capability(0))
 
         load_start = time.time()
-        llm = LLM(model=case["model"], **case["llm_kwargs"])
+        llm = LLM(model=case["model"], **llm_kwargs)
         result["load_seconds"] = time.time() - load_start
 
         gen_start = time.time()
-        outputs = llm.generate(
-            [case["prompt"]],
-            SamplingParams(max_tokens=case["max_tokens"], temperature=0.0),
-        )
+        sp = SamplingParams(max_tokens=case["max_tokens"], temperature=0.0)
+        # These are instruct ("-it") checkpoints: feed the prompt through the
+        # model's chat template via llm.chat(), otherwise a raw continuation
+        # degenerates (repeated punctuation) and the coherence check is
+        # meaningless. Fall back to raw generate() for any base model that ships
+        # no chat template.
+        try:
+            outputs = llm.chat(
+                [{"role": "user", "content": case["prompt"]}], sp
+            )
+            result["prompt_mode"] = "chat_template"
+        except Exception:
+            outputs = llm.generate([case["prompt"]], sp)
+            result["prompt_mode"] = "raw"
         result["generate_seconds"] = time.time() - gen_start
         result["output_text"] = outputs[0].outputs[0].text
         result["status"] = "PASS"
