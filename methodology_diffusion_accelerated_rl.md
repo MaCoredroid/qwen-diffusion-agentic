@@ -59,3 +59,11 @@ idle-compute assumption. Converges with our measured 1.39 accept/round on agenti
 audited 1.71x on agentic content (no extra model, no verify overhead, batch-robust, unoptimized stack) is competitive
 with real-world spec decode on this workload class — and the two compose. Use <2x as the honest spec-decode prior for
 agentic comparisons in all future tables.
+
+## ENDGAME SCOREBOARD (2026-07-04, runs/endgame_scoreboard/report.md, aggregate 247 audited turns)
+stock-bf16-AR-guided 124/247 @ 0.741 s/turn (THE TRUE BAR) | stock-FP8 129/247 @ 0.910 (FP8 slower on 5090!) |
+merged-AR-guided 127/247 (conversion tax = NEGATIVE, +3) | OUR hybrid-clean(v2) 130/247 @ 2.577.
+QUALITY: diffusion-hybrid BEATS stock AR Qwen aggregate (+6); per-slice split honest: matched-20 47 vs stock's 51,
+never-train ahead. CONVERSION TAX: none (slightly negative) on this battery. v6 NOT promoted (retention 0.70 held,
+quality flat 47 + never-train drop) -> v2 remains best; RL plateau at v2 confirmed across v4/v5/v6 variants.
+SPEED: 3.5x behind stock vLLM wall-clock — entirely the engine gap; P2 build in flight (parity harness committed).
