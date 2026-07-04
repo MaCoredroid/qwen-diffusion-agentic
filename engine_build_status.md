@@ -4,7 +4,33 @@ Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones
 Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
 IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
-> **UPDATE (§0.E, vLLM pin `d2fccab` = OPT-3 sync-scheduler fix): the FIRST COMPLETE full-63 battery now
+> **UPDATE (§0.F, vLLM pin `e5496cc` = FINAL engine: bidir-probe `b7d76e2` + PIECEWISE cudagraph `VLLM_FLARE_CUDAGRAPH=1`):
+> the strongest promotable candidate yet — but the strict 63/63-byte-parity promotion gate is STILL NOT met, so NOT
+> PROMOTED.** The FINAL engine turns BOTH landed levers on: the reference-exact windowed-**bidirectional** denoise read
+> (`VLLM_FLARE_BIDIR_PROBE=1`) and the PIECEWISE CUDA graph (OPT-4 Part 2; confirmed live — `enforce_eager=False`,
+> `cudagraph_mode=PIECEWISE`, 3756 PIECEWISE dispatches). Full-63, greedy, seed 20260701, uncapped, RAM cage, two boots.
+> **Required checks: byte-parity/turn 58/63** (breaks {20,21,44,45,60}) — **NOT met**, so the by-construction chain that
+> would force exact=47 does not hold and the run is diagnosed, not promoted. Aggregate quality is **≥ HF**: exact_args
+> **48/63** (+1 vs HF 47 — engine WINS gt60, correct where HF is wrong), episode_exact **13/20** (met), valid **63/63**
+> (bidir fixed gt19's non-stopping divergence — up from 62), `value_projection 0/63`, `verify_invariants 63/63`.
+> **Timing: s/turn mean 1.051** (p50 0.876, p90 1.699, min 0.326, worst 4.248 gt50/259tok), **TRUE 56.62 denoise
+> fwd/turn**, per-forward **18.56 ms** (eager ~29 → **1.615× cudagraph win**), **3.715× speedup vs HF**. **Bar
+> adjudication (mean 1.051): HF 3.904 → BEAT (0.269×) · guided-AR 1.213 → BEAT (0.866×) · M2-speed 1.120 → BEAT
+> (0.938×) · stock-AR-agg 0.741 → MISS (1.418×).** The eager engine (§0.E, 1.681) missed M2 and guided-AR; **cudagraph
+> now clears both for the FIRST time on the honest full-63** — the engine sits *below* guided-AR and *below* the M2
+> speed bar at ≥HF quality, though still above stock-AR-agg. **M2/K3 adjudication:** the M2 **speed** bar (<1.120) is
+> now **MET** (1.051, first time) and **K3 speed MET**; but M2's **quality** axis (≥55/63, byte-identical) is **MISSED**
+> (58/63 parity ≠ 63/63; exact 48 < 55), so the combined M2 promotion gate is NOT met. temp=0.7 (5 turns × 2 boots)
+> **byte-reproducible** and collapses onto greedy — RL contract holds under cudagraph; never-train spot-check (BFCL-AST
+> + API-Bank Lv1/Lv2, sha-verified prompts) **3/3 byte-parity/valid/exact, 0 projection** — not matched-20-specific.
+> **Why 63/63 is unreachable here:** the bidir read is the *correct* reference semantics and cudagraph is
+> **byte-neutral on the entire promotable set** (reproduces the bidir-eager anchor 58/63 + break-set exactly). The 5-turn
+> parity residual + the single exact deviation are the **coupled, UNLANDED** work: 32-absolute commit alignment
+> (`VLLM_FLARE_ALIGN_BLOCKS`, scaffold only) + per-request **variable commit width** — which is simultaneously **OPT-4
+> Part 1** (the remaining forward-compute cut to stock-agg). Parity closure and the last speed cut land together. Details
+> §0.F; battery commit `1acdf2e` (pushed origin/main).
+>
+> **PRIOR UPDATE (§0.E, vLLM pin `d2fccab` = OPT-3 sync-scheduler fix): the FIRST COMPLETE full-63 battery now
 > exists — the engine is MEASURABLE end-to-end, but NOT PROMOTED.** The OPT-3 fix closes both §0.D blockers:
 > all 63 turns complete, **zero stalls**, and the async-rollback divergence@33 is gone (**0/11 breaks at
 > pos-33**; gt12/16/18/20 byte-parity again). This is the first honest, complete, uncapped full-battery
@@ -759,6 +785,93 @@ tightens exact_args toward the ≥55 quality bar.
 - `matched20_temp07a.jsonl`, `matched20_temp07b.jsonl` — temp=0.7 RL sanity (2 byte-reproducible boots).
 - `profile_opt4.py`, `opt4_breakdown.json` — the `torch.profiler` kernel-level OPT-4 breakdown.
 - vLLM pin `d2fccab` (OPT-3 sync scheduler). `p2_engine_battery_result.md` — tracked summary.
+
+---
+
+## 0.F P2 ENGINE BATTERY v2 — FINAL engine (bidir probe + PIECEWISE cudagraph); strongest candidate, NOT PROMOTED (2026-07-04, RTX 5090 / sm_120)
+
+§0.E ran the OPT-3 sync-scheduler engine (windowed-**causal** probe, `enforce_eager`) and MISSED M2/K3 on both
+axes (1.681 s/turn, 52/63 parity). Since then BOTH remaining levers landed and this v2 battery runs the promotable
+full-63 on the **FINAL engine** = vLLM pin `e5496cc` with:
+- `VLLM_FLARE_BIDIR_PROBE=1` — the reference-exact windowed-**bidirectional** denoise read (`b7d76e2`), replacing
+  §0.E's causal approximation. This is the byte-parity refinement OPT-3 flagged as its residual.
+- `VLLM_FLARE_CUDAGRAPH=1` — PIECEWISE CUDA graph (OPT-4 Part 2). **Confirmed live:** `enforce_eager=False`,
+  `cudagraph_mode=PIECEWISE`, **3756 PIECEWISE dispatches** in the run.
+
+Greedy, temp 0, seed 20260701, uncapped (`n_ref+16`), RAM cage, two boots (ep0-9, ep10-19). Real export
+`qwen3.5-9b-fastdllm-rlv2-vllm-bf16` (block/canvas 32, mamba 1024, align+APC). Source: `p2_engine_battery_v2_result.md`;
+full report + artifacts `runs/p2_engine_battery_v2/report.md`. Battery commit `1acdf2e`, pushed to origin/main; this
+doc-update follows.
+
+### Required-check results — 63/63 byte-parity NOT met ⇒ NOT PROMOTED
+| task check | required (promotable) | measured | verdict |
+|---|---|---|---|
+| (1) byte-parity/turn | **63/63** | **58/63** (breaks {20,21,44,45,60}) | **NOT met** |
+| (2) exact_args | == 47 (HF) | **48** (engine WINS gt60, ≥HF) | deviation **+1** |
+| (2) episode_exact | 13/20 | **13/20** | **met** |
+| (2) valid | 63/63 | **63/63** (bidir fixed gt19) | **met** |
+| verify_invariants / value_projection | — / 0 | **63/63 / 0/63** | clean |
+
+Per the stop-and-diagnose rule: byte-parity is **58/63**, so the by-construction chain that would force exact=47
+does **not** hold — the run is diagnosed, **not promoted**. Aggregate quality is **≥ HF but not byte-identical**:
+exact_args 48 (+1; **gt60 the engine is correct where HF misses**), valid 63/63 (bidir fixed gt19's non-stopping
+divergence, up from §0.E's 62). `value_projection=0/63`, `verify_invariants=63/63`, projection `0/63` — clean.
+
+### Timing (all 63 turns) — cudagraph win
+- s/turn **mean 1.051**, p50 **0.876**, p90 **1.699**, min 0.326, **worst 4.248** (gt50, 259 tok).
+- **TRUE denoise forwards/turn = 56.62**, tokens/forward 1.362, **per-forward 18.56 ms** (eager ~29 ms →
+  **1.615× cudagraph win**), **speedup vs HF 3.715×**.
+
+### Bar adjudication (mean 1.051) — clears M2/guided-AR/HF for the first time
+| bar | value | engine 1.051 | verdict |
+|---|---:|---:|---|
+| HF hybrid-clean (v2) | 3.904 | 0.269× | **BEAT** |
+| stock-bf16-AR-guided | 1.213 | 0.866× | **BEAT** |
+| **M2 speed target** | **1.120** | **0.938×** | **BEAT** |
+| stock-AR aggregate | 0.741 | 1.418× | **MISS** |
+
+The §0.E eager engine (1.681) missed both M2 and guided-AR; **cudagraph now clears both for the first time on the
+honest full-63** — the engine sits *below* guided-AR and *below* the M2 speed bar at ≥HF quality, still above the
+stock-AR aggregate 0.741 (the beyond-AR / OPT-6 bar). **M2/K3 adjudication:** M2 **speed** bar MET (1.051 < 1.120,
+first time), **K3 speed MET**; M2 **quality** axis MISSED (58/63 byte-parity ≠ 63/63; exact 48 < 55) ⇒ the combined
+M2 promotion gate is **not** met and the strict 63/63-byte-parity gate is **NOT met** ⇒ NOT PROMOTED.
+
+### Honest table
+| row | exact | ep | valid | s/turn | fwd/turn |
+|---|---:|---:|---:|---:|---:|
+| **ENGINE FINAL (bidir + PIECEWISE cudagraph)** | **48/63** | **13/20** | **63/63** | **1.051** | 56.62 |
+| ENGINE §0.E (OPT-3 eager, causal) | 48/63 | 13/20 | 62/63 | 1.681 | 56.65 |
+| HF hybrid-clean (v2) | 47/63 | 13/20 | 63/63 | 3.904 | 56.83 |
+| stock-bf16-AR-guided | 51/63 | — | 63/63 | 1.213 | 82.24 (tok) |
+| stock-AR aggregate | 124/247 | — | — | 0.741 | 49.06 (tok) |
+| M2/K3 target | ≥55 | — | — | <1.120 | — |
+
+### temp=0.7 RL sanity + never-train spot-check — contract holds under cudagraph
+- **temp=0.7:** 5 turns (gt0/7/17/29/51) × 2 boots — **byte-reproducible** (identical n_gen/fwd/parity, ≤3 ms wall
+  jitter), all bounded/valid/`proj=0`; peaked value distributions collapse onto greedy. RL contract holds under
+  cudagraph.
+- **Never-train spot-check:** 3 turns spanning BFCL-AST + API-Bank Lv1/Lv2 (prompts sha256-verified vs HF) →
+  **3/3 byte-parity, 3/3 valid, 3/3 exact, 0 projection, cudagraph active**. The parity is **not matched-20-specific**.
+
+### Why 63/63 is unreachable in this (or any current) config — diagnosis
+The bidir read is the **correct** reference semantics; cudagraph is **byte-neutral on the entire promotable set**
+(reproduces the bidir-eager anchor `parity_bidir/battery_bidir.jsonl` 58/63 + the break-set exactly; the only deltas
+vs eager are the already-divergent tails of gt20/gt44, neither promotable). The 5-turn parity residual + the single
+exact deviation are the **coupled, documented, UNLANDED** work: **32-absolute commit alignment**
+(`VLLM_FLARE_ALIGN_BLOCKS`, scaffold only) + per-request **variable commit width** — which is simultaneously
+**OPT-4 Part 1** (the remaining forward-compute cut to the stock-AR aggregate). **Parity closure and the last speed
+cut land together.** Break classes: **gt20/gt45** bidir alignment regressions, **gt21** APC/prefix-cache artifact,
+**gt44** variable-width miss, **gt60** engine WINS (correct where HF is wrong).
+
+### Artifacts — `runs/p2_engine_battery_v2/` (committed `1acdf2e`, pushed origin/main)
+- `report.md` — full writeup; `matched20_turns.jsonl` (63) — engine greedy per-turn run.
+- `aggregate.json`, `aggregate.py` — full per-turn timing + check distribution.
+- `matched20_temp07a.jsonl`, `matched20_temp07b.jsonl` — temp=0.7 RL sanity (2 byte-reproducible boots).
+- `nevertrain_ref.json` (184 sha-verified) + `nevertrain_spotcheck.jsonl` — never-train spot-check.
+- Drivers: `run_battery_v2.py`, `build_nevertrain3_ref.py`, `env.sh`, `smoke.jsonl`.
+- `scripts/parity_audit_flare_engine.py` — the `VLLM_FLARE_CUDAGRAPH` opt-in seam (default stays eager; `=1` opts
+  into PIECEWISE). `p2_engine_battery_v2_result.md` — tracked top-level summary.
+- vLLM pin `e5496cc` (bidir probe `b7d76e2` + PIECEWISE cudagraph OPT-4 Part 2).
 
 ---
 

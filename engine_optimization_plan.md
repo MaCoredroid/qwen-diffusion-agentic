@@ -17,9 +17,28 @@ P0 / P1 / P2 against the two bars.
   on CPython and re-scaled to the true vocab below. Each item carries a
   GPU-verification step to convert its estimate to a measured number.
 
-## STATUS (2026-07-04, after the FULL-63 engine battery — vLLM pin `d2fccab`, OPT-3 sync scheduler)
+## STATUS (2026-07-04, after the FINAL-engine v2 battery — vLLM pin `e5496cc`, bidir probe + PIECEWISE cudagraph)
 
-> **P0 progress:** **OPT-1 DONE + verified clean** (GPU-native batched sampling; byte-identical A/B, 2.36×).
+> **FINAL-engine v2 battery (bidir probe `b7d76e2` + PIECEWISE cudagraph `VLLM_FLARE_CUDAGRAPH=1`, OPT-4 Part 2):
+> the strongest promotable candidate yet — engine now BEATS M2/guided-AR/HF on speed for the FIRST time on the
+> honest full-63, but the strict 63/63-byte-parity gate is STILL NOT met (58/63) ⇒ NOT PROMOTED.** Required checks:
+> **byte-parity 58/63** (breaks {20,21,44,45,60}, NOT met), exact_args **48** (+1, engine WINS gt60 ≥HF), episode
+> **13/20** (met), valid **63/63** (bidir fixed gt19, up from 62), `value_projection 0/63`, `verify_invariants 63/63`.
+> **Timing: s/turn mean 1.051** (p50 0.876, p90 1.699, worst 4.248), **56.62 TRUE fwd/turn**, per-forward **18.56 ms**
+> (eager ~29 → **1.615× cudagraph win**), **3.715× under HF**. **Bar adjudication (1.051): HF 3.904 BEAT (0.269×) ·
+> guided-AR 1.213 BEAT (0.866×) · M2-speed 1.120 BEAT (0.938×) · stock-AR-agg 0.741 MISS (1.418×).** The §0.E eager
+> engine (1.681) missed M2 + guided-AR; **cudagraph clears both for the first time.** **M2/K3:** speed bar MET
+> (1.051 < 1.120, K3 speed MET); quality axis MISSED (58/63 ≠ 63/63; exact 48 < 55) ⇒ combined M2 gate not met.
+> temp=0.7 (5×2 boots) byte-reproducible + never-train spot-check (BFCL/API-Bank, sha-verified) 3/3 byte-parity/valid/
+> exact — contract holds under cudagraph, not matched-20-specific. **Why 63/63 unreachable here:** bidir is the
+> correct semantics; cudagraph is **byte-neutral on the promotable set** (reproduces the bidir-eager 58/63 + break-set
+> exactly). The 5-turn residual + the single exact deviation are the **coupled UNLANDED OPT-4 Part 1**: 32-absolute
+> commit alignment (`VLLM_FLARE_ALIGN_BLOCKS`, scaffold only) + per-request variable commit width — **parity closure
+> and the last speed cut to stock-agg land together.** Break classes: gt20/gt45 bidir alignment, gt21 APC artifact,
+> gt44 variable-width, gt60 engine WINS. Source: `p2_engine_battery_v2_result.md`, `runs/p2_engine_battery_v2/report.md`;
+> build-status §0.F; battery commit `1acdf2e` (pushed origin/main).
+>
+> **PRIOR (§0.E, `d2fccab`): P0 progress:** **OPT-1 DONE + verified clean** (GPU-native batched sampling; byte-identical A/B, 2.36×).
 > **OPT-2 landed** (`cg_mode` counter + fail-closed config assert). **OPT-3 core blockers LANDED** (sync
 > scheduler): the full 63-turn battery now **completes end-to-end for the first time** — **zero stalls**,
 > async-rollback divergence@33 gone (0/11 breaks at pos-33). **OPT-5 DISPROVEN → do NOT do** (grammar =
@@ -42,15 +61,18 @@ P0 / P1 / P2 against the two bars.
 
 | row (matched-20, full-63 unless noted) | exact | s/turn | fwd-or-tok/turn |
 |---|---:|---|---|
-| **ENGINE full-63 (OPT-3 sync scheduler, `d2fccab`)** | **48/63** | **1.681** (p50 1.427, p90 2.724, worst 5.361) | 56.65 TRUE denoise fwd/turn |
+| **ENGINE FINAL full-63 (bidir + PIECEWISE cudagraph, `e5496cc`)** | **48/63** | **1.051** (p50 0.876, p90 1.699, worst 4.248) | 56.62 TRUE denoise fwd/turn |
+| ENGINE §0.E (OPT-3 eager, causal, `d2fccab`) | 48/63 | 1.681 (p50 1.427, p90 2.724, worst 5.361) | 56.65 TRUE denoise fwd/turn |
 | OUR HF hybrid-clean (v2) | 47/63 | 3.904 | 56.83 denoise fwd/turn |
 | stock-bf16-AR-guided | 51/63 | 1.213 | 82.24 tok/turn |
 | **stock-AR aggregate** | 124/247 | **0.741** | 49.06 tok/turn |
 
 - **M2 / K3 target:** **quality ≥55/63 AND < 1.120 s/turn** (just under guided-AR). — the P0 bar.
-  **Status: ADJUDICABLE for the first time (full-63 battery completes) — and MISSED on both axes:** speed
-  1.681 > 1.120 (1.39× *slower* than guided-AR 1.213; the prior bench's 1.250 was a short-turn subset), quality
-  48 < 55. But the engine is **2.32× under HF** and now measurable.
+  **Status (FINAL engine): the SPEED axis is now MET for the first time — 1.051 < 1.120 (0.938×), also BEATING
+  guided-AR 1.213 (0.866×) and HF 3.904 (0.269×) at ≥HF quality; K3 speed MET.** The eager §0.E engine (1.681)
+  missed both; the PIECEWISE cudagraph (per-forward 29→18.56 ms, 1.615×) is what clears them. **The QUALITY axis is
+  still MISSED** (byte-parity 58/63 ≠ 63/63; exact 48 < 55) ⇒ combined M2 gate not met, **NOT PROMOTED**. Still above
+  the stock-AR aggregate 0.741 (1.418×, the beyond-AR / OPT-6 bar).
 - **Beyond-AR / thesis KPI:** **< 0.741 s/turn** at equal quality via
   forwards-saved. — the P2 bar.
 - The engine wall-clock is now **fully honest and complete**: OPT-1 removed the host-sampling wall (2.36×) and
@@ -104,9 +126,9 @@ cost, folds into OPT-1 as a batched-topk requirement (call it OPT-1b); and the
 |---|---|---|---|---|---|---|
 | 1 | **OPT-1** GPU-native sampling | **~1.3–2.3 s** (host, MEASURED-scaled) → measured **2.36× A/B**, byte-identical | M | **Highest** | P0 | **DONE + verified** |
 | 2 | **OPT-2** graph guard + `cg_mode` log | avoids contingent **+0.2–0.6 s** eager fallback; enables honest measurement | **S** | Very high | P0 | **landed** (no eager fallback seen; gain not triggered) |
-| 3 | **OPT-3** variable single-[MASK] width (windowed-**bidirectional**) | liveness+rollback gate — sync-scheduler fix landed (63/63 complete, 0 stalls, 0/11 @33); residual **11/63** causal-vs-bidirectional divergence left | M–L | High | P0 | **CORE LANDED** (`d2fccab`); bidirectional refinement open |
+| 3 | **OPT-3** variable single-[MASK] width (windowed-**bidirectional**) | byte-parity refinement — bidir probe LANDED (`b7d76e2`): 52→**58/63** parity, valid 62→**63/63** (gt19 fixed); residual **5/63** breaks are OPT-4-Part-1 (align+variable-width) territory | M–L | High | P0 | **BIDIR LANDED** (`e5496cc`); last 5 breaks fold into OPT-4 Part 1 |
 | 4 | **OPT-5** incremental detok/FSM | ~~~15–75 ms~~ **DISPROVEN: grammar = 0.7% of turn** | L | ~~Medium~~ | ~~P1~~ | **DO NOT DO** |
-| 5 | **OPT-4** incremental KV/GDN 1-wide decode | closes residual GPU gap to AR (`fused_recurrent` + FULL graph); the speed bar (1.681 → <1.120) | L | High | P1 | **OPEN — single next lever** (profiled) |
+| 5 | **OPT-4** incremental KV/GDN 1-wide decode | **Part 2 (PIECEWISE cudagraph) DONE** — per-forward 29→18.56 ms (1.615×), 1.681→**1.051 s/turn** (BEATS M2/guided-AR/HF); **Part 1 OPEN** = `fused_recurrent` + 32-absolute align + variable commit width (closes last 5 parity breaks AND the residual speed gap to stock-agg 0.741) | L | High | P1 | **PART 2 DONE** (`e5496cc`); **PART 1 = single next lever** |
 | 6 | **OPT-6** multi-token bulk commits | fewer forwards than AR → sub-0.741 s | M–L | Beyond-AR | P2 | OPEN |
 
 Numbers are UNVERIFIED for GPU components; the host components of OPT-1/OPT-5 are
@@ -315,7 +337,17 @@ time (nsys) before/after to quantify the width cut.
 Once P0 removes the host-sampling wall and produces valid 1-wide reads, the
 remaining gap to AR is the residual GPU forward shape and the O(n²) host grammar.
 
-## P1-A · OPT-4 — Incremental KV+GDN commit → true 1-token decode kernel
+## P1-A · OPT-4 — Incremental KV+GDN commit → true 1-token decode kernel  ◑ PART 2 (PIECEWISE cudagraph) DONE; PART 1 open
+
+> **PART 2 DONE (vLLM pin `e5496cc`, `VLLM_FLARE_CUDAGRAPH=1`, build-status §0.F): PIECEWISE CUDA graph landed and
+> confirmed live** (`enforce_eager=False`, `cudagraph_mode=PIECEWISE`, 3756 dispatches). Per-forward **29→18.56 ms
+> (1.615×)**, dropping full-63 s/turn **1.681→1.051** — the engine now BEATS the M2 speed bar (1.120), guided-AR
+> (1.213) and HF (3.904) for the first time at ≥HF quality, still above stock-AR-agg 0.741. **PART 1 remains the single
+> next lever** and is now *coupled to parity*: routing the 1-token denoise GDN forward to `fused_recurrent` +
+> **32-absolute commit alignment** (`VLLM_FLARE_ALIGN_BLOCKS`, scaffold only) + **per-request variable commit width**
+> closes BOTH the last **5/63** byte-parity breaks ({20,21,44,45,60}: bidir alignment gt20/gt45, APC artifact gt21,
+> variable-width gt44, engine-WINS gt60) AND the residual forward-compute gap to the stock-AR aggregate. Parity closure
+> and the last speed cut land together.
 
 **Evidence.** With no active spec mask, GDN metadata build calls
 `split_decodes_and_prefills(m, decode_threshold=1)` (`gdn_attn.py:213`): any row
@@ -441,22 +473,22 @@ it *measurable* on a real turn.
    **2.36× A/B**, byte-identical; engine 2.27× under HF on the completed subset. It removed the host-sampling
    wall as designed — but because the battery can't complete (OPT-3 stall), the **M2-met checkpoint is NOT yet
    reached**: the honest number is 1.250 s/turn on a short-turn subset only.
-3. ~~**OPT-3 (P0-C, M–L)**~~ — **CORE LANDED** (`d2fccab`, sync scheduler): the full 63-turn battery now
-   completes end-to-end (0 stalls, 0/11 breaks at pos-33), so **M2/K3 are adjudicable — and MISSED** (speed
-   1.681 > 1.120, quality 48 < 55). Residual open: the **11/63** windowed-**causal** vs reference
-   windowed-**bidirectional** divergences (all `proj=0`), the bidirectional-refinement follow-up that tightens
-   quality toward ≥55.
+3. ~~**OPT-3 (P0-C, M–L)**~~ — **BIDIR PROBE LANDED** (`e5496cc`, `VLLM_FLARE_BIDIR_PROBE=1`): the reference-exact
+   windowed-**bidirectional** read replaced §0.E's causal approximation → byte-parity **52→58/63**, valid **62→63/63**
+   (gt19 fixed). Residual: the last **5/63** breaks ({20,21,44,45,60}) are no longer a standalone OPT-3 item — they
+   fold into **OPT-4 Part 1** (32-absolute align + variable commit width).
 4. ~~**OPT-5 (P1-B, L)**~~ — **DROPPED.** Grammar is 0.7% of turn time (measured); no host-grammar bottleneck
    exists. Do not do.
-5. **OPT-4 (P1-A, L) — NEXT, the single lever for the speed bar.** Incremental KV/GDN 1-token decode: takes the
-   forward off the prefill `chunk_gated_delta_rule` path (`fused_recurrent` absent, measured) onto the recurrent
-   decode kernel + a FULL CUDA graph (kills the ~11 ms host/forward from `enforce_eager`). **Expected checkpoint:
-   1.681 → toward ~0.741 s/turn (AR parity).**
+5. **OPT-4 (P1-A, L) — PART 2 DONE, PART 1 = single next lever.** Part 2 (PIECEWISE cudagraph, `e5496cc`): per-forward
+   29→18.56 ms (1.615×), **1.681→1.051 s/turn** — BEATS M2/guided-AR/HF for the first time. **Part 1 (NEXT):** route
+   the 1-token denoise GDN forward to `fused_recurrent` + 32-absolute commit alignment + per-request variable commit
+   width — **closes the last 5 parity breaks (→ 63/63, the promotion gate) AND the residual speed gap.**
+   **Expected checkpoint: 63/63 byte-parity + 1.051 → toward ~0.741 s/turn (AR parity).**
 6. **OPT-6 (P2-A, M–L)** — confidence-based multi-token bulk commits: amortize forwards below AR.
    **Expected checkpoint: < 0.741 s/turn (beyond-AR).**
 
-**One-line rationale (updated):** OPT-2 + OPT-1 + OPT-3-core are **done** → the full-63 battery is now
-measurable and M2/K3 are **MISSED** (1.681 s/turn > 1.120; 48 < 55, 52/63 byte-parity) → the single next lever
-is **OPT-4** (recurrent decode kernel + FULL graph) for the speed bar, with the windowed-**bidirectional**
-refinement to close the residual 11/63 divergences for quality → then amortize forwards (6) to beat AR.
-**OPT-5 is dropped (grammar 0.7%).**
+**One-line rationale (updated):** OPT-2 + OPT-1 + OPT-3(sync+bidir) + OPT-4-Part-2(cudagraph) are **done** → the
+FINAL engine BEATS M2/guided-AR/HF on speed (1.051 s/turn) at ≥HF quality but is **NOT PROMOTED** (58/63 byte-parity ≠
+63/63; exact 48 < 55) → the single remaining lever is **OPT-4 Part 1** (`fused_recurrent` + 32-absolute align +
+variable commit width), which closes BOTH the last 5 parity breaks (→ promotion) AND the residual speed gap to
+stock-agg 0.741 → then amortize forwards (OPT-6) to beat AR. **OPT-5 is dropped (grammar 0.7%).**
