@@ -525,6 +525,41 @@ reference's windowed-*bidirectional* `[tail, MASK]` read; empirically byte-exact
 | 6 — matched-20 quality | **byte-parity-implied = HF 47/63** | same weights + same algorithm token-for-token ⇒ engine quality **is** the HF hybrid-clean row. No independent 63-turn engine sweep was run or fabricated. |
 | 6 — engine s/turn (K3 speed) | **UNADJUDICATED — correctness fix, not a speed win** | model forward ~1.3–1.8 s per 36–42-tok turn, but end-to-end is dominated by the **shared grammar-FSM host cost** (`O(committed²)`; ep1's 110-tok turn > 9 min), the same cost the HF 3.904 s/turn carries ⇒ no engine speed advantage yet. |
 
+### Step 5 — per-turn byte-parity (single boot, `p2_full_acceptance.json`; `VLLM_QWEN3_5_FLARE_DECODE=hybrid_clean`, windowed-probe on, `boot_s=11.5`)
+Engine vs the pre-captured HF Fast_dLLM reference (`gap5a_ref.json`), greedy, identical prompt/schemas/mask (id 248077):
+
+| turn | prompt | n_gen / n_ref | first_div | finish | denoise fwd | forwards==model_chosen | generated==fsm+model | value_proj | residual_full_ctx | wall_s |
+|---|---:|---:|---:|---|---:|---|---|---:|---:|---:|
+| ep0/t0 | 1041 | **42 / 42** | none | stop | 24 | 23==23 ✓ | 42==19+23 ✓ | **0** | 0 | 1.83 |
+| ep1/t0 | 1443 | 32 / 110* | none | length* | 19 | 18==18 ✓ | 32==14+18 ✓ | **0** | 0 | 1.47 |
+| ep2/t0 | 917 | **36 / 36** | none | stop | 17 | 16==16 ✓ | 36==20+16 ✓ | **0** | 0 | 1.33 |
+
+`*` ep1 hard-capped at 32 output tokens: its grammar-FSM cost is `O(committed²)` and the tail (~tok 60–110)
+is pathologically slow (a full ep1 turn exceeds **9 min of host time**). The 32 emitted tokens are
+byte-identical to the reference — the cap is a wall-clock bound, not a divergence. ep0/ep2 run FULL to
+`stop`; ep0's 42/42 reproduced across two independent boots. Fewer-forwards is live and correct (ep2:
+36 tokens / 16 forwards, `tokens_per_forward=2.25`; 20 forced structural tokens bulk-committed with **zero**
+forwards; every value token still costs exactly one single-`[MASK]` forward, `forwards==model_chosen`).
+
+### Step 6 — wall-clock table (honest; NO fabricated engine number)
+Byte-parity ⇒ the engine runs the *same algorithm* as the winning HF row, so its matched-20 quality **is**
+47/63 (reported byte-parity-implied, not re-measured). On wall-clock the fix delivers **correctness, not a
+speed win**: the model *forward* is fast (~1.5 s per whole 36–42-tok turn) but end-to-end turn latency is
+dominated by the **shared grammar-FSM host code** (`O(committed²)`; ep1's 110-tok turn > 9 min) — the *same*
+cost the HF 3.904 s/turn carries — so there is **no full-battery engine s/turn**, and K3 speed remains
+unadjudicated on the engine path. `runs/endgame_scoreboard`, **still no measured engine wall-clock row**:
+
+| row | exact_args | episode_exact | valid | s/turn | fwd-or-tok/turn |
+|---|---:|---:|---:|---:|---:|
+| ENGINE (this fix) — byte-parity-implied | **= 47/63** | **= 13/20** | **= 63/63** | *forward ~1.5 s; end-to-end host-bound (unmeasured full battery)* | fewer-forwards live (ep2 36 tok / 16 fwd) |
+| OUR HF hybrid-clean (v2) — reference | 47/63 | 13/20 | 63/63 | **3.904** | 56.83 denoise fwd/turn |
+| stock-bf16-AR-guided (same build) | 51/63 | 14/20 | 63/63 | **1.213** | 82.24 tok/turn |
+| stock-AR aggregate | 124/247 | 33/80 | 247/247 | **0.741** | 49.06 tok/turn |
+
+The engine's only legitimate speed lever over guided-AR is the same FSM zero-forward bulk-commit (now
+proven live); a *net* s/turn win needs the grammar-FSM host cost made cheap (incremental FSM state, not
+re-parsing the growing prefix) — separate future work, not this fix.
+
 ### Determinism / temp>0 contract (honest)
 Greedy determinism holds (fresh boot, seedA==seedB byte-identical). temp>0 fixed-seed is reproducible
 (seeded per-slot `torch.Generator` in `_hc_sample_fn`); seed-diversity is real but *intermittent* (peaked
