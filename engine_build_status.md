@@ -5,10 +5,117 @@ Date: 2026-07-03. Author: build+review sweep, four parallel agents.
 
 **Bottom line:** the entire M1 write-list (`Qwen3_5FlareModelState` + ops + hybrid-clean FSM
 reference + parity harness + flywheel serving surface) is implemented, CPU-tested, and committed
-locally in three repos — **nothing pushed to the shared forks; nothing GPU-validated.** All four
-reviews returned **fix-needed**. Every load-bearing correctness claim (GDN read-only-denoise state
-discipline, turn-level byte-parity, the ~13x-fewer-forwards metric) is GPU-only-unvalidatable and is
-gated behind the smoke checklist in §3. Run that checklist, in order, the moment the GPU frees.
+locally in three repos. The GPU smoke gauntlet has now been **run on the RTX 5090 (sm_120) through
+step 4** (see §0). **Substrate PASS, checkpoint blocked:** steps 1-3 all pass — the first-party dLLM
+decode path, the sm_120 attention/GDN kernels, and MRV2×GDN both default and align+APC all run
+correctly on this card, killing the R1/R2/K1/K2 substrate risks. Step 4 (the M1 read-only-denoise
+go/no-go) is **not a clean go: the substrate mechanism works but is under-scoped, and there is no
+diffusion-trained export to decide it** — so steps 5-6 (turn byte-parity, matched-20 wall-clock) did
+**not** run and there is **no engine-vs-HF wall-clock number yet.** All four reviews returned
+**fix-needed**; the crux (GDN read-only-denoise state discipline) is now empirically characterised in
+§0 step 4. Full checklist with pass/kill criteria in §3.
+
+---
+
+## 0. GPU SMOKE GAUNTLET — RESULTS (2026-07-03, RTX 5090 / sm_120)
+
+**Env pre-flight:** host ~30 G RAM / ~25 G avail; GPU free (gnome-shell only). Every torch/vLLM
+process run one-at-a-time inside `systemd-run --user --scope -p MemoryMax=22G -p MemorySwapMax=4G`
+(the RAM cage killed exactly one host-RAM probe, never the session). `torch 2.11.0+cu130`,
+`get_device_capability()=(12,0)` sm_120 confirmed in every smoke JSON. Editable vLLM from
+`/home/mark/shared/vllm_p2_pr42406`.
+
+**HEAD note:** the vLLM flare branch has advanced past this doc's §1 pin (`6482e1d`). Current
+`qwen3_5-flare-modelstate` HEAD is **`22f660c`** — concurrent agents added `cd3ba35`
+(zero-value-projection live tripwire) and `22f660c` (the M1-crux GDN read-only-denoise fix). The
+qwen_diffusion fix committed alongside this update is **`1c69101`** (chat-template instruct prompts +
+non-JIT NvFp4 MoE backend override in `scripts/p2_vllm_smoke.py`); other agents' uncommitted Group-4
+audit-counter and harness diffs are preserved, none clobbered.
+
+### Per-step verdict
+
+**Step 1 — pin-venv sanity: PASS.** Editable vLLM confirmed, sm_120 detected, `VLLM_USE_V2_MODEL_RUNNER`
+honored. CPU suites under the real torch: flare state-machine **21 passed** (doc said 17; concurrent
+regression tests added), hybrid_clean **23 passed** (doc said 20), parity `--mode selftest` PASS,
+`--mode ops-parity` **18/18** checks PASS, `--mode state-parity` PASS. (Bypassed a missing `tblib`
+test-infra dep with `--noconftest`; no product code touched.)
+
+**Step 2 — DiffusionGemma smoke on sm_120: PASS** (`logs/smoke_diffusiongemma.json`, `status=PASS`).
+Coherent output `"Fast inference minimizes latency to provide real-time responses."` → **the
+first-party dLLM decode path (canvas draft / per-seq-causal Triton / commit) runs correctly on this
+card. R2 / K2 NOT triggered.** Two blockers fixed inline: (a) FlashInfer NvFp4-**MoE** JIT needs a
+CUDA toolkit → forced a non-JIT MoE backend (`emulation`, reference-correct; `marlin` also works);
+(b) the smoke fed a **raw prompt to an instruct model** → chat-template fix (raw prompt gave gibberish,
+chat template gave the coherent sentence). Both fixes are in commit `1c69101`.
+
+**Step 3 — Qwen3.5-9B under MRV2 (default + align+APC): PASS both** (`logs/smoke_qwen_default.json`,
+`logs/smoke_qwen_align_apc.json`, both `status=PASS`). Both configs load and generate coherently
+(`"Thinking Process:\n\n1.  **Analyze the Request"`); the align config trips **no** mamba-cache
+assertion. → **#38041 (MRV2×GDN broken) is stale; #42406 (align-APC) holds. K1 NOT triggered.** Two
+toolchain blockers fixed: (a) nvcc/CTK header skew — the cu13 wheel ships **nvcc 13.2** but cudart
+headers report `CUDA_VERSION 13000` and cccl's `cuda_toolkit.h` hard-errors → bypassed with the
+header's own sanctioned escape `NVCC_APPEND_FLAGS=-DCCCL_DISABLE_CTK_COMPATIBILITY_CHECK` (13.0↔13.2
+ABI-compatible); (b) the FlashInfer **sampler** JIT failed to *link* (`-lcudart`/`-lcuda` absent: wheel
+has `lib` not `lib64`, no `.so` dev symlink, no driver stub) → disabled it with
+`VLLM_USE_FLASHINFER_SAMPLER=0` (the dense Qwen GDN path needs no FlashInfer, and native argmax is
+better for step-5 byte-parity anyway). **Required env for the Qwen path:**
+`CUDA_HOME=<venv>/lib/python3.12/site-packages/nvidia/cu13`,
+`NVCC_APPEND_FLAGS=-DCCCL_DISABLE_CTK_COMPATIBILITY_CHECK`, `VLLM_USE_FLASHINFER_SAMPLER=0`, plus the
+doc's `VLLM_USE_V2_MODEL_RUNNER=1` / `VLLM_ATTENTION_BACKEND=TRITON_ATTN`.
+
+**Step 4 — read-only-denoise probe (M1 go/no-go): NOT A CLEAN GO — blocked by the checkpoint and by an
+under-scoped restore, not by the substrate.** Probe: `scratchpad/step4_readonly_denoise_probe.py` —
+boots the real FLARE engine in-process, monkeypatches the GDN snapshot/restore ops, and per-row
+float32-fingerprints the whole conv/ssm cache around every denoise forward. Final run: 10 denoise
+forwards, batch=1 (`scratchpad/step4f.log`).
+- **Engine blocker fixed to even boot:** the FLARE path publishes the canvas into the spec-decode
+  `draft_tokens` buffer, whose width = `num_speculative_tokens` = `diffusion_config.canvas_length`.
+  With **no `diffusion_config`** (stock export ships none) the buffer is width-0 →
+  `_finish_prefills` crashes (`shape mismatch: value [64] vs index [1,0]`, `qwen3_5_flare.py:742`).
+  Passing `diffusion_config={canvas_length,…}` fixes it. **This is a real launcher gap:**
+  `qwen35_9b_flare_hybrid_serve.sh` sets `VLLM_QWEN3_5_FLARE_BLOCK` but does **not** set
+  `num_speculative_tokens`, so the launcher as-written cannot boot the FLARE path.
+- **Findings (10/10 denoise forwards):** the restore makes the protected block-table boundary slot
+  (**row 1**) bit-identical — the mechanism works — but every denoise forward mutates GDN rows
+  **[1,2,3,4]** while `_denoise_state_rows` protects only **[1]**; rows **[2,3,4]** persist changed
+  after restore (`max_rowsum_diff_after_restore = 6038.2`, nonzero on all 10 forwards). The probe's own
+  bit-identical pass criterion therefore reports **STEP4: FAIL**. This empirically confirms the §2 crux
+  worry ("snapshot must protect the exact physical rows the GDN kernel writes"): the current
+  row-selection is **too narrow**.
+- **Decisive A/B:** with `VLLM_QWEN3_5_FLARE_READONLY_DENOISE` **on** (`step4f.log`) vs **off**
+  (`step4_off.log`) the committed outputs are **near-identical** (`"AustrAustr腔 Special … owl绘本征
+  Sarah"` either way) → the leaked rows [2,3,4] do **not** determine the committed output on this
+  checkpoint.
+- **Why it's checkpoint-blocked:** the on-disk `qwen3.5-9b-fastdllm-b1000-vllm-bf16` is a **stock,
+  non-diffusion-trained** export — it decodes gibberish through the canvas/denoise path regardless of
+  the readonly flag. Step 4 cannot be a real quality go/no-go, and step 5's byte-parity cannot be
+  meaningful, until a diffusion-trained export exists (with `canvas_length` a multiple of FLA_CHUNK 64).
+  **Verdict: the sm_120 substrate is validated and the boundary-row protection mechanism works, but the
+  restore's row scope must be widened to [1..4] and re-proven on a trained export before M1 can be
+  called.** Not a K1/K3 kill — a fix-and-retest, gated on producing the trained checkpoint.
+
+**Step 5 — turn byte-parity (engine vs HF): NOT RUN.** Gated behind a clean step-4 go per the §3
+"do not proceed until the current step passes" rule. No `--mode turn` run was attempted; the R5
+shifted-logit-capture divergence remains unmeasured.
+
+**Step 6 — matched-20 battery / engine-vs-HF wall-clock: NOT RUN.** Consequently **there is no honest
+engine-vs-HF wall-clock number** — the thesis KPI (s/turn, forwards-saved ratio) is still unmeasured on
+the engine path. The only timings captured are single-prompt smoke latencies (e.g. Qwen default
+`generate_seconds ≈ 0.51`, align+APC ≈ `0.48`), which are load/warm-up-dominated and **not** a valid
+AR-vs-diffusion comparison.
+
+### Remaining issues surfaced by the gauntlet (in addition to §2)
+1. **Launcher cannot boot the FLARE path** — `qwen35_9b_flare_hybrid_serve.sh` must also set
+   `num_speculative_tokens`/pass a `diffusion_config` with `canvas_length`, or `_finish_prefills`
+   crashes at width-0. Real gap, blocks any real serve.
+2. **Restore row scope is under-sized** — `_denoise_state_rows` protects only the boundary slot; the
+   GDN kernel writes rows [1..4]. Widen the snapshot to the full written set and re-run the probe. (A/B
+   says non-determinative on the stock export, but that is not evidence on a trained one.)
+3. **No diffusion-trained vLLM export on disk** — the stock export decodes gibberish through the
+   diffusion path, blocking steps 4-6 quality/parity/wall-clock gates. Produce a trained
+   canvas_length-multiple-of-64 export before re-attempting M1.
+4. **Toolchain workarounds must be baked into the launcher** — the cu13 CTK-skew flag and
+   `VLLM_USE_FLASHINFER_SAMPLER=0` are required for the Qwen GDN path to build/run on this box.
 
 ---
 
