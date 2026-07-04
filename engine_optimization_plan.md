@@ -213,7 +213,27 @@ currently tripping — that is exactly what this item measures.
 `cg_mode == FULL` on ≥99% of decode steps. Deliberately mis-set
 `hf_config.canvas_length` and confirm the startup assert fires (fail-closed test).
 
-## P0-C · OPT-3 — Variable single-[MASK] forward width (also the GAP-5A fix)  ⛔ OPEN — FRONTIER #1
+## P0-C · OPT-3 — Variable single-[MASK] forward width (also the GAP-5A fix)  ◑ CORE BLOCKERS LANDED (sync scheduler, pin `d2fccab`)
+
+> **UPDATE (2026-07-04, pin `d2fccab`): both named defect classes were RE-DIAGNOSED to the ASYNC scheduler
+> (not the windowed-probe read) and FIXED by forcing the SYNC scheduler.** A per-step harness
+> (`runs/p2_engine_bench/diag_opt3.py`) replaying the reproducers showed: (A) the divergence@33 is the async
+> scheduler *rolling back a committed forward* (observed `committed 6→5` then re-decode) and re-running the
+> stateful hybrid_clean decoder at the boundary — a nondeterministic corruption, NOT the causal read; and
+> (B) the stall is the async `num_output_placeholders` accounting drifting (the canvas is a READ window, not
+> candidate output tokens) → seq_len rollback `1542→1523` + width truncation `valid_len 32→13` at committed~96
+> → the next forward hangs. **Fix (`vllm/config/vllm.py`, guarded by `diffusion_config is not None`): propagate
+> `diffusion_config.canvas_length` → `hf_config.canvas_length` so `is_diffusion`/`check_for_draft_tokens` is True
+> (else the sync path publishes no canvas draft and stalls post-prefill), and force `async_scheduling=False`.**
+> GPU-validated on a fresh boot: **gt4 (ep1/t0, 110-tok STALL) 110/110 byte-parity 2.8s**; **gt24 (ep7/t2 STALL)
+> completes 2.5s**; **gt16/gt18/gt20 (the `first_div=33` divergences) full byte-parity restored**;
+> gt0/gt7 acceptance turns byte-parity (no regression); **CPU suite 70 passed**; two fresh boots byte-identical
+> (determinism). Zero committed-state rollbacks, constant `valid_len=32`, sampler step-time flat 0.3ms (no
+> boundary spike). **Residual (SEPARATE issue, follow-up):** gt24 still shows a value-region 2-token insertion
+> mid-block-1 (gen_idx 34) — the causal windowed-probe is an approximation of the reference's
+> windowed-**bidirectional** read; the first-after-boundary token matches, so this is the remaining
+> "windowed-bidirectional" refinement + the true per-request variable draft width (forward-compute cut), the
+> **batched-rollout follow-up** (sync loses cross-request batch overlap; acceptable for the batch=1 eval regime).
 
 > **Bench §0.D promoted this to the single frontier item and proved it is a CORRECTNESS + LIVENESS gate, not
 > merely efficiency.** The §0.C causal-windowed *approximation* of the reference's windowed-**bidirectional**
