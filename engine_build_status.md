@@ -5,15 +5,20 @@ Date: 2026-07-03. Author: build+review sweep, four parallel agents.
 
 **Bottom line:** the entire M1 write-list (`Qwen3_5FlareModelState` + ops + hybrid-clean FSM
 reference + parity harness + flywheel serving surface) is implemented, CPU-tested, and committed
-locally in three repos. The GPU smoke gauntlet has now been **run on the RTX 5090 (sm_120) through
-step 4** (see §0). **Substrate PASS, checkpoint blocked:** steps 1-3 all pass — the first-party dLLM
-decode path, the sm_120 attention/GDN kernels, and MRV2×GDN both default and align+APC all run
-correctly on this card, killing the R1/R2/K1/K2 substrate risks. Step 4 (the M1 read-only-denoise
-go/no-go) is **not a clean go: the substrate mechanism works but is under-scoped, and there is no
-diffusion-trained export to decide it** — so steps 5-6 (turn byte-parity, matched-20 wall-clock) did
-**not** run and there is **no engine-vs-HF wall-clock number yet.** All four reviews returned
-**fix-needed**; the crux (GDN read-only-denoise state discipline) is now empirically characterised in
-§0 step 4. Full checklist with pass/kill criteria in §3.
+locally in three repos. The gauntlet has now been **run twice on the RTX 5090 (sm_120): first on the
+b1000 smoke export (§0), then re-run steps 4-6 on the REAL diffusion-trained export** (§0.R —
+`qwen3.5-9b-fastdllm-rlv2-vllm-bf16`, RL-v2 adapter merged onto init). **Substrate PASS + M1 crux now
+PROVEN, but the engine is NOT promoted:** steps 1-3 pass (first-party dLLM decode path, sm_120
+attention/GDN kernels, MRV2×GDN default+align+APC all correct — R1/R2/K1/K2 killed). **Step 4 on the
+real export is now a clean PASS on the core M1 go/no-go:** after widening the read-only-denoise restore
+scope to the actual `{non_spec ∪ spec} ∪ checkpoint-slots` banded set (vLLM pin `af21dc8`), the whole
+GDN conv/ssm cache is **bit-identical around every denoise forward (0 leaks, 10/10, restore
+load-bearing)** — the GDN-state-discipline crux is empirically enforced. **But steps 5-6 stay BLOCKED
+(FAIL) for a structural, non-checkpoint reason:** the engine's served path is a canvas/renoise
+denoiser, a **different algorithm** than the `hybrid_clean` masked-diffusion the checkpoint was trained
+for, so it emits gibberish, and the parity-harness turn-adapter is unwired. There is therefore **still
+no engine-vs-HF turn byte-parity and no honest engine wall-clock number** — K3 cannot be adjudicated on
+the engine. All four reviews returned **fix-needed**. Full checklist with pass/kill criteria in §3.
 
 ---
 
@@ -113,9 +118,118 @@ AR-vs-diffusion comparison.
    says non-determinative on the stock export, but that is not evidence on a trained one.)
 3. **No diffusion-trained vLLM export on disk** — the stock export decodes gibberish through the
    diffusion path, blocking steps 4-6 quality/parity/wall-clock gates. Produce a trained
-   canvas_length-multiple-of-64 export before re-attempting M1.
+   canvas_length-multiple-of-64 export before re-attempting M1. **→ RESOLVED in §0.R** (real export
+   built); and **corrected**: the trained block is **32**, not a multiple of 64 — see §0.R.
 4. **Toolchain workarounds must be baked into the launcher** — the cu13 CTK-skew flag and
    `VLLM_USE_FLASHINFER_SAMPLER=0` are required for the Qwen GDN path to build/run on this box.
+
+---
+
+## 0.R REAL-CHECKPOINT GAUNTLET — steps 4-6 re-run on the trained export (2026-07-03, RTX 5090)
+
+The §0 gauntlet ran on the b1000 **smoke** export (stock, non-diffusion-trained → gibberish through the
+canvas path). Steps 4-6 were re-run on the **real diffusion-trained export** to decide M1 for real.
+
+### Export + block-config reconciliation (the pre-gauntlet decisions)
+- **Real export produced:** `models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16` (19G, new dir; b1000 left
+  untouched as tokenizer/AR-parity reference). It is the **RL-v2 adapter merged into init-materialized
+  weights** (`W += (α/r)·B@A`, r16/α32/scale 2.0), mathematically identical to the promoted HF
+  hybrid-clean eval's PEFT runtime application (`--base init --adapter …rl…v2/…step300 --no-merge`).
+  The RL-v2 adapter continued FROM Run-1 so it **subsumes** Run-1; B@1000 (r8, attn-only) is a separate
+  AR-parity lineage, not in the hybrid-clean delta. Export: `replacement_count=427`,
+  `lora_merge_count=152` (24 GDN layers × 5 + 8 attn × 4 — **GDN in_proj/out_proj deltas merged too**,
+  not just attention). Sanity gates PASS: (a) merge bit-exact vs `init + 2.0·(B@A)` (maxabs 0.0, incl.
+  GDN); (b) one HF hybrid-clean episode is **coherent, not gibberish** — `exact_args=3/4`, valid/schema/
+  sequence 4/4, right on the promoted 47/63 ≈ 74.6% rate. Full provenance/shas in the export's
+  `conversion_manifest.json` (`real_diffusion_export_block_reconcile.md`).
+- **Block size pinned `canvas_length = 32`** to match training (`bd_size=32`) and the winning HF eval
+  (`set_block_size(model, 32)`) end-to-end. Engine default 64 would denoise two trained blocks per
+  commit and break parity. **Stale-doc correction:** §0 said "engine default `_DEFAULT_BLOCK=32`" — the
+  source is actually `_DEFAULT_BLOCK = _GDN_CHUNK = 64`. So `32 % 64 != 0` trips the engine's mid-chunk
+  hazard (fp32 `chunk_states[:,-1]` boundary is a *partial* recurrent state) — an engine-side
+  restore-scope concern to prove at the step-4 re-run, **not** a reason to change the trained block.
+- **Launcher gap fixed:** a single `--diffusion-config '{"canvas_length":32,"max_denoising_steps":8}'`
+  both sets the engine block AND (via `num_speculative_tokens` fallback) sizes the spec-decode
+  `draft_tokens` buffer, fixing the width-0 `_finish_prefills` crash. `qwen35_9b_flare_hybrid_serve.sh`
+  now defaults to the real export and emits the config only when the FLARE gate is on.
+
+### Per-step verdict (real export)
+| step | verdict | one-line |
+|---|---|---|
+| 4 — read-only-denoise probe (M1 go/no-go) | **PASS (core invariant)** | after widening restore scope, whole GDN cache **bit-identical** around every denoise forward — 0 leaks, 10/10, restore load-bearing. |
+| 5 — turn byte-parity (engine vs HF) | **BLOCKED / FAIL** | 3 structural blockers persist on the real export (orphaned FSM / format mismatch / unwired turn-adapter). |
+| 6 — matched-20 M2 battery / wall-clock | **BLOCKED / FAIL** | `run_turn` raises `EngineUnavailable`; canvas sampler off-paradigm + non-deterministic. **No engine-vs-HF wall-clock.** K3 unadjudicable on the engine. |
+
+**Step 4 — PASS.** Pre-fix (committed `22f660c`, "protect slot [1] only") reproduced the leak on the
+real export: `protected [1]` vs `kernel-written [1,2,3,4]`, rows [2,3,4] still changed 10/10,
+`max_rowsum_diff = 5872.18`. Root cause (GPU-measured): this ModelState runs `num_spec == 0`, so the
+pre-forward block-table view names only checkpoint slot [1] while the align **running-state** row
+advances 1→2→3 across denoise sub-steps. **Fix (vLLM pin `af21dc8`):** snapshot in `prepare_attn`
+(post-metadata, pre-forward) reading the ACTUAL `non_spec ∪ spec` state indices, protecting
+`{non_spec ∪ spec} ∪ {block-table checkpoint slots}` widened by a per-anchor guard band
+(`VLLM_QWEN3_5_FLARE_READONLY_BAND`, default 4). Re-run: `leak forwards = 0`, `max_rowsum_diff = 0.0`,
+`changed [1,2,3,4] → [] (protected [0..5])`, `STEP4_READONLY_ON: PASS`. Live counters sane:
+`read_calls=10 advance_calls=1 read_advance_ratio=10.0 residual_full_context_model_calls=0
+block_size=32 route_verified=False`.
+- **Caveat — A/B on/off NOT identical, and all outputs gibberish.** Committed-token sha differs across
+  readonly OFF (`aa08de30…`) vs [1]-only (`f1a3a298…`) vs banded (`37509cc7…`) → the read-only scope IS
+  load-bearing (changes committed tokens). But every output is gibberish because the **engine's served
+  sampler is a canvas/random-renoise denoiser, a different algorithm than the trained `hybrid_clean`**.
+  So "which scope is semantically correct" needs the HF `hybrid_clean` parity reference — which is
+  blocked (step 5). Core M1 artifact (whole-cache bit-identical read-only denoise) PASSES; the
+  A/B-on-meaningful-output check is N/A until the engine runs the trained decode paradigm.
+
+**Step 5 — BLOCKED / FAIL** (three code-verified blockers, first found on the smoke export in
+`p2_engine_parity_smoke_result.md`, **re-verified on the real export**):
+- **A — engine has no hybrid_clean path.** `VLLM_QWEN3_5_FLARE=1` routes to `Qwen3_5FlareSampler`, a
+  canvas/renoise **block** denoiser (random init → Gumbel sample → entropy accept / random renoise →
+  commit whole block); the FSM (`vllm/v1/sample/hybrid_clean.py`) is imported by nothing on the serving
+  path. It ignores `SamplingParams.temperature` and is **not even self-reproducible** — two identical
+  greedy requests gave entirely different sequences (`greedy_deterministic: FALSE`). The reference is
+  single-token greedy + grammar FSM with a `[MASK]` sentinel. Cannot byte-match by construction.
+- **B — "same checkpoint" is undefined.** The vLLM export is stock
+  `Qwen3_5ForConditionalGeneration` / `model_type=qwen3_5`, `auto_map=None`, `mask_token_id=None`,
+  has `vision_config`. HF hybrid_clean needs the `Fast_dLLM_Qwen3_5` bridge + `mask_token_id` (248077)
+  → **cannot load this export**; reference decode is undefined on it. A stock vLLM export always lacks
+  the bridge/mask token, so this persists independent of training.
+- **C — harness turn-adapter unwired.** `VllmFlareEngineAdapter.run_turn` locates the class then raises
+  `EngineUnavailable` — no code path drives one shared turn and reads token-ids + block-boundary
+  snapshots out of the engine.
+
+**Step 6 — BLOCKED / FAIL, no engine wall-clock.** Requires the missing seam (blocker C); `run_turn`
+raises `EngineUnavailable` and the canvas sampler is non-deterministic + off-paradigm, so `exact_args`,
+`episode_exact`, TRUE forwards/turn and s/turn **cannot be produced on the engine**. The only honest
+engine signal is the read/advance ratio ~10 (fewer-forwards mechanism live — substrate liveness, not
+the KPI). Reference rows (matched-20, `runs/endgame_scoreboard`, NOT the engine):
+
+| row | exact_args | episode_exact | valid | s/turn | fwd-or-tok/turn |
+|---|---:|---:|---:|---:|---:|
+| OUR HF hybrid-clean (v2) | 47/63 | 13/20 | 63/63 | **3.904** | 56.83 denoise fwd/turn |
+| stock-bf16-AR-guided | 51/63 | 14/20 | 63/63 | **1.213** | 82.24 tok/turn |
+| stock-AR aggregate | 124/247 | 33/80 | 247/247 | **0.741** | 49.06 tok/turn |
+
+The only diffusion wall-clock is the **HF-stack** 3.904 s/turn (~3.5× the K3 1.120 target, ~5.3× stock
+AR) — **not the engine**. **K3 cannot be adjudicated on the engine path** until steps 5-6 unblock. No
+sunk-cost engine number was invented.
+
+### What remains before the engine can be promoted (steps 5-6 need net-new engineering, not a re-run)
+1. **Wire `hybrid_clean` onto the engine** — integrate `HybridCleanDecodePolicy` into
+   `Qwen3_5FlareSampler`, or expose a forward-only logit seam so the shared `sample_hybrid_clean`
+   driver sources +1-shifted block logits from the engine. Only then are both sides the same algorithm.
+2. **Produce one dual-format checkpoint** byte-equal as both the `Fast_dLLM_Qwen3_5` bridge (with
+   `mask_token_id`) and the vLLM `Qwen3_5ForConditionalGeneration` export.
+3. **Implement the harness seam** `VllmFlareEngineAdapter.run_turn` + `snapshot_from_vllm_modelstate`
+   so `--mode turn --engine vllm` drives one shared turn and emits the byte / state-snapshot report.
+4. Then: matched-20 turn byte-parity (greedy, identical FSM, `projected_value_tokens_exact==0`) and the
+   M2 wall-clock A/B vs guided-AR **re-baselined on the same pinned build** (R6 fairness).
+
+### Artifacts (real gauntlet)
+- vLLM pin `af21dc8` (branch `qwen3_5-flare-modelstate`) — read-only restore widening + guard band.
+- `p2_engine_gauntlet_real_result.md` — steps 4-6 on the real export (this section's source).
+- `real_diffusion_export_block_reconcile.md` — export build + `canvas_length=32` decision.
+- `p2_engine_parity_smoke_result.md` — the smoke-export step-5 structural-blocker analysis (re-verified).
+- `runs/p2_engine_gauntlet_real/` — `step4_real_probe.py`, `step4_real_on_default.json` (PASS, 0 leaks),
+  `step4_real_on.json` (pre-fix FAIL), `step4_real_off.json`, `step4_measure/instrument.json`.
 
 ---
 
