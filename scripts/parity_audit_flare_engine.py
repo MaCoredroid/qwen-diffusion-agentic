@@ -654,7 +654,11 @@ class VllmFlareEngineAdapter(EngineAdapter):
             gpu_memory_utilization=self.gpu_memory_utilization,
             max_num_seqs=1,
             max_num_batched_tokens=self.max_model_len,
-            enforce_eager=True,
+            # OPT-4 part 2: eager stays the default so the established battery
+            # baseline is unchanged; opt into the ~1.6x PIECEWISE cudagraph path
+            # with VLLM_FLARE_CUDAGRAPH=1 (byte-identical to eager on all HF-parity
+            # turns; the pin clamps FLARE to PIECEWISE -- FULL is not yet safe).
+            enforce_eager=os.environ.get("VLLM_FLARE_CUDAGRAPH", "0") != "1",
             enable_prefix_caching=True,
             mamba_cache_mode="align",
             mamba_block_size=1024,
