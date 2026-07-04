@@ -10,7 +10,6 @@ import types
 from pathlib import Path
 
 import torch
-from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from diagnose_toolcall_json_completability import JsonPrefixParser
@@ -1358,7 +1357,158 @@ def make_prompt(tokenizer, case, append_instruction, chat_template=None):
     return apply_chat_template(tokenizer, messages, case.get("tools") or None, chat_template=chat_template)
 
 
+# --- Dual-format loader: load the vLLM Qwen3_5ForConditionalGeneration export into
+#     the Fast_dLLM_Qwen3_5 HF bridge (Blocker B: ONE checkpoint artifact loadable on
+#     BOTH the vLLM engine AND the HF hybrid-clean reference). -----------------------
+FLARE_BRIDGE_CODE_DIR = ROOT / "models/qwen3.5-9b-fastdllm-init"  # source of the remote bridge code (modeling.py/configuration.py) + config defaults
+FLARE_MASK_TOKEN_ID = 248077  # reserved-slot mask id used at train/eval; vLLM export config drops it (mask_token_id=None)
+_VLLM_LM_PREFIX = "model.language_model."
+
+
+def _is_vllm_qwen35_conditional_export(model_dir) -> bool:
+    """True if ``model_dir`` is a stock vLLM Qwen3_5ForConditionalGeneration export
+    (nested text_config + vision tower) rather than a Fast_dLLM bridge checkpoint."""
+    cfg_path = Path(model_dir) / "config.json"
+    if not cfg_path.exists():
+        return False
+    try:
+        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    arch = cfg.get("architectures") or []
+    return ("Qwen3_5ForConditionalGeneration" in arch) or (
+        cfg.get("model_type") == "qwen3_5" and "text_config" in cfg
+    )
+
+
+def _remap_vllm_export_key(key: str):
+    """Map a vLLM Qwen3_5ForConditionalGeneration tensor name to its Fast_dLLM bridge
+    name, or return ``None`` to drop it. The language-model tensors are byte-identical
+    across the two formats -- only the ``model.language_model.`` prefix differs -- so this
+    is a pure rename (no transpose/fusion). The vision tower (``model.visual.*``) and the
+    MTP head (``mtp.*``) have no counterpart in the text-only bridge and are dropped."""
+    if key == "lm_head.weight":
+        return key
+    if key.startswith(_VLLM_LM_PREFIX):
+        return "model." + key[len(_VLLM_LM_PREFIX):]
+    return None
+
+
+def load_flare_bridge_from_vllm_export(
+    export_dir,
+    *,
+    tokenizer_path=None,
+    device="cuda",
+    dtype=torch.bfloat16,
+    bridge_code_dir=FLARE_BRIDGE_CODE_DIR,
+):
+    """Load the merged vLLM export into the Fast_dLLM_Qwen3_5 bridge so the HF
+    hybrid-clean reference serves the SAME on-disk weights the vLLM engine serves.
+
+    Approach (Blocker B, "extend the HF reference loader" option -- the vLLM export
+    bytes are left untouched, so vLLM-engine loadability is preserved trivially):
+      * config: the bridge remote config (auto_map + modeling.py/configuration.py from
+        ``bridge_code_dir``) overlaid with the export's ``text_config`` params, and with
+        ``mask_token_id`` restored (the vLLM export drops it to None).
+      * weights: streamed from the export safetensors with the prefix remap above,
+        directly onto ``device`` in ``dtype`` (no full CPU copy; RAM-cage friendly).
+    """
+    import safetensors.torch as _st
+    from transformers import AutoConfig
+
+    repo_v2 = ROOT / "fast-dllm/v2"
+    if str(repo_v2) not in sys.path:
+        sys.path.insert(0, str(repo_v2))
+    import generation_functions
+
+    export_dir = Path(export_dir)
+    bridge_cfg = AutoConfig.from_pretrained(str(bridge_code_dir), trust_remote_code=True)
+    export_cfg = json.loads((export_dir / "config.json").read_text(encoding="utf-8"))
+    text_cfg = export_cfg.get("text_config", export_cfg)
+    for k in (
+        "vocab_size", "hidden_size", "intermediate_size", "num_hidden_layers",
+        "num_attention_heads", "num_key_value_heads", "hidden_act",
+        "max_position_embeddings", "rms_norm_eps", "head_dim",
+        "linear_conv_kernel_dim", "linear_key_head_dim", "linear_value_head_dim",
+        "linear_num_key_heads", "linear_num_value_heads", "layer_types",
+        "rope_parameters", "attention_bias", "attention_dropout",
+    ):
+        if k in text_cfg:
+            setattr(bridge_cfg, k, text_cfg[k])
+    mask_id = (
+        text_cfg.get("mask_token_id")
+        or export_cfg.get("mask_token_id")
+        or getattr(bridge_cfg, "mask_token_id", None)
+        or FLARE_MASK_TOKEN_ID
+    )
+    bridge_cfg.mask_token_id = int(mask_id)
+    bridge_cfg.torch_dtype = dtype
+
+    prev_dtype = torch.get_default_dtype()
+    torch.set_default_dtype(dtype)
+    try:
+        with torch.device(device):
+            model = AutoModelForCausalLM.from_config(bridge_cfg, trust_remote_code=True)
+    finally:
+        torch.set_default_dtype(prev_dtype)
+    model = model.to(dtype)
+
+    # Stream merged weights into the bridge params, remapping keys shard-by-shard.
+    name_to_tensor = {n: p for n, p in model.named_parameters()}
+    for n, b in model.named_buffers():
+        name_to_tensor.setdefault(n, b)
+    index = json.loads(
+        (export_dir / "model.safetensors.index.json").read_text(encoding="utf-8")
+    )["weight_map"]
+    by_shard: dict[str, list[str]] = {}
+    for src_key, shard in index.items():
+        by_shard.setdefault(shard, []).append(src_key)
+    loaded = 0
+    for shard, src_keys in by_shard.items():
+        with _st.safe_open(str(export_dir / shard), framework="pt", device=device) as f:
+            for src_key in src_keys:
+                dst_key = _remap_vllm_export_key(src_key)
+                if dst_key is None:
+                    continue
+                tgt = name_to_tensor.get(dst_key)
+                if tgt is None:
+                    raise KeyError(
+                        f"bridge model has no parameter {dst_key!r} (remapped from {src_key!r})"
+                    )
+                src = f.get_tensor(src_key)
+                if tuple(src.shape) != tuple(tgt.shape):
+                    raise ValueError(
+                        f"shape mismatch for {dst_key!r}: export {tuple(src.shape)} vs bridge {tuple(tgt.shape)}"
+                    )
+                tgt.data.copy_(src.to(dtype))
+                loaded += 1
+    expected = len(name_to_tensor) - sum(1 for n in name_to_tensor if n.endswith("rotary_emb.inv_freq"))
+    if loaded < expected:
+        missing = sorted(
+            n for n in name_to_tensor
+            if not n.endswith("rotary_emb.inv_freq")
+        )
+        raise RuntimeError(
+            f"bridge load incomplete: filled {loaded} tensors, model expects {expected} "
+            f"(first few names: {missing[:4]})"
+        )
+
+    tok_src = tokenizer_path or export_dir
+    tokenizer = AutoTokenizer.from_pretrained(str(tok_src), trust_remote_code=True)
+    model.mdm_sample = types.MethodType(
+        generation_functions.Fast_dLLM_QwenForCausalLM.batch_sample,
+        model,
+    )
+    model.to(device).eval()
+    return model, tokenizer
+
+
 def load_model(base_model, adapter, merge_adapter, tokenizer_path=None):
+    # Blocker B: point --base-model at the vLLM Qwen3_5ForConditionalGeneration export
+    # (no adapter -- it is already merged) to serve the SAME weights the engine serves.
+    if adapter in (None, "", "None") and _is_vllm_qwen35_conditional_export(base_model):
+        return load_flare_bridge_from_vllm_export(base_model, tokenizer_path=tokenizer_path)
+
     repo_v2 = ROOT / "fast-dllm/v2"
     sys.path.insert(0, str(repo_v2))
     import generation_functions
@@ -1371,6 +1521,11 @@ def load_model(base_model, adapter, merge_adapter, tokenizer_path=None):
         torch_dtype=torch.bfloat16,
     )
     if adapter:
+        # Lazy import: peft is only needed to load a LoRA adapter. Keeping it off
+        # the module top level lets adapter-free consumers (e.g. the CPU parity
+        # modes that import this module transitively) run without peft installed.
+        from peft import PeftModel
+
         model = PeftModel.from_pretrained(base, adapter)
         if merge_adapter:
             model = model.merge_and_unload()

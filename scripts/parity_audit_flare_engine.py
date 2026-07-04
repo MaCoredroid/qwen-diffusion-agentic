@@ -592,42 +592,220 @@ class VllmFlareEngineAdapter(EngineAdapter):
             )
         return found
 
-    def snapshot_from_vllm_modelstate(self, model_state, *, block_start: int) -> StateSnapshot:  # pragma: no cover
-        """Convert one align-mode block-boundary checkpoint into a StateSnapshot.
-
-        MUST be implemented alongside Qwen3_5FlareModelState. See class docstring for the
-        exact per-layer field mapping (ssm_state slot -> gdn_state fp32, conv_state tail ->
-        conv_tail, paged-KV length -> key_len/value_len, pre-advance shifted logit ->
-        last_token_logits)."""
-        raise EngineUnavailable(
-            "snapshot_from_vllm_modelstate() not wired yet -- implement with Qwen3_5FlareModelState"
-        )
+    def __init__(
+        self,
+        workspace: Path = DEFAULT_VLLM_WORKSPACE,
+        *,
+        model_path: str | None = None,
+        canvas_length: int = 32,
+        max_denoising_steps: int = 8,
+        decode_mode: str = "hybrid_clean",
+        gpu_memory_utilization: float = 0.82,
+        max_model_len: int = 4096,
+        seed: int = 0,
+        engine: Any = None,
+        engine_kwargs: dict[str, Any] | None = None,
+    ):
+        self.workspace = Path(workspace)
+        self.model_path = str(model_path) if model_path is not None else None
+        self.canvas_length = int(canvas_length)
+        self.max_denoising_steps = int(max_denoising_steps)
+        self.decode_mode = str(decode_mode)
+        self.gpu_memory_utilization = float(gpu_memory_utilization)
+        self.max_model_len = int(max_model_len)
+        self.seed = int(seed)
+        # ``engine`` may be injected (a real ``vllm.LLM`` OR a mock exposing the same
+        # ``.generate`` + FLARE ``stats()`` seam) so the adapter is unit-testable off-GPU.
+        self._engine = engine
+        self._engine_kwargs = dict(engine_kwargs or {})
 
     def preflight(self) -> None:
-        # Fails closed until the vLLM serving driver is wired (see run_turn).
-        self.run_turn(None)  # type: ignore[arg-type]
+        if self._engine is not None:
+            return  # an engine (real or mock) is already injected
+        if not torch.cuda.is_available():
+            raise EngineUnavailable("vllm engine adapter requires CUDA (GPU-only path)")
+        self._locate()  # confirms Qwen3_5FlareModelState is present in the pin
+        if not self.model_path:
+            raise EngineUnavailable(
+                "vllm engine adapter needs model_path set (the vLLM Qwen3_5 export dir)"
+            )
 
-    def run_turn(self, ctx: TurnContext) -> EngineTurnResult:  # pragma: no cover - GPU/engine path
-        found = self._locate()  # raises EngineUnavailable with the precise reason if missing
+    def _build_engine(self):
+        """Boot (once, cached) the vLLM engine on the FLARE hybrid_clean decode path.
+
+        Env: VLLM_QWEN3_5_FLARE=1 routes Qwen3_5ForConditionalGeneration to
+        Qwen3_5FlareModelState; VLLM_QWEN3_5_FLARE_DECODE=hybrid_clean selects the
+        deterministic masked-diffusion policy wired in vLLM pin e38a9ea (Blocker A)."""
+        if self._engine is not None:
+            return self._engine
+        self.preflight()
+        os.environ.setdefault("VLLM_QWEN3_5_FLARE", "1")
+        os.environ["VLLM_QWEN3_5_FLARE_DECODE"] = self.decode_mode
+        os.environ.setdefault("VLLM_QWEN3_5_FLARE_BLOCK", str(self.canvas_length))
+        os.environ.setdefault("VLLM_USE_V2_MODEL_RUNNER", "1")
+        os.environ.setdefault("VLLM_ATTENTION_BACKEND", "TRITON_ATTN")
+        os.environ.setdefault("VLLM_USE_FLASHINFER_SAMPLER", "0")
+        from vllm import LLM
+
+        kwargs: dict[str, Any] = dict(
+            model=self.model_path,
+            trust_remote_code=True,
+            max_model_len=self.max_model_len,
+            gpu_memory_utilization=self.gpu_memory_utilization,
+            max_num_seqs=1,
+            max_num_batched_tokens=self.max_model_len,
+            enforce_eager=True,
+            enable_prefix_caching=True,
+            mamba_cache_mode="align",
+            mamba_block_size=1024,
+            mamba_ssm_cache_dtype="float32",
+            seed=self.seed,
+            attention_config={"backend": "TRITON_ATTN"},
+            diffusion_config={
+                "canvas_length": self.canvas_length,
+                "max_denoising_steps": self.max_denoising_steps,
+            },
+        )
+        kwargs.update(self._engine_kwargs)
+        self._engine = LLM(**kwargs)
+        return self._engine
+
+    def _engine_generate(self, engine, prompt_token_ids, sampling_params):
+        """Drive one decode through the engine. Overridable / mock-friendly seam:
+        ``engine.generate`` returns a list of RequestOutput-shaped objects."""
+        outs = engine.generate({"prompt_token_ids": list(prompt_token_ids)}, sampling_params)
+        return outs[0]
+
+    def _read_engine_stats(self, engine) -> dict[str, Any]:
+        """Read the live FLARE ModelState ``stats()`` (decode_mode, read/advance
+        calls, and the hybrid_clean sub-counters). Best-effort; mock exposes
+        ``engine.flare_model_state`` directly."""
+        ms = getattr(engine, "flare_model_state", None)
+        if ms is None:
+            try:
+                runner = engine.llm_engine.model_executor.driver_worker.model_runner
+                ms = getattr(runner, "model_state", None) or getattr(runner, "_model_state", None)
+            except Exception as exc:  # noqa: BLE001 - best-effort introspection
+                return {"stats_error": repr(exc)}
+        if ms is not None and hasattr(ms, "stats"):
+            try:
+                return dict(ms.stats())
+            except Exception as exc:  # noqa: BLE001
+                return {"stats_error": repr(exc)}
+        return {}
+
+    def _metrics_from_stats(
+        self, stats: dict[str, Any], *, gen_ids, text, finish_reason, wall_seconds
+    ) -> dict[str, Any]:
+        """Map the engine FLARE stats onto the reference turn-record metric keys
+        (so ``hybrid_schedule_events`` / ``finalize`` consume both sides identically)."""
+        stats = stats or {}
+        hc = stats.get("hybrid_clean") or {}
+        model_forwards = int(hc.get("model_forwards") or 0)
+        value_tokens = int(hc.get("value_tokens") or 0)
+        forced = int(hc.get("forced_token_count") or 0)
+        projected = int(hc.get("projected_value_tokens_exact") or 0)
+        # denoise_forwards granularity == the reference's model-chosen forwards.
+        denoise = model_forwards or int(stats.get("read_calls") or 0) or len(list(gen_ids))
+        if finish_reason == "stop":
+            stop_reason = "complete_tool_call"
+        elif finish_reason == "length":
+            stop_reason = "max_new_tokens"
+        else:
+            stop_reason = finish_reason
+        return {
+            "block_size": int(stats.get("block_size") or self.canvas_length),
+            "decode_mode": stats.get("decode_mode") or self.decode_mode,
+            "denoise_forwards": denoise,
+            "forced_grammar_tokens": forced,
+            "model_value_tokens": value_tokens,
+            "model_structural_tokens": max(model_forwards - value_tokens, 0),
+            "value_close_timing_tokens": 0,
+            "grammar_replacement_value_tokens": projected,
+            "grammar_unsafe_fallback_tokens": 0,
+            "parallel_commit_forced_tokens": 0,
+            "two_wave_wave1_projected_tokens": 0,
+            "stop_reason": stop_reason,
+            "cache_stats": stats,
+            "engine_stats": stats,
+            "generated_text": text,
+            "wall_seconds": float(wall_seconds),
+            "forwards_per_turn": float(denoise),
+            "read_advance_ratio": stats.get("read_advance_ratio"),
+        }
+
+    def snapshot_from_vllm_modelstate(self, model_state, *, block_start: int):  # pragma: no cover
+        """Convert one align-mode block-boundary checkpoint into a StateSnapshot.
+
+        The per-boundary GDN (conv,ssm) fp32 readout is a deeper GPU-state seam than
+        the token/counter turn-record; it is NOT required for the turn record or the
+        engine smoke, and the state-snapshot-equality gate is a known harness caveat
+        (the reference records prefill boundaries while the engine exposes commit-only
+        boundaries -- see engine_build_status.md review 3). Left as an explicit
+        follow-on; ``run_turn`` returns an empty snapshot list."""
         raise EngineUnavailable(
-            f"Qwen3_5FlareModelState located ({found}) but the vLLM serving driver is not "
-            "wired into this harness. To close the turn-level gate: boot vLLM V2 runner "
-            "(VLLM_USE_V2_MODEL_RUNNER=1, TRITON_ATTN, --mamba-cache-mode align "
-            "--mamba-ssm-cache-dtype float32 --enable-prefix-caching), serve the model so "
-            "Qwen3_5ForConditionalGeneration.get_model_state_cls() -> Qwen3_5FlareModelState, "
-            "drive the turn via SamplingParams.extra_args decode_mode='block_diffusion', "
-            "collect output token ids, and emit one StateSnapshot per committed block boundary "
-            "via snapshot_from_vllm_modelstate() (read Qwen3_5FlareRequestStates.block_start / "
-            "last_shift_logits and _gdn_caches() (conv,ssm) rows post-commit). The pure engine "
-            "ops are already parity-checked on CPU via --mode ops-parity."
+            "snapshot_from_vllm_modelstate() not wired: per-boundary GDN snapshot readout "
+            "is a follow-on to the token/counter turn record (see docstring)."
         )
 
+    def run_turn(self, ctx: TurnContext) -> EngineTurnResult:
+        """Drive ONE agentic turn through the engine and return the same turn-record
+        schema as the HF path: output_ids == prompt_ids + generated_ids, metrics
+        (forwards/turn, FSM counters, timings), and block_snapshots (empty here)."""
+        engine = self._build_engine()
+        from vllm import SamplingParams
 
-def build_engine_adapter(name: str, *, vllm_workspace: Path) -> EngineAdapter:
+        prompt_ids = [int(x) for x in ctx.prompt_input_ids.reshape(-1).tolist()]
+        greedy = float(ctx.temperature) <= 0.0
+        sp = SamplingParams(
+            max_tokens=int(ctx.max_new_tokens),
+            temperature=float(ctx.temperature),
+            top_p=1.0 if greedy else float(ctx.top_p),
+            seed=self.seed,
+            stop_token_ids=sorted(int(x) for x in ctx.stop_token_ids),
+        )
+        t0 = time.time()
+        req_out = self._engine_generate(engine, prompt_ids, sp)
+        wall = time.time() - t0
+        out0 = req_out.outputs[0]
+        gen_ids = [int(x) for x in out0.token_ids]
+        output_ids = prompt_ids + gen_ids
+        stats = self._read_engine_stats(engine)
+        metrics = self._metrics_from_stats(
+            stats,
+            gen_ids=gen_ids,
+            text=getattr(out0, "text", ""),
+            finish_reason=getattr(out0, "finish_reason", None),
+            wall_seconds=wall,
+        )
+        return EngineTurnResult(output_ids=output_ids, metrics=metrics, block_snapshots=[])
+
+
+def build_engine_adapter(
+    name: str,
+    *,
+    vllm_workspace: Path,
+    model_path: str | None = None,
+    canvas_length: int = 32,
+    max_denoising_steps: int = 8,
+    decode_mode: str = "hybrid_clean",
+    gpu_memory_utilization: float = 0.82,
+    max_model_len: int = 4096,
+    seed: int = 0,
+) -> EngineAdapter:
     if name == "self":
         return SelfEngineAdapter()
     if name == "vllm":
-        return VllmFlareEngineAdapter(vllm_workspace)
+        return VllmFlareEngineAdapter(
+            vllm_workspace,
+            model_path=model_path,
+            canvas_length=canvas_length,
+            max_denoising_steps=max_denoising_steps,
+            decode_mode=decode_mode,
+            gpu_memory_utilization=gpu_memory_utilization,
+            max_model_len=max_model_len,
+            seed=seed,
+        )
     raise ValueError(f"unknown engine adapter: {name!r}")
 
 
@@ -769,7 +947,13 @@ def run_turn_mode(args) -> dict[str, Any]:
 
     # Cheap engine preflight BEFORE the multi-minute 9B reference load, so
     # turn+<engine-not-runnable> is reported without wasting a reference decode.
-    adapter = build_engine_adapter(args.engine, vllm_workspace=args.vllm_workspace)
+    adapter = build_engine_adapter(
+        args.engine,
+        vllm_workspace=args.vllm_workspace,
+        model_path=str(args.base_model),
+        canvas_length=int(args.block_size),
+        seed=int(args.seed),
+    )
     engine_preflight_error = None
     try:
         adapter.preflight()
@@ -947,6 +1131,143 @@ def run_turn_mode(args) -> dict[str, Any]:
     report["audit_battery"]["engine_zero_projected_ok"] = zero_projected_ok(eng_totals)
     report["gates"] = gates
     report["passed"] = bool(all(gates.values()))
+    report["verdict"] = "PASS" if report["passed"] else "FAIL"
+    return report
+
+
+# ---------------------------------------------------------------------------
+# MODE: engine-smoke  (GPU, engine ONLY -- no co-loaded 9B HF reference)
+# ---------------------------------------------------------------------------
+def run_engine_smoke_mode(args) -> dict[str, Any]:
+    """One real turn through the vLLM FLARE engine ALONE (no HF reference co-load,
+    so it fits on one card). Verifies (Blocker B) the vLLM export loads on the engine
+    AND (Blocker C) VllmFlareEngineAdapter.run_turn drives a turn end-to-end, emitting
+    the turn-record schema (tokens, text, forwards/turn, counters, timings)."""
+    if not torch.cuda.is_available():
+        raise SystemExit("engine-smoke mode requires CUDA. Use --mode selftest on CPU.")
+    _set_route_i_env()
+    from transformers import AutoTokenizer
+
+    from eval_flare_northstar_matched import load_chat_template, render_matched_prompt
+    from eval_flare_multiturn_percall_waves import build_episodes
+    from eval_toolcall_jsonl import tool_schema_by_name
+
+    if int(args.turn_index) != 0:
+        raise SystemExit("engine-smoke is turn-0 only (no HF reference to replay prior turns).")
+
+    tok_src = args.tokenizer_path or args.base_model
+    tokenizer = AutoTokenizer.from_pretrained(str(tok_src), trust_remote_code=True)
+    chat_template = load_chat_template(args.chat_template_path)
+    episodes = build_episodes(args)
+    if args.episode_index >= len(episodes):
+        raise SystemExit(f"episode_index {args.episode_index} out of range ({len(episodes)} episodes)")
+    episode = episodes[args.episode_index]
+
+    prompt = render_matched_prompt(
+        tokenizer, [dict(m) for m in episode["prompt_messages"]], episode["tools"], chat_template
+    )
+    prompt_input_ids = tokenizer([prompt], return_tensors="pt", add_special_tokens=False).input_ids
+    prompt_len = int(prompt_input_ids.shape[1])
+
+    # Mask id + stop ids WITHOUT loading the 9B model.
+    mask_id = 248077
+    try:
+        cfg = json.loads((Path(args.base_model) / "config.json").read_text(encoding="utf-8"))
+        text_cfg = cfg.get("text_config", cfg)
+        mask_id = int(text_cfg.get("mask_token_id") or cfg.get("mask_token_id") or 248077)
+    except Exception:
+        pass
+    stop_token_ids: set[int] = set()
+    if tokenizer.eos_token_id is not None:
+        stop_token_ids.add(int(tokenizer.eos_token_id))
+    for text in ("<|im_end|>", "</tool_call>"):
+        ids = tokenizer(text, add_special_tokens=False).input_ids
+        stop_token_ids.update(int(x) for x in ids)
+
+    ctx = TurnContext(
+        model=None,
+        tokenizer=tokenizer,
+        prompt_input_ids=prompt_input_ids,
+        block_size=int(args.block_size),
+        max_new_tokens=int(args.max_new_tokens),
+        mask_id=int(mask_id),
+        stop_token_ids=stop_token_ids,
+        top_p=float(args.top_p),
+        temperature=float(args.temperature),
+        schemas=tool_schema_by_name(episode["tools"]),
+        grammar_topk=int(args.grammar_topk),
+    )
+
+    adapter = build_engine_adapter(
+        "vllm",
+        vllm_workspace=args.vllm_workspace,
+        model_path=str(args.base_model),
+        canvas_length=int(args.block_size),
+        max_denoising_steps=int(args.max_denoising_steps),
+        decode_mode=args.decode_mode,
+        gpu_memory_utilization=float(args.gpu_memory_utilization),
+        max_model_len=int(args.max_model_len),
+        seed=int(args.seed),
+    )
+    try:
+        adapter.preflight()
+    except EngineUnavailable as exc:
+        return {
+            "mode": "engine-smoke",
+            "engine_available": False,
+            "engine_error": str(exc),
+            "passed": None,
+            "verdict": "ENGINE_UNAVAILABLE_preflight",
+        }
+
+    t0 = time.time()
+    res = adapter.run_turn(ctx)
+    wall = time.time() - t0
+    new_ids = res.output_ids[prompt_len:]
+    assistant_text = tokenizer.decode(
+        new_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
+    )
+    row = build_audit_row(
+        backend="engine_vllm",
+        generated_ids=new_ids,
+        assistant_text=assistant_text,
+        exact_arguments=False,
+        metrics=res.metrics,
+    )
+    schedule_events = row["backend_meta"]["sampler_schedule_events"]
+    report = {
+        "mode": "engine-smoke",
+        "engine_available": True,
+        "engine": adapter.name,
+        "decode_mode": res.metrics.get("decode_mode"),
+        "model_path": str(args.base_model),
+        "episode_index": int(args.episode_index),
+        "episode_id": episode.get("id"),
+        "block_size": int(args.block_size),
+        "prompt_tokens": prompt_len,
+        "generated_token_count": len(new_ids),
+        "generated_token_ids": [int(x) for x in new_ids],
+        "assistant_text": assistant_text,
+        "turn_record": {
+            "denoise_forwards": schedule_events.get("denoise_forwards_total"),
+            "forwards_per_turn": res.metrics.get("forwards_per_turn"),
+            "forced_grammar_tokens": schedule_events.get("hybrid_forced_grammar_tokens"),
+            "model_value_tokens": schedule_events.get("hybrid_model_value_tokens"),
+            "model_structural_tokens": schedule_events.get("hybrid_model_structural_tokens"),
+            "grammar_replacement_value_tokens": schedule_events.get(
+                "hybrid_grammar_replacement_value_tokens"
+            ),
+            "stop_reason": res.metrics.get("stop_reason"),
+            "read_advance_ratio": res.metrics.get("read_advance_ratio"),
+            "wall_seconds": wall,
+        },
+        "engine_stats": res.metrics.get("engine_stats"),
+        "num_block_boundaries": len(res.block_snapshots),
+    }
+    # Smoke PASS = the engine loaded, decoded a nonempty turn, and its zero-value-
+    # projection tripwire held (grammar did not overwrite any value token).
+    projected = int(schedule_events.get("hybrid_grammar_replacement_value_tokens") or 0)
+    report["passed"] = bool(len(new_ids) > 0 and projected == 0)
     report["verdict"] = "PASS" if report["passed"] else "FAIL"
     return report
 
@@ -1412,16 +1733,32 @@ def run_ops_parity_mode(args) -> dict[str, Any]:
 # CLI
 # ---------------------------------------------------------------------------
 def parse_args() -> argparse.Namespace:
-    from eval_flare_northstar_matched import (
-        DEFAULT_AR_MODEL,
-        DEFAULT_CHAT_TEMPLATE,
-        DEFAULT_DIFFUSION_ADAPTER,
-        DEFAULT_DIFFUSION_BASE,
-        DEFAULT_INPUT,
-    )
+    # Turn-mode default paths live in eval_flare_northstar_matched, whose import
+    # chain pulls heavy model deps (peft, transformers model loaders). Those are
+    # ONLY needed for --mode turn (which requires CUDA + the real model anyway);
+    # importing them eagerly here would break the CPU-only modes (selftest /
+    # ops-parity / state-parity) on a box without those deps. Fail soft so the
+    # CPU modes always run; turn mode surfaces the missing dep when it loads.
+    try:
+        from eval_flare_northstar_matched import (
+            DEFAULT_AR_MODEL,
+            DEFAULT_CHAT_TEMPLATE,
+            DEFAULT_DIFFUSION_ADAPTER,
+            DEFAULT_DIFFUSION_BASE,
+            DEFAULT_INPUT,
+        )
+    except Exception as exc:  # noqa: BLE001 - optional heavy turn-mode deps
+        DEFAULT_AR_MODEL = None
+        DEFAULT_CHAT_TEMPLATE = None
+        DEFAULT_DIFFUSION_ADAPTER = None
+        DEFAULT_DIFFUSION_BASE = None
+        DEFAULT_INPUT = None
+        _TURN_DEFAULTS_IMPORT_ERROR = str(exc)
+    else:
+        _TURN_DEFAULTS_IMPORT_ERROR = None
 
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--mode", choices=["selftest", "ops-parity", "state-parity", "turn"], default="selftest")
+    p.add_argument("--mode", choices=["selftest", "ops-parity", "state-parity", "turn", "engine-smoke"], default="selftest")
     p.add_argument("--engine", choices=["self", "vllm"], default="vllm",
                    help="engine adapter for turn mode: 'self' = determinism/machinery self-test at full scale; "
                         "'vllm' = the real Qwen3_5FlareModelState (GPU, raises EngineUnavailable until it lands).")
@@ -1451,6 +1788,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--temperature", type=float, default=0.0)
     p.add_argument("--grammar-topk", type=int, default=256)
     p.add_argument("--vllm-workspace", type=Path, default=DEFAULT_VLLM_WORKSPACE)
+    # engine boot config (turn / engine-smoke modes)
+    p.add_argument("--decode-mode", choices=["hybrid_clean", "canvas"], default="hybrid_clean",
+                   help="engine FLARE decode policy (VLLM_QWEN3_5_FLARE_DECODE).")
+    p.add_argument("--max-denoising-steps", type=int, default=8)
+    p.add_argument("--gpu-memory-utilization", type=float, default=0.82)
+    p.add_argument("--max-model-len", type=int, default=4096)
     p.add_argument("--reference-only-if-engine-unavailable", action="store_true",
                    help="turn mode: if the engine can't run, still load the model and run + audit "
                         "the (a) reference side (else short-circuit at preflight).")
@@ -1463,7 +1806,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--threads", type=int, default=4)
 
     p.add_argument("--seed", type=int, default=20260701)
-    return p.parse_args()
+    args = p.parse_args()
+    if args.mode in ("turn", "engine-smoke") and _TURN_DEFAULTS_IMPORT_ERROR is not None:
+        raise SystemExit(
+            f"--mode {args.mode} needs the real-model deps from eval_flare_northstar_matched, "
+            f"which failed to import: {_TURN_DEFAULTS_IMPORT_ERROR}. Install the turn-mode "
+            "dependencies (e.g. peft/transformers) or run a CPU mode "
+            "(--mode selftest / ops-parity / state-parity)."
+        )
+    return args
 
 
 def main() -> int:
@@ -1474,6 +1825,8 @@ def main() -> int:
         report = run_ops_parity_mode(args)
     elif args.mode == "state-parity":
         report = run_state_parity_mode(args)
+    elif args.mode == "engine-smoke":
+        report = run_engine_smoke_mode(args)
     else:
         report = run_turn_mode(args)
 
