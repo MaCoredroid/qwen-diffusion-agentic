@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Small audited multi-turn diffu-GRPO pilot.
 
-This is deliberately a pilot, not the full RL trainer. It starts from the
-Run-1 copy-grounded checkpoint, samples grouped diffusion rollouts with the
-live Qwen-native tool grammar, scores them with the audited ToolRL-style
-reward, then applies a group-relative policy update by replaying generated
-assistant tokens through the trainable LoRA under raw full-vocab logprob.
+This is deliberately a pilot, not the full RL trainer. It samples grouped
+diffusion rollouts, scores them with the audited ToolRL-style reward, then
+applies a group-relative policy update by replaying generated assistant tokens
+through the trainable LoRA under raw full-vocab logprob.
 """
 
 from __future__ import annotations
@@ -245,6 +244,8 @@ def replay_examples(tokenizer, rollout: dict, advantage: float, args: argparse.N
                 "reward": (rollout.get("rewards") or [{}])[int(row.get("turn_idx") or 0)].get("reward"),
                 "assistant_tokens": len(assistant_ids),
                 "grammar_forced_tokens_masked": len(assistant_ids) - len(policy_token_indices),
+                "policy_value_tokens": len(policy_token_indices),
+                "policy_free_tokens": 0,
             }
         )
     return examples
@@ -458,7 +459,12 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         "trainable_params": trainable,
         "total_params": total,
         "warm_start": str(args.adapter),
-        "policy": "diffusion careful + live Qwen-native grammar, audited reward, GRPO group advantages",
+        "policy": (
+            "diffusion hybrid-clean + audited reward + GRPO group advantages"
+            if args.decode_policy == "hybrid_clean"
+            else "diffusion careful + live Qwen-native grammar, audited reward, GRPO group advantages"
+        ),
+        "decode_policy": str(args.decode_policy),
         "logprob_replay": "raw full-vocab replay over parameter-value/free assistant tokens only",
         "grammar_forced_policy_masking": "XML structure, tool names, parameter names, and tag whitespace are masked out of policy loss",
         "kl_to_base": {
@@ -548,6 +554,8 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
             "rollouts": rollout_summaries,
             "examples": len(examples),
             "grammar_forced_tokens_masked": sum(int(item.get("grammar_forced_tokens_masked") or 0) for item in examples),
+            "policy_value_tokens": sum(int(item.get("policy_value_tokens") or 0) for item in examples),
+            "policy_free_tokens": sum(int(item.get("policy_free_tokens") or 0) for item in examples),
             "grad_norm": grad_norm_value,
             "rollout_seconds": update_start - step_start,
             "update_seconds": update_seconds,
@@ -619,6 +627,8 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         "nonzero_advantage_steps": sum(int(not row["zero_advantage"]) for row in step_rows),
         "policy_tokens": sum(int(row["policy_tokens"]) for row in step_rows),
         "grammar_forced_tokens_masked": sum(int(row.get("grammar_forced_tokens_masked") or 0) for row in step_rows),
+        "policy_value_tokens": sum(int(row.get("policy_value_tokens") or 0) for row in step_rows),
+        "policy_free_tokens": sum(int(row.get("policy_free_tokens") or 0) for row in step_rows),
         "mean_reward": sum(float(row["reward_mean"]) for row in step_rows) / max(1, len(step_rows)),
         "last_step": step_rows[-1] if step_rows else None,
         "early_stopped": bool(step_rows and step_rows[-1].get("early_stop_reason")),
@@ -642,6 +652,8 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         f"- Grouping: `{'mixed adjacent public episodes' if args.mixed_episode_groups else 'same prompt'}`",
         f"- Nonzero-advantage steps: `{summary['nonzero_advantage_steps']}/{len(step_rows)}`",
         f"- Policy replay tokens: `{summary['policy_tokens']}`",
+        f"- Policy value tokens: `{summary['policy_value_tokens']}`",
+        f"- Policy free tokens: `{summary['policy_free_tokens']}`",
         f"- Grammar-forced tokens masked from policy loss: `{summary['grammar_forced_tokens_masked']}`",
         f"- KL-to-base coefficient: `{float(args.kl_to_base_coeff)}`",
         f"- KL early stop: last `{int(args.kl_early_stop_window)}` mean > `{float(args.kl_early_stop_mean_threshold)}`",
@@ -650,9 +662,9 @@ def run_pilot(args: argparse.Namespace) -> dict[str, Any]:
         f"- Mean step reward: `{summary['mean_reward']:.4f}`",
         f"- Output adapter: `{adapter_out}`",
         "",
-        "Rollouts used diffusion careful decode with live Qwen-native grammar and audited ToolRL-style reward. "
+        f"Rollouts used `{args.decode_policy}` decode with audited ToolRL-style reward. "
         "The update is a raw full-vocab logprob replay approximation over generated parameter-value/free tokens only; "
-        "grammar-forced structure is excluded from the policy loss. This is a plumbing pilot, not a promoted training result.",
+        "grammar-forced structure is excluded from the policy loss.",
     ]
     (args.out_dir / "report.md").write_text("\n".join(report) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True), flush=True)
@@ -679,6 +691,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--live-tool-json-topk", type=int, default=128)
+    parser.add_argument(
+        "--decode-policy",
+        choices=["careful_live_grammar", "hybrid_clean"],
+        default="careful_live_grammar",
+    )
+    parser.add_argument("--hybrid-grammar-topk", type=int, default=256)
     parser.add_argument("--seed", type=int, default=20260702)
     parser.add_argument("--gpu-index", type=int, default=0)
     parser.add_argument("--max-steps", type=int, default=2)

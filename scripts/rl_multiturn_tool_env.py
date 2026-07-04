@@ -32,6 +32,7 @@ if str(ROOT / "scripts") not in sys.path:
 from audit_value_projection_tokens import audit_rows  # noqa: E402
 from eval_fastdllm_toolcall_cases import full_context_sample, load_model, resolve_single_token_ids, resolve_token_ids  # noqa: E402
 from eval_flare_multiturn_percall_waves import build_episodes, make_gen_args, synthetic_tool_result  # noqa: E402
+from eval_flare_northstar_hybrid_clean import sample_hybrid_clean  # noqa: E402
 from eval_flare_northstar_matched import (  # noqa: E402
     DEFAULT_AR_MODEL,
     DEFAULT_CHAT_TEMPLATE,
@@ -251,6 +252,8 @@ def make_env_args(args: argparse.Namespace, filtered_jsonl: Path) -> SimpleNames
         diffusion_structural_only=False,
         out_dir=args.out_dir,
         seed=args.seed,
+        decode_policy=getattr(args, "decode_policy", "careful_live_grammar"),
+        grammar_topk=getattr(args, "hybrid_grammar_topk", getattr(args, "live_tool_json_topk", 128)),
     )
 
 
@@ -309,7 +312,140 @@ class MultiTurnToolRLEnv:
         gen_args.tool_prefix_guard_mode = "qwen_native"
         return gen_args
 
+    def rollout_episode_hybrid_clean(self, episode: dict) -> dict:
+        prefix_cache = FlarePrefixCache()
+        prompt = render_matched_prompt(
+            self.tokenizer,
+            [dict(message) for message in episode["prompt_messages"]],
+            episode["tools"],
+            self.chat_template,
+        )
+        stop_token_ids = set(int(item) for item in self.stop_token_ids)
+        turn_rows = []
+        reward_rows = []
+        for turn_idx, gold_block in enumerate(episode["gold_blocks"]):
+            prompt_input_ids = self.tokenizer(
+                [prompt],
+                return_tensors="pt",
+                add_special_tokens=False,
+            ).input_ids.to("cuda")
+            if torch.cuda.is_available():
+                torch.cuda.synchronize()
+            start = time.time()
+            with torch.no_grad():
+                output_ids, sampler_metrics = sample_hybrid_clean(
+                    self.model,
+                    self.tokenizer,
+                    prompt_input_ids,
+                    block_size=int(self.args.block_size),
+                    max_new_tokens=int(self.args.max_new_tokens),
+                    mask_id=int(self.mask_id),
+                    stop_token_ids=stop_token_ids,
+                    top_p=float(self.args.top_p),
+                    temperature=float(self.args.temperature),
+                    schemas=tool_schema_by_name(episode["tools"]),
+                    grammar_topk=int(getattr(self.args, "hybrid_grammar_topk", self.args.live_tool_json_topk)),
+                    prefix_cache=prefix_cache,
+                )
+            if torch.cuda.is_available():
+                torch.cuda.synchronize()
+            new_ids = output_ids[int(prompt_input_ids.shape[1]) :]
+            history_text = decode_text(self.tokenizer, new_ids)
+            assistant_text = trim_scored_assistant(history_text)
+            denoise_forwards = int(sampler_metrics.get("denoise_forwards") or 0)
+            schedule_events = {
+                "denoise_forwards_total": denoise_forwards,
+                "hybrid_model_forwards": denoise_forwards,
+                "hybrid_forced_grammar_tokens": int(sampler_metrics.get("forced_grammar_tokens") or 0),
+                "hybrid_model_value_tokens": int(sampler_metrics.get("model_value_tokens") or 0),
+                "hybrid_model_structural_tokens": int(sampler_metrics.get("model_structural_tokens") or 0),
+                "hybrid_value_close_timing_tokens": int(sampler_metrics.get("value_close_timing_tokens") or 0),
+                "hybrid_grammar_checked_tokens": int(sampler_metrics.get("grammar_checked_tokens") or 0),
+                "hybrid_grammar_replacement_tokens": int(sampler_metrics.get("grammar_replacement_tokens") or 0),
+                "hybrid_grammar_replacement_value_tokens": int(
+                    sampler_metrics.get("grammar_replacement_value_tokens") or 0
+                ),
+                "hybrid_grammar_unsafe_fallback_tokens": int(
+                    sampler_metrics.get("grammar_unsafe_fallback_tokens") or 0
+                ),
+                # The audit treats this as "model-accounted value tokens"; for
+                # hybrid-clean these are sequential raw-model tokens, not
+                # parallel/projection commits.
+                "parallel_commit_value_tokens": int(sampler_metrics.get("model_value_tokens") or 0),
+                "parallel_commit_forced_tokens": 0,
+                "two_wave_wave1_projected_tokens": 0,
+                "two_wave_wave1_value_tokens": 0,
+                "two_wave_wave2_value_tokens": 0,
+                "two_wave_wave2_forced_tokens": 0,
+            }
+            row = row_from_generation(
+                backend="diffusion_hybrid_clean_rl_env",
+                episode=episode,
+                turn_idx=turn_idx,
+                prompt=prompt,
+                tools=episode["tools"],
+                gold_block=gold_block,
+                assistant_text=assistant_text,
+                prompt_tokens=int(prompt_input_ids.shape[1]),
+                generated_tokens=int(new_ids.numel()),
+                turn_wall_seconds=time.time() - start,
+                schedule_build_seconds=0.0,
+                backend_meta={
+                    "sampler_schedule_events": schedule_events,
+                    "hybrid_sampler_metrics": sampler_metrics,
+                    "flare_cache_stats": sampler_metrics.get("cache_stats") or {},
+                    "max_new_tokens": int(self.args.max_new_tokens),
+                    "block_size": int(self.args.block_size),
+                    "grammar_topk": int(getattr(self.args, "hybrid_grammar_topk", self.args.live_tool_json_topk)),
+                    "policy": "diffusion_hybrid_clean_forced_grammar_bulk_seq_values",
+                    "assistant_generation_prompt": ASSISTANT_GENERATION_PROMPT,
+                },
+            )
+            row["assistant_history_sha256"] = sha256_json(history_text)
+            row["generated_token_ids"] = [int(token_id) for token_id in new_ids.detach().cpu().tolist()]
+            row["prompt"] = prompt
+            reward = audited_reward(self.tokenizer, row, episode["tools"], gold_block)
+            reward_payload = {
+                "episode_id": episode["id"],
+                "turn_idx": turn_idx,
+                "reward": reward.reward,
+                "exact_args": reward.exact_args,
+                "format_reward": reward.format_reward,
+                "schema_reward": reward.schema_reward,
+                "tool_name_reward": reward.tool_name_reward,
+                "arg_name_reward": reward.arg_name_reward,
+                "value_reward": reward.value_reward,
+                "audit_clean": reward.audit_clean,
+                "audit_mode": reward.audit_mode,
+                "projected_value_tokens_exact": reward.projected_value_tokens_exact,
+                "valid_tool_json": bool(reward.metrics.get("valid_tool_call")),
+                "all_schema_valid": bool(reward.metrics.get("all_schema_valid")),
+                "exact_tool_sequence": bool(reward.metrics.get("exact_tool_sequence")),
+                "called_names": reward.metrics.get("called_names") or [],
+            }
+            turn_rows.append(row)
+            reward_rows.append(reward_payload)
+            next_user = next_turn_user_message(episode, turn_idx + 1)
+            prompt = prompt + history_text + tool_response_suffix(row["tool_response_payload"], next_user)
+            print(
+                f"hybrid rollout episode={episode['id']} turn={turn_idx + 1}/{len(episode['gold_blocks'])} "
+                f"reward={reward.reward:.3f} exact={int(reward.exact_args)} audit={int(reward.audit_clean)} "
+                f"forwards={denoise_forwards} forced={schedule_events['hybrid_forced_grammar_tokens']} "
+                f"value_tokens={schedule_events['hybrid_model_value_tokens']}",
+                flush=True,
+            )
+        return {
+            "episode_id": episode["id"],
+            "turns": turn_rows,
+            "rewards": reward_rows,
+            "episode_reward_mean": sum(item["reward"] for item in reward_rows) / max(1, len(reward_rows)),
+            "episode_exact_all_turns": all(bool(item["exact_args"]) for item in reward_rows),
+            "episode_audit_clean": all(bool(item["audit_clean"]) for item in reward_rows),
+        }
+
     def rollout_episode(self, episode: dict) -> dict:
+        if getattr(self.args, "decode_policy", "careful_live_grammar") == "hybrid_clean":
+            return self.rollout_episode_hybrid_clean(episode)
         prefix_cache = FlarePrefixCache()
         gen_args = self.gen_args(prefix_cache)
         prompt = render_matched_prompt(
@@ -528,6 +664,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--live-tool-json-topk", type=int, default=128)
+    parser.add_argument(
+        "--decode-policy",
+        choices=["careful_live_grammar", "hybrid_clean"],
+        default="careful_live_grammar",
+    )
+    parser.add_argument("--hybrid-grammar-topk", type=int, default=256)
     parser.add_argument("--seed", type=int, default=20260701)
     parser.add_argument(
         "--eval-battery-path",
@@ -549,7 +691,7 @@ def main() -> int:
         "input_jsonl": str(args.input_jsonl),
         "filtered_jsonl": str(env.filtered_jsonl),
         "leak_filter": env.leak_manifest,
-        "policy": "diffusion-careful + live grammar structure, values raw",
+        "policy": args.decode_policy,
         "training": "not run",
     }
     write_json(args.out_dir / "env_manifest.json", manifest)
