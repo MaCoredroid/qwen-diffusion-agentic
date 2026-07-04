@@ -50,3 +50,12 @@ best-of-N sample-and-decode machinery · P2 engine plan (rollout-throughput mult
 3. Off-policy correction spec + a small validation run (AR updates from hybrid rollouts; stability + gain).
 4. This methodology doc matured into the shippable artifact (loop spec, budgets, gates, audit protocol).
 5. (Decision pending) P2 engine build — in this frame it is the ROLLOUT-THROUGHPUT multiplier, not just serving.
+
+## Expert correction (user, from industry experience, 2026-07-03)
+Published spec-decode speedups (EAGLE-3 2-2.5x, DFlash 3-6x) are benchmark-condition optimistic. On REAL agentic
+workloads (SWE-Verified via a Claude-Code-style agent): expect <2x — acceptance dies on exact spans (paths/IDs/code),
+tool-result interleaving keeps draft context cold, turns are prefill-heavy, and production batching kills the
+idle-compute assumption. Converges with our measured 1.39 accept/round on agentic content. CONSEQUENCE: hybrid's
+audited 1.71x on agentic content (no extra model, no verify overhead, batch-robust, unoptimized stack) is competitive
+with real-world spec decode on this workload class — and the two compose. Use <2x as the honest spec-decode prior for
+agentic comparisons in all future tables.
