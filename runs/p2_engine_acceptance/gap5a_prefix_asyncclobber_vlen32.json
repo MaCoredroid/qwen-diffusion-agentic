@@ -1,0 +1,238 @@
+{
+  "tidx": 0,
+  "plen": 1041,
+  "maxtok": 20,
+  "wall_s": 0.72,
+  "n_gen": 20,
+  "finish_reason": "length",
+  "denoise_forwards": 10,
+  "gen_ids_head": [
+    248058,
+    198,
+    27,
+    1628,
+    28,
+    20978,
+    8705,
+    78597,
+    29,
+    198,
+    27,
+    15704,
+    28,
+    2334,
+    8705,
+    78597,
+    29,
+    198,
+    198,
+    198
+  ],
+  "ref_ids_head": [
+    248058,
+    198,
+    27,
+    1628,
+    28,
+    20978,
+    8705,
+    78597,
+    29,
+    198,
+    27,
+    15704,
+    45334,
+    8705,
+    78597,
+    29,
+    198,
+    17,
+    198,
+    510,
+    15704,
+    29,
+    198,
+    27
+  ],
+  "first_divergence": 12,
+  "prefix_matches_ref": false,
+  "ref_pos12_argmax": 20978,
+  "pos12_eng": {
+    "argmax": 0,
+    "top": [
+      [
+        0,
+        15.1875
+      ],
+      [
+        29,
+        14.8125
+      ],
+      [
+        198,
+        13.1875
+      ],
+      [
+        8687,
+        12.0625
+      ],
+      [
+        10,
+        12.0
+      ],
+      [
+        33,
+        11.6875
+      ],
+      [
+        729,
+        11.625
+      ],
+      [
+        1628,
+        11.5625
+      ]
+    ],
+    "vlen": 32,
+    "decoded_argmax": null
+  },
+  "pos12_argmax_match": false,
+  "pos12_ref_top": [
+    [
+      20978,
+      27.0
+    ],
+    [
+      9974,
+      19.875
+    ],
+    [
+      28263,
+      18.625
+    ],
+    [
+      5917,
+      18.125
+    ],
+    [
+      9147,
+      17.625
+    ]
+  ],
+  "pos12_eng_top": [
+    [
+      0,
+      15.1875
+    ],
+    [
+      29,
+      14.8125
+    ],
+    [
+      198,
+      13.1875
+    ],
+    [
+      8687,
+      12.0625
+    ],
+    [
+      10,
+      12.0
+    ]
+  ],
+  "ms_per_denoise_fwd": 110.0,
+  "steps": [
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        0
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        20978,
+        8705,
+        78597,
+        29,
+        198
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        27
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        15704
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        28
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        2334,
+        8705,
+        78597,
+        29
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        198
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        198
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [
+        198
+      ],
+      "bl_argmax": null
+    },
+    {
+      "commit": true,
+      "vlen": 32,
+      "delta": [],
+      "bl_argmax": 0
+    },
+    {
+      "commit": false,
+      "vlen": 32,
+      "delta": [],
+      "bl_argmax": null
+    }
+  ]
+}

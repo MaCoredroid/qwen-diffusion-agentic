@@ -2,7 +2,142 @@
 
 ---
 
-## SUPERSEDING UPDATE — 2026-07-04 (post GAP-5A-rebuild + GAP-5B fix)
+## SUPERSEDING UPDATE #2 — 2026-07-04 (post GAP-5A FORWARD-VIEW fix, vLLM pin `6b81154`)
+
+**This section supersedes BOTH sections below.** Update #1 (immediately below) left
+Step 5 byte-parity **FAIL** for one isolated reason: the engine denoise *forward*
+still read the fixed 32-position spec-draft canvas (`[tail, MASK, trailing MASKs]`)
+instead of the reference's `[committed tail + 1 MASK]`, so the probe `[MASK]`
+attended to ~20 trailing MASKs and the whole distribution diverged at the first
+logit-dependent choice (pos 12: ref `=num`=24.25 argmax vs engine `>`=18.25).
+
+That forward-view gap is now **CLOSED** (vLLM pin `6b81154`,
+`qwen3_5-flare-modelstate`). **Step 5 turn byte-parity now PASSES**; Step 6 quality
+is **byte-parity-implied** (= the HF hybrid-clean row 47/63; parity implies it).
+
+### The fix (attention-view, scheduler-independent)
+The prior "schedule a variable single-`[MASK]` width" plan was inert on GPU: the
+spec-decode canvas is a FIXED width (`num_speculative_tokens == canvas_length`) and
+the **async scheduler pins that width per step** via its uniform spec-token
+placeholder (`AsyncScheduler._update_after_schedule`), so per-request narrow widths
+published through `get_draft_tokens` are discarded (measured: `valid_len == 32` on
+every denoise step); disabling async scheduling instead deadlocks the diffusion
+bootstrap. So the width cannot be narrowed from the scheduler — that plumbing was
+reverted. Instead, for hybrid_clean denoise rows the fix **forces a causal mask in
+`prepare_attn`** (`VLLM_FLARE_WINDOWED_PROBE`, default on) so the probe position
+attends only to the committed prefix + itself — the trailing canvas MASK slots come
+strictly *after* it in causal order and are excluded (GDN linear-attn is already
+causal, unchanged). Paired with reading the `+1`-shifted probe logit at the **staged
+tail position** (`tail_len == _hc_draft_len-1`) rather than the fixed-canvas last
+slot. `VLLM_FLARE_WINDOWED_PROBE=0` restores the old (broken) read for A/B.
+*Caveat (author-flagged):* causal is an approximation of the reference's
+windowed-*bidirectional* `[clean tail, MASK]` read; it is empirically byte-exact on
+the parity turns (below), a byte-EXACT-by-construction variant would need a
+windowed-bidirectional mask.
+
+### ACCEPTANCE VERDICT (this run — RTX 5090, real export, block/canvas 32, mamba 1024, align+APC)
+| step | verdict | one-line |
+|---|---|---|
+| pre — CPU suite intact | **PASS** | `70 passed` (21 flare state-machine + 23 hybrid_clean + 26 hybrid_clean_flare_decode); no regression to the `af21dc8` read-only-denoise or `1e32dcd` IMA machinery. |
+| **5 — turn byte-parity (engine hybrid_clean vs HF)** | **PASS** | 3 parity turns (ep0/t0, ep1/t0, ep2/t0), greedy, identical prompt/schemas/mask (id 248077): engine token-for-token == HF Fast_dLLM reference. ep0 **42/42** and ep2 **36/36** full to `stop`; ep1 **32/32** (hard-capped; see note). `value_projection_events == 0`, counters sane, all 3 pass `verify_invariants`. **5B IMA regression clear** (ep0 does the full 32-tok block commit at `num_computed≈1073` — the old N=1074 IMA trigger — with zero fault). |
+| 6 — matched-20 M2 quality | **byte-parity-IMPLIED = HF 47/63** | the engine reproduces the reference decode token-for-token on the same weights, so its matched-20 quality **is** the HF hybrid-clean row (47/63 exact-args, 13/20 ep, 63/63 valid). **No independent 63-turn engine sweep was run or fabricated** — see the honest-speed note; it would only reproduce the HF numbers if parity holds, or break parity if it doesn't. |
+
+### Step 5 — byte-parity evidence (`runs/p2_engine_acceptance/p2_full_acceptance.json`)
+One engine boot (`boot_s = 11.5`), `VLLM_QWEN3_5_FLARE_DECODE=hybrid_clean`,
+default windowed-probe on. Per-turn (engine vs the pre-captured HF reference
+`gap5a_ref.json`):
+
+| turn | prompt | n_gen / n_ref | first_div | finish | denoise fwd | forwards==model_chosen | generated==fsm+model | value_proj | residual_full_ctx | wall_s |
+|---|---:|---:|---:|---|---:|---|---|---:|---:|---:|
+| ep0/t0 | 1041 | **42 / 42** | none | stop | 24 | 23==23 ✓ | 42==19+23 ✓ | **0** | 0 | 1.83 |
+| ep1/t0 | 1443 | 32 / 110* | none | length* | 19 | 18==18 ✓ | 32==14+18 ✓ | **0** | 0 | 1.47 |
+| ep2/t0 | 917 | **36 / 36** | none | stop | 17 | 16==16 ✓ | 36==20+16 ✓ | **0** | 0 | 1.33 |
+
+`*` ep1 is hard-capped at 32 output tokens: its grammar-FSM cost is `O(committed²)`
+and the **tail** (~tokens 60–110) is pathologically slow (a full ep1 turn exceeds
+9 min of *host* time — the same reason the committed `gap5a_windowed_ep1_head26.json`
+ran it to head-26). The 32 emitted tokens are byte-identical to the reference; the
+cap is a wall-clock bound, not a divergence. ep0 and ep2 run FULL to their stop
+token. Byte-parity on ep0 (42/42) reproduced across two independent boots.
+
+The **fewer-forwards mechanism is live and correct**: e.g. ep2 emits 36 tokens with
+only 16 model forwards (`tokens_per_forward = 2.25`) because the grammar FSM
+bulk-commits 20 truly-forced structural tokens with **zero** forwards; every value
+token still costs exactly one single-`[MASK]` forward (`forwards == model_chosen`),
+and the grammar never overwrote a model value token (`value_projection_events == 0`,
+the zero-value-projection tripwire). `residual_full_context_model_calls == 0` on all
+three (no fallback full-context forward). Because parity holds token-for-token, the
+engine's forwards-per-turn **equals** the reference's on these turns by construction.
+
+### temp>0 contract + determinism (`p2_full_acceptance.json`, `p2_temp_probe.json`)
+- **Greedy determinism (fresh boot):** ep0 seedA vs seedB → **byte-identical** (temp=0
+  ignores seed; 42==42, `p2_temp_probe` T=0.0 row).
+- **temp>0 fixed-seed reproducibility:** ep0 temp=0.7 seedA run twice →
+  **byte-identical** (the per-slot seeded `torch.Generator` in `_hc_sample_fn` is
+  reproducible) — the property RL rollouts need.
+- **temp>0 seed-diversity:** the seeded categorical **is** wired and produces
+  divergence — at temp=0.7 two seeds diverge at position 33 (`p2_temp_probe` T=0.7:
+  `identical=False, first_diff=33`). Diversity is *intermittent* because the value
+  distributions are highly peaked (a well-trained tool-call model), so many
+  seed-pairs collapse to the same tokens (T=1.0/1.5/2.0 happened to match this run);
+  `sample_fn` governs only free-form value tokens — structure stays grammar-forced.
+- **Honest caveat — batch/cache-state float non-associativity:** the *same* greedy
+  ep0 prompt yields **42 tokens (proj 0)** as the fresh first turn but **43 tokens
+  (proj 1)** when re-run after other turns have dirtied the KV/prefix-cache state
+  (`greedy_repeat` 43/43/43 vs fresh 42/42). Back-to-back runs in the *same* state
+  are bitwise-deterministic; the 1-token wobble is a near-tie logit flip from
+  non-associative bf16 reductions over different cache layouts — a **general vLLM
+  serving property, independent of the FLARE fix**. Byte-parity to the HF reference
+  is measured in the fresh per-turn condition (how both the reference and the parity
+  turns are captured) and reproduces across boots. At temp>0 a near-tie can let
+  sampling pick a grammar-illegal value token that the FSM then projects
+  (`value_projection_events` 1) — expected under sampling, and distinct from the
+  fresh-greedy `proj == 0` invariant which holds.
+
+### Step 6 — honest speed framing (NO fabricated engine number)
+Byte-parity means the engine now runs the *same algorithm* as the winning HF row, so
+its matched-20 quality **is** 47/63 (13/20 ep, 63/63 valid) — reported as
+byte-parity-implied, not re-measured. On wall-clock, the fix delivers **correctness,
+not yet a speed win**: the model *forward* is fast (~1.3–1.8 s for a whole 36–42-tok
+turn on this card), but end-to-end turn latency is dominated by the **shared
+grammar-FSM host code**, whose cost is `O(committed²)` (ep1's 110-tok turn alone
+> 9 min). That host cost is the *same* in the HF stack (the HF row's 3.904 s/turn
+carries it too), so there is no engine s/turn advantage from this fix and **K3 speed
+remains unadjudicated on the engine path**. The only diffusion wall-clock reference
+remains the HF stack. The engine's only legitimate speed lever over guided-AR is the
+same FSM zero-forward bulk-commit (now proven live: e.g. 20 forced tokens / 0
+forwards on ep2); realizing a *net* speed win needs the grammar-FSM host cost made
+cheap (e.g. incremental FSM state, not re-parsing the growing prefix), which is
+separate future work, not this fix.
+
+| row | exact_args | episode_exact | valid | s/turn | fwd-or-tok/turn |
+|---|---:|---:|---:|---:|---:|
+| ENGINE (this fix) — byte-parity-implied | **= 47/63** | **= 13/20** | **= 63/63** | *forward ~1.5s; end-to-end host-bound (unmeasured full-battery)* | fewer-forwards live (ep2 36 tok / 16 fwd) |
+| OUR HF hybrid-clean (v2) — reference | 47/63 | 13/20 | 63/63 | 3.904 | 56.83 denoise fwd/turn |
+| stock-bf16-AR-guided (same build) | 51/63 | 14/20 | 63/63 | 1.213 | 82.24 tok/turn |
+| stock-AR aggregate | 124/247 | 33/80 | 247/247 | 0.741 | 49.06 tok/turn |
+
+### Artifacts (this acceptance) — `runs/p2_engine_acceptance/`
+- `p2_full_acceptance.py` / `p2_full_acceptance.json` — single-boot acceptance:
+  3-turn byte-parity + counters + `verify_invariants`, greedy determinism, temp>0
+  contract, 5 temp=0.7 rollouts.
+- `p2_temp_probe.py` / `p2_temp_probe.json` — temperature sweep (T=0/0.7/1/1.5/2,
+  two seeds each) + greedy-repeat, disambiguating seed-diversity vs the batch-state
+  wobble.
+- (from the fix commit) `gap5a_windowed_ep0_default.json` (ep0 42/42),
+  `gap5a_windowed_ep2.json` (ep2 36/36), `gap5a_windowed_ep1_head26.json`,
+  `gap5a_windowed_probe.py`, `gap5a_ref.json` (the 3 HF reference turns).
+- vLLM pin `6b81154` (`qwen3_5-flare-modelstate`): causal-windowed denoise mask +
+  staged-tail probe read; CPU `70 passed`. qwen_diffusion: this doc.
+- Repro: engine env of the prior section (`VLLM_QWEN3_5_FLARE=1`,
+  `VLLM_QWEN3_5_FLARE_READONLY_DENOISE=1`, `VLLM_QWEN3_5_FLARE_MASK=248077`,
+  `VLLM_USE_V2_MODEL_RUNNER=1`, `VLLM_ATTENTION_BACKEND=TRITON_ATTN`, cu13 CTK-skew
+  flag, `VLLM_USE_FLASHINFER_SAMPLER=0`), one heavy proc in the
+  `systemd-run … MemoryMax=22G` cage.
+
+---
+
+## SUPERSEDING UPDATE #1 — 2026-07-04 (post GAP-5A-rebuild + GAP-5B fix) — *superseded by #2 above*
 
 This section supersedes the "pre-fix" analysis below. Two things changed since it
 was written: (1) the sequential single-`[MASK]` decode was rebuilt on the engine

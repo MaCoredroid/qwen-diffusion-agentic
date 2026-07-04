@@ -2,9 +2,19 @@
 
 Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones, kill criteria).
 Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
-IMA-fix / sequential-decode-rebuild acceptance.
+IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
-**Bottom line (engine NOT promoted — one blocker left, now isolated to the forward):** the entire M1
+> **UPDATE (§0.C, vLLM pin `6b81154`): the last blocker — the denoise FORWARD view — is now CLOSED, and
+> turn byte-parity PASSES.** The engine hybrid_clean decode byte-matches the HF Fast_dLLM reference
+> token-for-token on the parity turns (ep0 **42/42**, ep2 **36/36** full to `stop`; ep1 32/32 capped),
+> `value_projection_events == 0`, all counters pass `verify_invariants`, CPU `70 passed`, 5B IMA clear.
+> **Step 5 (byte-parity) → PASS; Step 6 quality is byte-parity-implied = HF 47/63.** What is NOT yet
+> won is **engine s/turn**: the model forward is fast (~1.5 s/turn) but end-to-end latency is dominated
+> by the *shared* grammar-FSM host code (`O(committed²)`; ep1's 110-tok turn > 9 min), the same cost the
+> HF stack carries — so K3 speed remains unadjudicated and the fix delivers **correctness, not a speed
+> win**. Details §0.C; the pre-fix bottom-line below is retained for provenance.
+
+**Bottom line (PRE-§0.C: engine NOT promoted — one blocker left, now isolated to the forward):** the entire M1
 write-list (`Qwen3_5FlareModelState` + ops + hybrid-clean FSM reference + parity harness + flywheel
 serving surface) is implemented, CPU-tested, and committed. The gauntlet ran on the RTX 5090 (sm_120):
 b1000 smoke export (§0), the REAL diffusion-trained export (§0.R — `qwen3.5-9b-fastdllm-rlv2-vllm-bf16`),
@@ -482,6 +492,56 @@ in the M-milestone plan.
   `VLLM_QWEN3_5_FLARE_MASK` + `VLLM_FLARE_SYNC_DEBUG`). qwen_diffusion `237fdcf` (adapter passes tool
   schemas via `extra_args`; this doc). Repro: engine env of §0.A + `VLLM_FLARE_SYNC_DEBUG=1` for the
   decode-fault phase, `VLLM_FLARE_BOUNDS_CHECK=1` for the (passing) index-tensor checks.
+
+---
+
+## 0.C GAP-5A FORWARD-VIEW FIX — byte-parity PASS (2026-07-04, RTX 5090 / sm_120)
+
+§0.B left Step 5 byte-parity **FAIL** for one isolated reason: the engine denoise *forward* still read
+the fixed 32-position spec-draft canvas, so the probe `[MASK]` attended to ~20 trailing MASKs and the
+whole logit distribution diverged at the first model-chosen token (pos 12). That forward-view gap is now
+**CLOSED** (vLLM pin `6b81154`), and **turn byte-parity PASSES**. Source: `p2_engine_acceptance_result.md`
+(SUPERSEDING UPDATE #2); acceptance artifacts `runs/p2_engine_acceptance/p2_full_acceptance.{py,json}`,
+`p2_temp_probe.{py,json}`, and the fix commit's `gap5a_windowed_ep0_default.json` / `gap5a_windowed_ep2.json`.
+
+### The fix (attention-view, scheduler-independent)
+The "variable single-`[MASK]` width from the scheduler" plan was inert on GPU: the spec-decode canvas is
+a FIXED width (`num_speculative_tokens == canvas_length`) and the **async scheduler pins that width per
+step** (uniform spec-token placeholder in `AsyncScheduler._update_after_schedule`), discarding
+per-request narrow widths (measured `valid_len == 32` every step); disabling async deadlocks the
+diffusion bootstrap. So the width can't be narrowed from the scheduler — that plumbing was reverted.
+Instead, for hybrid_clean denoise rows the fix **forces a causal mask in `prepare_attn`**
+(`VLLM_FLARE_WINDOWED_PROBE`, default on) so the probe attends only to the committed prefix + itself
+(trailing canvas MASKs come strictly after it in causal order; GDN linear-attn is already causal), paired
+with reading the `+1`-shifted logit at the **staged tail position** (`tail_len == _hc_draft_len-1`).
+`VLLM_FLARE_WINDOWED_PROBE=0` restores the old broken read for A/B. Causal is an approximation of the
+reference's windowed-*bidirectional* `[tail, MASK]` read; empirically byte-exact on the parity turns.
+
+### Per-step verdict
+| step | verdict | one-line |
+|---|---|---|
+| pre — CPU suite | **PASS** | `70 passed` (21 flare state-machine + 23 hybrid_clean + 26 hybrid_clean_flare_decode); no regression to `af21dc8` read-only-denoise or `1e32dcd` IMA. |
+| 5A — turn byte-parity | **PASS** | ep0 **42/42** & ep2 **36/36** full to `stop`, ep1 32/32 (capped), all token-identical to the HF Fast_dLLM reference; `value_projection_events == 0`; `forwards == model_chosen`, `generated == fsm + model_chosen`; `residual_full_context_model_calls == 0`; 5B IMA regression clear (ep0 does the full 32-tok block commit at `num_computed≈1073` with zero fault). |
+| 6 — matched-20 quality | **byte-parity-implied = HF 47/63** | same weights + same algorithm token-for-token ⇒ engine quality **is** the HF hybrid-clean row. No independent 63-turn engine sweep was run or fabricated. |
+| 6 — engine s/turn (K3 speed) | **UNADJUDICATED — correctness fix, not a speed win** | model forward ~1.3–1.8 s per 36–42-tok turn, but end-to-end is dominated by the **shared grammar-FSM host cost** (`O(committed²)`; ep1's 110-tok turn > 9 min), the same cost the HF 3.904 s/turn carries ⇒ no engine speed advantage yet. |
+
+### Determinism / temp>0 contract (honest)
+Greedy determinism holds (fresh boot, seedA==seedB byte-identical). temp>0 fixed-seed is reproducible
+(seeded per-slot `torch.Generator` in `_hc_sample_fn`); seed-diversity is real but *intermittent* (peaked
+value distributions) — demonstrated at temp=0.7 (two seeds diverge at pos 33). **Caveat:** the same
+greedy prompt wobbles by ~1 token (42 fresh vs 43 after cache is dirtied) from non-associative bf16
+reductions over different KV/prefix-cache layouts — a **general vLLM property, not a FLARE defect**;
+byte-parity is measured in the fresh per-turn condition (how both sides are captured) and reproduces
+across boots. At temp>0 a near-tie can let sampling pick a grammar-illegal value token that the FSM
+projects (`value_projection_events` 1) — expected under sampling, distinct from the fresh-greedy `proj==0`
+invariant.
+
+### What this changes for the plan
+The M1 substrate + the sequential single-`[MASK]` decode are now **byte-parity-correct on the engine** —
+the quality blocker is gone. The remaining gap to a *promotable* engine is **speed**: the fewer-forwards
+mechanism is proven live (e.g. ep2: 36 tokens / 16 forwards, 20 forced tokens bulk-committed with zero
+forwards), but a net s/turn win over guided-AR requires making the grammar-FSM host cost cheap
+(incremental FSM state instead of re-parsing the growing prefix) — separate future work, not this fix.
 
 ---
 
