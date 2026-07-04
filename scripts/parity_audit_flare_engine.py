@@ -1323,6 +1323,33 @@ def run_ops_parity_mode(args) -> dict[str, Any]:
     ops.restore_readonly_rows(noop_caches, empty_snap)
     record("empty_readonly_snapshot_is_noop", torch.equal(noop_caches[0][0], before))
 
+    # 3b. denoise state-row SELECTION (the CPU-checkable half of the crux): the
+    #     rows to protect are derived from the gdn_attn backend's own gathered
+    #     state block table (mamba_get_block_table_tensor output), NOT from an
+    #     independent running-column reconstruction. Column 0 is the non-spec
+    #     write slot; the full column set is the safe superset the kernel may
+    #     touch. Here we assert: (a) only denoise rows are protected, (b) the
+    #     non-spec column-0 slot of every denoise row is included, (c) NULL(0)
+    #     padding is filtered and shared slots dedup.
+    if hasattr(ops, "select_denoise_state_rows"):
+        state_bt = torch.tensor(
+            [[10, 11, 0], [20, 21, 0], [30, 30, 5], [40, 0, 0]], dtype=torch.int32
+        )
+        denoise_mask = torch.tensor([False, True, True, True])
+        sel = ops.select_denoise_state_rows(state_bt, denoise_mask, null_block_id=0)
+        sel_set = set(sel.tolist())
+        backend_non_spec = state_bt[:, 0]  # gdn_attn non_spec_state_indices_tensor
+        col0_denoise = {int(backend_non_spec[i]) for i in (1, 2, 3)}
+        record("denoise_rows_include_backend_col0", col0_denoise <= sel_set,
+               f"col0={sorted(col0_denoise)} sel={sorted(sel_set)}")
+        record("denoise_rows_exclude_commit_slots",
+               10 not in sel_set and 11 not in sel_set)
+        record("denoise_rows_filter_null_and_dedup",
+               0 not in sel_set and sel.tolist() == sorted(sel_set))
+    else:
+        record("select_denoise_state_rows_present", False,
+               "engine ops missing select_denoise_state_rows")
+
     # 4. fp32 boundary carrier (FlareLayerCache fp32 discipline)
     bf16_state = ssm.to(torch.bfloat16)
     cap = ops.FlareBoundarySnapshot.capture(bf16_state, conv)
