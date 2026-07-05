@@ -1,0 +1,21 @@
+{
+  "a1_mcnemar_vs_C0": {
+    "paired": 63,
+    "b_c0right_anewwrong": 0,
+    "c_anewright_c0wrong": 0,
+    "net_loss_b_minus_c": 0,
+    "p_two_sided": 1.0
+  },
+  "a1_bootstrap": {
+    "point": 47,
+    "lb95": 35,
+    "ub95": 58
+  },
+  "a3_mcnemar_vs_C0": {
+    "paired": 184,
+    "b_c0right_anewwrong": 1,
+    "c_anewright_c0wrong": 1,
+    "net_loss_b_minus_c": 0,
+    "p_two_sided": 1.0
+  }
+}

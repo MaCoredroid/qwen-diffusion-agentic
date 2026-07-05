@@ -1,0 +1,106 @@
+{
+  "a1_diffusion_hybrid_matched20": {
+    "turns": 63,
+    "exact": 47,
+    "valid_tool_call": 63,
+    "exact_tool_sequence": 63,
+    "episodes": 20,
+    "episode_exact": 13,
+    "anchor": 47,
+    "audit": {
+      "status": "CLEAN",
+      "verification_mode": "no_projection_events",
+      "rows": 63,
+      "exact_args": 47,
+      "projected_value_tokens_exact": 0,
+      "parallel_commit_forced_tokens_counter": 0,
+      "wave1_projected_tokens": 0,
+      "wave1_value_tokens_counter": 0,
+      "wave2_forced_tokens_counter": 0,
+      "zero_forward_rows": 0
+    }
+  },
+  "a2_diffusion_careful_matched20": {
+    "turns": 63,
+    "exact": 42,
+    "valid_tool_call": 60,
+    "exact_tool_sequence": 56,
+    "episodes": 20,
+    "episode_exact": 10,
+    "anchor": 44,
+    "audit": {
+      "status": "CLEAN",
+      "verification_mode": "no_projection_events",
+      "rows": 63,
+      "exact_args": 42,
+      "projected_value_tokens_exact": 0,
+      "parallel_commit_forced_tokens_counter": 0,
+      "wave1_projected_tokens": 0,
+      "wave1_value_tokens_counter": 0,
+      "wave2_forced_tokens_counter": 0,
+      "zero_forward_rows": 0
+    }
+  },
+  "a3_diffusion_hybrid_nevertrain": {
+    "turns": 184,
+    "exact": 83,
+    "valid_tool_call": 184,
+    "exact_tool_sequence": 133,
+    "episodes": 60,
+    "episode_exact": 20,
+    "anchor": 83,
+    "audit": {
+      "status": "CLEAN",
+      "verification_mode": "no_projection_events",
+      "rows": 184,
+      "exact_args": 83,
+      "projected_value_tokens_exact": 0,
+      "parallel_commit_forced_tokens_counter": 0,
+      "wave1_projected_tokens": 0,
+      "wave1_value_tokens_counter": 0,
+      "wave2_forced_tokens_counter": 0,
+      "zero_forward_rows": 0
+    }
+  },
+  "b_ar_guided_matched20": {
+    "turns": 63,
+    "exact": 50,
+    "valid_tool_call": 62,
+    "exact_tool_sequence": 62,
+    "episodes": 20,
+    "episode_exact": 13,
+    "anchor": 50
+  },
+  "b_ar_guided_nevertrain": {
+    "turns": 184,
+    "exact": 86,
+    "valid_tool_call": 184,
+    "exact_tool_sequence": 130,
+    "episodes": 60,
+    "episode_exact": 20,
+    "anchor": 77
+  },
+  "b_ar_guided_aggregate": {
+    "exact": 136,
+    "turns": 247,
+    "anchor": 127
+  },
+  "diffusion_aggregate": {
+    "exact": 130,
+    "turns": 247,
+    "anchor": 130
+  },
+  "c_gsm8k_legacy_fullctx_N20": {
+    "strict": 12,
+    "flex": 12,
+    "N": 20,
+    "anchor": 13,
+    "per_chunk_strict": [
+      3,
+      4,
+      3,
+      2
+    ],
+    "deterministic_rerun": "identical (chunks 0,3 reproduced per-example flags exactly)"
+  }
+}
