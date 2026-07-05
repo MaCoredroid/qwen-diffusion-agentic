@@ -1,0 +1,7 @@
+{
+  "a6_global_turns": [0, 4, 10, 16, 20, 21, 30, 44, 55, 60],
+  "a7_episodes": [0, 4, 6],
+  "seed": 20260701,
+  "margin": 16,
+  "note": "A6 = 10 matched-20 turns, single-turn APC-reset (fresh). A7 = 3 full episodes (ep0=gt0-3, ep4=gt13-15, ep6=gt19-21) turn-by-turn, warm APC. gt44 = the documented offline HF byte-break; gt20/21/60 = census turns."
+}

@@ -1,0 +1,160 @@
+Running as unit: run-p3510991-i3520470.scope; invocation ID: 63a7806150bd428fa9ec1a8054bcafdb
+INFO 07-05 14:18:30 [api_utils.py:273] non-default args: {'trust_remote_code': True, 'seed': 20260701, 'max_model_len': 4096, 'enable_prefix_caching': True, 'gpu_memory_utilization': 0.745, 'max_num_batched_tokens': 1024, 'max_num_seqs': 1, 'disable_log_stats': True, 'enforce_eager': True, 'enable_chunked_prefill': True, 'diffusion_config': {'canvas_length': 32, 'max_denoising_steps': 8}, 'attention_config': AttentionConfig(backend=<AttentionBackendEnum.TRITON_ATTN: 'vllm.v1.attention.backends.triton_attn.TritonAttentionBackend'>, flash_attn_version=None, use_prefill_decode_attention=False, flash_attn_max_num_splits_for_cuda_graph=32, tq_max_kv_splits_for_cuda_graph=32, use_trtllm_attention=None, disable_flashinfer_q_quantization=False, mla_prefill_backend=None, use_prefill_query_quantization=False, use_fp4_indexer_cache=False, indexer_kv_dtype='bf16', use_non_causal=False, flex_attn_block_m=None, flex_attn_block_n=None, flex_attn_q_block_size=None, flex_attn_kv_block_size=None), 'mamba_ssm_cache_dtype': 'float32', 'mamba_block_size': 1024, 'mamba_cache_mode': 'align', 'model': '/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16'}
+WARNING 07-05 14:18:30 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_USE_V1
+WARNING 07-05 14:18:30 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE
+WARNING 07-05 14:18:30 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_DECODE
+WARNING 07-05 14:18:30 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_BLOCK
+WARNING 07-05 14:18:30 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_ATTENTION_BACKEND
+WARNING 07-05 14:18:30 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_FLARE_BIDIR_PROBE
+WARNING 07-05 14:18:30 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_MASK
+WARNING 07-05 14:18:30 [arg_utils.py:1600] The global random seed is set to 20260701. Since VLLM_ENABLE_V1_MULTIPROCESSING is set to False, this may affect the random state of the Python process that launched vLLM.
+INFO 07-05 14:18:30 [model.py:606] Resolved architecture: Qwen3_5ForConditionalGeneration
+INFO 07-05 14:18:30 [model.py:1736] Using max model len 4096
+INFO 07-05 14:18:30 [scheduler.py:252] Chunked prefill is enabled with max_num_batched_tokens=1024.
+INFO 07-05 14:18:30 [config.py:575] Warning: Prefix caching in Mamba cache 'align' mode is currently enabled. Its support for Mamba layers is experimental. Please report any issues you may observe.
+INFO 07-05 14:18:30 [vllm.py:1093] Asynchronous scheduling is disabled.
+WARNING 07-05 14:18:30 [vllm.py:1147] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+WARNING 07-05 14:18:30 [vllm.py:1195] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+INFO 07-05 14:18:30 [kernel.py:286] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+INFO 07-05 14:18:30 [vllm.py:1400] Cudagraph is disabled under eager mode
+INFO 07-05 14:18:30 [compilation.py:312] Enabled custom fusions: norm_quant, act_quant
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+INFO 07-05 14:18:35 [core.py:114] Initializing a V1 LLM engine (v0.1.dev200+g2665ed704) with config: model='/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16', speculative_config=None, tokenizer='/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=20260701, served_model_name=/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [1024], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, moe_backend='auto', linear_backend='auto')
+INFO 07-05 14:18:35 [parallel_state.py:1588] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.0.0.148:59863 backend=nccl
+INFO 07-05 14:18:35 [parallel_state.py:1923] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+INFO 07-05 14:18:35 [gpu_worker.py:360] Using V2 Model Runner
+INFO 07-05 14:18:36 [model_runner.py:281] Loading model from scratch...
+INFO 07-05 14:18:36 [cuda.py:542] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+INFO 07-05 14:18:36 [mm_encoder_attention.py:373] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+INFO 07-05 14:18:36 [qwen_gdn_linear_attn.py:228] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+INFO 07-05 14:18:36 [cuda.py:423] Using AttentionBackendEnum.TRITON_ATTN backend.
+INFO 07-05 14:18:36 [weight_utils.py:849] Filesystem type for checkpoints: EXT4. Checkpoint size: 17.98 GiB. Available RAM: 25.93 GiB.
+INFO 07-05 14:18:36 [weight_utils.py:872] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:01<00:03,  1.23s/it]
+Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:02<00:02,  1.17s/it]
+Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:03<00:01,  1.15s/it]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:04<00:00,  1.06it/s]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:04<00:00,  1.03s/it]
+
+INFO 07-05 14:18:40 [default_loader.py:430] Loading weights took 4.15 seconds
+INFO 07-05 14:18:40 [model_runner.py:302] Model loading took 17.66 GiB and 4.827249 seconds
+WARNING 07-05 14:18:40 [qwen3_5_flare.py:254] FLARE block size 32 is not a multiple of the GDN chunk 64; commit boundaries will land mid-chunk and the fp32 boundary snapshot will not be a clean recurrent checkpoint. Set diffusion_config.canvas_length / VLLM_QWEN3_5_FLARE_BLOCK to a multiple of 64.
+WARNING 07-05 14:18:40 [qwen3_5_flare.py:436] Qwen3_5FlareModelState: model exposes no flare_gdn_route(); the route_i GROUND invariant is UNVERIFIED and assumed from VLLM_QWEN3_5_FLARE_ROUTE='route_i'. If the served forward is not the route_i FLARE forward, denoise/commit state discipline is invalid and this will not be caught here.
+INFO 07-05 14:18:40 [qwen3_5_flare.py:403] Qwen3_5FlareModelState ready: decode_mode=hybrid_clean block_size=32 bidir_probe=1 windowed_probe=1 readonly_denoise=1 canonical_publish=False route_verified=False
+INFO 07-05 14:18:40 [topk_topp_sampler.py:39] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+INFO 07-05 14:18:41 [interface.py:773] Setting attention block size to 528 tokens to ensure that attention page size is >= mamba page size.
+INFO 07-05 14:18:41 [interface.py:797] Padding mamba page size by 0.76% to ensure that mamba page size and attention page size are exactly equal.
+INFO 07-05 14:18:42 [gpu_worker.py:538] Available KV cache memory: 5.36 GiB
+INFO 07-05 14:18:42 [kv_cache_utils.py:2146] GPU KV cache size: 97,133 tokens
+INFO 07-05 14:18:42 [kv_cache_utils.py:2147] Maximum concurrency for 4,096 tokens per request: 23.71x
+INFO 07-05 14:18:42 [qwen_triton_warmup.py:364] Warming up Qwen Triton kernels for model_type=qwen3_5_text.
+INFO 07-05 14:18:42 [deep_gemm.py:175] deep_gemm not found in site-packages, trying vendored vllm.third_party.deep_gemm
+INFO 07-05 14:18:42 [deep_gemm.py:202] DeepGEMM PDL enabled on vllm.third_party.deep_gemm.
+INFO 07-05 14:18:42 [kernel_warmup.py:177] Using FlashInfer autotune cache file: /home/mark/.cache/vllm/flashinfer_autotune_cache/0.6.13/120f/503ebc37c445c7b24a7e8b8b8bd957eed9316fcd655e3cf2b848bfacb4e8478c/autotune_configs.json
+2026-07-05 14:18:42,885 - INFO - autotuner.py:651 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+2026-07-05 14:18:43,023 - INFO - autotuner.py:674 - flashinfer.jit: [Autotuner]: Autotuning process ends
+WARNING 07-05 14:18:43 [kernel_warmup.py:206] No FlashInfer autotune cache entries found.Falling back to default tactics.
+INFO 07-05 14:18:43 [cutedsl_warmup.py:97] Skipping CuTeDSL warmup because no compile units were requested.
+INFO 07-05 14:18:43 [qwen3_5_flare.py:633] FLARE hybrid_clean req=_warmup_0_ done: model_forwards=1 forced_token_count=0 value_tokens=0 projected_value_tokens_exact=0 generated_tokens=1 stop_reason=None
+INFO 07-05 14:18:43 [jit_monitor.py:72] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+INFO 07-05 14:18:43 [core.py:344] init engine (profile, create kv cache, warmup model) took 2.02 s
+[offline] booted boot_s=13.4 decode_mode=hybrid_clean enforce_eager=True apc=True chunked=True max_batched=1024 mask=248077
+INFO 07-05 14:18:43 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 103.18it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]WARNING 07-05 14:18:43 [jit_monitor.py:128] Triton kernel JIT compilation during inference: layer_norm_fwd_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.24it/s, est. speed input: 1290.49 toks/s, output: 52.07 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.24it/s, est. speed input: 1290.49 toks/s, output: 52.07 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.24it/s, est. speed input: 1290.49 toks/s, output: 52.07 toks/s]
+[offline-A6] gt 0 n=42/42 fin=stop bp_vs_hf=True fd_hf=None exact=1(hf=1) proj=0
+INFO 07-05 14:18:44 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3469.23it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:44 [qwen3_5_flare.py:633] FLARE hybrid_clean req=0-bb29e9fa done: model_forwards=23 forced_token_count=19 value_tokens=13 projected_value_tokens_exact=0 generated_tokens=42 stop_reason=complete_tool_call
+WARNING 07-05 14:18:45 [jit_monitor.py:128] Triton kernel JIT compilation during inference: _causal_conv1d_update_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-05 14:18:45 [jit_monitor.py:128] Triton kernel JIT compilation during inference: fused_recurrent_gated_delta_rule_packed_decode_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-05 14:18:45 [jit_monitor.py:128] Triton kernel JIT compilation during inference: _triton_mrope_forward. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-05 14:18:45 [jit_monitor.py:128] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-05 14:18:45 [jit_monitor.py:128] Triton kernel JIT compilation during inference: reduce_segments. This causes a latency spike; consider extending warmup to cover this shape/config.
+Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.65s/it, est. speed input: 544.09 toks/s, output: 41.48 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.65s/it, est. speed input: 544.09 toks/s, output: 41.48 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.65s/it, est. speed input: 544.09 toks/s, output: 41.48 toks/s]
+[offline-A6] gt 4 n=110/110 fin=stop bp_vs_hf=True fd_hf=None exact=1(hf=1) proj=0
+INFO 07-05 14:18:46 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4128.25it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:46 [qwen3_5_flare.py:633] FLARE hybrid_clean req=1-b9fa4b3b done: model_forwards=89 forced_token_count=21 value_tokens=80 projected_value_tokens_exact=0 generated_tokens=110 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.33s/it, est. speed input: 446.71 toks/s, output: 42.87 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.33s/it, est. speed input: 446.71 toks/s, output: 42.87 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.33s/it, est. speed input: 446.71 toks/s, output: 42.87 toks/s]
+[offline-A6] gt10 n=100/100 fin=stop bp_vs_hf=True fd_hf=None exact=1(hf=1) proj=0
+INFO 07-05 14:18:49 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4253.86it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:49 [qwen3_5_flare.py:633] FLARE hybrid_clean req=2-93d0fea2 done: model_forwards=79 forced_token_count=21 value_tokens=64 projected_value_tokens_exact=0 generated_tokens=100 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.15s/it, est. speed input: 836.29 toks/s, output: 48.83 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.15s/it, est. speed input: 836.29 toks/s, output: 48.83 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.15s/it, est. speed input: 836.29 toks/s, output: 48.83 toks/s]
+[offline-A6] gt16 n=56/56 fin=stop bp_vs_hf=True fd_hf=None exact=1(hf=1) proj=0
+INFO 07-05 14:18:50 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3927.25it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:50 [qwen3_5_flare.py:633] FLARE hybrid_clean req=3-a5a3f68c done: model_forwards=37 forced_token_count=19 value_tokens=28 projected_value_tokens_exact=0 generated_tokens=56 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.75s/it, est. speed input: 670.98 toks/s, output: 45.15 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.75s/it, est. speed input: 670.98 toks/s, output: 45.15 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.75s/it, est. speed input: 670.98 toks/s, output: 45.15 toks/s]
+[offline-A6] gt20 n=79/79 fin=stop bp_vs_hf=True fd_hf=None exact=0(hf=0) proj=0
+INFO 07-05 14:18:52 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3826.92it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:52 [qwen3_5_flare.py:633] FLARE hybrid_clean req=4-947a49a5 done: model_forwards=57 forced_token_count=22 value_tokens=47 projected_value_tokens_exact=0 generated_tokens=79 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.76s/it, est. speed input: 768.91 toks/s, output: 44.90 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.76s/it, est. speed input: 768.91 toks/s, output: 44.90 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.76s/it, est. speed input: 768.91 toks/s, output: 44.90 toks/s]
+[offline-A6] gt21 n=79/79 fin=stop bp_vs_hf=True fd_hf=None exact=0(hf=0) proj=0
+INFO 07-05 14:18:53 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4080.06it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:53 [qwen3_5_flare.py:633] FLARE hybrid_clean req=5-b3dc6640 done: model_forwards=58 forced_token_count=21 value_tokens=48 projected_value_tokens_exact=0 generated_tokens=79 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.02it/s, est. speed input: 1160.81 toks/s, output: 47.73 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.02it/s, est. speed input: 1160.81 toks/s, output: 47.73 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.02it/s, est. speed input: 1160.81 toks/s, output: 47.73 toks/s]
+[offline-A6] gt30 n=47/47 fin=stop bp_vs_hf=True fd_hf=None exact=1(hf=1) proj=0
+INFO 07-05 14:18:54 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3869.28it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:54 [qwen3_5_flare.py:633] FLARE hybrid_clean req=6-a5d4c6e3 done: model_forwards=29 forced_token_count=18 value_tokens=20 projected_value_tokens_exact=0 generated_tokens=47 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.42s/it, est. speed input: 540.23 toks/s, output: 41.75 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.42s/it, est. speed input: 540.23 toks/s, output: 41.75 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.42s/it, est. speed input: 540.23 toks/s, output: 41.75 toks/s]
+[offline-A6] gt44 n=101/99 fin=stop bp_vs_hf=False fd_hf=16 exact=0(hf=0) proj=0
+INFO 07-05 14:18:57 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3771.86it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:57 [qwen3_5_flare.py:633] FLARE hybrid_clean req=7-a847c223 done: model_forwards=82 forced_token_count=19 value_tokens=67 projected_value_tokens_exact=0 generated_tokens=101 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.04s/it, est. speed input: 738.91 toks/s, output: 41.59 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.04s/it, est. speed input: 738.91 toks/s, output: 41.59 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.04s/it, est. speed input: 738.91 toks/s, output: 41.59 toks/s]
+[offline-A6] gt55 n=85/85 fin=stop bp_vs_hf=True fd_hf=None exact=1(hf=1) proj=0
+INFO 07-05 14:18:59 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4056.39it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:18:59 [qwen3_5_flare.py:633] FLARE hybrid_clean req=8-87c85964 done: model_forwards=68 forced_token_count=17 value_tokens=58 projected_value_tokens_exact=0 generated_tokens=85 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:04<00:00,  4.29s/it, est. speed input: 291.61 toks/s, output: 39.36 toks/s]Processed prompts: 100%|██████████| 1/1 [00:04<00:00,  4.29s/it, est. speed input: 291.61 toks/s, output: 39.36 toks/s]Processed prompts: 100%|██████████| 1/1 [00:04<00:00,  4.29s/it, est. speed input: 291.61 toks/s, output: 39.36 toks/s]
+[offline-A6] gt60 n=169/169 fin=stop bp_vs_hf=True fd_hf=None exact=0(hf=0) proj=0
+INFO 07-05 14:19:03 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4116.10it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:03 [qwen3_5_flare.py:633] FLARE hybrid_clean req=9-aa5b69a3 done: model_forwards=150 forced_token_count=19 value_tokens=140 projected_value_tokens_exact=0 generated_tokens=169 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.27it/s, est. speed input: 1319.21 toks/s, output: 53.22 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.27it/s, est. speed input: 1319.21 toks/s, output: 53.22 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.27it/s, est. speed input: 1319.21 toks/s, output: 53.22 toks/s]
+[offline-A7] ep0 gt 0 t0 n=42/42 fin=stop bp_vs_hf=True exact=1(hf=1)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3898.05it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:04 [qwen3_5_flare.py:633] FLARE hybrid_clean req=10-b2360a25 done: model_forwards=23 forced_token_count=19 value_tokens=13 projected_value_tokens_exact=0 generated_tokens=42 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.60s/it, est. speed input: 721.75 toks/s, output: 46.91 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.60s/it, est. speed input: 721.75 toks/s, output: 46.91 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.60s/it, est. speed input: 721.75 toks/s, output: 46.91 toks/s]
+[offline-A7] ep0 gt 1 t1 n=75/75 fin=stop bp_vs_hf=True exact=0(hf=0)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3890.82it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:06 [qwen3_5_flare.py:633] FLARE hybrid_clean req=11-9832d5ae done: model_forwards=56 forced_token_count=19 value_tokens=47 projected_value_tokens_exact=0 generated_tokens=75 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.07it/s, est. speed input: 1412.61 toks/s, output: 53.31 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.07it/s, est. speed input: 1412.61 toks/s, output: 53.31 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.07it/s, est. speed input: 1412.61 toks/s, output: 53.31 toks/s]
+[offline-A7] ep0 gt 2 t2 n=50/50 fin=stop bp_vs_hf=True exact=1(hf=1)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3785.47it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:07 [qwen3_5_flare.py:633] FLARE hybrid_clean req=12-a9385d39 done: model_forwards=32 forced_token_count=18 value_tokens=22 projected_value_tokens_exact=0 generated_tokens=50 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.69it/s, est. speed input: 2458.79 toks/s, output: 62.57 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.69it/s, est. speed input: 2458.79 toks/s, output: 62.57 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.69it/s, est. speed input: 2458.79 toks/s, output: 62.57 toks/s]
+[offline-A7] ep0 gt 3 t3 n=37/37 fin=stop bp_vs_hf=True exact=1(hf=1)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4173.44it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:07 [qwen3_5_flare.py:633] FLARE hybrid_clean req=13-b82e392b done: model_forwards=19 forced_token_count=18 value_tokens=13 projected_value_tokens_exact=0 generated_tokens=37 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.81s/it, est. speed input: 511.86 toks/s, output: 43.84 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.81s/it, est. speed input: 511.86 toks/s, output: 43.84 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.81s/it, est. speed input: 511.86 toks/s, output: 43.84 toks/s]
+[offline-A7] ep4 gt13 t0 n=123/123 fin=stop bp_vs_hf=True exact=1(hf=1)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3650.40it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:10 [qwen3_5_flare.py:633] FLARE hybrid_clean req=14-968dcb99 done: model_forwards=95 forced_token_count=28 value_tokens=64 projected_value_tokens_exact=0 generated_tokens=123 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.71s/it, est. speed input: 616.52 toks/s, output: 45.01 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.71s/it, est. speed input: 616.52 toks/s, output: 45.01 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.71s/it, est. speed input: 616.52 toks/s, output: 45.01 toks/s]
+[offline-A7] ep4 gt14 t1 n=122/122 fin=stop bp_vs_hf=True exact=1(hf=1)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3647.22it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:13 [qwen3_5_flare.py:633] FLARE hybrid_clean req=15-b36c7d08 done: model_forwards=94 forced_token_count=28 value_tokens=63 projected_value_tokens_exact=0 generated_tokens=122 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.66s/it, est. speed input: 717.46 toks/s, output: 45.57 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.66s/it, est. speed input: 717.46 toks/s, output: 45.57 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.69s/it, est. speed input: 717.46 toks/s, output: 45.57 toks/s]
+[offline-A7] ep4 gt15 t2 n=121/121 fin=stop bp_vs_hf=True exact=1(hf=1)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4116.10it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:15 [qwen3_5_flare.py:633] FLARE hybrid_clean req=16-839ec885 done: model_forwards=93 forced_token_count=28 value_tokens=62 projected_value_tokens_exact=0 generated_tokens=121 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 674.12 toks/s, output: 45.87 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 674.12 toks/s, output: 45.87 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 674.12 toks/s, output: 45.87 toks/s]
+[offline-A7] ep6 gt19 t0 n=69/69 fin=stop bp_vs_hf=True exact=0(hf=0)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4124.19it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:17 [qwen3_5_flare.py:633] FLARE hybrid_clean req=17-96cd1bc5 done: model_forwards=49 forced_token_count=20 value_tokens=39 projected_value_tokens_exact=0 generated_tokens=69 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.65s/it, est. speed input: 709.56 toks/s, output: 47.75 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.65s/it, est. speed input: 709.56 toks/s, output: 47.75 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.65s/it, est. speed input: 709.56 toks/s, output: 47.75 toks/s]
+[offline-A7] ep6 gt20 t1 n=79/79 fin=stop bp_vs_hf=True exact=0(hf=0)
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3956.89it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]INFO 07-05 14:19:18 [qwen3_5_flare.py:633] FLARE hybrid_clean req=18-a1a754ff done: model_forwards=57 forced_token_count=22 value_tokens=47 projected_value_tokens_exact=0 generated_tokens=79 stop_reason=complete_tool_call
+Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.66s/it, est. speed input: 813.27 toks/s, output: 47.49 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.66s/it, est. speed input: 813.27 toks/s, output: 47.49 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.66s/it, est. speed input: 813.27 toks/s, output: 47.49 toks/s]
+[offline-A7] ep6 gt21 t2 n=79/79 fin=stop bp_vs_hf=True exact=0(hf=0)
+[offline] DONE
+[rank0]:[W705 14:19:20.763113713 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
