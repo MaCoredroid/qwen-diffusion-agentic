@@ -25,8 +25,25 @@ IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix accep
 > compute 6.54 ms (**not width-reducible**) + host 0.58 ms. Bar needs 13.03 ms/fwd → **not reachable by engine plumbing at
 > bs=1**; levers are fewer forwards/turn (training), fp8/int8 weights (~0.68/0.51 s/turn, quality tradeoff), or batching.
 > temp=0.7 (5 rollouts × 2 boots) byte-reproducible + never-train 3/3 byte-parity/exact vs HF — contract holds post-fix.
-> **No engine row added to the endgame scoreboard** (gate not met). Details §0.H; battery commit `1cb4457` (pushed
+>
+> **UPDATE (ENDGAME BATTERY COMPLETE — aggregate 247, engine row now ON the scoreboard).** The missing never-train
+> slice (BFCL/API-Bank, 184 turns) ran on the **exact v3b config** (`runs/p2_engine_nevertrain/`, commit `1129f86`):
+> exact **83/184 == HF EXACTLY**, valid 184/184, byte-parity 171/184 (13 breaks, all quality-neutral fp-residue, 0
+> structural), **0.480 s/turn**, 24.06 fwd/turn. **Aggregate-247 ENGINE** (matched-63 v3b + never-train-184): exact
+> **130/247 == HF hybrid-clean 130/247 EXACTLY**, episode **32/80 == HF**, valid **247/247**, byte-parity **233/247**
+> (cold-config 235/247; 14 breaks all fp-residue, **0 structural**, proj==0, `eng_exact==hf_exact` ⇒ exact stays 130),
+> **0.626 s/turn**, 32.43 fwd/turn. **Quality:** engine ties HF exactly AND beats every AR baseline (+6 vs
+> stock-bf16-AR 124, +1 vs stock-FP8 129, +3 vs merged-AR 127). **Speed:** 0.626 s/turn **BEATS** stock-bf16-AR-agg
+> 0.741 (1.18×), stock-FP8-agg 0.910 (1.45×), merged-AR-agg 0.739 (1.18×), HF-hybrid 2.577 (4.12×) — **closes the last
+> slower column of the scoreboard AND the v3b "stock-agg 0.741 MISS"** (that MISS compared matched-20-only 1.053 to a
+> shorter stock mix; on the identical 247-turn mix the engine aggregate wins). The **engine row is now added to
+> `runs/endgame_scoreboard/report.md`** (all three slices) — this is a "same-system, faster-serving, quality-identical"
+> row, NOT a promotion: the **strict 247/247 byte-parity gate remains NOT met (233/247) ⇒ code default stays OFF**.
+> Final assembled table + verdict: `endgame_table_final.md` (repo root). Never-train commit `1129f86` (pushed
 > origin/main).
+>
+> **PRIOR (matched-20 v3b): No engine row on the scoreboard at that point** (matched-20 gate not met). Details §0.H;
+> battery commit `1cb4457` (pushed origin/main).
 >
 > **PRIOR UPDATE (§0.G, vLLM pin `e5496cc` — THE PROMOTION ATTEMPT: NOT PROMOTED).** The v3 battery is the explicit
 > promotion attempt against the strict gate (**63/63 byte-parity ⇒ exact exactly 47**) plus an independent 3rd boot.
