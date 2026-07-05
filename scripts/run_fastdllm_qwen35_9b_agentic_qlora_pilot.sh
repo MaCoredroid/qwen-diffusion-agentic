@@ -57,6 +57,9 @@ DATA_SEED="${DATA_SEED:-${SEED}}"
 GRADIENT_CHECKPOINTING="${GRADIENT_CHECKPOINTING:-1}"
 GRADIENT_CHECKPOINTING_KWARGS="${GRADIENT_CHECKPOINTING_KWARGS:-{\"use_reentrant\":false}}"
 LOGGING_STEPS="${LOGGING_STEPS:-5}"
+# Entry script is overridable so alternate pre-tokenized ingestion (S2 pilot) can
+# reuse this whole runner unchanged. Default is byte-identical to prior behavior.
+ENTRY_SCRIPT="${ENTRY_SCRIPT:-train_scripts/finetune.py}"
 
 export CUDA_HOME="${CUDA_ROOT}"
 export PATH="${CUDA_HOME}/bin:${ROOT}/.venv-fastdllm/bin:${PATH}"
@@ -213,7 +216,7 @@ if [[ -n "${LR_SCHEDULER_KWARGS}" ]]; then
     EXTRA_ARGS+=(--lr_scheduler_kwargs "${LR_SCHEDULER_KWARGS}")
 fi
 
-exec "${ENV_PY}" train_scripts/finetune.py \
+exec "${ENV_PY}" "${ENTRY_SCRIPT}" \
     --model_name_or_path "${MODEL_PATH}" \
     --trust_remote_code 1 \
     --mdm 1 \
