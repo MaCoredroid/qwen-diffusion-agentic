@@ -1,0 +1,224 @@
+{
+  "note": "N=5 paired Stage-C SWE run. VERDICTS ARE MOCK (gold-line-subset stand-in), NOT docker resolve@1 (docker+swebench absent on 5090; alienware x86 offload unreachable this session). predictions.jsonl emitted per arm for later offload scoring.",
+  "context_ceiling": "max_model_len=32768, proxy max_tokens=2048 -> usable input ~30720; once conversation exceeds it every turn 400s. Hit BOTH arms (AR 3x400, diffusion 5x400).",
+  "instances": {
+    "django__django-11119": {
+      "ar": {
+        "made_edit": true,
+        "patch_bytes": 485,
+        "mock_verdict": "resolved",
+        "mock_failure_mode": "tests_passed",
+        "turns": 8,
+        "wall_s": 16.885,
+        "per_turn_s": 2.11,
+        "cli_exit": 0,
+        "cli_exit_meaning": "clean_success",
+        "subtype": "success",
+        "edit_calls": 1,
+        "read_calls": 4,
+        "shell_calls": 2,
+        "gen_tokens_out": 1232,
+        "usage_total_tokens_cumulative": 106635
+      },
+      "diffusion": {
+        "made_edit": true,
+        "patch_bytes": 977,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "tests_failed",
+        "turns": null,
+        "wall_s": 426.242,
+        "per_turn_s": null,
+        "cli_exit": 53,
+        "cli_exit_meaning": "turn_limit(FatalTurnLimitedError, max_session_turns=50)",
+        "subtype": null,
+        "edit_calls": 0,
+        "read_calls": 0,
+        "shell_calls": 0,
+        "gen_tokens_out": null,
+        "usage_total_tokens_cumulative": null
+      }
+    },
+    "django__django-12754": {
+      "ar": {
+        "made_edit": false,
+        "patch_bytes": 0,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "patch_apply_failed",
+        "turns": 17,
+        "wall_s": 27.798,
+        "per_turn_s": 1.64,
+        "cli_exit": 0,
+        "cli_exit_meaning": "clean_success",
+        "subtype": "success",
+        "edit_calls": 0,
+        "read_calls": 10,
+        "shell_calls": 4,
+        "gen_tokens_out": 1992,
+        "usage_total_tokens_cumulative": 279362
+      },
+      "diffusion": {
+        "made_edit": false,
+        "patch_bytes": 0,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "patch_apply_failed",
+        "turns": 37,
+        "wall_s": 134.529,
+        "per_turn_s": 3.64,
+        "cli_exit": 0,
+        "cli_exit_meaning": "clean_success",
+        "subtype": "success",
+        "edit_calls": 0,
+        "read_calls": 12,
+        "shell_calls": 24,
+        "gen_tokens_out": 3999,
+        "usage_total_tokens_cumulative": 820251
+      }
+    },
+    "django__django-13741": {
+      "ar": {
+        "made_edit": true,
+        "patch_bytes": 465,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "tests_failed",
+        "turns": 10,
+        "wall_s": 16.434,
+        "per_turn_s": 1.64,
+        "cli_exit": 0,
+        "cli_exit_meaning": "clean_success",
+        "subtype": "success",
+        "edit_calls": 1,
+        "read_calls": 3,
+        "shell_calls": 5,
+        "gen_tokens_out": 1288,
+        "usage_total_tokens_cumulative": 130190
+      },
+      "diffusion": {
+        "made_edit": false,
+        "patch_bytes": 0,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "patch_apply_failed",
+        "turns": 14,
+        "wall_s": 112.853,
+        "per_turn_s": 8.06,
+        "cli_exit": 0,
+        "cli_exit_meaning": "clean_success",
+        "subtype": "success",
+        "edit_calls": 0,
+        "read_calls": 8,
+        "shell_calls": 5,
+        "gen_tokens_out": 2949,
+        "usage_total_tokens_cumulative": 243663
+      }
+    },
+    "pytest-dev__pytest-8399": {
+      "ar": {
+        "made_edit": true,
+        "patch_bytes": 1112,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "tests_failed",
+        "turns": 37,
+        "wall_s": 84.616,
+        "per_turn_s": 2.29,
+        "cli_exit": 0,
+        "cli_exit_meaning": "clean_success",
+        "subtype": "success",
+        "edit_calls": 1,
+        "read_calls": 8,
+        "shell_calls": 24,
+        "gen_tokens_out": 6735,
+        "usage_total_tokens_cumulative": 822593
+      },
+      "diffusion": {
+        "made_edit": false,
+        "patch_bytes": 0,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "patch_apply_failed",
+        "turns": 29,
+        "wall_s": 49.925,
+        "per_turn_s": 1.72,
+        "cli_exit": 1,
+        "cli_exit_meaning": "loop_detector_halt(consecutive_identical_tool_calls)",
+        "subtype": "error_during_execution",
+        "edit_calls": 0,
+        "read_calls": 0,
+        "shell_calls": 0,
+        "gen_tokens_out": 1864,
+        "usage_total_tokens_cumulative": 518898
+      }
+    },
+    "sympy__sympy-13757": {
+      "ar": {
+        "made_edit": false,
+        "patch_bytes": 0,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "patch_apply_failed",
+        "turns": 41,
+        "wall_s": 89.724,
+        "per_turn_s": 2.19,
+        "cli_exit": 0,
+        "cli_exit_meaning": "clean_success",
+        "subtype": "success",
+        "edit_calls": 0,
+        "read_calls": 13,
+        "shell_calls": 27,
+        "gen_tokens_out": 7164,
+        "usage_total_tokens_cumulative": 826565
+      },
+      "diffusion": {
+        "made_edit": false,
+        "patch_bytes": 0,
+        "mock_verdict": "failed",
+        "mock_failure_mode": "patch_apply_failed",
+        "turns": 19,
+        "wall_s": 40.963,
+        "per_turn_s": 2.16,
+        "cli_exit": 1,
+        "cli_exit_meaning": "loop_detector_halt(consecutive_identical_tool_calls)",
+        "subtype": "error_during_execution",
+        "edit_calls": 0,
+        "read_calls": 0,
+        "shell_calls": 0,
+        "gen_tokens_out": 1511,
+        "usage_total_tokens_cumulative": 226222
+      }
+    }
+  },
+  "diffusion_engine_counters": {
+    "log": "/home/mark/qwen_diffusion/runs/stage_c_n5/logs/diffusion_server.log",
+    "boot_decode_line": "decode_mode=hybrid_clean block_size=32 bidir_probe=1 windowed_probe=1 readonly_denoise=1 canonical_publish=False route_verified=False",
+    "decode_mode_hybrid_clean": true,
+    "n_hybrid_clean_requests": 153,
+    "projected_value_tokens_exact_all_zero": true,
+    "projected_value_tokens_exact_violations": 0,
+    "total_model_forwards": 21971,
+    "total_generated_tokens": 24179,
+    "stop_reasons": {
+      "None": 5,
+      "complete_tool_call": 147,
+      "max_new_tokens": 1
+    },
+    "prefix_cache_hit_rates_pct": [
+      88.3,
+      88.6,
+      88.6,
+      88.8,
+      88.9
+    ],
+    "gpu_prefix_cache_hit_rates_pct": [],
+    "n_error_lines": 0,
+    "n_http_4xx_5xx": 5,
+    "counters_clean": false
+  },
+  "arm_rollup": {
+    "ar": {
+      "made_edit": 3,
+      "mock_resolved": 1,
+      "clean_exit0": 5
+    },
+    "diffusion": {
+      "made_edit": 1,
+      "mock_resolved": 0,
+      "clean_exit0": 2
+    }
+  }
+}

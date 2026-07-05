@@ -479,6 +479,35 @@ Verdict: **FLYWHEEL PRESERVES.** McNemar `b = 0` (C0-right & A_new-wrong) in **b
 GSM8K combined 26/40 = 0.65 == anchor; all audits clean; no KILL fired. Full table §5.
 (`convert_after_rl_result.md`.)
 
+### 3.10 First SWE-loop milestone — Stage-C N=5 paired smoke (2026-07-05, C4+C5)
+
+The first exercise of the served endpoints on **real SWE-bench_Verified instances**, paired AR vs
+diffusion, is DONE — `runs/stage_c_n5/report.md` + `paired_summary.json`. 5 Tier0 instances
+(`django-11119/12754/13741`, `pytest-8399`, `sympy-13757`) × 2 arms, one server at a time (RAM cage):
+Qwen Code `@0.19.2` headless → stock-AR `:9951` and FLARE diffusion `:9952` hybrid_clean. `predictions.jsonl`
+emitted per arm (5+5) for later real resolve@1.
+
+- **Loop closes on both arms (C-G1 behavioral).** Tool calls parse, real edits land, verdict classifier
+  returns for every instance, **zero engine crash.** Diffusion engine counters CLEAN: `decode_mode=hybrid_clean`,
+  **153 hybrid_clean requests all on the grammar path** (A2 bridge every turn), **`projected_value_tokens_exact`
+  all-zero / 0 violations**, 147× `stop_reason=complete_tool_call`, APC hit-rate 88.3→88.9%, 0 error lines.
+- **Verdicts are MOCK, NOT docker resolve@1** — docker+swebench absent on the 5090, alienware unreachable
+  this session (offload out-of-scope per user decision). Mock = extracted-patch-lines ⊇ gold-lines (strict;
+  a genuine-but-different fix scores `failed`). **AR: mock-resolved 1/5, real edit 3/5, clean exit 5/5.
+  Diffusion: mock-resolved 0/5, real edit 1/5, clean exit 2/5.** Real resolve@1 waits on local docker/swebench.
+- **R4 reproduces at SWE scale, sharpening benign→malign.** 2/5 diffusion episodes halt on qwen's
+  `consecutive_identical_tool_calls` guard **before any edit lands** (empty patch; Stage-A fired it *after* a
+  correct edit); 1/5 hits the 50-turn `FatalTurnLimitedError` but produces a 977B patch. Same structural root:
+  the A2 grammar requires a tool call every turn, so diffusion never emits the clean terminating free-text turn
+  AR uses (AR exit-0 5/5 vs diffusion 2/5).
+- **New shared blocker: 32,768 context ceiling** (`max_model_len=32768` + proxy `max_tokens=2048` → usable
+  input ~30,720; long episodes 400 out on both arms — AR 3×400, diff 5×400; Qwen Code has no compaction).
+  Confounds long episodes on *both* arms; not an engine defect.
+- **N=25–50 (C6) read: conditional GO** after three fixes — raise `max_model_len` (40–48k) / enable
+  compaction; land the R4 free-text|tool-call grammar alternation so diffusion terminates; stand up local
+  docker/swebench for real resolve@1. Running C6 today would score a diffusion termination artifact, not
+  capability.
+
 ---
 
 ## 4. THE AUDIT BATTERY — MANDATORY ACCEPTANCE (not optional; the lessons are half the value)

@@ -199,3 +199,36 @@ policy fix: stop full-canvas re-denoise per committed token + EOS overshoot (~30
 SWE-Verified evaluation (patch apply + tests + resolve scoring) runs LOCALLY on this machine. The
 alienware x86 offload path (swe_x86_helpers) is excluded by user decision. Local docker/swebench setup is
 in-scope work and part of the reproducible recipe.
+
+## Stage-C status — 2026-07-05 (C4+C5 DONE: N=5 paired smoke, first SWE loop closes on the diffusion engine)
+- **C4+C5 DONE** — `runs/stage_c_n5/report.md` + `paired_summary.json`. 5 Tier0 SWE-bench_Verified
+  instances (`django-11119/12754/13741`, `pytest-8399`, `sympy-13757`) x 2 arms, one server at a time in
+  the RAM cage (all 5 on AR `:9951` -> kill -> all 5 on diffusion `:9952` hybrid_clean -> kill). AR arm
+  4.5 min wall, diffusion arm 12.9 min. Clean teardown verified both arms. `predictions.jsonl` emitted
+  per arm (5+5 rows) for later real resolve@1 scoring.
+- **C-G1 (smoke loop closes) MET behaviorally.** Tool calls parse on both arms, real edits land, the
+  verdict classifier returns for every instance, **zero engine crash**. Diffusion engine counters CLEAN:
+  `decode_mode=hybrid_clean` (A-G1 live), **153 hybrid_clean requests all on the grammar path** (A2 bridge
+  fired every turn), **`projected_value_tokens_exact` all-zero, 0 violations**, stop_reasons
+  147x`complete_tool_call`, APC hit-rate 88.3->88.9% (real cross-turn reuse), 0 error lines. The 5 HTTP-400s
+  are the context-ceiling limit below, not engine faults.
+- **Verdicts are MOCK, not docker resolve@1** — docker+swebench absent on the 5090, alienware unreachable
+  this session (and offload out-of-scope per addendum 2). Mock = extracted-patch-lines superset gold-lines
+  (strict; a genuine-but-different fix scores `failed`). Rollup: **AR mock-resolved 1/5, made a real edit
+  3/5, exited clean 5/5; diffusion mock-resolved 0/5, made a real edit 1/5, exited clean 2/5.** Real
+  resolve@1 waits on local docker/swebench (in-scope recipe work, C3).
+- **R4 REPRODUCES at SWE scale and sharpens benign->malign.** Two diffusion episodes (`pytest-8399`,
+  `sympy-13757`) halt on qwen's `consecutive_identical_tool_calls` guard (exit 1) **before landing any
+  edit** (empty patch) — vs Stage-A where it fired *after* a correct edit. One (`django-11119`) hits the
+  50-turn `FatalTurnLimitedError` (exit 53) but produces a 977B patch. Same structural root cause: the A2
+  grammar requires a tool call every turn, so diffusion never emits the terminating free-text turn AR uses
+  to exit clean (AR exit-0 5/5 vs diffusion 2/5; turn-count asymmetry reproduces and amplifies, e.g.
+  django-11119 diff 50 vs AR 8).
+- **NEW SHARED BLOCKER — 32,768 context ceiling (both arms).** `max_model_len=32768` + proxy
+  `max_tokens=2048` -> usable input ~30,720; long episodes 400 out (AR 3x400, diff 5x400). Qwen Code has no
+  compaction. Confounds the long episodes on *both* arms; **not** an engine defect.
+- **Go/no-go for C6 (N=25-50): CONDITIONAL GO, gated on three fixes first** — (1) raise `max_model_len` to
+  40-48k and/or enable qwen-code compaction (arm-neutral context fix); (2) land the R4 free-text|tool-call
+  grammar alternation (or drop `tools` post-work) so diffusion can terminate; (3) stand up local
+  docker/swebench for real resolve@1. Running C6 today for a resolve verdict would score a diffusion
+  termination artifact, not capability. **Do not launch N=25-50 for a verdict until (1)+(2)+(3) land.**
