@@ -1,0 +1,25 @@
+{
+  "model_name_or_path": "qwen3.5-9b-ar::qwen-code-0.19.2::stage-c",
+  "started_at": "2026-07-05T22:08:54Z",
+  "ended_at": "2026-07-05T22:09:07Z",
+  "instances_total": 1,
+  "verdict_counts": {
+    "resolved": 1
+  },
+  "failure_mode_counts": {
+    "tests_passed": 1
+  },
+  "per_repo_total": {
+    "pytest-dev/pytest": 1
+  },
+  "per_repo_resolved": {
+    "pytest-dev/pytest": 1
+  },
+  "agent_wall_seconds": {
+    "p50": 0.001,
+    "p90": 0.001,
+    "min": 0.001,
+    "max": 0.001
+  },
+  "resolved_rate": 1.0
+}

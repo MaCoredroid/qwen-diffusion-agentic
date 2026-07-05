@@ -1,0 +1,16 @@
+{
+  "track": "swe_bench",
+  "instance_id": "pytest-dev__pytest-8399",
+  "model_id": "qwen3.5-9b-ar::qwen-code-0.19.2::stage-c",
+  "dataset_name": "princeton-nlp/SWE-bench_Verified",
+  "patch_path": "/home/mark/qwen_diffusion/runs/stage_c_driver/dryrun_output/verified/per_task/pytest-dev__pytest-8399/patch.diff",
+  "prediction_path": "/home/mark/qwen_diffusion/runs/stage_c_driver/dryrun_output/verified/per_task/pytest-dev__pytest-8399/eval/predictions.jsonl",
+  "verdict": "resolved",
+  "passed": true,
+  "failure_mode": "tests_passed",
+  "harness_exit_code": 0,
+  "eval_wall_clock_seconds": 0.0,
+  "error": null,
+  "mock": true,
+  "eval_backend": "mock_gold_compare"
+}

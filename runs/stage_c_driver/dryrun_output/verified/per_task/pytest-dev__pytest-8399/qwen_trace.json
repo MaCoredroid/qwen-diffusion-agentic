@@ -1,0 +1,7 @@
+{
+  "mock_agent": true,
+  "action": "replay_gold_patch",
+  "gold_patch_bytes": 2450,
+  "applied": true,
+  "apply_stderr": ""
+}

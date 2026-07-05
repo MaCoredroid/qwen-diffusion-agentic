@@ -1,0 +1,49 @@
+{
+  "instance_id": "pytest-dev__pytest-8399",
+  "dataset_name": "princeton-nlp/SWE-bench_Verified",
+  "started_at": "2026-07-05T22:08:54Z",
+  "repo": "pytest-dev/pytest",
+  "base_commit": "6e7dc8bac831cd8cf7a53b08efa366bd84f0c0fe",
+  "agent": "mock",
+  "eval_mode": "mock",
+  "qwen": {
+    "elapsed_s": 0.001,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "mock_gold_replay",
+    "num_turns": 1,
+    "duration_api_ms": 0,
+    "usage": null,
+    "tool_calls": 1,
+    "tool_by_name": {
+      "mock_apply": 1
+    },
+    "result_tail": "gold_replay applied=True",
+    "mock_apply_err": ""
+  },
+  "patch_bytes": 2460,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "mock"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "pytest-dev__pytest-8399",
+    "model_id": "qwen3.5-9b-ar::qwen-code-0.19.2::stage-c",
+    "dataset_name": "princeton-nlp/SWE-bench_Verified",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage_c_driver/dryrun_output/verified/per_task/pytest-dev__pytest-8399/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage_c_driver/dryrun_output/verified/per_task/pytest-dev__pytest-8399/eval/predictions.jsonl",
+    "verdict": "resolved",
+    "passed": true,
+    "failure_mode": "tests_passed",
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "mock": true,
+    "eval_backend": "mock_gold_compare"
+  },
+  "ended_at": "2026-07-05T22:09:07Z"
+}

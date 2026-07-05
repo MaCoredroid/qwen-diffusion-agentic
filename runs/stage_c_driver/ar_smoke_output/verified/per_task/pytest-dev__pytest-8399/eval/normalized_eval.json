@@ -1,0 +1,10 @@
+{
+  "track": "swe_bench",
+  "instance_id": "pytest-dev__pytest-8399",
+  "outcome": "failed",
+  "failure_mode": "tests_failed",
+  "dataset_name": "princeton-nlp/SWE-bench_Verified",
+  "model_id": "qwen3.5-9b-ar::qwen-code-0.19.2::stage-c-smoke",
+  "eval_wall_clock_seconds": 0.0,
+  "arch": "x86_64"
+}
