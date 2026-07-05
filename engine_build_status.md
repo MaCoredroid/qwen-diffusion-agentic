@@ -1,9 +1,43 @@
 # P2 Engine-Fast Diffusion Serving — Build Status & GPU Smoke Checklist
 
 Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones, kill criteria).
-Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
+Date: 2026-07-04 (last verified 2026-07-05). Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
 IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
+> **UPDATE (2026-07-05 — L0 DONE + L2 MEASURED; FINAL-HEAD CONSOLIDATED VERIFICATION on vLLM pin `0b44dcc`; certificate NOT regressed).**
+> The **L0 free-text serving fix landed on the pin as `0b44dcc`** ("fix CPU-pathological hang + honor EOS like AR"). This
+> re-verification re-ran the full no-regression set on that FINAL HEAD (hybrid_clean, PIECEWISE cudagraph,
+> `VLLM_FLARE_BIDIR_PROBE=1`+`VLLM_FLARE_CUDAGRAPH=1`, bf16, RTX 5090, B=1, greedy seed 20260701). **Zero source edits made**
+> → byte-parity certificate safe. Artifacts: `runs/l0l2_final_head_verify/` (summary.json + 5 JSONL).
+>
+> **(1) Free-text 30-prompt sweep (L0 gate) — FIXED.** GSM8K clean first-30, schema-free free-text: **30/30 clean stop
+> (finish_reason=stop), 0 hang, 0 degenerate, single boot / 0 reboots** (pre-fix pin `95d8b47` was 24/30 clean + 3
+> CPU-pathological hang + 3 degenerate-length). **GSM8K strict now 26/30** (L1 pre-fix was 0/24 — the fix restores scorable
+> free-CoT instead of an unstoppable phantom tool-wrap). `value_projection_events=0`, verify.ok on all 30, cudagraph engaged
+> (cg/fwd≈1.04). But this path is **K=1** (model_chosen==forwards) and **per-forward 25.8 ms** — see (4).
+>
+> **(2) 15-turn tool-call parity sweep (spot-gate) — NOT REGRESSED.** Turns {0-9,20,21,44,45,60}: **byte-parity 14/15**,
+> the **lone break gt44 (fd=16, n=101)** — the same known path-invariant deterministic fp-residue as v3b/endgame; gt45 and
+> the APC-sensitive {20,21,60} all parity-clean. `value_projection_events=0` on all 15, `eng_exact==hf` on all 15,
+> verify.ok on all 15. The L0 fix is gated on `grammar.enabled` / "finished-but-no-stop-id", so tool-call decode is
+> byte-identical to the pre-fix engine — **the 233/247 certificate is intact.**
+>
+> **(3) Read-only-denoise fingerprint — CLEAN.** 6 turns, per-forward hash of conv+ssm denoise rows (cap 4/turn):
+> **6/6 bit-identical (post-restore == pre-forward), forward_wrote>0 on all (restore load-bearing), 0 leaks.** GDN state
+> discipline holds. **Determinism 2×:** two independent fresh boots (battery15_B vs battery15_C) of the 15-turn sweep are
+> **identical on every per-turn field** (n_gen / first_div / byte_parity / forwards / exact).
+>
+> **(4) Per-forward before/after + the corrected 5× factor.** Tool-call content clean per-forward **18.31 ms (fwd-weighted),
+> 17.92 ms long-turn-amortized** — statistically identical to endgame **18.5** / L2 re-measure **17.8** ⇒ **L0 is
+> per-forward-NEUTRAL on the tool-call path**, as designed. NEW: the now-working **free-text/reasoning per-forward = 25.8 ms**
+> (cudagraph-engaged, K=1, 0.86 *emitted* tok/fwd because block-diffusion overshoots past EOS and discards the tail). This
+> is the honest reasoning-content per-forward (pre-fix it hung, so was unmeasurable). **Corrected 5× equation on reasoning
+> content** (ratio = committed tok/fwd × AR-ms/tok ÷ engine-ms/fwd, AR-cudagraph fairness per L2): **0.86 × (10.72 ÷ 25.8) =
+> 0.36× vs AR-cudagraph** (0.47× vs AR-eager). model-chosen K=1.00 is the chain-rule wall; distance to 5× ≈ **14×**, entirely
+> in K (L2 per-forward parity 25.8→~13 is at most ~2× and still K-bound). Only L3 (S2 consistency-distillation + adaptive-K
+> training) can move it. Open L2 note: free-text 25.8 ms > tool-call 18.3 ms even though both engage cudagraph — pure
+> block-diffusion free-gen re-denoises the full canvas per committed token with no FSM to bulk-commit/prune.
+>
 > **UPDATE (§0.H, vLLM pin `95d8b47` — POST-FIX PROMOTION ATTEMPT: NOT PROMOTED, 1 turn short).** OPT-4 Part 1 has now
 > **landed** (Stage 1 32-absolute variable commit width + Stage 2 scheduler width plumbing + Stage 3 byte-robust bidir key
 > window; **code default OFF**). v3b is an **independent fresh boot of the post-fix engine** — the real promotion attempt.

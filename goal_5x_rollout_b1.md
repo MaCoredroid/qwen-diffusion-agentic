@@ -31,6 +31,32 @@ Equation filled in today: **1.00 (reasoning tok/fwd, K=1) × 0.754 (14.1 AR ÷ 1
 - (5) L2 CONFIRMED: engine 18.7 ms/forward vs AR 14.1 ms/token = 1.33× per-forward penalty; L2 job
   18.7→~13 ms converts the 0.754 factor →1.0 (cannot change tok/fwd).
 
+## ★★ L0 DONE + L2 MEASURED — FINAL-HEAD VERIFIED (2026-07-05, pin `0b44dcc`, `runs/l0l2_final_head_verify/`)
+Re-ran the full no-regression set on the FINAL HEAD (L0 free-text fix `0b44dcc`); **zero source edits**,
+byte-parity certificate intact. Two corrections change the honest equation:
+- **AR-cudagraph fairness (L2):** the fair AR baseline is **10.72 ms/tok (cudagraph, 93.3 tok/s)**, not the
+  14.1 ms eager used in L1. AR gets a 1.32× cudagraph speedup the engine already banks; using eager was a
+  handicap. Honest AR per-step = **10.72 ms**.
+- **Reasoning per-forward is 25.8 ms, not 18.7 (L0 revealed it).** L1's 18.7 ms was the engine emitting
+  *unstoppable short tool-wraps* (0/24 scorable). The L0 fix makes free-text actually work (**30/30 clean
+  stop, 26/30 GSM8K, 0 hangs**) — and the real free-CoT path costs **25.8 ms/forward** (cudagraph-engaged,
+  K=1, only **0.86 emitted tok/fwd** because block-diffusion overshoots past EOS). So the honest
+  reasoning-content per-forward is **25.8 ms**, a further ~1.4× above the 18.3 ms tool-call floor (measured
+  clean this run; matches endgame 18.5). L2 job now: 25.8 → ~13 ms on the reasoning path.
+
+**CORRECTED 5× EQUATION (reasoning content, final HEAD):**
+
+    ratio = (committed tok/fwd) × (AR ms/tok ÷ engine ms/fwd)
+          = 0.86 × (10.72 AR-cudagraph ÷ 25.8 engine-free-text) = **0.36× vs AR-cudagraph**   (0.47× vs AR-eager)
+    model-chosen K = 1.00  (chain-rule wall)
+
+The two honesty corrections move the L1-published **0.75×** → **0.36×** (fairness −0.17, working-free-CoT
+per-forward −0.22). **Distance to the 5× north star ≈ 14×**, entirely in the K factor — L2 per-forward
+parity (25.8→~13) buys at most ~2× and is still K-bound; only **L3 (S2 consistency-distillation +
+entropy-gated adaptive K)** raises reasoning K above 1. No-regression evidence: 15-turn parity **14/15**
+(lone break gt44 fp-residue), read-only fingerprint **6/6 bit-identical**, determinism **2× identical**,
+value_projection **0**.
+
 ## The Amdahl accounting (why this is feasible)
 avg tok/fwd = 1 / (f_reason/K + f_value/1); grammar-forced tokens = 0 forwards (already live).
 - Tool-call eval content (f_value≈15%): K→∞ caps avg at 6.7; K=8 gives 3.9. Hard but not the target mix.
