@@ -1,0 +1,176 @@
+Running as unit: run-p2159098-i2172257.scope; invocation ID: 5b128e4ef4f145d58a647186e302cad8
+[eng] n_prompts=16 exact=8 miss=8 NS=[4, 8, 16] temp=0.7 gmu=0.62 maxseq=16 block=32
+[eng] resume: 0 groups already done
+INFO 07-04 20:53:48 [api_utils.py:273] non-default args: {'trust_remote_code': True, 'seed': 20260701, 'max_model_len': 4096, 'enable_prefix_caching': True, 'gpu_memory_utilization': 0.62, 'max_num_batched_tokens': 4096, 'max_num_seqs': 16, 'disable_log_stats': True, 'diffusion_config': {'canvas_length': 32, 'max_denoising_steps': 8}, 'attention_config': AttentionConfig(backend=<AttentionBackendEnum.TRITON_ATTN: 'vllm.v1.attention.backends.triton_attn.TritonAttentionBackend'>, flash_attn_version=None, use_prefill_decode_attention=False, flash_attn_max_num_splits_for_cuda_graph=32, tq_max_kv_splits_for_cuda_graph=32, use_trtllm_attention=None, disable_flashinfer_q_quantization=False, mla_prefill_backend=None, use_prefill_query_quantization=False, use_fp4_indexer_cache=False, indexer_kv_dtype='bf16', use_non_causal=False, flex_attn_block_m=None, flex_attn_block_n=None, flex_attn_q_block_size=None, flex_attn_kv_block_size=None), 'mamba_ssm_cache_dtype': 'float32', 'mamba_block_size': 1024, 'mamba_cache_mode': 'align', 'model': '/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16'}
+WARNING 07-04 20:53:48 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_FLARE_CUDAGRAPH
+WARNING 07-04 20:53:48 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_ATTENTION_BACKEND
+WARNING 07-04 20:53:48 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_FLARE_BIDIR_PROBE
+WARNING 07-04 20:53:48 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_USE_V1
+WARNING 07-04 20:53:48 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_MASK
+WARNING 07-04 20:53:48 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE
+WARNING 07-04 20:53:48 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_DECODE
+WARNING 07-04 20:53:48 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_BLOCK
+WARNING 07-04 20:53:48 [arg_utils.py:1600] The global random seed is set to 20260701. Since VLLM_ENABLE_V1_MULTIPROCESSING is set to False, this may affect the random state of the Python process that launched vLLM.
+INFO 07-04 20:53:52 [model.py:606] Resolved architecture: Qwen3_5ForConditionalGeneration
+INFO 07-04 20:53:52 [model.py:1736] Using max model len 4096
+INFO 07-04 20:53:52 [scheduler.py:252] Chunked prefill is enabled with max_num_batched_tokens=4096.
+INFO 07-04 20:53:52 [config.py:575] Warning: Prefix caching in Mamba cache 'align' mode is currently enabled. Its support for Mamba layers is experimental. Please report any issues you may observe.
+INFO 07-04 20:53:52 [vllm.py:1093] Asynchronous scheduling is disabled.
+INFO 07-04 20:53:52 [kernel.py:286] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'])
+INFO 07-04 20:53:52 [vllm.py:1363] Block-diffusion (FLARE) models do not yet support FULL cudagraphs (the GDN denoise forward is prefill-classed). Overriding cudagraph_mode from FULL_AND_PIECEWISE to PIECEWISE.
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+INFO 07-04 20:53:57 [core.py:114] Initializing a V1 LLM engine (v0.1.dev200+g2665ed704) with config: model='/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16', speculative_config=None, tokenizer='/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=20260701, served_model_name=/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::qwen_gdn_attention_core', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::kda_attention', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [4096], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.PIECEWISE: 1>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, moe_backend='auto', linear_backend='auto')
+INFO 07-04 20:53:57 [parallel_state.py:1588] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.0.0.148:54027 backend=nccl
+INFO 07-04 20:53:58 [parallel_state.py:1923] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+INFO 07-04 20:53:58 [gpu_worker.py:360] Using V2 Model Runner
+INFO 07-04 20:53:58 [model_runner.py:281] Loading model from scratch...
+INFO 07-04 20:53:58 [cuda.py:542] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+INFO 07-04 20:53:58 [mm_encoder_attention.py:373] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+INFO 07-04 20:53:58 [qwen_gdn_linear_attn.py:228] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+INFO 07-04 20:53:58 [cuda.py:423] Using AttentionBackendEnum.TRITON_ATTN backend.
+INFO 07-04 20:53:58 [weight_utils.py:849] Filesystem type for checkpoints: EXT4. Checkpoint size: 17.98 GiB. Available RAM: 26.09 GiB.
+INFO 07-04 20:53:58 [weight_utils.py:872] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:01<00:03,  1.16s/it]
+Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:02<00:02,  1.23s/it]
+Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:03<00:01,  1.17s/it]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:04<00:00,  1.01s/it]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:04<00:00,  1.07s/it]
+
+INFO 07-04 20:54:03 [default_loader.py:430] Loading weights took 4.31 seconds
+INFO 07-04 20:54:03 [model_runner.py:302] Model loading took 17.65 GiB and 5.424609 seconds
+WARNING 07-04 20:54:03 [qwen3_5_flare.py:252] FLARE block size 32 is not a multiple of the GDN chunk 64; commit boundaries will land mid-chunk and the fp32 boundary snapshot will not be a clean recurrent checkpoint. Set diffusion_config.canvas_length / VLLM_QWEN3_5_FLARE_BLOCK to a multiple of 64.
+WARNING 07-04 20:54:03 [qwen3_5_flare.py:375] Qwen3_5FlareModelState: model exposes no flare_gdn_route(); the route_i GROUND invariant is UNVERIFIED and assumed from VLLM_QWEN3_5_FLARE_ROUTE='route_i'. If the served forward is not the route_i FLARE forward, denoise/commit state discipline is invalid and this will not be caught here.
+INFO 07-04 20:54:03 [topk_topp_sampler.py:39] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+INFO 07-04 20:54:04 [interface.py:773] Setting attention block size to 528 tokens to ensure that attention page size is >= mamba page size.
+INFO 07-04 20:54:04 [interface.py:797] Padding mamba page size by 0.76% to ensure that mamba page size and attention page size are exactly equal.
+INFO 07-04 20:54:05 [backends.py:1089] Using cache directory: /home/mark/.cache/vllm/torch_compile_cache/e42ceaf619/rank_0_0/backbone for vLLM's torch.compile
+INFO 07-04 20:54:05 [backends.py:1148] Dynamo bytecode transform time: 0.76 s
+INFO 07-04 20:54:06 [backends.py:292] Directly load the compiled graph(s) for compile range (1, 4096) from the cache, took 0.619 s
+INFO 07-04 20:54:06 [decorators.py:311] Directly load AOT compilation from path /home/mark/.cache/vllm/torch_compile_cache/torch_aot_compile/9ac2660817a2938f6c73e7158cf1d9c452bf187bfc9dffaddf56d97b4045e4f7/rank_0_0/model
+INFO 07-04 20:54:06 [monitor.py:53] torch.compile took 1.48 s in total
+INFO 07-04 20:54:06 [monitor.py:81] Initial profiling/warmup run took 0.45 s
+INFO 07-04 20:54:07 [gpu_worker.py:538] Available KV cache memory: 1.04 GiB
+INFO 07-04 20:54:07 [kv_cache_utils.py:2146] GPU KV cache size: 18,724 tokens
+INFO 07-04 20:54:07 [kv_cache_utils.py:2147] Maximum concurrency for 4,096 tokens per request: 4.57x
+INFO 07-04 20:54:07 [qwen_triton_warmup.py:364] Warming up Qwen Triton kernels for model_type=qwen3_5_text.
+INFO 07-04 20:54:07 [deep_gemm.py:175] deep_gemm not found in site-packages, trying vendored vllm.third_party.deep_gemm
+INFO 07-04 20:54:07 [deep_gemm.py:202] DeepGEMM PDL enabled on vllm.third_party.deep_gemm.
+INFO 07-04 20:54:07 [kernel_warmup.py:177] Using FlashInfer autotune cache file: /home/mark/.cache/vllm/flashinfer_autotune_cache/0.6.13/120f/1f781bb2fc9eec09c414c047afd663fa5feaaefa634b8d420d6890d0ad60f7a7/autotune_configs.json
+2026-07-04 20:54:07,347 - INFO - autotuner.py:651 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+2026-07-04 20:54:07,526 - INFO - autotuner.py:674 - flashinfer.jit: [Autotuner]: Autotuning process ends
+WARNING 07-04 20:54:07 [kernel_warmup.py:206] No FlashInfer autotune cache entries found.Falling back to default tactics.
+INFO 07-04 20:54:07 [cutedsl_warmup.py:97] Skipping CuTeDSL warmup because no compile units were requested.
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/16 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):  19%|█▉        | 3/16 [00:00<00:00, 22.19it/s]Capturing CUDA graphs (PIECEWISE):  38%|███▊      | 6/16 [00:00<00:00, 24.27it/s]Capturing CUDA graphs (PIECEWISE):  62%|██████▎   | 10/16 [00:00<00:00, 27.98it/s]Capturing CUDA graphs (PIECEWISE):  94%|█████████▍| 15/16 [00:00<00:00, 33.26it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 16/16 [00:00<00:00, 31.00it/s]
+INFO 07-04 20:54:08 [model_runner.py:721] Graph capturing finished in 1 secs, took 0.22 GiB
+INFO 07-04 20:54:08 [jit_monitor.py:72] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+INFO 07-04 20:54:08 [core.py:337] init engine (profile, create kv cache, warmup model) took 4.59 s (compilation: 1.48 s)
+[eng] booted boot_s=20.7 idle_mem=25735MB
+INFO 07-04 20:54:08 [block_pool.py:685] Successfully reset prefix cache
+WARNING 07-04 20:54:08 [jit_monitor.py:128] Triton kernel JIT compilation during inference: preprocess_mamba_align_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-04 20:54:08 [jit_monitor.py:128] Triton kernel JIT compilation during inference: precopy_mamba_align_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-04 20:54:08 [jit_monitor.py:128] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-04 20:54:08 [jit_monitor.py:128] Triton kernel JIT compilation during inference: postprocess_mamba_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+INFO 07-04 20:54:09 [block_pool.py:685] Successfully reset prefix cache
+INFO 07-04 20:54:09 [block_pool.py:685] Successfully reset prefix cache
+INFO 07-04 20:54:11 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt154 BFCL-AST     hf=1 wall=0.43s samp/s=9.36 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=1.0 passN=1 fwd/s=3.5 occ=1.0 proj=0 vok=1 util~88.0%
+INFO 07-04 20:54:11 [block_pool.py:685] Successfully reset prefix cache
+WARNING 07-04 20:54:11 [jit_monitor.py:128] Triton kernel JIT compilation during inference: _causal_conv1d_update_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-04 20:54:11 [jit_monitor.py:128] Triton kernel JIT compilation during inference: fused_recurrent_gated_delta_rule_packed_decode_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-04 20:54:11 [jit_monitor.py:128] Triton kernel JIT compilation during inference: reduce_segments. This causes a latency spike; consider extending warmup to cover this shape/config.
+[eng] N= 4 gt156 BFCL-AST     hf=1 wall=0.44s samp/s=9.06 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=1.0 passN=1 fwd/s=3.5 occ=1.0 proj=0 vok=1 util~86.0%
+INFO 07-04 20:54:12 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt158 BFCL-AST     hf=1 wall=0.39s samp/s=10.17 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=1.0 passN=1 fwd/s=3.0 occ=1.0 proj=0 vok=1 util~84.0%
+INFO 07-04 20:54:12 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt159 API-Bank-Lv1 hf=1 wall=0.68s samp/s=5.91 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=1.0 passN=1 fwd/s=5.75 occ=1.0 proj=0 vok=1 util~85.0%
+INFO 07-04 20:54:13 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt163 API-Bank-Lv1 hf=1 wall=0.64s samp/s=6.22 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=1.0 passN=1 fwd/s=5.75 occ=1.0 proj=0 vok=1 util~87.3%
+INFO 07-04 20:54:13 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt167 API-Bank-Lv1 hf=1 wall=0.72s samp/s=5.54 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=1.0 passN=1 fwd/s=6.5 occ=1.0 proj=0 vok=1 util~87.8%
+INFO 07-04 20:54:14 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt172 API-Bank-Lv2 hf=1 wall=0.72s samp/s=5.54 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=1.0 passN=1 fwd/s=6.0 occ=1.0 proj=0 vok=1 util~96.8%
+INFO 07-04 20:54:15 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt181 API-Bank-Lv2 hf=1 wall=0.65s samp/s=6.19 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=1.0 passN=1 fwd/s=6.0 occ=1.0 proj=0 vok=1 util~85.7%
+INFO 07-04 20:54:16 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt 14 BFCL-multi_t hf=0 wall=0.44s samp/s=9.02 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.0 passN=0 fwd/s=3.5 occ=1.0 proj=0 vok=1 util~85.7%
+INFO 07-04 20:54:16 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt 52 BFCL-multi_t hf=0 wall=0.61s samp/s=6.56 uniqOut=0.5 uniqArg=0.5 valid=1.0 pass1=0.25 passN=1 fwd/s=5.75 occ=0.707 proj=0 vok=1 util~86.3%
+INFO 07-04 20:54:17 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt 90 BFCL-multi_t hf=0 wall=0.42s samp/s=9.42 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.0 passN=0 fwd/s=3.5 occ=1.0 proj=0 vok=1 util~89.0%
+INFO 07-04 20:54:17 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt161 API-Bank-Lv1 hf=0 wall=0.67s samp/s=5.98 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.0 passN=0 fwd/s=5.75 occ=1.0 proj=0 vok=1 util~95.2%
+INFO 07-04 20:54:18 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt168 API-Bank-Lv1 hf=0 wall=1.75s samp/s=2.29 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.0 passN=0 fwd/s=18.25 occ=1.0 proj=0 vok=1 util~86.5%
+INFO 07-04 20:54:20 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt170 API-Bank-Lv1 hf=0 wall=1.80s samp/s=2.22 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.0 passN=0 fwd/s=18.5 occ=1.0 proj=0 vok=1 util~87.0%
+INFO 07-04 20:54:21 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt175 API-Bank-Lv2 hf=0 wall=0.65s samp/s=6.11 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.0 passN=0 fwd/s=5.75 occ=1.0 proj=0 vok=1 util~89.3%
+INFO 07-04 20:54:22 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 4 gt183 API-Bank-Lv2 hf=0 wall=0.55s samp/s=7.34 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.0 passN=0 fwd/s=5.5 occ=1.0 proj=0 vok=1 util~85.3%
+INFO 07-04 20:54:23 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt154 BFCL-AST     hf=1 wall=0.65s samp/s=12.27 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=1.0 passN=1 fwd/s=1.75 occ=1.0 proj=0 vok=1 util~85.0%
+INFO 07-04 20:54:23 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt156 BFCL-AST     hf=1 wall=0.61s samp/s=13.16 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=1.0 passN=1 fwd/s=1.75 occ=1.0 proj=0 vok=1 util~83.0%
+INFO 07-04 20:54:24 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt158 BFCL-AST     hf=1 wall=0.61s samp/s=13.06 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=1.0 passN=1 fwd/s=1.5 occ=1.0 proj=0 vok=1 util~87.0%
+INFO 07-04 20:54:25 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt159 API-Bank-Lv1 hf=1 wall=0.95s samp/s=8.44 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=1.0 passN=1 fwd/s=2.88 occ=1.0 proj=0 vok=1 util~90.6%
+INFO 07-04 20:54:26 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt163 API-Bank-Lv1 hf=1 wall=0.87s samp/s=9.17 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=1.0 passN=1 fwd/s=2.88 occ=1.0 proj=0 vok=1 util~96.0%
+INFO 07-04 20:54:27 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt167 API-Bank-Lv1 hf=1 wall=0.96s samp/s=8.32 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=1.0 passN=1 fwd/s=3.25 occ=1.0 proj=0 vok=1 util~84.4%
+INFO 07-04 20:54:28 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt172 API-Bank-Lv2 hf=1 wall=1.02s samp/s=7.83 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=1.0 passN=1 fwd/s=3.0 occ=1.0 proj=0 vok=1 util~92.6%
+INFO 07-04 20:54:29 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt181 API-Bank-Lv2 hf=1 wall=0.93s samp/s=8.57 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=1.0 passN=1 fwd/s=3.0 occ=1.0 proj=0 vok=1 util~88.8%
+INFO 07-04 20:54:30 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt 14 BFCL-multi_t hf=0 wall=0.70s samp/s=11.42 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.125 passN=1 fwd/s=2.88 occ=0.658 proj=0 vok=1 util~86.0%
+INFO 07-04 20:54:30 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt 52 BFCL-multi_t hf=0 wall=0.70s samp/s=11.42 uniqOut=0.25 uniqArg=0.25 valid=1.0 pass1=0.125 passN=1 fwd/s=2.88 occ=0.658 proj=0 vok=1 util~67.5%
+INFO 07-04 20:54:31 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt 90 BFCL-multi_t hf=0 wall=0.56s samp/s=14.32 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=0.0 passN=0 fwd/s=1.75 occ=1.0 proj=0 vok=1 util~80.7%
+INFO 07-04 20:54:32 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt161 API-Bank-Lv1 hf=0 wall=1.00s samp/s=7.98 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=0.0 passN=0 fwd/s=2.88 occ=1.0 proj=0 vok=1 util~93.8%
+INFO 07-04 20:54:33 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt168 API-Bank-Lv1 hf=0 wall=2.62s samp/s=3.06 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=0.0 passN=0 fwd/s=9.12 occ=1.0 proj=0 vok=1 util~90.8%
+INFO 07-04 20:54:35 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt170 API-Bank-Lv1 hf=0 wall=2.54s samp/s=3.15 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=0.0 passN=0 fwd/s=9.25 occ=1.0 proj=0 vok=1 util~85.0%
+INFO 07-04 20:54:38 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt175 API-Bank-Lv2 hf=0 wall=0.92s samp/s=8.65 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=0.0 passN=0 fwd/s=2.88 occ=1.0 proj=0 vok=1 util~82.2%
+INFO 07-04 20:54:39 [block_pool.py:685] Successfully reset prefix cache
+[eng] N= 8 gt183 API-Bank-Lv2 hf=0 wall=0.74s samp/s=10.84 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=0.0 passN=0 fwd/s=2.75 occ=1.0 proj=0 vok=1 util~78.0%
+INFO 07-04 20:54:40 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt154 BFCL-AST     hf=1 wall=1.21s samp/s=13.18 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=1.0 passN=1 fwd/s=1.75 occ=0.5 proj=0 vok=1 util~92.7%
+INFO 07-04 20:54:41 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt156 BFCL-AST     hf=1 wall=1.11s samp/s=14.43 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=1.0 passN=1 fwd/s=1.75 occ=0.5 proj=0 vok=1 util~84.2%
+INFO 07-04 20:54:42 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt158 BFCL-AST     hf=1 wall=1.16s samp/s=13.81 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=1.0 passN=1 fwd/s=1.56 occ=0.5 proj=0 vok=1 util~85.7%
+INFO 07-04 20:54:43 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt159 API-Bank-Lv1 hf=1 wall=1.82s samp/s=8.81 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=1.0 passN=1 fwd/s=2.94 occ=0.496 proj=0 vok=1 util~82.8%
+INFO 07-04 20:54:45 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt163 API-Bank-Lv1 hf=1 wall=1.62s samp/s=9.85 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=1.0 passN=1 fwd/s=2.88 occ=0.5 proj=0 vok=1 util~86.8%
+INFO 07-04 20:54:47 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt167 API-Bank-Lv1 hf=1 wall=1.84s samp/s=8.69 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=1.0 passN=1 fwd/s=3.25 occ=0.5 proj=0 vok=1 util~90.1%
+INFO 07-04 20:54:49 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt172 API-Bank-Lv2 hf=1 wall=1.99s samp/s=8.06 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=1.0 passN=1 fwd/s=3.06 occ=0.5 proj=0 vok=1 util~90.8%
+INFO 07-04 20:54:51 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt181 API-Bank-Lv2 hf=1 wall=1.71s samp/s=9.35 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=1.0 passN=1 fwd/s=3.0 occ=0.5 proj=0 vok=1 util~87.2%
+INFO 07-04 20:54:52 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt 14 BFCL-multi_t hf=0 wall=1.14s samp/s=13.98 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=0.0625 passN=1 fwd/s=2.31 occ=0.394 proj=0 vok=1 util~86.5%
+INFO 07-04 20:54:54 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt 52 BFCL-multi_t hf=0 wall=1.16s samp/s=13.79 uniqOut=0.125 uniqArg=0.125 valid=1.0 pass1=0.0625 passN=1 fwd/s=2.31 occ=0.394 proj=0 vok=1 util~83.7%
+INFO 07-04 20:54:55 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt 90 BFCL-multi_t hf=0 wall=1.01s samp/s=15.85 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=0.0 passN=0 fwd/s=1.75 occ=0.5 proj=0 vok=1 util~87.4%
+INFO 07-04 20:54:56 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt161 API-Bank-Lv1 hf=0 wall=1.91s samp/s=8.37 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=0.0 passN=0 fwd/s=2.94 occ=0.495 proj=0 vok=1 util~81.1%
+INFO 07-04 20:54:58 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt168 API-Bank-Lv1 hf=0 wall=4.88s samp/s=3.28 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=0.0 passN=0 fwd/s=9.19 occ=0.498 proj=0 vok=1 util~89.5%
+INFO 07-04 20:55:03 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt170 API-Bank-Lv1 hf=0 wall=4.89s samp/s=3.27 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=0.0 passN=0 fwd/s=9.25 occ=0.5 proj=0 vok=1 util~88.0%
+INFO 07-04 20:55:08 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt175 API-Bank-Lv2 hf=0 wall=1.74s samp/s=9.17 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=0.0 passN=0 fwd/s=2.88 occ=0.5 proj=0 vok=1 util~87.8%
+INFO 07-04 20:55:09 [block_pool.py:685] Successfully reset prefix cache
+[eng] N=16 gt183 API-Bank-Lv2 hf=0 wall=1.37s samp/s=11.64 uniqOut=0.0625 uniqArg=0.0625 valid=1.0 pass1=0.0 passN=0 fwd/s=2.75 occ=0.5 proj=0 vok=1 util~84.7%
+[eng] DONE
+[rank0]:[W704 20:55:11.770360317 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

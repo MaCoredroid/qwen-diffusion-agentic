@@ -1,0 +1,281 @@
+{
+  "engine": {
+    "all": {
+      "4": {
+        "n_groups": 16,
+        "tot_samples": 64,
+        "micro_samples_per_sec": 5.532,
+        "mean_group_samples_per_sec": 6.682,
+        "mean_unique_output_frac": 0.2656,
+        "mean_unique_argset_frac": 0.2656,
+        "mean_unique_valid_argset_frac": 0.2656,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 0.5156,
+        "passN_group_frac": 0.5625,
+        "mean_unique_output_count": 1.062,
+        "mean_gen_tok_per_sample": 39.2
+      },
+      "8": {
+        "n_groups": 16,
+        "tot_samples": 128,
+        "micro_samples_per_sec": 7.811,
+        "mean_group_samples_per_sec": 9.48,
+        "mean_unique_output_frac": 0.1406,
+        "mean_unique_argset_frac": 0.1406,
+        "mean_unique_valid_argset_frac": 0.1406,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 0.5156,
+        "passN_group_frac": 0.625,
+        "mean_unique_output_count": 1.125,
+        "mean_gen_tok_per_sample": 39.2
+      },
+      "16": {
+        "n_groups": 16,
+        "tot_samples": 256,
+        "micro_samples_per_sec": 8.371,
+        "mean_group_samples_per_sec": 10.346,
+        "mean_unique_output_frac": 0.0703,
+        "mean_unique_argset_frac": 0.0703,
+        "mean_unique_valid_argset_frac": 0.0703,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 0.5078,
+        "passN_group_frac": 0.625,
+        "mean_unique_output_count": 1.125,
+        "mean_gen_tok_per_sample": 39.1
+      }
+    },
+    "hf_exact": {
+      "4": {
+        "n_groups": 8,
+        "tot_samples": 32,
+        "micro_samples_per_sec": 6.849,
+        "mean_group_samples_per_sec": 7.248,
+        "mean_unique_output_frac": 0.25,
+        "mean_unique_argset_frac": 0.25,
+        "mean_unique_valid_argset_frac": 0.25,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 1.0,
+        "passN_group_frac": 1.0,
+        "mean_unique_output_count": 1.0,
+        "mean_gen_tok_per_sample": 34.2
+      },
+      "8": {
+        "n_groups": 8,
+        "tot_samples": 64,
+        "micro_samples_per_sec": 9.684,
+        "mean_group_samples_per_sec": 10.104,
+        "mean_unique_output_frac": 0.125,
+        "mean_unique_argset_frac": 0.125,
+        "mean_unique_valid_argset_frac": 0.125,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 1.0,
+        "passN_group_frac": 1.0,
+        "mean_unique_output_count": 1.0,
+        "mean_gen_tok_per_sample": 34.2
+      },
+      "16": {
+        "n_groups": 8,
+        "tot_samples": 128,
+        "micro_samples_per_sec": 10.271,
+        "mean_group_samples_per_sec": 10.772,
+        "mean_unique_output_frac": 0.0625,
+        "mean_unique_argset_frac": 0.0625,
+        "mean_unique_valid_argset_frac": 0.0625,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 1.0,
+        "passN_group_frac": 1.0,
+        "mean_unique_output_count": 1.0,
+        "mean_gen_tok_per_sample": 34.2
+      }
+    },
+    "hf_miss": {
+      "4": {
+        "n_groups": 8,
+        "tot_samples": 32,
+        "micro_samples_per_sec": 4.639,
+        "mean_group_samples_per_sec": 6.117,
+        "mean_unique_output_frac": 0.2812,
+        "mean_unique_argset_frac": 0.2812,
+        "mean_unique_valid_argset_frac": 0.2812,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 0.0312,
+        "passN_group_frac": 0.125,
+        "mean_unique_output_count": 1.125,
+        "mean_gen_tok_per_sample": 44.2
+      },
+      "8": {
+        "n_groups": 8,
+        "tot_samples": 64,
+        "micro_samples_per_sec": 6.545,
+        "mean_group_samples_per_sec": 8.856,
+        "mean_unique_output_frac": 0.1562,
+        "mean_unique_argset_frac": 0.1562,
+        "mean_unique_valid_argset_frac": 0.1562,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 0.0312,
+        "passN_group_frac": 0.25,
+        "mean_unique_output_count": 1.25,
+        "mean_gen_tok_per_sample": 44.2
+      },
+      "16": {
+        "n_groups": 8,
+        "tot_samples": 128,
+        "micro_samples_per_sec": 7.064,
+        "mean_group_samples_per_sec": 9.919,
+        "mean_unique_output_frac": 0.0781,
+        "mean_unique_argset_frac": 0.0781,
+        "mean_unique_valid_argset_frac": 0.0781,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 0.0156,
+        "passN_group_frac": 0.25,
+        "mean_unique_output_count": 1.25,
+        "mean_gen_tok_per_sample": 44.0
+      }
+    }
+  },
+  "ar": {
+    "all": {
+      "4": {
+        "n_groups": 16,
+        "tot_samples": 64,
+        "micro_samples_per_sec": 6.484,
+        "mean_group_samples_per_sec": 7.053,
+        "mean_unique_output_frac": 0.3125,
+        "mean_unique_argset_frac": 0.2969,
+        "mean_unique_valid_argset_frac": 0.2969,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 0.5312,
+        "passN_group_frac": 0.625,
+        "mean_unique_output_count": 1.25,
+        "mean_gen_tok_per_sample": 39.6
+      },
+      "8": {
+        "n_groups": 16,
+        "tot_samples": 128,
+        "micro_samples_per_sec": 11.577,
+        "mean_group_samples_per_sec": 12.65,
+        "mean_unique_output_frac": 0.1797,
+        "mean_unique_argset_frac": 0.1797,
+        "mean_unique_valid_argset_frac": 0.1641,
+        "mean_valid_frac": 0.9766,
+        "pass1_micro": 0.5312,
+        "passN_group_frac": 0.625,
+        "mean_unique_output_count": 1.438,
+        "mean_gen_tok_per_sample": 39.9
+      },
+      "16": {
+        "n_groups": 16,
+        "tot_samples": 256,
+        "micro_samples_per_sec": 12.564,
+        "mean_group_samples_per_sec": 13.978,
+        "mean_unique_output_frac": 0.1055,
+        "mean_unique_argset_frac": 0.0977,
+        "mean_unique_valid_argset_frac": 0.0898,
+        "mean_valid_frac": 0.9844,
+        "pass1_micro": 0.5352,
+        "passN_group_frac": 0.625,
+        "mean_unique_output_count": 1.688,
+        "mean_gen_tok_per_sample": 39.9
+      }
+    },
+    "hf_exact": {
+      "4": {
+        "n_groups": 8,
+        "tot_samples": 32,
+        "micro_samples_per_sec": 7.157,
+        "mean_group_samples_per_sec": 7.263,
+        "mean_unique_output_frac": 0.25,
+        "mean_unique_argset_frac": 0.25,
+        "mean_unique_valid_argset_frac": 0.25,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 1.0,
+        "passN_group_frac": 1.0,
+        "mean_unique_output_count": 1.0,
+        "mean_gen_tok_per_sample": 34.2
+      },
+      "8": {
+        "n_groups": 8,
+        "tot_samples": 64,
+        "micro_samples_per_sec": 13.204,
+        "mean_group_samples_per_sec": 13.378,
+        "mean_unique_output_frac": 0.125,
+        "mean_unique_argset_frac": 0.125,
+        "mean_unique_valid_argset_frac": 0.125,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 1.0,
+        "passN_group_frac": 1.0,
+        "mean_unique_output_count": 1.0,
+        "mean_gen_tok_per_sample": 34.2
+      },
+      "16": {
+        "n_groups": 8,
+        "tot_samples": 128,
+        "micro_samples_per_sec": 13.508,
+        "mean_group_samples_per_sec": 13.698,
+        "mean_unique_output_frac": 0.0625,
+        "mean_unique_argset_frac": 0.0625,
+        "mean_unique_valid_argset_frac": 0.0625,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 1.0,
+        "passN_group_frac": 1.0,
+        "mean_unique_output_count": 1.0,
+        "mean_gen_tok_per_sample": 34.2
+      }
+    },
+    "hf_miss": {
+      "4": {
+        "n_groups": 8,
+        "tot_samples": 32,
+        "micro_samples_per_sec": 5.927,
+        "mean_group_samples_per_sec": 6.844,
+        "mean_unique_output_frac": 0.375,
+        "mean_unique_argset_frac": 0.3438,
+        "mean_unique_valid_argset_frac": 0.3438,
+        "mean_valid_frac": 1.0,
+        "pass1_micro": 0.0625,
+        "passN_group_frac": 0.25,
+        "mean_unique_output_count": 1.5,
+        "mean_gen_tok_per_sample": 44.9
+      },
+      "8": {
+        "n_groups": 8,
+        "tot_samples": 64,
+        "micro_samples_per_sec": 10.308,
+        "mean_group_samples_per_sec": 11.921,
+        "mean_unique_output_frac": 0.2344,
+        "mean_unique_argset_frac": 0.2344,
+        "mean_unique_valid_argset_frac": 0.2031,
+        "mean_valid_frac": 0.9531,
+        "pass1_micro": 0.0625,
+        "passN_group_frac": 0.25,
+        "mean_unique_output_count": 1.875,
+        "mean_gen_tok_per_sample": 45.6
+      },
+      "16": {
+        "n_groups": 8,
+        "tot_samples": 128,
+        "micro_samples_per_sec": 11.744,
+        "mean_group_samples_per_sec": 14.258,
+        "mean_unique_output_frac": 0.1484,
+        "mean_unique_argset_frac": 0.1328,
+        "mean_unique_valid_argset_frac": 0.1172,
+        "mean_valid_frac": 0.9688,
+        "pass1_micro": 0.0703,
+        "passN_group_frac": 0.25,
+        "mean_unique_output_count": 2.375,
+        "mean_gen_tok_per_sample": 45.5
+      }
+    }
+  },
+  "engine_audit": {
+    "n_groups": 48,
+    "all_proj_zero": true,
+    "all_verify_ok": true,
+    "max_value_projection_events_over_all_groups": 0,
+    "all_valid_frac_1p0": true
+  },
+  "prompt_integrity": {
+    "engine_all_have_sha": true,
+    "ar_all_have_sha": true
+  }
+}

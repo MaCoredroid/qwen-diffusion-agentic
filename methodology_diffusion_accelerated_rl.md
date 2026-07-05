@@ -106,3 +106,35 @@ QUALITY: diffusion-hybrid BEATS stock AR Qwen aggregate (+6); per-slice split ho
 never-train ahead. CONVERSION TAX: none (slightly negative) on this battery. v6 NOT promoted (retention 0.70 held,
 quality flat 47 + never-train drop) -> v2 remains best; RL plateau at v2 confirmed across v4/v5/v6 variants.
 SPEED: 3.5x behind stock vLLM wall-clock — entirely the engine gap; P2 build in flight (parity harness committed).
+
+## BEST-OF-N SAME-PROMPT (GRPO ROLLOUT) BENCH (2026-07-04, runs/p2_bestofn_grpo/report.md)
+The batched-rollout bench disconfirmed the throughput thesis on INDEPENDENT-prompt batching; the one
+unmeasured axis was the ACTUAL GRPO pattern (N samples of the SAME prompt, shared prefix, group
+advantage needs N diverse valid rollouts). Measured on 16 never-train turns (8 HF-exact / 8 HF-miss,
+all 4 families), N in {4,8,16}, temp=0.7, per-sample distinct nested seeds, engine vs stock guided-AR.
+
+**Q1 throughput (samples/sec, eng/AR):** N=4 0.85x, N=8 0.67x, N=16 0.67x. Same-prompt batching makes
+BOTH faster than the independent bench (shared prefill amortizes) but AR benefits MORE (perfect
+co-batch of identical prefixes at 100% util) than the variable-draft-width hybrid (occupancy ~0.5 of
+N) -> the ratio is unchanged-to-worse. AR wins throughput in the GRPO regime too.
+
+**Q2 signal quality (the thesis's last chance) — REFUTED, opposite direction.** The hypothesis was
+"engine canvas noise -> more diverse valid candidates than a collapsing AR." Measured: BOTH paradigms
+near-totally collapse at temp=0.7 on strict tool calls (peaked value distributions absorb the
+temperature: ~1 unique output / N on 12/16 prompts; HF-exact lane is IDENTICAL 1-unique collapse both
+sides with pass@1=pass@N=1.0). Where any diversity lives (miss lane), AR is MORE diverse than the
+engine at every N (N=16 uniqOut 0.148 vs 0.078; ~2.4 vs ~1.25 unique/16) and that diversity converts
+to correct rollouts (gt14: AR 6/16 exact vs engine 1/16). Miss-lane pass@1 AR ~0.06-0.07 vs engine
+~0.02-0.03; pass@N(group) plateaus at 0.25 both. Overall pass@1 ~0.52 tied (different weights;
+consistent with the endgame scoreboard). The engine's ONLY edge: 100% valid stops (48/48 groups) vs
+AR ~97% — but a valid IDENTICAL rollout is zero-advantage, so it yields no extra GRPO signal. Engine
+audit clean: 0 value-projection events, verify-OK, 48/48 valid.
+
+**CONSEQUENCE for the loop (step 2 economics, final):** for the GRPO rollout step, stock guided-AR is
+the better rollout generator on BOTH throughput (1.2-1.5x) AND per-group signal (more diverse, more
+correct rollouts on hard prompts). The signal-quality axis does not rescue the diffusion twin as a
+rollout multiplier — it strengthens the disconfirmation. A deeper structural note this exposes: GRPO
+on strict tool-call turns is SIGNAL-STARVED for EITHER generator (peaked values -> mostly identical
+rollouts -> zero-advantage groups); the lever for GRPO signal is temperature/graded-partial reward,
+not the decode paradigm. The twin's earned role stays quality/validity at safe batch, not samples/sec
+or rollout diversity.
