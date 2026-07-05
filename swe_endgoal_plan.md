@@ -175,3 +175,13 @@ The SWE-Verified driver must follow the flywheel's existing SWE machinery, not a
 `inference_proxy.py` (+363 lines). Port the flywheel Codex-orchestrator pattern to Qwen Code as the agent
 CLI; keep their episode/eval/reward conventions so results are comparable with the flywheel's own SWE runs.
 On any harness wall: pull the flywheel upstream first (standing rule), then adapt.
+
+## Stage-B addendum (2026-07-05): per-forward overhead re-attack is a NVFP4 PREREQUISITE
+Reconciliation: engine forward = 17.8-18.3ms (tool-call) / 25.8ms (free-text) vs AR-cudagraph 10.72ms —
+per-TOKEN parity on tool-call benches is the grammar-scaffold subsidy (~1.7 tok/fwd), not forward parity.
+At bf16 the ~6.4ms non-gemm overhead hides under the 11.4ms weight-stream floor (36% of forward); under
+NVFP4 (floor -> ~3-4ms) it becomes DOMINANT and the ratio degrades to ~0.35x unless cut. Therefore Stage B
+includes: (B-P0) kernel-level per-forward trace at FP4-projected shares — re-litigate every "non-reducible
+at bf16" item (GDN decode-class routing, align-postprocess fusion, launch gaps); (B-P1) free-text decode
+policy fix: stop full-canvas re-denoise per committed token + EOS overshoot (~30% on the free-text path,
+25.8 -> ~18ms class; SWE turns are free-text-heavy). Both measured before/after with the parity gates.
