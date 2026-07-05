@@ -1,0 +1,276 @@
+diff --git a/third_party/lmflow/pipeline/finetuner.py b/third_party/lmflow/pipeline/finetuner.py
+index b7bc044..b73a469 100644
+--- a/third_party/lmflow/pipeline/finetuner.py
++++ b/third_party/lmflow/pipeline/finetuner.py
+@@ -170,17 +170,39 @@ class Finetuner(BaseTuner):
+                 block_size = data_args.block_size
+         pad_mask_token = data_args.pad_mask_token
+         bd_size = data_args.bd_size
++        flare_two_stream = os.environ.get("FASTDLLM_FLARE_TWO_STREAM", "").strip().lower() in {
++            "1",
++            "true",
++            "yes",
++            "on",
++        } or os.environ.get("FLARE_TWO_STREAM", "").strip().lower() in {
++            "1",
++            "true",
++            "yes",
++            "on",
++        }
+         # Main data processing function that will concatenate all texts from
+         # our dataset and generate chunks of block_size.
+         def group_texts(examples):
+             mask_token_id = data_args.mask_id
++            if flare_two_stream and "doc_ids" not in examples:
++                examples["doc_ids"] = [
++                    [doc_id] * len(input_ids)
++                    for doc_id, input_ids in enumerate(examples["input_ids"])
++                ]
+             # Concatenate all texts.
+-            if pad_mask_token:
++            if pad_mask_token or flare_two_stream:
+                 for i in range(len(examples['input_ids'])):
+-                    pad_length = bd_size - len(examples['input_ids'][i]) % bd_size
+-                    examples['labels'][i].extend([-100] * pad_length)
+-                    examples['attention_mask'][i].extend([0] * pad_length)
+-                    examples['input_ids'][i].extend([mask_token_id] * pad_length)
++                    if flare_two_stream:
++                        pad_length = (bd_size - len(examples['input_ids'][i]) % bd_size) % bd_size
++                    else:
++                        pad_length = bd_size - len(examples['input_ids'][i]) % bd_size
++                    if pad_length:
++                        examples['labels'][i].extend([-100] * pad_length)
++                        examples['attention_mask'][i].extend([0] * pad_length)
++                        examples['input_ids'][i].extend([mask_token_id] * pad_length)
++                        if flare_two_stream:
++                            examples['doc_ids'][i].extend([-1] * pad_length)
+ 
+                 # concat
+                 concatenated_examples = {k: list(chain(*examples[k])) for k in examples.keys()}
+@@ -596,6 +618,30 @@ class Finetuner(BaseTuner):
+ 
+             trainer_callbacks.append(dynamic_layer_activation_callback)
+ 
++        # [fastdllm-chunk] Env-gated early-stop so a fixed-horizon (max_steps) cosine
++        # run can be trained in resumable segments without corrupting the LR schedule.
++        # No-op unless FASTDLLM_STOP_AT_STEP is set; behavior is identical to upstream
++        # when the env var is absent.
++        stop_at_step_raw = os.environ.get("FASTDLLM_STOP_AT_STEP", "").strip()
++        if stop_at_step_raw:
++            stop_at_step_val = int(stop_at_step_raw)
++
++            class StopAtStepCallback(TrainerCallback):
++                def __init__(self, stop_at_step):
++                    super().__init__()
++                    self.stop_at_step = int(stop_at_step)
++
++                def on_step_end(self, args, state, control, **kwargs):
++                    if state.global_step >= self.stop_at_step:
++                        control.should_training_stop = True
++                        control.should_save = True
++                    return control
++
++            trainer_callbacks.append(StopAtStepCallback(stop_at_step_val))
++            logger.info(
++                f"[fastdllm-chunk] StopAtStepCallback armed: stop at global_step>={stop_at_step_val}"
++            )
++
+         trainer = FinetuningTrainer(
+             model=model.get_backend_model(),
+             args=training_args,
+@@ -657,4 +703,4 @@ class Finetuner(BaseTuner):
+         else:
+             trainer.create_model_card(**kwargs)
+ 
+-        return model
+\ No newline at end of file
++        return model
+diff --git a/third_party/lmflow/pipeline/utils/peft_trainer.py b/third_party/lmflow/pipeline/utils/peft_trainer.py
+index 2eecfd7..87dcf84 100644
+--- a/third_party/lmflow/pipeline/utils/peft_trainer.py
++++ b/third_party/lmflow/pipeline/utils/peft_trainer.py
+@@ -4,6 +4,8 @@
+ """
+ 
+ from __future__ import absolute_import
++import json
++import time
+ from transformers import Trainer
+ from transformers.trainer_utils import PREFIX_CHECKPOINT_DIR
+ from transformers.trainer_callback import (
+@@ -14,11 +16,121 @@ from transformers.trainer_callback import (
+ from transformers.training_args import TrainingArguments
+ import os
+ import numpy as np
++import torch
++from transformers.trainer import DistributedType, OptimizerNames
+ 
+ class PeftTrainer(Trainer):
++    def training_step(self, model, inputs, num_items_in_batch=None):
++        if os.environ.get("FASTDLLM_PROFILE_TRAINING_STEP", "").strip().lower() not in {
++            "1",
++            "true",
++            "yes",
++            "on",
++        }:
++            return super().training_step(model, inputs, num_items_in_batch=num_items_in_batch)
++
++        model.train()
++        if hasattr(self.optimizer, "train") and callable(self.optimizer.train):
++            self.optimizer.train()
++
++        inputs = self._prepare_inputs(inputs)
++        if torch.cuda.is_available():
++            torch.cuda.synchronize()
++            torch.cuda.reset_peak_memory_stats()
++
++        record = {
++            "global_step": int(self.state.global_step),
++            "gradient_checkpointing": bool(getattr(self.args, "gradient_checkpointing", False)),
++            "gradient_checkpointing_kwargs": getattr(self.args, "gradient_checkpointing_kwargs", None),
++            "timestamps": {},
++            "seconds": {},
++            "cuda_memory_bytes": {},
++        }
++
++        fwd_start = time.time()
++        record["timestamps"]["forward_start"] = fwd_start
++        with self.compute_loss_context_manager():
++            loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
++        if torch.cuda.is_available():
++            torch.cuda.synchronize()
++            record["cuda_memory_bytes"]["after_forward_allocated"] = int(torch.cuda.memory_allocated())
++            record["cuda_memory_bytes"]["after_forward_reserved"] = int(torch.cuda.memory_reserved())
++            record["cuda_memory_bytes"]["after_forward_peak_allocated"] = int(torch.cuda.max_memory_allocated())
++            record["cuda_memory_bytes"]["after_forward_peak_reserved"] = int(torch.cuda.max_memory_reserved())
++        fwd_end = time.time()
++        record["timestamps"]["forward_end"] = fwd_end
++        record["seconds"]["forward"] = fwd_end - fwd_start
++
++        del inputs
++        if (
++            self.args.torch_empty_cache_steps is not None
++            and self.state.global_step % self.args.torch_empty_cache_steps == 0
++        ):
++            torch.cuda.empty_cache()
++
++        kwargs = {}
++        if self.args.optim in [OptimizerNames.LOMO, OptimizerNames.ADALOMO]:
++            kwargs["learning_rate"] = self._get_learning_rate()
++
++        if self.args.n_gpu > 1:
++            loss = loss.mean()
++
++        if self.use_apex:
++            from apex import amp
++
++            bwd_start = time.time()
++            record["timestamps"]["backward_start"] = bwd_start
++            with amp.scale_loss(loss, self.optimizer) as scaled_loss:
++                scaled_loss.backward()
++        else:
++            if (not self.model_accepts_loss_kwargs or num_items_in_batch is None) and self.compute_loss_func is None:
++                loss = loss / self.args.gradient_accumulation_steps
++
++            if self.accelerator.distributed_type == DistributedType.DEEPSPEED:
++                kwargs["scale_wrt_gas"] = False
++
++            bwd_start = time.time()
++            record["timestamps"]["backward_start"] = bwd_start
++            self.accelerator.backward(loss, **kwargs)
++
++        if torch.cuda.is_available():
++            torch.cuda.synchronize()
++            record["cuda_memory_bytes"]["after_backward_allocated"] = int(torch.cuda.memory_allocated())
++            record["cuda_memory_bytes"]["after_backward_reserved"] = int(torch.cuda.memory_reserved())
++            record["cuda_memory_bytes"]["after_backward_peak_allocated"] = int(torch.cuda.max_memory_allocated())
++            record["cuda_memory_bytes"]["after_backward_peak_reserved"] = int(torch.cuda.max_memory_reserved())
++        bwd_end = time.time()
++        record["timestamps"]["backward_end"] = bwd_end
++        record["seconds"]["backward"] = bwd_end - bwd_start
++        record["seconds"]["forward_backward"] = bwd_end - fwd_start
++        record["loss"] = float(loss.detach().float().cpu())
++
++        os.makedirs(self.args.output_dir, exist_ok=True)
++        profile_path = os.path.join(self.args.output_dir, "training_step_profile.jsonl")
++        with open(profile_path, "a", encoding="utf-8") as handle:
++            handle.write(json.dumps(record, sort_keys=True) + "\n")
++        print(
++            "[fastdllm-profile] "
++            f"step={record['global_step']} "
++            f"forward_s={record['seconds']['forward']:.3f} "
++            f"backward_s={record['seconds']['backward']:.3f} "
++            f"total_s={record['seconds']['forward_backward']:.3f}",
++            flush=True,
++        )
++        return loss.detach()
++
+     def _save_checkpoint(self, _, trial, metrics=None):
+         """ Don't save base model, optimizer etc.
+             but create checkpoint folder (needed for saving adapter) """
++        # [fastdllm-chunk] Resumable-checkpoint mode: fall back to stock HF checkpointing
++        # (adapter at checkpoint root + optimizer.pt + scheduler.pt + rng_state.pth +
++        # trainer_state.json) so that a fixed-horizon run can be trained in resumable
++        # segments. For a PeftModel, stock `_save` writes adapter-only, so this stays
++        # small. No-op unless FASTDLLM_RESUMABLE_CKPT is truthy (backward compatible).
++        if os.environ.get("FASTDLLM_RESUMABLE_CKPT", "").strip().lower() in {
++            "1", "true", "yes", "on",
++        }:
++            return super()._save_checkpoint(_, trial)
+         checkpoint_folder = f"{PREFIX_CHECKPOINT_DIR}-{self.state.global_step}"
+ 
+         run_dir = self._get_output_dir(trial=trial)
+@@ -50,14 +162,29 @@ class PeftSavingCallback(TrainerCallback):
+         peft_model_path = os.path.join(folder, "adapter_model")
+         model.save_pretrained(peft_model_path)
+ 
++    def _resumable(self):
++        return os.environ.get("FASTDLLM_RESUMABLE_CKPT", "").strip().lower() in {
++            "1", "true", "yes", "on",
++        }
++
+     def on_train_end(self, args: TrainingArguments, state: TrainerState,
+             control: TrainerControl, **kwargs):
+         """ Save final best model adapter """
++        # [fastdllm-chunk] In resumable mode the adapter lives at the checkpoint ROOT and
++        # the final adapter is saved by the pipeline (model.save). Skip the subdir save,
++        # which (with best_model_checkpoint=None) would also drop a stray CWD adapter dir.
++        if self._resumable():
++            return
+         self._save(kwargs['model'], state.best_model_checkpoint)
+ 
+     def on_epoch_end(self, args: TrainingArguments, state: TrainerState,
+             control: TrainerControl, **kwargs):
+         """ Save intermediate model adapters in case of interrupted training """
++        # [fastdllm-chunk] Fires even on a mid-epoch stop (after the training-loop break),
++        # which would write checkpoint-N/adapter_model/ and make HF's _load_from_checkpoint
++        # prefer that subdir (loaded NON-trainable) over the trainable root adapter. Skip it.
++        if self._resumable():
++            return
+         folder = os.path.join(args.output_dir, f"{PREFIX_CHECKPOINT_DIR}-{state.global_step}")
+         self._save(kwargs['model'], folder)
+         
+@@ -68,11 +195,20 @@ class PeftSavingCallback(TrainerCallback):
+         control: TrainerControl,
+         **kwargs,
+     ):
++        # [fastdllm-chunk] In resumable-checkpoint mode the stock _save_checkpoint has
++        # already written the adapter at the checkpoint ROOT. Writing an additional
++        # adapter_model/ subdir would make HF's _load_from_checkpoint prefer the subdir
++        # (loaded as a NON-trainable adapter) and silently resume from an untrained
++        # adapter. So skip the subdir save when resuming is enabled.
++        if os.environ.get("FASTDLLM_RESUMABLE_CKPT", "").strip().lower() in {
++            "1", "true", "yes", "on",
++        }:
++            return control
+         checkpoint_folder = os.path.join(
+             args.output_dir, f"{PREFIX_CHECKPOINT_DIR}-{state.global_step}"
+-        )       
++        )
+         self._save(kwargs['model'], checkpoint_folder)
+ 
+         peft_model_path = os.path.join(checkpoint_folder, "adapter_model")
+         kwargs["model"].save_pretrained(peft_model_path)
+-        return control
+\ No newline at end of file
++        return control

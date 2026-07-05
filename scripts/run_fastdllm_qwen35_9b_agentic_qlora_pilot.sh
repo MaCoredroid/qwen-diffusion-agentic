@@ -197,6 +197,10 @@ fi
 if [[ -n "${LORA_MODEL_PATH}" ]]; then
     EXTRA_ARGS+=(--lora_model_path "${LORA_MODEL_PATH}")
 fi
+# Resume support for chunked/segmented training (no-op unless RESUME_FROM_CHECKPOINT is set).
+if [[ -n "${RESUME_FROM_CHECKPOINT:-}" ]]; then
+    EXTRA_ARGS+=(--resume_from_checkpoint "${RESUME_FROM_CHECKPOINT}")
+fi
 if [[ "${GRADIENT_CHECKPOINTING}" == "1" || "${GRADIENT_CHECKPOINTING}" == "true" || "${GRADIENT_CHECKPOINTING}" == "True" ]]; then
     EXTRA_ARGS+=(--gradient_checkpointing_kwargs "${GRADIENT_CHECKPOINTING_KWARGS}")
 fi
