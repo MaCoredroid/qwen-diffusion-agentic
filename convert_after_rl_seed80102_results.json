@@ -1,0 +1,77 @@
+{
+  "seed": 80102,
+  "adapter": "runs/convert_after_rl/Anew_run1recipe_step400_seed80102",
+  "adapter_sha256": "34cfa1346ffe1d5076e1af5ffd4edee6d0d90862b018c151233cbaa0e55313dd",
+  "base_model": "models/qwen3.5-9b-fastdllm-mtplus1-merged",
+  "a1_diffusion_hybrid_matched20": {
+    "turns": 63,
+    "exact_args": 50,
+    "valid_tool_call": 63,
+    "exact_tool_sequence": 63,
+    "episodes": 20,
+    "episode_exact": 14,
+    "anchor": 47,
+    "gate": ">=44",
+    "audit": {
+      "status": "CLEAN",
+      "verification_mode": "no_projection_events",
+      "exact_args": 50,
+      "projected_value_tokens_exact": 0,
+      "parallel_commit_forced_tokens_counter": 0,
+      "true_xml_value_tokens": 2069
+    }
+  },
+  "a2_diffusion_careful_matched20": {
+    "turns": 63,
+    "exact_args": 43,
+    "valid_tool_call": 60,
+    "exact_tool_sequence": 55,
+    "episodes": 20,
+    "episode_exact": 10,
+    "anchor": 44,
+    "gate": ">=41",
+    "audit": {
+      "status": "CLEAN",
+      "verification_mode": "no_projection_events",
+      "exact_args": 43,
+      "projected_value_tokens_exact": 0,
+      "parallel_commit_forced_tokens_counter": 0,
+      "true_xml_value_tokens": 1919
+    }
+  },
+  "a3_diffusion_hybrid_nevertrain": {
+    "turns": 184,
+    "exact_args": 83,
+    "valid_tool_call": 184,
+    "exact_tool_sequence": 132,
+    "episodes": 60,
+    "episode_exact": 20,
+    "anchor": 83,
+    "gate": ">=78",
+    "audit": {
+      "status": "CLEAN",
+      "verification_mode": "no_projection_events",
+      "exact_args": 83,
+      "projected_value_tokens_exact": 0,
+      "parallel_commit_forced_tokens_counter": 0,
+      "true_xml_value_tokens": 1408
+    }
+  },
+  "diffusion_aggregate_hybrid": {
+    "exact": 133,
+    "turns": 247,
+    "anchor": 130
+  },
+  "c_gsm8k_legacy_fullctx_N20": {
+    "strict": 14,
+    "N": 20,
+    "per_chunk_strict": [
+      4,
+      3,
+      3,
+      4
+    ],
+    "anchor": 13,
+    "gate": ">=13 PASS / <=11 FAIL"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "a1_mcnemar_seed80101_vs_C0": {
+    "paired": 63,
+    "gold_mismatch": 0,
+    "b_c0right_anewwrong": 0,
+    "c_anewright_c0wrong": 0,
+    "net_loss_b_minus_c": 0,
+    "p_two_sided": 1.0,
+    "ref_exact": 47,
+    "new_exact": 47
+  },
+  "a1_mcnemar_seed80102_vs_C0": {
+    "paired": 63,
+    "gold_mismatch": 0,
+    "b_c0right_anewwrong": 0,
+    "c_anewright_c0wrong": 3,
+    "net_loss_b_minus_c": -3,
+    "p_two_sided": 0.25,
+    "ref_exact": 47,
+    "new_exact": 50
+  },
+  "a3_mcnemar_seed80101_vs_C0": {
+    "paired": 184,
+    "gold_mismatch": 0,
+    "b_c0right_anewwrong": 1,
+    "c_anewright_c0wrong": 1,
+    "net_loss_b_minus_c": 0,
+    "p_two_sided": 1.0,
+    "ref_exact": 83,
+    "new_exact": 83
+  },
+  "a3_mcnemar_seed80102_vs_C0": {
+    "paired": 184,
+    "gold_mismatch": 0,
+    "b_c0right_anewwrong": 1,
+    "c_anewright_c0wrong": 1,
+    "net_loss_b_minus_c": 0,
+    "p_two_sided": 1.0,
+    "ref_exact": 83,
+    "new_exact": 83
+  },
+  "a1_bootstrap_seed80101": {
+    "point": 47,
+    "episodes": 20,
+    "turns": 63,
+    "lb95": 35,
+    "ub95": 58,
+    "B": 10000
+  },
+  "a1_bootstrap_seed80102": {
+    "point": 50,
+    "episodes": 20,
+    "turns": 63,
+    "lb95": 39,
+    "ub95": 60,
+    "B": 10000
+  },
+  "a1_bootstrap_C0": {
+    "point": 47,
+    "episodes": 20,
+    "turns": 63,
+    "lb95": 35,
+    "ub95": 58,
+    "B": 10000
+  },
+  "a1_bootstrap_pooled_40ep": {
+    "point": 97,
+    "episodes": 40,
+    "turns": 126,
+    "lb95": 81,
+    "ub95": 112,
+    "B": 10000
+  },
+  "a1_bootstrap_pooled_per63": {
+    "mean_exact_per63": 48.5,
+    "lb95_per63": 40.5,
+    "ub95_per63": 56.0
+  },
+  "a3_bootstrap_seed80101": {
+    "point": 83,
+    "episodes": 60,
+    "turns": 184,
+    "lb95": 62,
+    "ub95": 105,
+    "B": 10000
+  },
+  "a3_bootstrap_seed80102": {
+    "point": 83,
+    "episodes": 60,
+    "turns": 184,
+    "lb95": 62,
+    "ub95": 105,
+    "B": 10000
+  },
+  "c_gsm8k": {
+    "seed80101": 12,
+    "seed80102": 14,
+    "N_each": 20,
+    "combined_correct": 26,
+    "combined_N": 40,
+    "combined_rate": 0.65,
+    "anchor_rate": 0.65
+  }
+}
