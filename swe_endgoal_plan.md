@@ -167,3 +167,11 @@ Anchored at **2026-07-05**. Lossless-APC is at DESIGN today; its ~1.5–2 wk eng
 - **R3 — resolve-rate parity not met (C-G2).** 9B on SWE-Verified is a hard task; both arms may resolve few. The creditable claim is the **paired AR-vs-diffusion delta**, not an absolute resolve number — still a valid result even if both are low.
 - **R4 — Qwen-Code tool-loop divergence.** Grammar-off free-text path (if A2 shim misfires) silently drops the exact-arg safety net. Mitigation: A-G1 asserts schemas non-empty; native `qwen3_xml` format both arms.
 - **R5 — alienware contention.** Eval offload competes with user reservations. Mitigation: docker eval can also run natively on the 5090 (x86), decoupled from serving windows.
+
+## User directive (2026-07-05): Stage C runs through QWEN CODE with LumoFlyWheel as the REFERENCE implementation
+The SWE-Verified driver must follow the flywheel's existing SWE machinery, not a from-scratch harness:
+`run_swe_bench_q36_a.py` (updated in the 2026-07-05 upstream sync, +72 lines), `scripts/swe_x86_helpers/`
+(offload_codex_proxy.sh / relaunch_proxy_remote.sh — the two-machine proxy topology), and the hardened
+`inference_proxy.py` (+363 lines). Port the flywheel Codex-orchestrator pattern to Qwen Code as the agent
+CLI; keep their episode/eval/reward conventions so results are comparable with the flywheel's own SWE runs.
+On any harness wall: pull the flywheel upstream first (standing rule), then adapt.
