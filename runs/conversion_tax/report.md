@@ -8,6 +8,9 @@ identical prompts across all three systems. Two class-A cells reused (see Reuse)
 | **GSM8K free-CoT (30)** | 29/30 | 27/30 | 26/30 |
 | **CODE / MBPP (25)** | 22/25 | 22/25 | 20/25 |
 | **INSTRUCTION (25)** | 21/25 | 22/25 | 21/25 |
+| _TOOL-CALL (247 turns, agentic)_ ¹ | 124/247 | 136/247 | 130/247 |
+
+¹ reference row — reference row, from prior certified work (endgame_scoreboard / convert_after_rl step3); not re-run in this battery. C0 merged-AR alt point = 127/247.
 
 Columns are the conversion pipeline: **STOCK-AR** (pre-conversion baseline) → **MERGED-AR** (RL-v2 merged weights served plain AR — the 136/247 export) → **ENGINE-DIFFUSION** (the same RL-v2 weights served through the block-diffusion engine).
 

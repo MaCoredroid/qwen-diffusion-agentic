@@ -31,6 +31,17 @@ CELLS = [
     ("C", "engine", CT / "C_engine.jsonl", False),
 ]
 
+# Certified tool-call row from prior work (NOT re-run here) — the anchor capability
+# the whole conversion program was built on. Provenance in qwen-diffusion-endgame-result
+# / convert_after_rl_step3. MERGED-AR uses the A_new AR-guided 136/247 to match the
+# MERGED-AR column here (A_new export); the C0 merged-AR point is 127/247.
+TOOLCALL_REF = {
+    "class_label": "TOOL-CALL (247 turns, agentic)",
+    "stock": "124/247", "merged": "136/247", "engine": "130/247",
+    "note": "reference row, from prior certified work (endgame_scoreboard / convert_after_rl step3); "
+            "not re-run in this battery. C0 merged-AR alt point = 127/247.",
+}
+
 GOLD_A = {r["idx"]: r["gold_answer"] for r in json.loads((ROOT / "runs/l1_census/gsm8k_prompts_clean.json").read_text())}
 META_B = {r["idx"]: r for r in json.loads((CT / "code_prompts.json").read_text())}
 META_C = {r["idx"]: r for r in json.loads((CT / "instr_prompts.json").read_text())}
@@ -94,6 +105,7 @@ def main():
         },
         "regime": "B=1 greedy (temp 0, seed 20260701), strict deterministic scoring, prompts identical across systems",
         "grid_raw_counts": grid,
+        "toolcall_reference_row": TOOLCALL_REF,
         "cells": cells,
         "engine_stability": {
             "hangs_total": sum(len(c["engine_audit"]["hangs"]) for c in cells if c["system"] == "ENGINE-DIFFUSION"),
@@ -116,7 +128,9 @@ def main():
     L.append("|---|---|---|---|")
     for c in ["A", "B", "C"]:
         L.append(f"| **{CLASS_LABEL[c]}** | {grid[c]['stock']} | {grid[c]['merged']} | {grid[c]['engine']} |")
+    L.append(f"| _{TOOLCALL_REF['class_label']}_ ¹ | {TOOLCALL_REF['stock']} | {TOOLCALL_REF['merged']} | {TOOLCALL_REF['engine']} |")
     L.append("")
+    L.append(f"¹ reference row — {TOOLCALL_REF['note']}\n")
     L.append("Columns are the conversion pipeline: **STOCK-AR** (pre-conversion baseline) → "
              "**MERGED-AR** (RL-v2 merged weights served plain AR — the 136/247 export) → "
              "**ENGINE-DIFFUSION** (the same RL-v2 weights served through the block-diffusion engine).\n")

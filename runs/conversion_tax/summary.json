@@ -24,6 +24,13 @@
       "engine": "21/25"
     }
   },
+  "toolcall_reference_row": {
+    "class_label": "TOOL-CALL (247 turns, agentic)",
+    "stock": "124/247",
+    "merged": "136/247",
+    "engine": "130/247",
+    "note": "reference row, from prior certified work (endgame_scoreboard / convert_after_rl step3); not re-run in this battery. C0 merged-AR alt point = 127/247."
+  },
   "cells": [
     {
       "system": "STOCK-AR",
