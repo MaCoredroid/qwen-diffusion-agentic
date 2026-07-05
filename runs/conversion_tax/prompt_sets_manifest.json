@@ -1,0 +1,98 @@
+{
+  "class_B_code": {
+    "source": "google-research-datasets/mbpp config=sanitized (local HF cache, offline)",
+    "cache": "/home/mark/.cache/huggingface/datasets/google-research-datasets___mbpp/sanitized/0.0.0/4bb6404fdc6cacfda99d4ac4205087b89d32030c",
+    "fewshot_split": "prompt",
+    "fewshot_task_ids": [
+      2,
+      3,
+      4
+    ],
+    "eval_split": "test",
+    "eval_task_ids": [
+      11,
+      12,
+      14,
+      16,
+      17,
+      18,
+      19,
+      20,
+      56,
+      57,
+      58,
+      59,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      74
+    ],
+    "n": 25,
+    "prompt_shots": 3,
+    "scaffold": "bare Qwen chat turns, no system prompt, thinking-off",
+    "scoring": "first ```python fence exec'd vs test_imports+test_list asserts, 5s subprocess timeout; pass = returncode 0",
+    "prompt_len_min_max": [
+      736,
+      880
+    ],
+    "sha256": "6bb8e8099e61951d2f2b777ebf3fa198c00b91b06e84f183a708d36826cef4c0"
+  },
+  "class_C_instruction": {
+    "source": "constructed locally (IFEval-style verifiable constraints), see build_sets.py::INSTR",
+    "n": 25,
+    "shots": 0,
+    "scoring": "single deterministic machine check per item (scoring.py::score_instruction) on stripped completion",
+    "check_types": [
+      "contains_all",
+      "contains_digit",
+      "ends_with",
+      "ends_with_char",
+      "exact_match",
+      "json_keys",
+      "keyword_count_eq",
+      "keyword_present",
+      "line_prefix",
+      "no_comma",
+      "no_letter",
+      "no_word",
+      "sentence_count_eq",
+      "start_and_end",
+      "starts_with",
+      "word_count_eq",
+      "word_count_ge",
+      "word_count_lt"
+    ],
+    "prompt_len_min_max": [
+      13,
+      31
+    ],
+    "sha256": "58033129e75c06f410df1f56ecc0852cc341395dd38cbb44e575012d42b6b942"
+  },
+  "shared": {
+    "tokenizer": "stock Qwen3.5-9B c202236 (prompt vocab shared by all 3 systems)",
+    "block_size": 32,
+    "mask_id": 248077,
+    "grammar_topk": 256,
+    "stop_token_ids": [
+      248044,
+      248045,
+      248046,
+      248059
+    ],
+    "stop_token_strs": [
+      "<|endoftext|>",
+      "<|im_start|>",
+      "<|im_end|>",
+      "</tool_call>"
+    ]
+  }
+}
