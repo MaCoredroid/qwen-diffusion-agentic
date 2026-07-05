@@ -88,6 +88,36 @@ certificate ("engine == HF by kernels"), not a quality gain — and quality (130
 exactly. The residual is the block#0 GDN fold granularity, a kernel-level task explicitly deferred.
 (`endgame_table_final.md` §(c), `p2_engine_battery_v3b_result.md`.)
 
+**IS NOT — a lossless-prefix-cache agentic server (yet); the cache-on certificate is UNACHIEVED.** The
+SWE-class end goal needs a **lossless prefix cache** (cache-on byte-identical to fresh-context decode) so
+the parity certificate holds *with* cross-turn reuse. Today's align-APC reuse is functional but **byte-lossy**
+on the {gt20,gt21,gt60}/gt130 near-tie class (cache-path GDN-state fp divergence flips near-tie tokens;
+`exact_args` is APC-invariant), so **the parity certificate stays anchored fresh-context — there is NO
+cache-on lossless certificate.** The lossless design (**Route A**: cache only chunk-aligned GDN states
+refolded through the *same* `chunk_gated_delta_rule` kernel as fresh recompute) is **proven bit-exact at the
+primitive layer** (GPU refold-parity probe: Route A refold **0/524 288 bits differ vs fresh**; the deployed
+lossy 32-fold diverges on **61%** of state bits; CPU state-machine suite 52/52), but its staging seam is
+**landed-but-INERT** in the pin — the two capture sinks have **zero callers**, publish only stages and never
+applies to the live align row (`qwen3_5_flare.py:320-321`). **So `VLLM_QWEN3_5_FLARE_CANONICAL_PUBLISH=1`
+changes zero serving bits, and no functional lossless serving arm exists** until **W1** (call
+`capture_committed_gdn_inputs`/`seed_replay_window` from the GDN forward) + **W2** (apply staged
+`published[layer_id]` to the live align ssm row) land. The lossless-APC gate battery therefore **STOPS at
+gate-1 (BLOCKED-CANNOT-PASS, structural)**; gates 2 (cache-on parity cert) and 5 (measured refold overhead)
+are **NOT-RUN-DEPENDENT**. **Agentic serving bench** (nevertrain ep0-9, 10 episodes / 57 turns, ctx
+1175→2640 tok, batch=1 greedy; the prefill-reuse *speed envelope* a lossless publish would inherit): APC gives
+**engine 1.23×/turn** (1.26× on within-episode reuse; prefill **0.164 s→0.064 s = 2.58×**, decode unchanged),
+AR **1.24×** — modest **by construction** because these short structured tool-call turns (~34 tok) over 1–2.6k
+context are **decode-bound (engine cold split 34% prefill / 66% decode ⇒ ceiling ~1.47×)**; prefill-saved
+scales with context (0.059 s @<1400 tok → 0.153 s @>2300 tok), so **the payoff is context-length-gated toward
+the long-context SWE end goal, and this short-turn bench is the conservative floor.** At **matched caching,
+un-guided greedy, same build/cudagraph/batch=1 the engine and stock AR are neck-and-neck** (per-turn wall
+AR/ENG 0.95×, per-token parity ENG 10.44 vs AR 10.23 ms/tok); the engine's earlier "beats AR" edge came from
+the heavier **grammar-guided** AR server, and stripping guidance (conservative for AR) equalizes them.
+Lossless would keep these savings minus a bounded per-1024-checkpoint refold (**gate-5 envelope, UN-MEASURED**:
+~0.02–0.04 s/turn ⇒ APC ~1.23×→~1.13–1.18×; net-positive, shrinks as context grows).
+(`runs/lossless_apc/gates/gate_results.jsonl`, `runs/lossless_apc/bench/bench_aggregate.json`, bench commit
+`b6586f0`; engine_build_status.md §0.J; goal_5x_rollout_b1.md END GOAL.)
+
 ---
 
 ## 1. SOURCES OF TRUTH (index — read these; numbers here are transcribed, not re-derived)

@@ -1183,6 +1183,117 @@ fused_recurrent** (task #37) is the lever to lower `per_forward_ms` and lift the
 
 ---
 
+## 0.J LOSSLESS-APC — Route A gate battery STOPPED at gate-1 (seam inert) + END-GOAL agentic serving bench (2026-07-05, RTX 5090 / sm_120)
+
+The user end-goal (task #53) demands a **LOSSLESS prefix cache**: cache-on byte-identical to fresh-context
+decode, so the parity certificate holds *with* cross-turn reuse (today's certificate is anchored fresh-context
+as a workaround for the {20,21,60}/gt130 APC artifact class). This section runs the lossless-APC gate battery
+in order, stops at the first hard failure, and then benches the **speed envelope** a lossless publish would
+inherit. Sources: `runs/lossless_apc/gates/gate_results.jsonl`, `runs/lossless_apc/bench/` (bench commit
+`b6586f0`, pushed origin/main); Route A design in `runs/lossless_apc/rootcause.md`.
+
+### Probe finding (gate-0 preconditions — the primitive layer is REAL and bit-exact)
+Two preconditions both PASS, proving the Route A **math** is correct:
+- **CPU state-machine suite:** `pytest tests/v1/worker/gpu/test_qwen3_5_flare_state_machine.py` → **52 passed / 0
+  failed (7.2 s)** (39 baseline + 13 new incl a bitwise-identity property, `torch.equal` atol=0).
+- **GPU refold-parity probe** (`flare_refold_parity_probe.py`, the **real** `chunk_gated_delta_rule` kernel at
+  deployed geometry H=32, K=V=128, stride=1024, fp32, 32-token commits):
+
+  | path | max_abs vs fresh | bits differ | verdict |
+  |---|---:|---:|:---:|
+  | deployed **lossy** 32-fold | 5.555e-5 | 319 599 / 524 288 (**61%**) | diverges |
+  | **Route A refold** | **0.0** | **0 / 524 288** | **bit-identical** |
+  | **Route A publish buffer** | **0.0** | **0 / 524 288** (published=1) | **bit-identical** |
+
+  ⇒ Route A's canonical-checkpoint refold reproduces fresh recompute **bit-for-bit** on the real kernel; the
+  shipped 32-fold align path diverges on 61% of GDN state bits. **The math is done; only the wiring is missing.**
+
+### Route A (canonical GDN state boundaries — the lossless design)
+Cache only chunk-aligned GDN states computed via the **same kernel path** as fresh recompute (bitwise
+losslessness by construction; attention-KV reuse was exact already). At a 1024-token checkpoint crossing the
+committed tokens are re-folded through `chunk_gated_delta_rule` and the resulting canonical state — not the
+lossy incremental 32-fold — becomes the reused checkpoint. Landed in pin `aedf465` as **CPU-validated
+primitives + a GATED staging seam** (`VLLM_QWEN3_5_FLARE_CANONICAL_PUBLISH`).
+
+### Gate-1 — cache-on byte-match FRESH under multi-turn reuse: **BLOCKED-CANNOT-PASS (structural, not a math error)**
+The staging seam is **landed but INERT**. Whole-repo grep: the two capture sinks that must feed the replay
+window from the GDN forward — `capture_committed_gdn_inputs` (`qwen3_5_flare.py:1067`) and `seed_replay_window`
+(`:1096`) — are **defined with ZERO callers** anywhere in `vllm/`. `_run_canonical_publish` only **stages** into
+`GdnReplayState.published[layer_id]` (`:1184`); it **never applies** to the live align ssm row. The engine
+documents this itself (`qwen3_5_flare.py:320-321`): *"Until (i) is wired the windows never fill, so even gate-on
+is a no-op that touches no live cache."* ⇒ setting `VLLM_QWEN3_5_FLARE_CANONICAL_PUBLISH=1` changes **zero
+serving bits** — replay windows never populate → `window.ready()` never true → publish never written. Gate-1
+would fail identically with the env gate ON or OFF, so cache-on output is byte-**identical to today's lossy
+gate-OFF path**, which diverges from fresh on the {gt20,gt21,gt60}/gt130 census class.
+
+**Did NOT burn the ~8–15 GPU-h census/battery:** the divergence is code-guaranteed and already captured in
+`runs/p2_engine_nevertrain/`. Re-deriving it yields zero new signal.
+
+**Wiring remaining (the two blockers to a real lossless arm):**
+- **W1** — call `capture_committed_gdn_inputs` + `seed_replay_window` from the GDN commit/prefill forward
+  (`qwen_gdn_linear_attn.py`) with the exact per-request post-l2norm q/k/v/g/beta sliced to committed tokens,
+  seeded from the prior canonical checkpoint.
+- **W2** — apply the staged `published[layer_id]` into the align checkpoint ssm row at the 1024 crossing
+  (currently staged only, never applied).
+
+### Cache-on certificate status + gates 2–5 (all DEPENDENT, not run)
+- **Gate-2 (full-63 cache-on parity certificate):** NOT-RUN-DEPENDENT. **The parity certificate CANNOT be
+  upgraded to cache-on while the fix is inert** — it stays **anchored fresh-context**. No lossless cache-on
+  certificate exists yet.
+- **Gate-3 (20-turn never-train spot):** NOT-RUN-DEPENDENT.
+- **Gate-4 (no-regression set):** NOT-RUN-DEPENDENT. With the gate OFF the seam is fully inert, so the shipped
+  byte-parity / read-only-denoise / determinism / cudagraph certificates are **preserved by construction**; the
+  no-regression set becomes meaningful only once W1+W2 land and must be re-run with the gate ON.
+- **Gate-5 (refold overhead):** NOT-RUN-DEPENDENT — **un-measured**. Per-checkpoint refold is one
+  `chunk_gated_delta_rule` call over ≤1024 committed tokens; it cannot be measured on the live path until W1
+  feeds real windows. Envelope estimate below.
+
+### END-GOAL agentic serving bench — the prefill-reuse SPEED ENVELOPE a lossless publish would inherit
+Because **no functional lossless mode exists to time**, this benches the deployed align-APC reuse (byte-lossy on
+a quality-neutral near-tie class: engine-on **52/57 byte-parity vs cold**; `exact_args` is APC-invariant) to
+bound the savings a lossless publish inherits. Same vLLM build both backends (pin `aedf465`), PIECEWISE
+cudagraph, batch=1, greedy, seed 20260701; nevertrain **ep0-9 = 10 episodes / 57 turns**, growing context
+**1175→2640 tok**; exact per-turn `prompt_ids` replayed token-identically through the diffusion engine and stock
+`Qwen3.5-9B` AR. Cold = `reset_prefix_cache()`/turn (the hybrid rejects `enable_prefix_caching=False` with
+`mamba_block_size` set — the resetapc-cert protocol). Four arms `{engine,ar}×{cold,on}`.
+
+1. **APC speedup (per-turn wall):** ENGINE **1.23×** (mean-ratio 1.28×; **1.26× on within-episode-reuse turns**,
+   n=47), AR **1.24×**. Engine wall **0.515 s → 0.417 s**; **prefill 0.164 s → 0.064 s = 2.58× (−0.101 s/turn)**,
+   decode unchanged. Turn-0 gain small (**1.10×**, no same-episode prefix). Per-episode range **1.03×–1.35×**
+   (longer episodes → bigger gain).
+2. **Prefill vs decode dominance (the honest ceiling):** engine cold split = **34% prefill / 66% decode** (AR
+   31/69). APC only touches prefill ⇒ **theoretical ceiling ~1.47×**, realized ~1.23–1.26×. Agentic tool-call
+   turns emit **short structured outputs (~34 tok)** over 1–2.6k context ⇒ **decode-bound by construction here**.
+   **But prefill-saved scales with context** (0.059 s @<1400 tok → 0.153 s @>2300 tok) — so the SWE-class
+   long-context end goal is where lossless-APC actually pays off; this short-turn bench is the **conservative
+   floor, not the ceiling.**
+3. **Engine vs AR at matched caching** (same build, cudagraph, batch=1, **un-guided** greedy): within **~5%** on
+   per-turn wall (AR/ENG on-wall **0.95×**), **per-token parity** (ENG 10.44 vs AR 10.23 ms/tok), near-identical
+   total tokens (1912 vs 1923). Engine block-parallelism (1.70 tok/forward @ 17.7 ms) cancels its higher
+   per-forward + FLARE prefill cost. Note: the earlier never-train "engine beats AR" used the heavier
+   **grammar-guided** AR server; stripping guidance (which only slows AR — favorable to AR) makes them
+   **neck-and-neck**. The engine's speed edge lives in guided-AR comparisons, longer outputs, or batch — not
+   this workload.
+4. **Lossless refold overhead (gate-5 envelope, UN-MEASURED):** ≤2 checkpoint crossings/episode at these lengths
+   ⇒ ~1–2 refolds/episode (~0.02–0.04 s/turn amortized), trimming engine APC **~1.23× → ~1.13–1.18×**. Net
+   positive; the fraction shrinks as context grows. **Gate-5 blocked on W1+W2.**
+
+### Bottom line
+Lossless-APC's value on **this** agentic workload is real but **bounded (~1.2×/turn, decode-dominated)**; its
+payoff is **context-length-gated** and points at the long-context SWE end goal. The wiring gap stands: **no
+lossless serving arm exists** until W1 + W2 land — only then can gate-2 (cache-on byte-parity certificate) and
+gate-5 (measured refold overhead) actually run. Route A's primitives are proven bit-exact; the fix is a wiring
+task, not a math task.
+
+### Artifacts — `runs/lossless_apc/` (bench commit `b6586f0`, pushed origin/main)
+`gates/gate_results.jsonl` (the ordered ledger) · `rootcause.md` · `flare_refold_parity_probe.py` /
+`flare_ssm_fold_probe.py` · `bench/{engine,ar}_{cold,on}.jsonl` (57 turns each, per-turn `wall_s` +
+`prefill_s`/`decode_s`) · `bench/bench_aggregate.json` (all cuts + per-episode + per-turn rows) ·
+`bench/run_engine_bench.py` (v3b harness + first-denoise-step prefill timer; the `.item()` sync makes the split
+accurate) / `run_ar_bench.py` / `aggregate.py` / `env_engine.sh` / `runcage_*.sh`.
+
+---
+
 ## 1. What was built (paths + local commits)
 
 ### Repo A — vLLM pin `/home/mark/shared/vllm_p2_pr42406`

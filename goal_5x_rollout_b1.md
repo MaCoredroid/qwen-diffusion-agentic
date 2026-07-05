@@ -125,3 +125,35 @@ tokens; certificate currently anchored fresh-context as a workaround). Fix shape
 boundaries — cache only chunk-aligned states computed via the same kernel path as fresh recompute
 (bitwise losslessness by construction); attention KV reuse is exact already. Acceptance: parity
 certificate holds WITH cache reuse across turns + measured agentic-episode speedup from APC.
+
+### STATUS (2026-07-05, task #53): Route A math PROVEN bit-exact; gate battery STOPPED at gate-1 (seam inert)
+Ran the lossless-APC gate battery in order (`runs/lossless_apc/gates/gate_results.jsonl`, bench commit
+`b6586f0` → origin/main; engine_build_status.md §0.J).
+- **Gate-0 preconditions PASS — Route A is real.** CPU state-machine suite **52/52**; GPU refold-parity probe on
+  the real `chunk_gated_delta_rule` (H=32, K=V=128, stride=1024, fp32, 32-tok commits): **Route A refold & publish
+  = 0/524 288 bits differ vs fresh (bit-identical)**, while the deployed lossy 32-fold diverges on **61%** of
+  state bits. The canonical-boundary design **is** bitwise-lossless; the math is done.
+- **Gate-1 BLOCKED-CANNOT-PASS (structural, not math).** Route A landed in the pin as CPU-validated primitives +
+  a GATED but **INERT** staging seam: the two capture sinks (`capture_committed_gdn_inputs`, `seed_replay_window`)
+  have **zero callers**; publish only stages into `GdnReplayState.published`, never applies to the live align row
+  (`qwen3_5_flare.py:320-321`). ⇒ `VLLM_QWEN3_5_FLARE_CANONICAL_PUBLISH=1` changes **zero serving bits**; cache-on
+  output is byte-identical to today's lossy path. Did NOT burn the ~8–15 GPU-h census (divergence code-guaranteed).
+- **Acceptance NOT met.** The cache-on parity certificate stays **anchored fresh-context**; gate-2 (cache-on cert)
+  and gate-5 (refold overhead) are NOT-RUN-DEPENDENT. **Two wiring tasks remain: W1** (call the capture sinks from
+  the GDN forward with committed post-l2norm q/k/v/g/beta) **+ W2** (apply staged `published[layer_id]` at the 1024
+  crossing). Only after W1+W2 can the lossless serving arm exist and the two gates run.
+
+### Measured agentic-episode APC speedup (the speed envelope a lossless publish inherits)
+Nevertrain ep0-9 (10 episodes / **57 turns**, ctx **1175→2640 tok**), same vLLM build both backends, PIECEWISE
+cudagraph, batch=1, greedy, seed 20260701; exact `prompt_ids` replayed token-identically through engine + stock
+`Qwen3.5-9B` AR. Cold = `reset_prefix_cache()`/turn.
+- **APC speedup:** engine **1.23×/turn** (1.26× within-episode reuse), AR 1.24×; engine prefill **0.164→0.064 s =
+  2.58× (−0.10 s/turn)**, decode unchanged. Modest **by construction**: short tool-call outputs (~34 tok) over
+  1–2.6k ctx are **decode-bound** (cold split 34% prefill / 66% decode ⇒ ceiling ~1.47×). **Prefill-saved scales
+  with context** (0.059 s @<1400 → 0.153 s @>2300 tok) → **payoff is context-length-gated toward this SWE-class
+  long-context end goal; the short-turn bench is the conservative floor.**
+- **Engine vs AR at matched caching** (un-guided greedy, same build/cudagraph/batch=1): **neck-and-neck** —
+  per-turn wall AR/ENG 0.95×, per-token parity (ENG 10.44 vs AR 10.23 ms/tok). The engine's speed edge lives in
+  guided-AR comparisons, longer outputs, or batch — not this workload.
+- **Lossless refold caveat (gate-5, UN-MEASURED):** ~1–2 refolds/episode (~0.02–0.04 s/turn) trims engine APC
+  ~1.23×→~1.13–1.18×; net-positive, shrinks as context grows.
