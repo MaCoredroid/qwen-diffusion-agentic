@@ -49,12 +49,37 @@ rests on: **conversion must preserve the NEWEST, most fragile capabilities** (th
 RL-acquired), else the flywheel erases its own gains. Therefore:
 
 - **Per-capability conversion-tax table** (not one aggregate number): stock-AR vs converted-AR vs diffusion-hybrid on
-  tool-call exactness, GSM8K, MBPP, instruction-following — the deltas per capability class. (First run queued:
-  stock-vs-merged AR baseline.)
+  tool-call exactness, GSM8K, MBPP, instruction-following — the deltas per capability class. **DONE (2026-07-05, #28,
+  `conversion_tax_result.md`): TAX SMALL + BOUNDED, no class collapses** (see the audit table below).
 - **Preservation audit protocol (the sharp test)**: take a model with a FRESHLY ACQUIRED capability (our v2/v6 RL
   gains qualify), run the conversion ON it, verify the fresh capability survives (a) in diffusion mode, (b) in
   post-conversion AR mode. Convert-after-RL is the missing experiment; conversion-before-RL (our historical order)
   does not certify the loop.
+
+### PER-CAPABILITY CONVERSION-TAX AUDIT — RESULT (2026-07-05, work-item #28, `conversion_tax_result.md`): **SMALL + BOUNDED, no class collapses**
+
+Three systems × three capability classes (+ the certified N=247 tool-call row), identical prompts, B=1 greedy, strict
+deterministic scoring, engine audits on. Columns are the conversion pipeline: **STOCK-AR** (pre-conversion) →
+**MERGED-AR** (RL-v2 merged weights, the 136/247 `A_new`, served plain AR) → **ENGINE-DIFFUSION** (same weights via the
+block-diffusion engine, pin `0b44dcc` hybrid_clean free-text). STOCK-AR and MERGED-AR share the identical offline-vLLM
+AR path (only the weight dir differs), isolating "what RL+merge did" from "what the engine costs on top."
+
+| capability class | N | STOCK-AR | MERGED-AR | ENGINE-DIFFUSION | Δ merged−stock | Δ engine−merged |
+|---|---:|---:|---:|---:|---|---|
+| GSM8K free-CoT | 30 | 29/30 · 97% [83,99] | 27/30 · 90% [74,97] | 26/30 · 87% [70,95] | −2 (−7pp) | −1 (−3pp) |
+| CODE / MBPP | 25 | 22/25 · 88% [70,96] | 22/25 · 88% [70,96] | 20/25 · 80% [61,91] | 0 | −2 (−8pp) |
+| INSTRUCTION | 25 | 21/25 · 84% [65,94] | 22/25 · 88% [70,96] | 21/25 · 84% [65,94] | +1 (+4pp) | −1 (−4pp) |
+| _TOOL-CALL (agentic)_ ¹ | 247 | 124/247 · 50% [44,56] | 136/247 · 55% [49,61] | 130/247 · 53% [46,59] | +12 (+5pp) | −6 (−2pp) |
+
+Intervals are Wilson 95%. ¹ certified reference row (`endgame_scoreboard`/`convert_after_rl` step-3), not re-run here.
+**Small-N caveat is load-bearing:** the A/B/C intervals span ≈20 points and all three systems overlap within each
+class, so per-class differences of ≤3 items are within noise — the table certifies "no collapse," not a ranked ladder.
+Only the N=247 tool-call row is tight enough to separate. **Reading:** RL+merge is capability-neutral on the general
+classes (code 0, instruction +1, reasoning −2) and *gains* the tool-call exactness it was trained for (+12); the engine
+then costs a bounded −1..−2 per class vs its own AR-served weights, and on tool-call lands *between* stock and merged
+(130 ∈ [124,136]). **Engine stability held (the L0-fix check):** 0 CPU-pathological hangs on both free-text engine
+cells, `value_projection_events == 0` across all engine cells, all `verify.ok == True`. No capability class collapses;
+the conversion tax is small and bounded everywhere, net-positive where it was optimized.
 
 ### PRESERVATION AUDIT — RESULT (2026-07-05, work-item #29, `convert_after_rl_result.md`): **PRESERVES**
 
@@ -95,7 +120,11 @@ best-of-N sample-and-decode machinery · P2 engine (low-batch serving twin + con
 
 ## Gaps = the new work items
 
-1. Per-capability conversion-tax audit (extend the queued stock-vs-merged run to the full battery).
+1. Per-capability conversion-tax audit — **DONE (2026-07-05, #28): TAX SMALL + BOUNDED, no class collapses.** Full
+   3×3 battery (stock-AR/merged-AR/engine-diffusion × GSM8K/MBPP/instruction) + certified N=247 tool-call row; RL+merge
+   capability-neutral on general classes and +12 on tool-call, engine −1..−2 per class (within noise on N=25–30, CIs
+   overlap). Engine audit clean (0 hangs, proj=0, verify-OK). See the per-capability table above and
+   `conversion_tax_result.md`.
 2. Convert-after-RL preservation experiment — **DONE (2026-07-05): PRESERVES** across two seeds (b=0 vs C0 both seeds,
    0 tool-call turns lost; GSM8K combined 0.65 == anchor; audits clean). See the preservation-result table above and
    `convert_after_rl_result.md`. No step-1 preservation mechanism required.
