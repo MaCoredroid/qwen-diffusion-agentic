@@ -72,10 +72,10 @@
       "word_count_lt"
     ],
     "prompt_len_min_max": [
-      13,
-      31
+      17,
+      35
     ],
-    "sha256": "58033129e75c06f410df1f56ecc0852cc341395dd38cbb44e575012d42b6b942"
+    "sha256": "f42a4beb491193a61554caaf328e2804627225054157309039f43458e8775dde"
   },
   "shared": {
     "tokenizer": "stock Qwen3.5-9B c202236 (prompt vocab shared by all 3 systems)",

@@ -1,0 +1,25 @@
+{"idx": 0, "prompt_len": 28, "n_gen": 7, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.118, "tok_per_s": 59.51, "gen_text": "The quick brown fox jumps."}
+{"idx": 1, "prompt_len": 27, "n_gen": 3, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.064, "tok_per_s": 46.78, "gen_text": "HELLO"}
+{"idx": 2, "prompt_len": 25, "n_gen": 16, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.236, "tok_per_s": 67.81, "gen_text": "The banana was next to the banana, which was next to the banana."}
+{"idx": 3, "prompt_len": 31, "n_gen": 5, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.09, "tok_per_s": 55.48, "gen_text": "Sun shines hot."}
+{"idx": 4, "prompt_len": 28, "n_gen": 16, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.236, "tok_per_s": 67.78, "gen_text": "Winter brings a blanket of snow that silences the world. The end."}
+{"idx": 5, "prompt_len": 35, "n_gen": 19, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.276, "tok_per_s": 68.78, "gen_text": "{\n  \"name\": \"Assistant\",\n  \"age\": 0\n}"}
+{"idx": 6, "prompt_len": 30, "n_gen": 9, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.144, "tok_per_s": 62.32, "gen_text": "- Red\n- Blue\n- Green"}
+{"idx": 7, "prompt_len": 27, "n_gen": 21, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.302, "tok_per_s": 69.45, "gen_text": "As the sun sets and the moon rises, the stars begin to twinkle in the night sky."}
+{"idx": 8, "prompt_len": 24, "n_gen": 7, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.117, "tok_per_s": 59.85, "gen_text": "Grass is typically green."}
+{"idx": 9, "prompt_len": 29, "n_gen": 4, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.077, "tok_per_s": 51.96, "gen_text": "Answer: Paris"}
+{"idx": 10, "prompt_len": 21, "n_gen": 45, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.624, "tok_per_s": 72.07, "gen_text": "My favorite hobby is reading, as it allows me to explore countless worlds and ideas within the comfort of my home. This quiet pastime not only relaxes my mind but also expands my understanding of different cultures and perspectives."}
+{"idx": 11, "prompt_len": 30, "n_gen": 26, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.37, "tok_per_s": 70.36, "gen_text": "Plants make food by using sunlight, water, and carbon dioxide to produce glucose and oxygen through a process called photosynthesis."}
+{"idx": 12, "prompt_len": 28, "n_gen": 4, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.078, "tok_per_s": 51.5, "gen_text": "i love programming"}
+{"idx": 13, "prompt_len": 23, "n_gen": 3, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.064, "tok_per_s": 46.93, "gen_text": "42"}
+{"idx": 14, "prompt_len": 25, "n_gen": 19, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.277, "tok_per_s": 68.69, "gen_text": "The bustling city lights reflect off the wet pavement while people rush home after a long day."}
+{"idx": 15, "prompt_len": 30, "n_gen": 5, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.091, "tok_per_s": 55.19, "gen_text": "Lion Tiger Bear"}
+{"idx": 16, "prompt_len": 29, "n_gen": 5, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.09, "tok_per_s": 55.32, "gen_text": "go go go go"}
+{"idx": 17, "prompt_len": 28, "n_gen": 17, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.249, "tok_per_s": 68.18, "gen_text": "What is the farthest object that has been directly imaged by a telescope?"}
+{"idx": 18, "prompt_len": 22, "n_gen": 13, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.197, "tok_per_s": 65.99, "gen_text": "The year 2024 is a leap year."}
+{"idx": 19, "prompt_len": 33, "n_gen": 12, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.184, "tok_per_s": 65.31, "gen_text": "* Mercury\n* Venus\n* Earth\n* Mars"}
+{"idx": 20, "prompt_len": 24, "n_gen": 9, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.144, "tok_per_s": 62.36, "gen_text": "A happy dog runs through the park."}
+{"idx": 21, "prompt_len": 17, "n_gen": 2, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.051, "tok_per_s": 39.47, "gen_text": "OK"}
+{"idx": 22, "prompt_len": 26, "n_gen": 88, "maxtok": 256, "finish_reason": "stop", "wall_s": 1.194, "tok_per_s": 73.71, "gen_text": "The ocean is a vast and mysterious expanse that covers more than seventy percent of our planet's surface, serving as the ultimate home to countless diverse species. Its depths hold ancient secrets, from towering underwater mountains to bioluminescent creatures that glow in the darkness. Beyond its biological richness, the ocean plays a critical role in regulating global climate by absorbing heat and carbon dioxide, making it essential for the survival of all life on Earth."}
+{"idx": 23, "prompt_len": 27, "n_gen": 32, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.449, "tok_per_s": 71.26, "gen_text": "First, I will acknowledge your instruction to begin with a specific word. Then, I will ensure that my response concludes with the required final word. Last."}
+{"idx": 24, "prompt_len": 30, "n_gen": 13, "maxtok": 256, "finish_reason": "stop", "wall_s": 0.197, "tok_per_s": 65.96, "gen_text": "Language: Python\nLanguage: Java\nLanguage: C++"}

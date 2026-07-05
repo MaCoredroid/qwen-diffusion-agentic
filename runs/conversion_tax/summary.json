@@ -1,0 +1,214 @@
+{
+  "title": "Per-capability conversion-tax battery (#28) \u2014 3x3 raw counts",
+  "date": "2026-07-05",
+  "systems": {
+    "STOCK-AR": "stock Qwen3.5-9B c202236, offline vLLM bf16 enforce_eager, plain greedy",
+    "MERGED-AR": "models/qwen3.5-9b-fastdllm-mtplus1-Anew-vllm-bf16 (the 136/247 export), same offline-vLLM AR path as STOCK-AR",
+    "ENGINE-DIFFUSION": "models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16, vLLM pin 0b44dcc hybrid_clean free-text, BIDIR_PROBE+CUDAGRAPH"
+  },
+  "regime": "B=1 greedy (temp 0, seed 20260701), strict deterministic scoring, prompts identical across systems",
+  "grid_raw_counts": {
+    "A": {
+      "stock": "29/30",
+      "merged": "27/30",
+      "engine": "26/30"
+    },
+    "B": {
+      "stock": "22/25",
+      "merged": "22/25",
+      "engine": "20/25"
+    },
+    "C": {
+      "stock": "21/25",
+      "merged": "22/25",
+      "engine": "21/25"
+    }
+  },
+  "cells": [
+    {
+      "system": "STOCK-AR",
+      "class": "A",
+      "correct": 29,
+      "n": 30,
+      "denom": 30,
+      "wrong_idxs": [
+        12
+      ],
+      "finish_reasons": {
+        "stop": 30
+      },
+      "reused": true,
+      "source": "runs/l1_baseline_b1/ar_gsm8k_clean.jsonl"
+    },
+    {
+      "system": "MERGED-AR",
+      "class": "A",
+      "correct": 27,
+      "n": 30,
+      "denom": 30,
+      "wrong_idxs": [
+        12,
+        13,
+        21
+      ],
+      "finish_reasons": {
+        "stop": 29,
+        "length": 1
+      },
+      "reused": false,
+      "source": "runs/conversion_tax/A_merged_ar.jsonl"
+    },
+    {
+      "system": "ENGINE-DIFFUSION",
+      "class": "A",
+      "correct": 26,
+      "n": 30,
+      "denom": 30,
+      "wrong_idxs": [
+        2,
+        7,
+        12,
+        13
+      ],
+      "finish_reasons": {
+        "stop": 30
+      },
+      "reused": true,
+      "source": "runs/l0l2_final_head_verify/engine_gsm8k_clean_head.jsonl",
+      "engine_audit": {
+        "hangs": [],
+        "length_runaways": [],
+        "value_projection_events_nonzero_idxs": [],
+        "all_verify_ok": true
+      }
+    },
+    {
+      "system": "STOCK-AR",
+      "class": "B",
+      "correct": 22,
+      "n": 25,
+      "denom": 25,
+      "wrong_idxs": [
+        2,
+        18,
+        24
+      ],
+      "finish_reasons": {
+        "stop": 25
+      },
+      "reused": false,
+      "source": "runs/conversion_tax/B_stock_ar.jsonl"
+    },
+    {
+      "system": "MERGED-AR",
+      "class": "B",
+      "correct": 22,
+      "n": 25,
+      "denom": 25,
+      "wrong_idxs": [
+        2,
+        7,
+        18
+      ],
+      "finish_reasons": {
+        "stop": 25
+      },
+      "reused": false,
+      "source": "runs/conversion_tax/B_merged_ar.jsonl"
+    },
+    {
+      "system": "ENGINE-DIFFUSION",
+      "class": "B",
+      "correct": 20,
+      "n": 25,
+      "denom": 25,
+      "wrong_idxs": [
+        2,
+        7,
+        14,
+        18,
+        20
+      ],
+      "finish_reasons": {
+        "stop": 24,
+        "length": 1
+      },
+      "reused": false,
+      "source": "runs/conversion_tax/B_engine.jsonl",
+      "engine_audit": {
+        "hangs": [],
+        "length_runaways": [
+          7
+        ],
+        "value_projection_events_nonzero_idxs": [],
+        "all_verify_ok": true
+      }
+    },
+    {
+      "system": "STOCK-AR",
+      "class": "C",
+      "correct": 21,
+      "n": 25,
+      "denom": 25,
+      "wrong_idxs": [
+        0,
+        3,
+        20,
+        23
+      ],
+      "finish_reasons": {
+        "stop": 25
+      },
+      "reused": false,
+      "source": "runs/conversion_tax/C_stock_ar.jsonl"
+    },
+    {
+      "system": "MERGED-AR",
+      "class": "C",
+      "correct": 22,
+      "n": 25,
+      "denom": 25,
+      "wrong_idxs": [
+        3,
+        20,
+        23
+      ],
+      "finish_reasons": {
+        "stop": 25
+      },
+      "reused": false,
+      "source": "runs/conversion_tax/C_merged_ar.jsonl"
+    },
+    {
+      "system": "ENGINE-DIFFUSION",
+      "class": "C",
+      "correct": 21,
+      "n": 25,
+      "denom": 25,
+      "wrong_idxs": [
+        0,
+        3,
+        19,
+        20
+      ],
+      "finish_reasons": {
+        "stop": 25
+      },
+      "reused": false,
+      "source": "runs/conversion_tax/C_engine.jsonl",
+      "engine_audit": {
+        "hangs": [],
+        "length_runaways": [],
+        "value_projection_events_nonzero_idxs": [],
+        "all_verify_ok": true
+      }
+    }
+  ],
+  "engine_stability": {
+    "hangs_total": 0,
+    "length_runaways_total": 1,
+    "value_projection_events": "0 across all engine cells",
+    "all_verify_ok": true,
+    "note": "L0 fix held: 0 CPU-pathological hangs on free-text B and C engine cells (expected)."
+  }
+}

@@ -36,19 +36,27 @@ def score_gsm8k(completion: str, gold_answer: str) -> bool:
 
 
 # ------------------------------------------------------------------ B: CODE ---
-_FENCE_RE = re.compile(r"```(?:python|py)?\s*\n(.*?)```", re.DOTALL | re.IGNORECASE)
+_LANG_LEAD = re.compile(r"^\s*(?:python|py)\s*\n", re.IGNORECASE)
 
 
 def extract_code(completion: str) -> str:
-    """First fenced code block; fall back to the raw completion if unfenced."""
-    m = _FENCE_RE.search(completion or "")
-    if m:
-        return m.group(1)
-    # tolerate a fence opened but not closed (truncation)
-    m2 = re.search(r"```(?:python|py)?\s*\n(.*)$", completion or "", re.DOTALL | re.IGNORECASE)
-    if m2:
-        return m2.group(1)
-    return completion or ""
+    """Extract the code body robustly and uniformly across all systems.
+
+    Handles: properly paired ```python … ``` (AR systems); a lone/closing ``` with
+    the opening fence dropped (the diffusion engine emits `python\\ndef…\\n```);
+    an opened-but-truncated fence; and no fence at all. Applied identically to every
+    system so the comparison is fair — the only thing that differs is the code text.
+    """
+    t = completion or ""
+    fences = [m.start() for m in re.finditer(r"```", t)]
+    if len(fences) >= 2:
+        inner = t[fences[0] + 3:fences[1]]
+    elif len(fences) == 1:
+        inner = t[:fences[0]]            # lone fence == closing; code precedes it
+    else:
+        inner = t
+    inner = _LANG_LEAD.sub("", inner, count=1)   # drop a leading `python`/`py` tag line
+    return inner
 
 
 def score_code(completion: str, test_imports, test_list, timeout: float = 5.0) -> bool:
@@ -108,8 +116,13 @@ def _extract_json_obj(t):
     return None
 
 
+_THINK_RE = re.compile(r"^\s*<think>.*?</think>\s*", re.DOTALL)
+
+
 def score_instruction(completion: str, check: dict) -> bool:
-    t = (completion or "").strip()
+    # defensive: strip a leading <think>…</think> block if the model emitted one
+    # (the prompts use the thinking-off scaffold, so normally none is present).
+    t = _THINK_RE.sub("", completion or "").strip()
     typ = check["type"]
     low = t.lower()
     if typ == "exact_match":

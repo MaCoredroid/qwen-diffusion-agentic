@@ -147,7 +147,11 @@ def build_instr():
     assert len(INSTR) == NINSTR, len(INSTR)
     recs = []
     for i, (instr, check) in enumerate(INSTR):
-        prompt_str = f"<|im_start|>user\n{instr}<|im_end|>\n<|im_start|>assistant\n"
+        # thinking-OFF scaffold (Qwen3.5 enable_thinking=False): zero-shot prompts
+        # otherwise open a <think> block and ramble to the length cap. The empty
+        # think prefill makes all 3 systems emit a direct, bounded answer.
+        prompt_str = (f"<|im_start|>user\n{instr}<|im_end|>\n"
+                      f"<|im_start|>assistant\n<think>\n\n</think>\n\n")
         pid = ids(prompt_str)
         recs.append({
             "idx": i, "instruction": instr, "check": check,
