@@ -1086,6 +1086,69 @@ row added to the endgame scoreboard (gate not met).
 
 ---
 
+## 0.I BATCHED RL-ROLLOUT THROUGHPUT — engine vs stock-AR-guided across batch {1,2,4,8,16}; thesis DISCONFIRMED (2026-07-04, RTX 5090 / sm_120)
+
+The prior sections adjudicated **single-turn** wall-clock (0.626 s/turn agg, beats stock-AR). This section answers the
+distinct **RL-rollout regime** question: does the diffusion twin generate on-policy signal *at higher throughput* when
+rollouts are **batched**? The a-priori thesis was that the FLOP-reducing hybrid (~10× fewer forwards/turn) would hold or
+grow its advantage with batch. **Bench DISCONFIRMS it against a fast guided-AR baseline.** Source:
+`runs/p2_batched_rollout_bench/report.md`; bench commit `58524f9` (pushed origin/main).
+
+### Batch-correctness precondition — PASSED (bench was safe to run)
+`runs/p2_engine_batchgates`: **NO cross-request contamination** on the batched path — per-request GDN snapshot/restore
+state stays isolated across co-batched requests. The batched path is SAFE; only *then* was the throughput sweep run.
+
+### The two throughput curves + the ratio that matters (samples/sec == rollouts/sec/GPU)
+All on the certified engine (pin `95d8b47`, PIECEWISE cudagraph + APC, BIDIR_PROBE), RTX 5090, 22 GB RAM cage,
+foreground; **48 never-train BFCL/API-Bank turns/point** (48 divisible by every batch); temp=0.7 seeded (RL mode).
+**AR = stock Qwen3.5-9B guided decoding** (`regex_from_qwen_xml_tool_schema`, the exact scoreboard guidance) given its
+*fastest* offline+cudagraph path — **conservative for the engine** (engine must beat AR at AR's best).
+
+| batch | eng samp/s | AR samp/s | **eng/AR** | eng tok/s | AR tok/s | eng occ (eff) | eng util% | AR util% |
+|---:|---:|---:|:---:|---:|---:|---:|---:|---:|
+| 1 | 1.524 | 1.625 | **0.94×** | 75 | 82 | 1.0 (1.00) | 88 | 100 |
+| 2 | 2.248 | 2.499 | **0.90×** | 109 | 126 | 1.5 (0.77) | 88 | 100 |
+| 4 | 3.426 | 4.103 | **0.83×** | 167 | 207 | 2.7 (0.68) | 87 | 100 |
+| 8 | 4.948 | 6.601 | **0.75×** | 243 | 333 | 4.8 (0.60) | 87 | 100 |
+| 16 | 5.732 | 7.846 | **0.73×** | 279 | 395 | 7.2 (0.45) | 84 | 100 |
+
+The ratio goes the **wrong way**: 0.94 → 0.90 → 0.83 → 0.75 → 0.73. The engine is at rollout **parity at batch=1** and
+**LOSES ground as batch grows**; AR amortizes its weight-stream floor faster (scale 4.83× at b16 vs engine 3.76×).
+Greedy engine b8 = 4.798 samp/s ≈ temp=0.7 b8 → **throughput is temperature-insensitive** (RL sampling mode is free).
+
+### Mechanism (measured) — FLOP reduction is real but cancelled twice
+1. **Per-forward cost ~14× AR's.** Hybrid does ~10× fewer forwards (4.9/turn at b16 vs AR's ~50 decode steps) but
+   `per_forward_ms` **climbs 18.7 → 35.3 ms** with batch (wider GEMMs) while AR's per-step **falls 12.2 → 2.53 ms**
+   (cudagraph amortizes weight load). 4.9 × 35.3 ≈ 173 ms/turn forward ≈ 50 × 2.53 ≈ 127 ms — AR is cheaper per turn.
+2. **Batch occupancy collapses — the STRUCTURAL limitation.** The FLARE **sync scheduler** + per-request **variable
+   draft widths** (3–18 tok/commit) mean requests finish at wildly different forward counts, so a synchronous wave
+   stalls on its slowest member (head-of-line/straggler). Effective batch-in-forward: **7.2/16 = 0.45 at b16 — it never
+   co-batches all 16** (histogram scattered 1..14). AR co-batches near-linearly at 100% GPU util; the engine idles at
+   **84–88%** (host-bound FLARE per-request state management, not compute).
+
+### Sync-scheduler honesty + structural batch limitation
+No hard queueing / no deadlock — **48/48 finish `stop`** (bounded valid tool call) at every batch. The real cost is
+**head-of-line/straggler blocking** intrinsic to the variable-draft-width hybrid under FLARE's *forced* sync scheduler.
+Continuous batching (refill slots as requests finish) would recover *some* occupancy but is **bounded by the forced
+sync** — it cannot reach AR's near-linear co-batching. **Memory limitation:** the per-request GDN snapshot/restore state
+makes **b16 OOM at gmu 0.74** (~31.3 GB spike); it fits only at gmu 0.62 (~25.5 GB). AR is flat ~21.9 GB at every batch
+→ **the engine's practical rollout concurrency is capped tighter than AR's on a 32 GB card.** Host-RAM peak both ~6.9 GB.
+
+### Verdict — the engine's value is NOT samples/sec
+Throughput-bound RL loops are **faster with stock guided-AR (1.1–1.4× at batch)**. The engine earns its place on
+**quality/parity at safe batch**, not rollout throughput: safe batching (proven), **latency parity** at low batch,
+**48/48 valid** stops (guided-AR truncated 2/48 at the cap), and the certified **quality edge** (130 vs 124 exact_args
+aggregate). This is a **floor, not a ceiling** — the 84–88% util flags host-bound headroom; **OPT-4 Part-1
+fused_recurrent** (task #37) is the lever to lower `per_forward_ms` and lift the whole ratio curve.
+
+### Artifacts — `runs/p2_batched_rollout_bench/` (bench commit `58524f9`, pushed origin/main)
+`report.md` · `engine_points.jsonl` / `ar_points.jsonl` · `engine_throughput.json` / `ar_throughput.json` /
+`compare.json` / `compare_table.md` · harness `bench_engine.py` / `bench_ar_guided.py` / `gpu_sampler.py` /
+`make_report.py` / `runcage_*.sh` · raw `tp_engine.log` / `tp_ar.log` · b16-OOM evidence `engine_throughput.gmu074.json`
++ `tp_engine.gmu074.log` · correctness precondition `runs/p2_engine_batchgates/`.
+
+---
+
 ## 1. What was built (paths + local commits)
 
 ### Repo A — vLLM pin `/home/mark/shared/vllm_p2_pr42406`
