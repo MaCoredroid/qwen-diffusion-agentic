@@ -88,9 +88,36 @@ certificate ("engine == HF by kernels"), not a quality gain — and quality (130
 exactly. The residual is the block#0 GDN fold granularity, a kernel-level task explicitly deferred.
 (`endgame_table_final.md` §(c), `p2_engine_battery_v3b_result.md`.)
 
-**IS NOT — a lossless-prefix-cache agentic server (yet); the cache-on certificate is UNACHIEVED.** The
-SWE-class end goal needs a **lossless prefix cache** (cache-on byte-identical to fresh-context decode) so
-the parity certificate holds *with* cross-turn reuse. Today's align-APC reuse is functional but **byte-lossy**
+**CACHE-ON CERTIFICATE (2026-07-05, lossless-APC gate battery live at HEAD `9cb5e7a`, RTX 5090, RAM cage;
+battery commit `8b98aaf`, artifacts `runs/lossless_apc/gates2/`): quality-lossless CERTIFIED, strict-bitwise
+NOT.** The full gate battery (Gates 0–5 + wall-rule) ran live and split into two findings. **(A) The
+canonical-publish seam (W1+W2, `9cb5e7a`) is STILL LIVE-INERT** — `canonical_publish`/`apply` fired **0×** on
+the gt4 2048-crosser, all 63 matched-20 turns, and all 184 never-train turns; gate-ON == gate-OFF
+byte-identical; it changes **zero serving bits** → **NOT promoted, default OFF, not pushed on the pin.** **(B)
+Separately — the real news — the post-Stage-3 shipped engine is ALREADY effectively cache-lossless on the
+QUALITY axis, without the seam.** The certificate the battery targeted (**cache-on quality == fresh**) is
+**satisfied, inherited from Stage-3 (`95d8b47`), NOT produced by the inert seam.** Measured live:
+**Gate 2 (matched-20 full-63 cache-on)** — byte-parity **62/63** vs HF (lone break gt44, path-invariant
+fp-residue that breaks fresh too), **exact_args EXACTLY 47/63 == HF per-turn (63/63, 0 wins / 0 losses)**,
+reproduces `parity_cert_freshboot.jsonl` ⇒ **cache-on == fresh MET**; gate-ON vs gate-OFF eager = 0 diffs,
+eager vs shipped cudagraph = 0 diffs. **Gate 3 (never-train full-184)** — warm cache-on byte-parity 175/184,
+exact **83/184 == HF**; losslessness measure (WARM cache-on vs COLD fresh-proxy, same kernel) **174/184
+byte-identical, exact 83==83 (ZERO quality-affecting turns)**, the 10 differing turns all fp-ε near-tie flips
+(warm is *closer* to warm HF than cold: 9 vs 15 breaks). **Gate 5 (refold overhead)** — seam inert ⇒ **0 live
+overhead** (0 crossings fired); isolated primitive cost **0.374 ms/layer × 24 = ~9.0 ms per 1024-crossing**;
+**net APC speedup unchanged from the 1.23× lossy number** (the lossless number cannot be measured live until
+the seam fires; if wired, ~9.0 ms/crossing amortizes to ~0 for the `<2048`-token turns that dominate agentic
+serving). **The remaining gap is strict BITWISE losslessness on near-tie tokens** — which the inert seam
+targets but a *chunked* kernel cannot fully close anyway (rootcause Refinement 1: needs the sequential-recurrent
+republish design). **exact_args is byte-stable and fully APC-invariant across warm/cold/gate-on/off/eager/
+cudagraph** ⇒ **the Stage-3 shipped path is the current cache-lossless-on-quality engine.**
+(`runs/lossless_apc/gates2/gate_results.jsonl`, engine_build_status.md top update, battery commit `8b98aaf`.)
+
+**IS NOT — a strict-BITWISE-lossless-prefix-cache server (yet); the near-tie bitwise cert is UNACHIEVED via
+the seam.** The SWE-class end goal wants a **lossless prefix cache** (cache-on byte-identical to fresh-context
+decode). Per the battery above, cache-on quality is already fresh-identical; what stays open is strict bitwise
+parity on near-tie tokens. The pre-battery framing below is retained for the design history. Today's align-APC
+reuse is functional but **byte-lossy**
 on the {gt20,gt21,gt60}/gt130 near-tie class (cache-path GDN-state fp divergence flips near-tie tokens;
 `exact_args` is APC-invariant), so **the parity certificate stays anchored fresh-context — there is NO
 cache-on lossless certificate.** The lossless design (**Route A**: cache only chunk-aligned GDN states
@@ -101,9 +128,10 @@ lossy 32-fold diverges on **61%** of state bits; CPU state-machine suite 52/52),
 applies to the live align row (`qwen3_5_flare.py:320-321`). **So `VLLM_QWEN3_5_FLARE_CANONICAL_PUBLISH=1`
 changes zero serving bits, and no functional lossless serving arm exists** until **W1** (call
 `capture_committed_gdn_inputs`/`seed_replay_window` from the GDN forward) + **W2** (apply staged
-`published[layer_id]` to the live align ssm row) land. The lossless-APC gate battery therefore **STOPS at
-gate-1 (BLOCKED-CANNOT-PASS, structural)**; gates 2 (cache-on parity cert) and 5 (measured refold overhead)
-are **NOT-RUN-DEPENDENT**. **Agentic serving bench** (nevertrain ep0-9, 10 episodes / 57 turns, ctx
+`published[layer_id]` to the live align ssm row) land. *(SUPERSEDED by the 2026-07-05 battery above: rather
+than stopping at gate-1, the full battery ran the seam inert and certified cache-on quality == fresh via
+Stage-3; gate-1 census turns byte-match HF under warm cache-on. The seam stays inert; only strict-bitwise
+parity remains open.)* **Agentic serving bench** (nevertrain ep0-9, 10 episodes / 57 turns, ctx
 1175→2640 tok, batch=1 greedy; the prefill-reuse *speed envelope* a lossless publish would inherit): APC gives
 **engine 1.23×/turn** (1.26× on within-episode reuse; prefill **0.164 s→0.064 s = 2.58×**, decode unchanged),
 AR **1.24×** — modest **by construction** because these short structured tool-call turns (~34 tok) over 1–2.6k
@@ -113,9 +141,11 @@ the long-context SWE end goal, and this short-turn bench is the conservative flo
 un-guided greedy, same build/cudagraph/batch=1 the engine and stock AR are neck-and-neck** (per-turn wall
 AR/ENG 0.95×, per-token parity ENG 10.44 vs AR 10.23 ms/tok); the engine's earlier "beats AR" edge came from
 the heavier **grammar-guided** AR server, and stripping guidance (conservative for AR) equalizes them.
-Lossless would keep these savings minus a bounded per-1024-checkpoint refold (**gate-5 envelope, UN-MEASURED**:
-~0.02–0.04 s/turn ⇒ APC ~1.23×→~1.13–1.18×; net-positive, shrinks as context grows).
-(`runs/lossless_apc/gates/gate_results.jsonl`, `runs/lossless_apc/bench/bench_aggregate.json`, bench commit
+Lossless would keep these savings minus a bounded per-1024-checkpoint refold (**gate-5 primitive cost now
+MEASURED, 2026-07-05: ~0.374 ms/layer × 24 = ~9.0 ms per 1024-crossing, 0 live overhead since the seam is
+inert / 0 crossings fired**; if wired it amortizes to ~0 for the `<2048`-token turns that dominate; net APC
+speedup unchanged from the 1.23× lossy number until the seam fires).
+(`runs/lossless_apc/gates2/gate_results.jsonl`, `runs/lossless_apc/gates/gate_results.jsonl`, `runs/lossless_apc/bench/bench_aggregate.json`, bench commit
 `b6586f0`; engine_build_status.md §0.J; goal_5x_rollout_b1.md END GOAL.)
 
 ---

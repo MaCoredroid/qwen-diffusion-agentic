@@ -4,6 +4,40 @@ Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones
 Date: 2026-07-04 (last verified 2026-07-05). Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
 IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
+> **UPDATE (2026-07-05 — LOSSLESS-APC GATE BATTERY, live at HEAD `9cb5e7a`, RTX 5090, RAM cage, 5 GPU boots ~15 min; battery commit `8b98aaf`; artifacts `runs/lossless_apc/gates2/`). CACHE-ON CERTIFICATE STATUS: quality-lossless CERTIFIED (via Stage-3), strict-bitwise NOT (seam inert).**
+> Two distinct findings. **(A) The canonical-publish seam (W1+W2, commit `9cb5e7a`) is STILL LIVE-INERT.** Runtime callpath
+> assertion re-run at HEAD: `canonical_publish_calls`/`canonical_apply_calls` = **0** on the gt4 2048-crosser, on all 63
+> matched-20 turns, and on all 184 never-train turns. gate-ON == gate-OFF **byte-identical (0/63 differing fields)**. The 3
+> named wiring gaps stand (chunked-prefill guard; commit routes through `_forward_core_decode_non_spec` where there is no
+> hook; `<2048` census never crosses a 1024 window). It changes **zero serving bits** → **NOT promoted, default stays OFF,
+> not pushed on the vLLM pin.**
+> **(B) SEPARATELY — the real news — the post-Stage-3 shipped engine is ALREADY effectively cache-lossless on the QUALITY
+> axis, without the seam.** The certificate the battery targeted (cache-on quality == fresh) is **satisfied, inherited from
+> Stage-3 (`95d8b47`), not produced by the inert seam.**
+> **The lossless-APC numbers (measured live):**
+> - **Gate 2 — matched-20 full-63 cache-on cert:** byte-parity **62/63** vs HF (lone break gt44, fd=16, path-invariant
+>   fp-residue that breaks fresh too), **exact_args EXACTLY 47/63 == HF per-turn (63/63, 0 wins / 0 losses)**, episode 13/20,
+>   valid 63/63, proj 0/63. Reproduces `parity_cert_freshboot.jsonl` → **cache-on == fresh MET.** gate-ON vs gate-OFF eager
+>   = 0 diffs; eager vs shipped cudagraph = 0 diffs.
+> - **Gate 3 — never-train full-184:** warm cache-on byte-parity **175/184**, exact **83/184 == HF**, proj 0/184. Losslessness
+>   measure (engine WARM cache-on vs COLD fresh-proxy, same kernel): **174/184 byte-identical, exact 83==83 (ZERO
+>   quality-affecting turns)**; the 10 differing turns are all fp-ε near-tie flips. Warm cache-on is *closer* to the warm HF
+>   ref than cold (9 vs 15 breaks).
+> - **Gate 5 — refold overhead:** seam inert → **0 live overhead** (0 crossings fired). Isolated primitive cost **0.374
+>   ms/layer × 24 = ~9.0 ms per 1024-crossing**; gate-ON vs gate-OFF wall +2.79% (eager jitter, publish=0). **Net APC speedup
+>   unchanged from the 1.23× lossy number** — the lossless number cannot be measured live until the seam fires; if wired,
+>   ~9.0 ms/crossing amortizes to ~0 for the `<2048`-token turns that dominate agentic serving (crossings are rare).
+> - **Gate 4 — no-regression (gate-OFF):** PASS. CPU 59/59; gate-ON==gate-OFF==shipped-cudagraph byte-identical; proj=0
+>   everywhere; determinism holds at seed 20260701. WALL-RULE considered, NOT triggered (every residual explained by the
+>   fold-grid / near-tie fp-residue mechanism; proj=0, verify ok, exact APC-invariant; no unexplained accumulating divergence).
+>
+> **Verdict.** exact_args is byte-stable and fully APC-invariant across warm/cold/gate-on/off/eager/cudagraph (matched-20
+> 47/63, never-train 83/184). **cache-on quality == fresh is effectively already TRUE via Stage-3.** The **remaining gap is
+> strict BITWISE losslessness on near-tie tokens** — which the inert seam targets but a *chunked* kernel cannot fully close
+> anyway (rootcause Refinement 1: needs the sequential-recurrent republish design). **The Stage-3 shipped path stands and is
+> the current cache-lossless-on-quality engine.** Next task fires only if strict bitwise losslessness is required beyond
+> quality-lossless: complete W1+W2 (hook `_forward_core_decode_non_spec`, drop the chunked-prefill guard).
+>
 > **UPDATE (2026-07-05 — L0 DONE + L2 MEASURED; FINAL-HEAD CONSOLIDATED VERIFICATION on vLLM pin `0b44dcc`; certificate NOT regressed).**
 > The **L0 free-text serving fix landed on the pin as `0b44dcc`** ("fix CPU-pathological hang + honor EOS like AR"). This
 > re-verification re-ran the full no-regression set on that FINAL HEAD (hybrid_clean, PIECEWISE cudagraph,

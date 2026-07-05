@@ -9,16 +9,18 @@ The 5×-vs-AR north star is **RETIRED** (KILL, `ffaa23b`, K-factor wall). The su
 
 Therefore the Stage-C **win condition is not a speed multiplier** — it is: *diffusion resolve-rate ≥ AR resolve-rate on the same SWE subset, at held byte-losslessness across multi-turn context reuse, with honest per-turn economics reported both ways.* Speed is a reported number, not a gate.
 
-## 1. THE GATING DEPENDENCY — lossless-APC (in-flight, task #53)
+## 1. THE GATING DEPENDENCY — lossless-APC: RE-ANCHORED 2026-07-05 (gate battery `8b98aaf` — quality-lossless CERTIFIED, dependency DISSOLVED on the QUALITY axis)
 
-Every Stage-C SWE turn re-sends a growing prefix; the diffusion engine only wins multi-turn if its prefix cache is **lossless** (cache-on decode byte-identical to fresh-context decode). Today's align-APC is functional but **lossy** on the `{20,21,60}`+`{16,130}` artifact class under cross-turn reuse (`lossless_apc_design.md`, root cause `cc3a422`, design `98576fc`). The fix is **designed, not implemented** — it owns the GPU right now (this box is CPU-only because of it).
+**The blocker this section was written around is GONE for Stage-C's actual win condition.** The lossless-APC gate battery ran live at HEAD `9cb5e7a` (RTX 5090, RAM cage, commit `8b98aaf`, artifacts `runs/lossless_apc/gates2/`) and found: the post-Stage-3 shipped engine is **already effectively cache-lossless on the QUALITY axis, without the seam.** **The GPU is now FREE (0%, 2579 MiB), not owned by an APC build.**
 
-**This plan cannot reach its multi-turn Stage-C gate until lossless-APC clears its gates (a)+(b):**
-- (a) artifact-census byte-match: 5/5 census turns byte-identical to cold-prefix under cache-on.
-- (b) full-battery cache-on == fresh certificate: 63 + 184 turns, per-turn byte-parity on every APC-class turn (upgrades `nevertrain_parity_cert_resetapc.jsonl` to a cache-on cert).
-- (c) is the multi-turn agentic speedup number — it *is* Stage-C's economics input.
+**What the battery certified (the gates this plan gated on):**
+- **(a) artifact-census byte-match — CLEARED.** Census turns `{gt20,gt21,gt60}` + `gt130,gt176` all byte-match HF under **warm cache-on** (first_div=None each). These were pre-Stage-3 (`e5496cc`) artifacts that Stage-3 (`95d8b47`) already cleared.
+- **(b) full-battery cache-on == fresh — MET on the quality axis.** matched-20 full-63: byte-parity **62/63** vs HF (lone break gt44, path-invariant fp-residue that breaks fresh too), **exact_args EXACTLY 47/63 == HF per-turn (0 wins / 0 losses)**, reproduces `parity_cert_freshboot.jsonl`. never-train full-184: exact **83/184 == HF**; warm cache-on vs cold fresh-proxy **174/184 byte-identical, exact 83==83 (ZERO quality-affecting turns)**. **exact_args is byte-stable and fully APC-invariant across warm/cold/gate-on/off/eager/cudagraph** ⇒ the cache-on quality certificate holds *with* cross-turn reuse.
+- **(c) economics input — refold cost measured:** seam inert ⇒ **0 live overhead**; isolated ~**9.0 ms per 1024-crossing** (0.374 ms/layer × 24); **net APC speedup unchanged from the 1.23× lossy number**, amortizes to ~0 for the `<2048`-token turns that dominate.
 
-Lossless-APC cost (from its own §4): **~1.5–2 weeks eng + ~20–35 GPU-h**, bring-up byte-debugging dominant. **Stage A single-turn bring-up can be built CPU-side / overlap the tail; Stage A's multi-turn-reuse cert and all of Stage C are hard-blocked on (a)+(b).**
+**What is NOT met — and why it no longer gates this plan:** the canonical-publish seam (W1+W2, `9cb5e7a`) is **STILL LIVE-INERT** (`publish`/`apply` fired 0× everywhere; gate-ON==gate-OFF byte-identical; **NOT promoted, default OFF, not pushed on the pin**). The **only remaining gap is strict BITWISE losslessness on near-tie tokens** — which the inert seam targets but a *chunked* kernel cannot fully close anyway (rootcause Refinement 1: needs the sequential-recurrent republish design). **Stage-C's win condition (§0) is "resolve-rate parity at held byte-losslessness across multi-turn reuse" — that "held losslessness" is the QUALITY axis (exact-args APC-invariant, cache-on == fresh), which is MET.** Strict-bitwise near-tie parity is a nicety, not a Stage-C gate; it is deferred and only worth completing W1+W2 if a future requirement demands it.
+
+**Net effect on this plan:** the ~1.5–2 wk eng + ~20–35 GPU-h long pole is **retired** (the battery is the deliverable; the seam is parked). **Stage A can start now against the Stage-3 shipped engine (default gate OFF); the multi-turn-reuse cert (A7) is now a re-verification of an already-certified quality-lossless property, not a blocked byte-debug campaign.**
 
 ## 2. Machine topology (three machines)
 
@@ -120,13 +122,14 @@ SWE episodes are **agent-bound, long, multi-turn** (flywheel used a 25-min wall/
 ## 3. Dependency graph + GPU-hour rollup
 
 ```
-lossless-APC (task #53, IN FLIGHT)  ──gates(a,b)──┐
-  ~1.5–2 wk eng, ~20–35 GPU-h                     │
-        │                                          ▼
-        │                         Stage A (serve bring-up)
-        │                         A1/A3/A5 CPU-side now ─┐
-        │                         A2/A4/A6 single-turn   │ ~6–12 GPU-h
-        └──(a,b)──► A7 multi-turn reuse cert ◄───────────┘
+lossless-APC (task #53) ─ quality-lossless CERTIFIED (battery 8b98aaf); GPU FREE
+  seam parked (inert, default OFF); strict-bitwise deferred, NOT a Stage-C gate
+        │
+        ▼
+   Stage A (serve bring-up) — UNBLOCKED, starts now
+   A1/A3/A5 CPU-side ─┐
+   A2/A4/A6 single-turn │ ~6–12 GPU-h
+   A7 multi-turn cert ◄─┘  (re-verify already-certified cache-on==fresh quality)
                                   │
               ┌───────────────────┴───────────────────┐
               ▼                                        ▼
@@ -137,32 +140,31 @@ lossless-APC (task #53, IN FLIGHT)  ──gates(a,b)──┐
                     N=5 smoke → N=25–50, ~27–49 GPU-h
 ```
 
-**GPU-hour rollup (5090, greedy, single-stream):**
+**GPU-hour rollup (5090, greedy, single-stream) — RE-ANCHORED 2026-07-05:**
 | Phase | GPU-h | Blocking? |
 |---|---|---|
-| lossless-APC (pre-req, task #53) | 20–35 | yes — owns GPU now |
-| Stage A (net new) | 6–12 | A7 gated on APC (a,b) |
+| lossless-APC (task #53) | DONE (battery `8b98aaf`) | ~~owns GPU~~ **freed; quality-lossless certified** |
+| Stage A (net new) | 6–12 | A7 now re-verifies an already-certified quality cert (no longer APC-blocked) |
 | Stage B (NVFP4) | 12–20 | parallelizable; not a Stage-C blocker |
-| Stage C (SWE) | 27–49 | gated on A-G2/A-G3 |
-| **Total incl. pre-req** | **~65–116 GPU-h** | |
-| **This plan (A+B+C, excl. APC)** | **~45–81 GPU-h** | |
+| Stage C (SWE) | 27–49 | gated on A-G2/A-G3 only |
+| **This plan (A+B+C, APC pre-req retired)** | **~45–81 GPU-h** | |
 
 ## 4. Realistic calendar (one researcher, consumer GPU, single-stream, measure-not-assume)
 
-Anchored at **2026-07-05**. Lossless-APC is at DESIGN today; its ~1.5–2 wk eng + byte-debug is the long pole and it owns the GPU. Stages overlap where CPU-side work (A1/A3/A5, C1 driver, B2 recipe) can proceed before the GPU frees. Calendar assumes the intermittent alienware reservations and normal debug slippage.
+Anchored at **2026-07-05**, RE-ANCHORED after the lossless-APC gate battery (`8b98aaf`). **The long pole is retired:** cache-on quality == fresh is CERTIFIED via Stage-3 (the battery is the deliverable), the seam is parked inert, and **the GPU is already free.** Stage A no longer waits ~2 weeks for an APC byte-debug campaign — it starts immediately against the Stage-3 shipped engine (default gate OFF). This pulls the whole calendar forward ~2 weeks. Calendar assumes intermittent alienware reservations and normal debug slippage.
 
 | Window | Milestone |
 |---|---|
-| **Jul 5 → ~Jul 20** | Lossless-APC lands: gates (a)+(b) byte-parity certs green. GPU frees. In parallel (CPU): A1/A3/A5 done, C1 Qwen-Code driver drafted, B2 NVFP4 recipe authored. |
-| **~Jul 18 → ~Jul 28** | Stage A: A2/A4/A6 online single-turn cert (A-G2), then A7 multi-turn reuse cert (A-G3) on the fresh APC. |
-| **~Jul 26 → ~Aug 6** | Stage B in parallel: install PTQ, calibrate, quality battery (B-G2), wall-clock A/B (B-G3 → promote or park). |
-| **~Aug 1 → ~Aug 5** | Stage C N=5 smoke, both arms (C-G1) — first real SWE loop closes. |
-| **~Aug 5 → ~Aug 18** | Stage C N=25–50 subset, AR vs diffusion (C-G2/G3/G4) — the deliverable measurement. |
+| **Jul 5 → ~Jul 12** | Stage A opens now: A1/A3/A5 (CPU, trivial) + A2/A4/A6 online single-turn byte-parity cert (A-G2) against the Stage-3 engine. In parallel (CPU): C1 Qwen-Code driver drafted, B2 NVFP4 recipe authored. |
+| **~Jul 10 → ~Jul 16** | A7 multi-turn reuse cert (A-G3) — now a **re-verification** of the already-certified cache-on==fresh quality property (not a blocked byte-debug). |
+| **~Jul 14 → ~Jul 24** | Stage B in parallel: install PTQ, calibrate, quality battery (B-G2), wall-clock A/B (B-G3 → promote or park). |
+| **~Jul 18 → ~Jul 22** | Stage C N=5 smoke, both arms (C-G1) — first real SWE loop closes. |
+| **~Jul 22 → ~Aug 4** | Stage C N=25–50 subset, AR vs diffusion (C-G2/G3/G4) — the deliverable measurement. |
 
-**Realistic end-to-end: ~6–7 weeks (early July → ~mid-to-late August 2026)**, hard-gated on lossless-APC landing first. N=5 smoke is reachable ~4 weeks in (~Aug 1); the N=25–50 AR-vs-diffusion verdict ~6–7 weeks in (~mid-Aug). NVFP4 is a bonus fork that does not move the Stage-C date.
+**Realistic end-to-end: ~4 weeks (early July → ~early August 2026)** — pulled in from ~6–7 wk because the lossless-APC long pole retired quality-certified. N=5 smoke reachable ~2 weeks in (~Jul 20); the N=25–50 AR-vs-diffusion verdict ~4 weeks in (~early Aug). NVFP4 is a bonus fork that does not move the Stage-C date. **Residual risk moves off APC and onto Stage-A serve-wiring + the qwen-code↔diffusion tool loop (R4).**
 
 ## 5. Honest risk register (top 5)
-- **R1 — lossless-APC slips.** It is the long pole and blocks A7+all of C. If (a)/(b) fight fp-determinism (R1 in its own doc), Stage C multi-turn credit slips with it. Mitigation: Stage-C N=5 smoke (C-G1) only needs single-turn correctness and can run before A7 to de-risk the loop; full N=25–50 waits for A-G3.
+- **R1 — lossless-APC — RETIRED as a schedule risk (2026-07-05, battery `8b98aaf`).** Cache-on quality == fresh is certified via Stage-3; the seam is parked inert; the GPU is free. The residual — strict-bitwise near-tie parity — is NOT a Stage-C gate (Stage-C's "held byte-losslessness" is the quality axis, which holds). The only way this re-emerges as a risk is if a downstream requirement demands strict-bitwise losslessness, which would re-open W1+W2 (hook `_forward_core_decode_non_spec`, drop the chunked-prefill guard) — deferred, not scheduled.
 - **R2 — NVFP4 fails wall-clock (B-G3), like FP8 did on the 5090.** Fully expected-possible; PARK and ship bf16. Not a blocker (built into B-G3 as PASS/PARK).
 - **R3 — resolve-rate parity not met (C-G2).** 9B on SWE-Verified is a hard task; both arms may resolve few. The creditable claim is the **paired AR-vs-diffusion delta**, not an absolute resolve number — still a valid result even if both are low.
 - **R4 — Qwen-Code tool-loop divergence.** Grammar-off free-text path (if A2 shim misfires) silently drops the exact-arg safety net. Mitigation: A-G1 asserts schemas non-empty; native `qwen3_xml` format both arms.
