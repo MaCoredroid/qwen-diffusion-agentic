@@ -194,3 +194,8 @@ includes: (B-P0) kernel-level per-forward trace at FP4-projected shares — re-l
 at bf16" item (GDN decode-class routing, align-postprocess fusion, launch gaps); (B-P1) free-text decode
 policy fix: stop full-canvas re-denoise per committed token + EOS overshoot (~30% on the free-text path,
 25.8 -> ~18ms class; SWE turns are free-text-heavy). Both measured before/after with the parity gates.
+
+## Stage-C addendum 2 (user decision, 2026-07-05): LOCAL eval only
+SWE-Verified evaluation (patch apply + tests + resolve scoring) runs LOCALLY on this machine. The
+alienware x86 offload path (swe_x86_helpers) is excluded by user decision. Local docker/swebench setup is
+in-scope work and part of the reproducible recipe.
