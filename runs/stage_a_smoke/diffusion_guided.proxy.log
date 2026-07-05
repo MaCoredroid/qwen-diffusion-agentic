@@ -1,0 +1,9 @@
+qwen-code SGLang proxy listening on http://127.0.0.1:30012/v1
+05/Jul/2026 14:47:45 - "GET /health HTTP/1.1" 200 -
+05/Jul/2026 14:47:46 - "POST /v1/chat/completions HTTP/1.1" 200 -
+05/Jul/2026 14:47:47 - "POST /v1/chat/completions HTTP/1.1" 200 -
+05/Jul/2026 14:47:51 - "POST /v1/chat/completions HTTP/1.1" 200 -
+05/Jul/2026 14:47:52 - "POST /v1/chat/completions HTTP/1.1" 200 -
+05/Jul/2026 14:47:53 - "POST /v1/chat/completions HTTP/1.1" 200 -
+05/Jul/2026 14:47:54 - "POST /v1/chat/completions HTTP/1.1" 200 -
+05/Jul/2026 14:47:56 - "POST /v1/chat/completions HTTP/1.1" 200 -

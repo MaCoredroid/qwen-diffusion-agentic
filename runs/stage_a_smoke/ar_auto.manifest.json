@@ -1,0 +1,19 @@
+{
+  "out": "runs/stage_a_smoke/ar_auto.jsonl",
+  "input": "runs/stage_a_smoke/toy_repo_case.jsonl",
+  "records": 1,
+  "totals": {
+    "records": 1,
+    "initial_tests_failed": 1,
+    "qwen_exit_zero": 1,
+    "final_tests_passed": 1,
+    "changed_expected_file": 1,
+    "changed_unexpected_file": 0,
+    "diff_nonempty": 1,
+    "errors": 0
+  },
+  "elapsed_sec": 7.788,
+  "endpoint": "http://127.0.0.1:9951/v1",
+  "model": "qwen3.5-9b-ar",
+  "proxy_log": "runs/stage_a_smoke/ar_auto.proxy.log"
+}

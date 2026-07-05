@@ -1,0 +1,166 @@
+{
+  "summary": {
+    "log": "runs/stage_a_smoke/logs/diffusion_server.log",
+    "boot_decode_line": "decode_mode=hybrid_clean block_size=32 bidir_probe=1 windowed_probe=1 readonly_denoise=1 canonical_publish=False route_verified=False",
+    "decode_mode_hybrid_clean": true,
+    "n_hybrid_clean_requests": 15,
+    "projected_value_tokens_exact_all_zero": true,
+    "projected_value_tokens_exact_violations": 0,
+    "total_model_forwards": 681,
+    "total_generated_tokens": 893,
+    "stop_reasons": {
+      "None": 1,
+      "complete_tool_call": 14
+    },
+    "prefix_cache_hit_rates_pct": [
+      78.1,
+      78.1,
+      79.2,
+      82.6,
+      82.6
+    ],
+    "gpu_prefix_cache_hit_rates_pct": [],
+    "n_error_lines": 0,
+    "n_http_4xx_5xx": 0,
+    "counters_clean": true
+  },
+  "requests": [
+    {
+      "req": "_warmup_0_",
+      "model_forwards": 1,
+      "forced_token_count": 0,
+      "value_tokens": 0,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 1,
+      "stop_reason": "None"
+    },
+    {
+      "req": "chatcmpl-bc890bcfbe6f4d68-91e7d551",
+      "model_forwards": 40,
+      "forced_token_count": 13,
+      "value_tokens": 34,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 53,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-a8696f22704d1651-9a801ada",
+      "model_forwards": 119,
+      "forced_token_count": 18,
+      "value_tokens": 105,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 137,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-b1ddff78cff3c5e5-8dc7cdd3",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-b25ce6c8ef1c24c3-bac0cc73",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-bf5df8124601e639-862ae90f",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-ad5746e7c790560f-ba1b277f",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-a8d82ce2f1bc6f17-88c32092",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-84f69c0e80e0b7ee-be0b10aa",
+      "model_forwards": 41,
+      "forced_token_count": 13,
+      "value_tokens": 35,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 54,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-b54471238b5cb1fd-b200d72b",
+      "model_forwards": 120,
+      "forced_token_count": 18,
+      "value_tokens": 106,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 138,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-8abdacca8bfa80f7-91d79f97",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-b364edeb599f8820-96780409",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-aa3b99534516178e-aed0d825",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-b74b060a169e667c-a01e388b",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    },
+    {
+      "req": "chatcmpl-bfdfa88d7bac5e62-9537d901",
+      "model_forwards": 36,
+      "forced_token_count": 15,
+      "value_tokens": 24,
+      "projected_value_tokens_exact": 0,
+      "generated_tokens": 51,
+      "stop_reason": "complete_tool_call"
+    }
+  ],
+  "error_lines_sample": [],
+  "http_errors_sample": []
+}

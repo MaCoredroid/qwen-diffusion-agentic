@@ -1,0 +1,19 @@
+{
+  "out": "runs/stage_a_smoke/diffusion_guided.jsonl",
+  "input": "runs/stage_a_smoke/toy_repo_case.jsonl",
+  "records": 1,
+  "totals": {
+    "records": 1,
+    "initial_tests_failed": 1,
+    "qwen_exit_zero": 0,
+    "final_tests_passed": 1,
+    "changed_expected_file": 1,
+    "changed_unexpected_file": 0,
+    "diff_nonempty": 1,
+    "errors": 0
+  },
+  "elapsed_sec": 11.798,
+  "endpoint": "http://127.0.0.1:9952/v1",
+  "model": "qwen3.5-9b-flare-hybrid-clean",
+  "proxy_log": "runs/stage_a_smoke/diffusion_guided.proxy.log"
+}
