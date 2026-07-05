@@ -15,3 +15,11 @@ via the proxy from the host or inside the container), OR materialize the instanc
 per instance. Prefer the official-image path — it aligns runtime AND scoring in one move.
 ACCEPTANCE: agent can `python -c "import <pkg>"` and run the instance's test command in-episode without
 dependency errors, on all 5 Tier0 instances, before any re-run is scored.
+
+## UPDATE (user, 2026-07-05): N=5 numbers DEPRECATED, not caveated
+"Redo the numbers after fixing — a troubled env can't measure real intelligence." ALL N=5 behavioral
+numbers (both arms + any partial third-arm data) are DEPRECATED for any claim. The disambiguation workflow
+was STOPPED mid-flight to avoid spending GPU on discarded data. Order of work: (1) runtime alignment
+(episodes inside official per-instance swebench images, acceptance test on all 5), (2) clean THREE-ARM
+re-run (stock-AR / merged-AR / diffusion) on the aligned runtime = the true behavioral baseline,
+(3) N=25-50 go/no-go from THAT data.
