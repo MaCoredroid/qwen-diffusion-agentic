@@ -57,25 +57,34 @@ entropy-gated adaptive K)** raises reasoning K above 1. No-regression evidence: 
 (lone break gt44 fp-residue), read-only fingerprint **6/6 bit-identical**, determinism **2× identical**,
 value_projection **0**.
 
-## ☐ L3 / S2 PILOT STATUS — DESIGNED, BLOCKED, UNRUN (2026-07-05, `s2_pilot_result.md`)
-The cheapest decisive test of the L3 bet is designed and pre-registered (`s2_pilot_design.md` @ 9ce9445:
-reasoning-span K 1→≥2 at held GSM8K, entropy-gated CAD sampler, PASS = tok/fwd ≥2.0 at held acc / KILL =
-K=2 loses >2 items or retention/tool-call damaged). **It has not run and cannot yet be adjudicated —
-neither PASS nor KILL.** Two hard blockers:
-- **No adapter.** `A_S2` (`runs/s2_pilot/Apilot_step400_seed90101`) does not exist. The self-trajectory
-  corpus is **66 raw / 31 audit-clean**, below even the **700-trajectory yield floor** — training cannot
-  start. The gen loop is not alive (GPU idle 2.2 GB, `gen_iter.log` frozen at idx 65). The data step must
-  be restarted.
-- **Two eval scripts missing.** `scripts/eval_flare_freetext_cad.py` (the new CAD sampler) must be
-  authored + pass its byte-exact K=1 baseline test; `export_qwen35_9b_fastdllm_vllm.py` is absent (no file
-  matches its pinned sha) — blocks only an engine cross-check, not the HF-stack primary battery.
+## ✗ L3 / S2 PILOT — RAN, **KILL** (2026-07-05, `s2_pilot_result.md`; gate `05d5297`)
+The cheapest decisive test of the L3 bet ran end-to-end (corpus built, `A_S2` trajectory-consistency LoRA
+trained, full pre-registered battery on the 30-prompt clean set, seed 20260701, all rows raw + audited).
+**Verdict per design §0/§8: PILOT KILL — reasoning-span K stays ≈1.0 at held exactness. The 5×-vs-AR
+claim is RETIRED on the K-factor wall.**
+- **(a) K-gate — FAIL the primary bet.** Peak committed **tok/fwd = 1.053** (A_S2 K=2, γ0.90),
+  **decisively below the 2.0 PASS bar** and below even the 1.5 inconclusive floor. K-curve as γ relaxes
+  0.99→0.95→0.90: K=2-commit 0.0 %→1.4 %→**5.3 %**, tok/fwd 1.000→1.014→**1.053** — a real but tiny
+  propensity that saturates ≈1.05. The parallel reasoning lane **does not open.**
+- **Failure mode = K-non-engagement, NOT accuracy collapse.** Accuracy held (net-loss ≤ 1, McNemar
+  **p = 1.000** at every γ) → the §9 KILL-a *trigger* (net-loss > 2) did **not** fire; the bet dies
+  because K never reaches 2, not because parallelism broke exactness. Cleanest form of the KILL.
+- **Safety gates all PASS** (the pilot damaged nothing certified): **retention 13/20 = anchor**
+  (half0 8/10 + half1 5/10 — honest tension: the in-training KL-to-base proxy tripped 0.070>0.05 at
+  step 120, early-stopping training there = why `A_S2`==checkpoint-120; the behavioral N=20 gate held);
+  **tool-call spot-10 = 0 lost vs C0** (9/10==9/10, FSM path byte-identical); **audits CLEAN**
+  (value_projection=0, zero_forward=0 on every row → all tok/fwd valid).
+- **Training delta positive but immaterial:** A_S2 K=2 commits ~3.5× more often than CTRL-decode-only
+  (5.3 % vs 1.5 %) for +0.038 tpf, but CTRL-decode alone peaks at only 1.015 — **neither decode nor
+  training approaches 2.0.** Both confirm the same wall; consistent with the measured 0.238 top-1
+  reasoning-token conditional (§11.3: too little low-entropy connective mass to average to 2.0).
 
-**Consequence for the goal:** the **5×-vs-AR claim remains UNRESOLVED** — not funded (needs a PASS), not
-retired (a KILL is a *measured* K-wall, which we have not measured). Verified-good preconditions: spec
-HEAD 9ce9445; the 3 pinned eval-script sha256 match §6; gate set = 30 prompts; KILL-0 base half PASSES
-(`mtplus1-merged` `mask_token_id=248077`, `bd_size=32`); anchor intact (0.862 tok/fwd K=1, 26/30). The
-honest speed story is unchanged: **0.36× vs AR-cudagraph, distance to 5× ≈ 14× entirely in the K factor**,
-and whether L3 can move K above 1 is exactly what stays untested.
+**Consequence for the goal:** the **5×-vs-AR north star is RETIRED.** The campaign reverts to the honest
+**"0.36× vs AR-cudagraph today, L2 per-forward parity buys at most ~2×, no path to 5×"** on this
+GDN-hybrid architecture — the K-factor is a wall, and (this pilot localizes it) an entropy/architecture
+wall, not a training-dose one. Do **not** extend past the 600-step erosion cap to chase a factor-of-two
+miss. L2 (per-forward 25.8→~13 ms, task #37) remains a real ~2× engineering win at B=1 and is what
+survives; L4 NVFP4 is a ratio-neutral absolute-latency bonus. The honest speed story stands.
 
 ## The Amdahl accounting (why this is feasible)
 avg tok/fwd = 1 / (f_reason/K + f_value/1); grammar-forced tokens = 0 forwards (already live).
