@@ -106,3 +106,13 @@ avg tok/fwd = 1 / (f_reason/K + f_value/1); grammar-forced tokens = 0 forwards (
 - L3 gate: avg tok/fwd ≥5 on rollout content at exactness within noise of K=1 careful (paired stats,
   episode bootstrap) + GSM8K retention ≥ anchor + full audit battery. Sampler-pinned per REPRODUCE_V2.
 - Endgame: engine B=1 rollout wall-clock ≥5× guided-AR on the same episodes, same weights, audited.
+
+## END GOAL (user, 2026-07-05): agentic tasks (SWE-Verified-class) as the target workload
+Multi-turn agentic episodes are prefill-heavy across turns → prefix cache is mandatory (LumoFlyWheel
+already ships it for the native+MTP AR case). REQUIREMENT: the diffusion engine needs a **LOSSLESS
+prefix cache** — cache-on byte-identical to fresh-context decode. Today's align-APC is functional but
+lossy (the {20,21,60}/gt130 artifact class: cache-path-dependent GDN-state fp divergence flips near-tie
+tokens; certificate currently anchored fresh-context as a workaround). Fix shape: canonical GDN state
+boundaries — cache only chunk-aligned states computed via the same kernel path as fresh recompute
+(bitwise losslessness by construction); attention KV reuse is exact already. Acceptance: parity
+certificate holds WITH cache reuse across turns + measured agentic-episode speedup from APC.
