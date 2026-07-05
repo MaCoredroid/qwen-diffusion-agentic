@@ -4,7 +4,31 @@ Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones
 Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
 IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
-> **UPDATE (§0.G, vLLM pin `e5496cc` — THE PROMOTION ATTEMPT: NOT PROMOTED).** The v3 battery is the explicit
+> **UPDATE (§0.H, vLLM pin `95d8b47` — POST-FIX PROMOTION ATTEMPT: NOT PROMOTED, 1 turn short).** OPT-4 Part 1 has now
+> **landed** (Stage 1 32-absolute variable commit width + Stage 2 scheduler width plumbing + Stage 3 byte-robust bidir key
+> window; **code default OFF**). v3b is an **independent fresh boot of the post-fix engine** — the real promotion attempt.
+> **Measured (APC-on, full-63): byte-parity 62/63** (lone break gt44), **exact_args EXACTLY 47** (0 turns eng≠hf), episode
+> **13/20**, valid **63/63**, verify **63/63**, projection **0/63**. The strict gate is **63/63 ⇒ exact exactly 47**;
+> parity is 62/63 so ⇒ **NOT PROMOTED, default stays OFF.** The Stage-3 fix took byte-parity **58/63 → 62/63** and drove
+> exact to **exactly 47** (pre-fix "won" gt60 at 48; post-fix it byte-matches HF incl. HF's mistake → 47), clearing
+> {20,21,45,60} **path-robustly** (clean in both APC-on and cold-prefix fresh-boot), **no regressions**, shared-clean turns
+> byte-identical to v3. **Lone break gt44** breaks **identically** under APC-on and per-turn fresh-boot (same fd16, n101)
+> → a **path-invariant deterministic fp-residue, NOT an APC class** (the documented APC protocol cannot rescue it); both
+> engine and HF are non-exact on gt44 → **quality-neutral**. Root cause = the block#0 GDN fold-path fp gap (matching HF's
+> fold granularity is kernel-level, deferred). **Timing: s/turn mean 1.053** (p50 0.896, p90 1.700, worst 4.241 gt50),
+> 56.86 TRUE fwd/turn, per-forward **18.52 ms**, PIECEWISE cudagraph 63/63 turns, **3.708× under HF**. **Bars (1.053): HF
+> 3.904 BEAT (0.270×) · guided-AR 1.213 BEAT (0.868×) · M2 1.120 BEAT (0.940×) · stock-agg 0.741 MISS (1.421×).** **THE
+> v3b CORRECTION (supersedes §0.G/v3 "0.741 REACHABLE"):** OPT-4 Part 1 (variable commit width) landed but the Stage-3
+> A/B measured it **speed-NEUTRAL** (18.52 vs 18.56 ms/fwd — cudagraph buckets narrow widths back to a captured bucket),
+> so CL=32 width was **not** the residual. Measured per-forward 18.52 ms = **weight-stream floor 11.40 ms** (gemm device
+> self-time, 63.5% of GPU; arithmetic 10.77 ms = 19.31 GB bf16 / 1.79 TB/s HBM, **irreducible at bs=1**) + non-weight GPU
+> compute 6.54 ms (**not width-reducible**) + host 0.58 ms. Bar needs 13.03 ms/fwd → **not reachable by engine plumbing at
+> bs=1**; levers are fewer forwards/turn (training), fp8/int8 weights (~0.68/0.51 s/turn, quality tradeoff), or batching.
+> temp=0.7 (5 rollouts × 2 boots) byte-reproducible + never-train 3/3 byte-parity/exact vs HF — contract holds post-fix.
+> **No engine row added to the endgame scoreboard** (gate not met). Details §0.H; battery commit `1cb4457` (pushed
+> origin/main).
+>
+> **PRIOR UPDATE (§0.G, vLLM pin `e5496cc` — THE PROMOTION ATTEMPT: NOT PROMOTED).** The v3 battery is the explicit
 > promotion attempt against the strict gate (**63/63 byte-parity ⇒ exact exactly 47**) plus an independent 3rd boot.
 > The engine tree is **clean at `e5496cc` = byte-identical to v2** (OPT-4 Part 1 / Task #37 UNLANDED), so this is a
 > faithful re-run: it **reproduces v2 exactly** (n_gen/fwd/parity/exact/first_div ALL identical) and adds a
