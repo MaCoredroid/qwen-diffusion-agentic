@@ -982,6 +982,69 @@ Stage-3 session is actively developing it). No engine row is added to the endgam
 
 ---
 
+## 0.H P2 ENGINE BATTERY v3b — PROMOTION ATTEMPT on the POST-FIX engine (OPT-4 Stage 1+2+3 landed); 62/63, exact EXACTLY 47; NOT PROMOTED (2026-07-04, RTX 5090 / sm_120)
+
+§0.G was on the **pre-fix** pin `e5496cc` (58/63). OPT-4 Part 1 has since **landed** on pin `95d8b47` (Stage 1
+32-absolute variable commit width + Stage 2 scheduler width plumbing + Stage 3 byte-robust bidir key window; **code
+default OFF**). v3b is an **independent fresh boot of the post-fix engine** — the real promotion attempt. Same protocol
+as §0.F/§0.G: greedy, temp 0, seed 20260701, uncapped, RAM cage, chunked foreground (ep0-9, ep10-19), export
+`qwen3.5-9b-fastdllm-rlv2-vllm-bf16`, FINAL engine `VLLM_FLARE_BIDIR_PROBE=1 + VLLM_FLARE_CUDAGRAPH=1`. Source:
+`p2_engine_battery_v3b_result.md`; full report + artifacts `runs/p2_engine_battery_v3b/report.md`.
+
+### Promotion gate — 62/63 byte-parity ⇒ 63/63 NOT met ⇒ NOT PROMOTED (but exact IS exactly 47)
+| promotion-gate check | required | measured | verdict |
+|---|---|---|---|
+| byte-parity/turn | **63/63** | **62/63** (lone break {44}) | **NOT met** — 1 turn short |
+| exact_args | **exactly 47** | **47** (0 turns eng≠hf) | **met** |
+| episode_exact | 13/20 | **13/20** (ties HF) | **met** |
+| valid | 63/63 | **63/63** | **met** |
+| verify_invariants / value_projection | clean / 0 | **63/63 / 0/63** | **met** |
+| delta vs pre-fix v3 | — | fix cleared **{20,21,45,60}** path-robustly; **no regressions**; shared-clean byte-identical | **fix landed** |
+
+The Stage-3 fix takes **58/63 → 62/63** and drops the pre-fix gt60 "engine wins" (exact 48 → **exactly 47**, byte-matching
+HF incl. HF's mistake). The **lone break gt44** is a **path-invariant deterministic fp-residue**: it breaks identically
+under APC-on AND cold-prefix fresh-boot (same fd16, n101), so it is **NOT an APC class** — the documented APC protocol
+cannot rescue it to 63/63. gt44 is non-exact for BOTH engine and HF (quality-neutral). **NOT PROMOTED; default OFF.**
+
+### Numbers (APC-on full-63)
+| | ENGINE v3b (post-fix) | pre-fix v3/v2 | HF | guided-AR | stock-agg | M2 |
+|---|---:|---:|---:|---:|---:|---:|
+| byte-parity | **62/63** ({44}) | 58/63 | (self) | — | — | 63/63 |
+| exact_args | **47/63** (==HF) | 48/63 | 47/63 | 51/63 | 124/247 | ≥55 |
+| valid / episode | 63/63 / 13/20 | 63/63 / 13/20 | 63/63 / 13/20 | 63/63 | — | — |
+| s/turn mean (p50/p90/max) | **1.053** (0.896/1.700/4.241) | 1.056 | 3.904 | 1.213 | 0.741 | <1.120 |
+| denoise fwd/turn · per-fwd ms | 56.86 · **18.52** | 56.62 · 18.66 | 56.83 | 82.24 tok | 49.06 tok | — |
+
+### Bar adjudication (mean 1.053): HF 3.904 **BEAT** (0.270×) · guided-AR 1.213 **BEAT** (0.868×) · M2 1.120 **BEAT** (0.940×) · stock-agg 0.741 **MISS** (1.421×).
+
+### THE v3b CORRECTION — 0.741 is NOT reachable by width-narrowing (supersedes §0.G "REACHABLE")
+§0.G predicted OPT-4 Part 1 would close the 0.741 gap. **It landed, and the Stage-3 A/B measured it speed-NEUTRAL**
+(variable-width 18.52 vs fixed-32 18.56 ms/forward — cudagraph buckets narrow widths back to a captured bucket). The
+**measured** per-forward decomposition (torch.profiler device self-time, current pin): 18.52 ms wall = **weight-stream
+floor 11.40 ms** (gemm MLP+proj+lm_head, 63.5% of GPU; arithmetic 10.77 ms = 19.31 GB bf16 / 1.79 TB/s HBM,
+**irreducible at bs=1**) + non-weight GPU compute **6.54 ms** (proven NOT width-reducible) + residual host **0.58 ms**.
+Bar needs 13.03 ms/fwd (only 1.64 ms above the weight floor), but the 6.54 ms non-weight compute doesn't shrink → **not
+reachable by engine plumbing at batch=1.** Levers are orthogonal: fewer forwards/turn (training), fp8/int8 weights
+(~0.68/0.51 s/turn, quality tradeoff), or batching. stock-agg is also stock-AR over a different, shorter mix (49 tok/turn).
+
+### RL/OOD sanity — contract holds post-fix
+- **temp=0.7:** 5 rollouts (gt0/7/17/29/51) byte-reproducible across 2 boots (max wall Δ 4 ms), all valid/exact/proj0/parity.
+- **never-train:** 3/3 (BFCL-AST, API-Bank Lv1/Lv2) byte-parity + exact vs HF.
+
+### Verdict
+Strongest promotable candidate to date and the **first independent certificate of the landed OPT-4 fix**: 62/63,
+exact **exactly 47 (==HF, 0 wins/losses)**, valid 63/63, episode 13/20, verify 63/63, projection 0, mean 1.053 s/turn
+(beats M2, guided-AR, HF). But **63/63 is one turn short** — gt44 is a proven path-invariant fp-residue (block#0 GDN
+fold-path fp gap; matching HF's fold granularity is kernel-level, deferred). **NOT PROMOTED; default OFF.** No engine
+row added to the endgame scoreboard (gate not met).
+
+### Artifacts — `runs/p2_engine_battery_v3b/` + `p2_engine_battery_v3b_result.md` (tracked)
+`matched20_turns.jsonl` (63) · `aggregate.json` · `matched20_temp07{a,b}.jsonl` · `nevertrain_spotcheck.jsonl` (3) ·
+`parity_cert_freshboot.jsonl` (5) · `opt4_breakdown.json` (profiler split) · `run_battery_v3b.py` / `aggregate.py` /
+`profile_v3b.py` / `env.sh` / `runcage.sh` / `chunk{1,2}.log`. vLLM pin `95d8b47` (Stage 1+2+3 landed, default OFF).
+
+---
+
 ## 1. What was built (paths + local commits)
 
 ### Repo A — vLLM pin `/home/mark/shared/vllm_p2_pr42406`
