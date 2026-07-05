@@ -2,14 +2,16 @@
 
 The single self-contained reproduction + claims artifact for the **whole** system:
 a preservation-certified recipe that converts an autoregressive (AR) Qwen3.5-9B into a
-block-diffusion twin, RL-hardens it for agentic tool use, serves it faster-than-stock on a
-byte-parity-audited vLLM engine, and closes the flywheel by re-converting the RL'd model without
-losing the gain.
+block-diffusion twin, RL-hardens it for agentic tool use, serves it at batch=1 latency competitive
+with stock AR (faster than the `enforce_eager` AR server it was baselined against; at ~parity vs a
+fair cudagraph AR) on a byte-parity-audited vLLM engine, and closes the flywheel by re-converting the
+RL'd model without losing the gain.
 
 This supersedes **REPRODUCE_V2.md** (kept in-repo, linked here). V2 is the external reproduction
 guide for the conversion→RL→hybrid-clean-serving lane (recipe + pins). V3 keeps that lane verbatim,
-re-verifies every pin, and adds the three things V2 predates: the **vLLM P2 engine** (faster-than-AR
-serving, pin chain `6b81154..0b44dcc`), the **convert-after-RL preservation certificate** (the
+re-verifies every pin, and adds the three things V2 predates: the **vLLM P2 engine** (batch=1 serving
+faster than the eager AR server, ≈parity vs a fair cudagraph AR — §5.1/§5.7; pin chain
+`6b81154..0b44dcc`), the **convert-after-RL preservation certificate** (the
 flywheel's sharp test), and the **honest speed frontier** (K_max=1.0 today; the 5× goal is an open
 training bet, not a shipped result).
 
@@ -20,16 +22,21 @@ appears without a source. All paths are absolute unless written repo-relative un
 
 ## 0. WHAT THIS SYSTEM IS — AND IS NOT (claims summary)
 
-**IS — a faster-than-stock, quality-identical, certified agentic serving system on converted
-weights.** Converting Qwen3.5-9B to block-diffusion and serving it on the P2 vLLM FLARE engine
-(pin `95d8b47`/`0b44dcc`, batch=1, RTX 5090) posts **exact-args 130/247 == the HF diffusion
-reference 130/247 EXACTLY** on the aggregate endgame battery (episode 32/80, valid 247/247, 0
-per-turn wins / 0 losses vs HF), and **beats every AR baseline on quality**: +6 vs stock-bf16-AR
-(124), +1 vs stock-FP8 (129), +3 vs merged-AR (127). It is also **faster than the stock AR model it
-was converted from** on the identical 247-turn mix: **0.626 s/turn** vs stock-bf16-AR 0.741 (1.18×),
-stock-FP8 0.910 (1.45×), merged-AR 0.739 (1.18×), and the HF hybrid stack 2.577 (4.12×). Conversion
-+ RL did not cost accuracy — it gained it. (`endgame_table_final.md`, `runs/endgame_scoreboard`,
-`p2_engine_battery_v3b_result.md`.)
+**IS — a quality-identical, certified agentic serving system on converted weights, at batch=1
+latency competitive with stock AR.** Converting Qwen3.5-9B to block-diffusion and serving it on the
+P2 vLLM FLARE engine (pin `95d8b47`/`0b44dcc`, batch=1, RTX 5090) posts **exact-args 130/247 == the
+HF diffusion reference 130/247 EXACTLY** on the aggregate endgame battery (episode 32/80, valid
+247/247, 0 per-turn wins / 0 losses vs HF), and **beats every AR baseline on quality**: +6 vs
+stock-bf16-AR (124), +1 vs stock-FP8 (129), +3 vs merged-AR (127). On speed it is **faster than the
+`enforce_eager` vLLM AR server it was baselined against** on the identical 247-turn mix: **0.626
+s/turn** vs stock-bf16-AR 0.741 (1.18×), stock-FP8 0.910 (1.45×), merged-AR 0.739 (1.18×), and the HF
+hybrid stack 2.577 (4.12×). **Speed caveat (load-bearing, per §5.1/§5.7): those AR baselines ran
+`enforce_eager` — CUDA graphs OFF (`runs/endgame_stock_qwen35_ar_guided/{bf16,fp8}/server_launch.json`)
+— while the engine ran cudagraph; cudagraph is a measured ~1.32× AR speedup. Against a FAIR cudagraph
+guided-AR at batch=1 the engine is at ~parity-to-slightly-slower (0.94×, §5.7), so the 1.18× is a win
+over the eager server, NOT a fair-harness single-stream speed win.** Conversion + RL did not cost
+accuracy — it gained it. (`endgame_table_final.md`, `runs/endgame_scoreboard`,
+`p2_engine_battery_v3b_result.md`, `runs/p2_batched_rollout_bench/report.md`.)
 
 **IS — a preservation-certified conversion loop.** Re-running a fresh two-stream conversion on the
 *merged RL-v2 weights* — using the original Run-1 mix that **excludes** the RL episode pool, so the
@@ -468,8 +475,12 @@ PASS (`convert_after_rl_result.md §3`).
 ### 5.1 The endgame table — aggregate 247 (matched-63 v3b + never-train-184)
 
 Source: `endgame_table_final.md`, `runs/endgame_scoreboard/report.md`. Engine row = vLLM P2 FLARE,
-pin `95d8b47`, batch=1, RTX 5090, code default OFF. AR rows = vLLM-guided server, greedy temp 0 seed
-20260701.
+pin `95d8b47`, batch=1, RTX 5090, code default OFF, **PIECEWISE cudagraph ON**. AR rows = vLLM-guided
+server, greedy temp 0 seed 20260701, **`enforce_eager` — CUDA graphs OFF** (confirmed
+`runs/endgame_stock_qwen35_ar_guided/{bf16,fp8}/server_launch.json`: `enforce_eager: true`; server
+logs: "Cudagraph is disabled under eager mode"). **So the s/turn ratios are cudagraph-engine vs
+eager-AR-server — NOT a fair-harness comparison; cudagraph is a measured ~1.32× AR speedup (§5.6), and
+the fair cudagraph-guided-AR batch=1 comparison is §5.7 (engine 0.94×, i.e. slightly slower).**
 
 | system | exact /247 | episode /80 | valid | s/turn (agg) | fwd-or-tok/turn | parity certificate |
 |---|---:|---:|---:|---:|---:|---|
@@ -486,9 +497,12 @@ gt44); never-train 83/184 @ 0.480 s/turn, 24.06 fwd/turn, byte-parity 171/184 (1
 exactly 83) — no tolerance, it is a byte-derived count and the engine ties HF on every turn.
 Byte-parity is **233/247 ±2** as a function of cache configuration (cold-prefix → 235/247); it is a
 recorded diagnostic, not a gate on exact-args. s/turn is hardware/thermal-sensitive (±~5%); the
-**ratios** are the durable claim: engine agg 0.626 beats stock-bf16-AR 0.741 (1.18×), stock-FP8 0.910
-(1.45×), merged-AR 0.739 (1.18×), HF-hybrid 2.577 (4.12×). GSM8K first20 gates move ±1 row on seed
-noise — rerun once and report both seeds/artifacts if a gate moves by one row (V2 §10 rule).
+**ratios** are the durable claim **against the eager AR server**: engine agg 0.626 beats
+stock-bf16-AR 0.741 (1.18×), stock-FP8 0.910 (1.45×), merged-AR 0.739 (1.18×), HF-hybrid 2.577
+(4.12×). **These AR rows are `enforce_eager` (see caption); the eager→cudagraph AR speedup is ~1.32×,
+so a fair cudagraph AR at batch=1 is FASTER than the engine — measured directly in §5.7 (engine
+0.94×). The certified-fair batch=1 result is ≈parity, not a 1.18× win.** GSM8K first20 gates move ±1
+row on seed noise — rerun once and report both seeds/artifacts if a gate moves by one row (V2 §10 rule).
 
 ### 5.2 The fp-residue break class (documented, quality-neutral)
 
@@ -547,11 +561,15 @@ Source: `conversion_tax_result.md`. B=1 greedy, identical prompts, strict determ
 | INSTRUCTION | 25 | 21/25 | 22/25 | 21/25 | +1 | −1 |
 | TOOL-CALL (agentic) ¹ | 247 | 124/247 | 136/247 | 130/247 | +12 | −6 |
 
-¹ certified reference row (not re-run). **Small-N caveat is load-bearing:** the A/B/C N=25–30 Wilson
+¹ certified reference row (not re-run). **Note the MERGED-AR tool-call point here is 136/247 — the
+promoted `A_new` AR export (§5.4 seed-1), a DIFFERENT operating point from the 127/247 merged-AR-guided
+row in §5.1's endgame table (= C0, the init+RL-v2 merge the engine actually serves).** So "engine sits
+between stock and merged (130 ∈ [124,136])" uses the A_new merged point; against the C0 merged the
+engine serves, engine 130 > C0-AR 127. **Small-N caveat is load-bearing:** the A/B/C N=25–30 Wilson
 95% intervals span ≈20 points and all three systems overlap within each class — the table certifies
 "no collapse," not a ranked ladder. Only the N=247 tool-call row separates: RL+merge *gains* the
-exactness it was trained for (+12); the engine sits between stock and merged (130 ∈ [124,136]). Engine
-stability held: 0 CPU-pathological hangs, `value_projection_events == 0`, all `verify.ok == True`.
+exactness it was trained for (+12). Engine stability held: 0 CPU-pathological hangs,
+`value_projection_events == 0`, all `verify.ok == True`.
 
 ### 5.6 The honest speed frontier (5×-at-B1) — measured, mostly REFUTED priors
 
@@ -570,9 +588,11 @@ Source: `goal_5x_rollout_b1.md`, `l1_content_mix_result.md`, `runs/l0l2_final_he
   entirely in the K factor.** L2 per-forward parity (25.8→~13 ms) buys at most ~2× and is still
   K-bound; only **L3 (S2 consistency-distillation + entropy-gated adaptive K), unexecuted**, can raise
   reasoning K above 1. The goal-doc "expected 2–3× already" is **REFUTED** on the audited serving path.
-- **Where the engine DOES win at B=1:** tool-call-heavy content (higher grammar-forced fraction, more
-  free bulk-commits) — the aggregate 0.626 vs 0.741 (1.18×) is real and certified (§5.1). The win is
-  forced-token bulk commits, not parallel reasoning.
+- **Where the engine is LEAST behind at B=1:** tool-call-heavy content (higher grammar-forced
+  fraction, more free bulk-commits) — the aggregate 0.626 vs the **eager** AR server's 0.741 (1.18×)
+  is real, and vs a fair **cudagraph** guided-AR the engine reaches only ~parity (0.94×, §5.7), still
+  its best regime. The advantage over the eager server is forced-token bulk commits, not parallel
+  reasoning — and it does not survive to a fair-harness win.
 
 ### 5.7 Rollout-regime disconfirmations (REFUTED throughput/signal priors)
 
