@@ -12,12 +12,33 @@ Second factor → ~1.0 with engineering parity. **The goal is therefore one numb
     NORTH STAR: avg ≥5 committed tokens/forward at HELD exactness on rollout content, per-forward at
     AR per-step parity → ≥5× rollout wall-clock at B=1.
 
+## ★ L1 MEASURED (2026-07-05, `l1_content_mix_result.md` + `l1_baseline_b1_result.md`)
+Equation filled in today: **1.00 (reasoning tok/fwd, K=1) × 0.754 (14.1 AR ÷ 18.7 engine ms) = 0.75×**
+(all-committed framing 1.03×). Both factors at/below parity → NO speed advantage on reasoning content.
+- (1) Content mix (served, RLv2 hybrid_clean): grammar-forced 26.5 % (0-fwd) · value 54.2 % (K=1) ·
+  structural 19.3 % (K=1); all 73.5 % model-chosen tokens are K=1 (732 fwd == 732 tokens).
+- (2) **K_max(today) = 1.0 tok/fwd at held GSM8K exactness — NO parallel reasoning lane exists today.**
+  ★ The "native 4 tok/fwd" claim below is REFUTED: legacy anchor sampler is ~1.02 tok/fwd at every block
+  width (bdc8001 + l1_kcurve thr0.9 = 1.011); the fixed-K sampler that reaches nominal 4–8 tok/fwd is the
+  disqualified mutable-remask diagnostic (0.25 at full denoise, fails anchor). Achievable-today avg tok/fwd
+  = 1.36 served (all from the free scaffold) / 1.00 on reasoning tokens.
+- (3) Ratio TODAY: reasoning-only 0.75× · all-committed 1.03× · per-forward 1.33× slower (AR
+  enforce_eager-handicapped → true ratio ≤ reported).
+- (4) L3 TARGET: for rollout f_value 2–5 %, avg=5 needs reasoning-span **K ≈ 5.4–6.3** (K→∞ ceiling
+  1/f_value = 20–50). Distance from K_max(today)=1.0 → **~6× reasoning-span tok/fwd at held exactness**
+  (K≈9 if L2 penalty left unclosed). S2 must (a) turn chain-rule value tokens into parallel reasoning
+  spans and (b) erase the 15–45-pt exactness loss the only K≈4–8 sampler shows today.
+- (5) L2 CONFIRMED: engine 18.7 ms/forward vs AR 14.1 ms/token = 1.33× per-forward penalty; L2 job
+  18.7→~13 ms converts the 0.754 factor →1.0 (cannot change tok/fwd).
+
 ## The Amdahl accounting (why this is feasible)
 avg tok/fwd = 1 / (f_reason/K + f_value/1); grammar-forced tokens = 0 forwards (already live).
 - Tool-call eval content (f_value≈15%): K→∞ caps avg at 6.7; K=8 gives 3.9. Hard but not the target mix.
 - Rollout content (SWE/CoT/GSM8K-class, f_value≈2-5% exact spans): avg 5 needs K≈6-7 on reasoning spans.
-- MEASURED TODAY: native 4 tok/fwd on GSM8K-class at held exactness (post drift-fix). Values stay K=1
-  (chain rule, 0.238 top-1 measured — never revisit without new evidence).
+- ~~MEASURED TODAY: native 4 tok/fwd on GSM8K-class at held exactness (post drift-fix).~~ **REFUTED by L1
+  (2026-07-05): the anchor sampler is ~1.0 tok/fwd at every block width; the 4-tok/fwd came from the
+  disqualified fixed-K diagnostic. K_max(today) = 1.0 at held exactness.** Values stay K=1 (chain rule,
+  0.238 top-1 measured — never revisit without new evidence).
 
 ## The three multiplicative levers (the campaign)
 1. **L1 — content mix, measure first (M1, cheap, decisive):** B=1 bench on reasoning-heavy flywheel
