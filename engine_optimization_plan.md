@@ -17,9 +17,27 @@ P0 / P1 / P2 against the two bars.
   on CPython and re-scaled to the true vocab below. Each item carries a
   GPU-verification step to convert its estimate to a measured number.
 
-## STATUS (2026-07-04, after the FINAL-engine v2 battery — vLLM pin `e5496cc`, bidir probe + PIECEWISE cudagraph)
+## STATUS (2026-07-04, after the v3 PROMOTION ATTEMPT — vLLM pin `e5496cc`, tree byte-identical to v2)
 
-> **FINAL-engine v2 battery (bidir probe `b7d76e2` + PIECEWISE cudagraph `VLLM_FLARE_CUDAGRAPH=1`, OPT-4 Part 2):
+> **v3 battery = THE PROMOTION ATTEMPT (NOT promoted).** The strict gate is **63/63 byte-parity ⇒ exact exactly 47**.
+> The engine tree is **clean at `e5496cc` = byte-identical to v2** (OPT-4 Part 1 / Task #37 UNLANDED), so v3 is a
+> faithful promotion attempt + independent 3rd boot: it **reproduces v2 exactly** (n_gen/fwd/parity/exact/first_div ALL
+> identical) and adds a fresh-context parity certificate. **Measured (APC-on, v2 protocol): byte-parity 58/63** (breaks
+> {20,21,44,45,60}, NOT met), **exact 48** (+1 = gt60 APC win, so exact≠47), episode 13/20, valid 63/63, verify 63/63,
+> projection 0/63 ⇒ **NOT PROMOTED.** Timing reproduces v2: **s/turn mean 1.056** (p50 0.874, p90 1.734, worst 4.253),
+> 56.62 TRUE fwd/turn, per-forward 18.66 ms. **Bars (1.056): HF 3.904 BEAT (0.270×) · guided-AR 1.213 BEAT (0.871×) ·
+> M2 1.120 BEAT (0.943×) · stock-agg 0.741 MISS (1.425×).** **THE v3 FINDING:** byte-parity is **cache-path-dependent**;
+> a fresh-context certificate (cold cache, fresh boot/turn; 57/63 measured, 6 pending under a concurrent Stage-3 GPU
+> hold) localizes the **invariant structural residual to {44,45}** (both paths — gt44 variable-width, gt45 32-absolute
+> align), with {20,21,60} APC-only (cross-turn prefix-cache artifacts) and {1,3,12,23,24,50,57} fresh-only. gt60's
+> exact-win is an APC artifact (fresh, it copies HF's mistake → exact 0 = hf). So the robust blocker is the 2-turn set
+> **{44,45}** = **OPT-4 Part 1** (variable commit width + 32-absolute align), which ALSO cuts per-forward **18.66→13.09
+> ms** to reach stock-agg 0.741 (weight-stream floor 10.5 ms; 2.59 ms above floor, REACHABLE) — **parity closure and the
+> last speed cut land together.** temp=0.7 (5×2 boots) byte-reproducible + never-train 3/3 byte-parity/exact vs HF.
+> Source: `p2_engine_battery_v3_result.md`, `runs/p2_engine_battery_v3/report.md`; build-status §0.G; battery commit
+> `55965de` (pushed origin/main). **No engine row added to the endgame scoreboard** (gate not met).
+>
+> **PRIOR — FINAL-engine v2 battery (bidir probe `b7d76e2` + PIECEWISE cudagraph `VLLM_FLARE_CUDAGRAPH=1`, OPT-4 Part 2):
 > the strongest promotable candidate yet — engine now BEATS M2/guided-AR/HF on speed for the FIRST time on the
 > honest full-63, but the strict 63/63-byte-parity gate is STILL NOT met (58/63) ⇒ NOT PROMOTED.** Required checks:
 > **byte-parity 58/63** (breaks {20,21,44,45,60}, NOT met), exact_args **48** (+1, engine WINS gt60 ≥HF), episode
@@ -345,9 +363,13 @@ remaining gap to AR is the residual GPU forward shape and the O(n²) host gramma
 > (1.213) and HF (3.904) for the first time at ≥HF quality, still above stock-AR-agg 0.741. **PART 1 remains the single
 > next lever** and is now *coupled to parity*: routing the 1-token denoise GDN forward to `fused_recurrent` +
 > **32-absolute commit alignment** (`VLLM_FLARE_ALIGN_BLOCKS`, scaffold only) + **per-request variable commit width**
-> closes BOTH the last **5/63** byte-parity breaks ({20,21,44,45,60}: bidir alignment gt20/gt45, APC artifact gt21,
-> variable-width gt44, engine-WINS gt60) AND the residual forward-compute gap to the stock-AR aggregate. Parity closure
-> and the last speed cut land together.
+> closes BOTH the last **5/63** APC-on byte-parity breaks ({20,21,44,45,60}) AND the residual forward-compute gap to the
+> stock-AR aggregate. **v3 sharpened the residual (fresh-context certificate, build-status §0.G):** the invariant
+> structural residual is the 2-turn set **{44,45}** (breaks in BOTH cache paths — gt44 fd16 variable-width, gt45 fd20
+> 32-absolute align); {20,21,60} are APC-only cross-turn prefix-cache artifacts (gt60 "engine wins" is an APC artifact,
+> not a real gain — fresh it copies HF's mistake ⇒ exact 0 = hf). So OPT-4 Part 1 = variable commit width + 32-absolute
+> align closes {44,45} AND cuts per-forward **18.66→13.09 ms** to stock-agg 0.741 (weight-stream floor 10.5 ms; 2.59 ms
+> above floor, REACHABLE). Parity closure and the last speed cut land together.
 
 **Evidence.** With no active spec mask, GDN metadata build calls
 `split_decodes_and_prefills(m, decode_threshold=1)` (`gdn_attn.py:213`): any row

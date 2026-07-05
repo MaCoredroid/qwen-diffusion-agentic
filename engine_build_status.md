@@ -4,7 +4,30 @@ Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones
 Date: 2026-07-04. Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
 IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
-> **UPDATE (§0.F, vLLM pin `e5496cc` = FINAL engine: bidir-probe `b7d76e2` + PIECEWISE cudagraph `VLLM_FLARE_CUDAGRAPH=1`):
+> **UPDATE (§0.G, vLLM pin `e5496cc` — THE PROMOTION ATTEMPT: NOT PROMOTED).** The v3 battery is the explicit
+> promotion attempt against the strict gate (**63/63 byte-parity ⇒ exact exactly 47**) plus an independent 3rd boot.
+> The engine tree is **clean at `e5496cc` = byte-identical to v2** (OPT-4 Part 1 / Task #37 UNLANDED), so this is a
+> faithful re-run: it **reproduces v2 exactly** (n_gen/fwd/parity/exact/first_div ALL identical) and adds a
+> **fresh-context parity certificate**. **Measured (APC-on, the v2 protocol): 58/63 byte-parity** (breaks
+> {20,21,44,45,60}), **exact_args 48/63** (+1 vs HF 47 = the gt60 APC win), episode **13/20**, valid **63/63**, verify
+> **63/63**, projection **0/63**. Gate needs 63/63 ⇒ exact exactly 47; parity is 58/63 so exact is 48 ⇒ **NOT
+> PROMOTED.** Timing reproduces v2: **s/turn mean 1.056** (p50 0.874, p90 1.734, worst 4.253), 56.62 TRUE fwd/turn,
+> per-forward 18.66 ms. **Bars (1.056): HF 3.904 → BEAT (0.270×, 3.695×) · guided-AR 1.213 → BEAT (0.871×) · M2 1.120 →
+> BEAT (0.943×) · stock-AR-agg 0.741 → MISS (1.425×).** **THE v3 FINDING — byte-parity is cache-path-dependent; the
+> invariant structural residual is {44,45}.** A fresh-context certificate (cold prefix+mamba cache, fresh boot per
+> turn; 57/63 measured, 6 pending under a concurrent Stage-3 GPU hold, all APC-parity; `enable_prefix_caching=False`
+> and `reset_prefix_cache()` are documented negative controls, both invalid here) splits the breaks: **invariant in
+> BOTH paths {44,45}** (genuine OPT-4 Part 1 — gt44 fd16 variable-width, gt45 fd20 32-absolute align), **APC-only
+> {20,21,60}** (cross-turn prefix-cache artifacts, resolve fresh), **fresh-only {1,3,12,23,24,50,57}** (hidden by APC).
+> gt60's "engine wins" is an **APC artifact**: fresh, it byte-matches HF's 169-tok output *incl. HF's mistake* →
+> eng_exact 0 = hf, exactly the gate memo's prediction. So the "58/63" headline is cache-config-specific; the robust
+> promotion blocker is the 2-turn structural set **{44,45}** — single coupled lever = **OPT-4 Part 1** (variable commit
+> width + 32-absolute align), which also cuts per-forward **18.66→13.09 ms** to reach stock-agg 0.741 (weight-stream
+> floor 10.5 ms; target 2.59 ms above floor, REACHABLE). temp=0.7 (5 rollouts × 2 boots) byte-reproducible +
+> never-train 3/3 byte-parity/exact vs HF — contract holds. **No engine row added to the endgame scoreboard** (gate not
+> met). Details §0.G; battery commit `55965de` (pushed origin/main).
+>
+> **PRIOR UPDATE (§0.F, vLLM pin `e5496cc` = FINAL engine: bidir-probe `b7d76e2` + PIECEWISE cudagraph `VLLM_FLARE_CUDAGRAPH=1`):
 > the strongest promotable candidate yet — but the strict 63/63-byte-parity promotion gate is STILL NOT met, so NOT
 > PROMOTED.** The FINAL engine turns BOTH landed levers on: the reference-exact windowed-**bidirectional** denoise read
 > (`VLLM_FLARE_BIDIR_PROBE=1`) and the PIECEWISE CUDA graph (OPT-4 Part 2; confirmed live — `enforce_eager=False`,
@@ -872,6 +895,90 @@ cut land together.** Break classes: **gt20/gt45** bidir alignment regressions, *
 - `scripts/parity_audit_flare_engine.py` — the `VLLM_FLARE_CUDAGRAPH` opt-in seam (default stays eager; `=1` opts
   into PIECEWISE). `p2_engine_battery_v2_result.md` — tracked top-level summary.
 - vLLM pin `e5496cc` (bidir probe `b7d76e2` + PIECEWISE cudagraph OPT-4 Part 2).
+
+---
+
+## 0.G P2 ENGINE BATTERY v3 — THE PROMOTION ATTEMPT; NOT PROMOTED; residual localized to {44,45} (2026-07-04, RTX 5090 / sm_120)
+
+§0.F was the strongest candidate; v3 is the **explicit promotion attempt** against the strict gate and an independent
+3rd boot. The engine tree is **clean at `e5496cc` = byte-identical to v2** (OPT-4 Part 1 / Task #37 still UNLANDED), so
+this is a faithful re-run, not a new engine. It **reproduces v2 exactly** (n_gen / fwd / parity / exact / first_div ALL
+identical) and adds the documented **fresh-context parity certificate**, which sharpens the residual to exactly
+**{44,45}**. Same protocol as §0.F: greedy, temp 0, seed 20260701, uncapped, RAM cage, export
+`qwen3.5-9b-fastdllm-rlv2-vllm-bf16` (block/canvas 32, mamba 1024, align+APC), FINAL engine
+`VLLM_FLARE_BIDIR_PROBE=1 + VLLM_FLARE_CUDAGRAPH=1`. Source: `p2_engine_battery_v3_result.md`; full report + 11
+artifacts `runs/p2_engine_battery_v3/report.md`. Battery commit `55965de`, pushed origin/main; this doc-update follows.
+
+### Promotion gate — 63/63 byte-parity ⇒ exact exactly 47 NOT met ⇒ NOT PROMOTED
+| promotion-gate check | required | measured | verdict |
+|---|---|---|---|
+| byte-parity/turn | **63/63** | **58/63** (breaks {20,21,44,45,60}) | **NOT met** |
+| exact_args | **exactly 47** | **48** (+1 = gt60, an APC artifact) | **deviation** |
+| episode_exact | 13/20 | **13/20** | **met** |
+| valid | 63/63 | **63/63** | **met** |
+| verify_invariants / value_projection | clean / 0 | **63/63 / 0/63** | **met** |
+| determinism vs v2 | — | n_gen/fwd/parity/exact/first_div **ALL identical** | **3rd-boot repro** |
+
+The gate needs 63/63 ⇒ the by-construction chain that would force exact=47; parity is **58/63** so exact is **48**.
+**NOT PROMOTED.**
+
+### Numbers (APC-on full-63) — reproduces v2
+| | ENGINE v3 (=v2) | HF | guided-AR | stock-agg | M2 |
+|---|---:|---:|---:|---:|---:|
+| exact_args | **48/63** | 47/63 | 51/63 | 124/247 | ≥55 |
+| episode | 13/20 | 13/20 | — | — | — |
+| valid | 63/63 | 63/63 | 63/63 | — | — |
+| byte-parity | 58/63 | (self) | — | — | 63/63 |
+| s/turn mean | **1.056** | 3.904 | 1.213 | 0.741 | <1.120 |
+| s/turn p50 / p90 / max | 0.874 / 1.734 / 4.253 | — | — | — | — |
+| denoise fwd/turn | 56.62 | 56.83 | 82.24 tok | 49.06 tok | — |
+| per-forward ms | 18.66 | — | — | — | — |
+
+### Bar adjudication (mean 1.056)
+| bar | value | engine 1.056 | verdict |
+|---|---:|---:|---|
+| HF hybrid-clean (v2) | 3.904 | 0.270× (3.695×) | **BEAT** |
+| stock-bf16-AR-guided | 1.213 | 0.871× | **BEAT** |
+| **M2 speed target** | **1.120** | **0.943×** | **BEAT** |
+| stock-AR aggregate | 0.741 | 1.425× | **MISS** |
+
+### THE v3 FINDING — byte-parity is cache-path-dependent; the invariant residual is {44,45}
+A **fresh-context parity certificate** (fresh boot per turn = cold prefix + mamba cache) was run alongside the APC-on
+battery. `enable_prefix_caching=False` is invalid here (mamba-block-size dependency) and `reset_prefix_cache()` is a
+false proxy that corrupts the un-reset GDN cache — both are documented as negative controls. 57/63 fresh boots measured
+(6 pending under the concurrent Stage-3 GPU hold; all 6 are APC-parity). The two paths split the break-set:
+- **invariant breaks (BOTH paths): {44,45}** — genuine OPT-4 Part 1 (gt44 fd16 variable-width; gt45 fd20 32-absolute align).
+- **APC-only breaks (resolve fresh): {20,21,60}** — cross-turn prefix-cache artifacts, not denoise errors.
+- **fresh-only breaks (hidden by APC): {1,3,12,23,24,50,57}**.
+
+gt60's "engine wins" is an **APC artifact**: fresh, it byte-matches HF's 169-tok output *incl. HF's mistake* →
+eng_exact 0 = hf (exactly the gate memo's prediction). So the **"58/63" headline is cache-config-specific**; the robust
+promotion blocker is the 2-turn structural set **{44,45}**. Of the 57 turns measured in both paths, 45 are parity in
+both, 2 break in both, ~10 flip on the cache path.
+
+### Residual gap to 0.741 (measured) — REACHABLE
+Need per-forward **18.66 → 13.09 ms** at 56.62 fwd/turn (cut 5.57 ms). The weight-stream floor is 10.5 ms, so the bar
+target sits **2.59 ms above the floor — REACHABLE**. Lever = **OPT-4 Part 1**: variable commit width shrinks the CL=32
+gemm/attn rows + a width-1 GDN routes to `fused_recurrent`; it also lowers fwd/turn. **It closes {44,45} AND the speed
+gap to stock-agg together.**
+
+### RL/OOD sanity — contract holds
+- **temp=0.7:** 5 rollouts byte-reproducible across 2 boots, all valid / exact / proj0.
+- **never-train:** 3/3 (BFCL-AST, API-Bank Lv1/Lv2) byte-parity + exact vs HF.
+
+### Verdict
+Strongest candidate to date, reproduces v2 exactly, beats HF / guided-AR / M2 on speed — but the strict gate
+(63/63 ⇒ exact 47) is **NOT met**. The fresh-context certificate localizes the genuine residual to **{44,45}** and
+shows the gt60 exact-win is an APC artifact. **NOT PROMOTED.** Single coupled lever = **OPT-4 Part 1** (a concurrent
+Stage-3 session is actively developing it). No engine row is added to the endgame scoreboard (promotion gate not met).
+
+### Artifacts — `runs/p2_engine_battery_v3/` (committed `55965de`, pushed origin/main; 11 empirical artifacts)
+- `report.md` — full writeup; `aggregate.json` — per-turn timing + check distribution.
+- APC-on full-63 battery + the fresh-context parity certificate (57/63 fresh boots) + the two negative controls
+  (`enable_prefix_caching=False`, `reset_prefix_cache()`).
+- temp=0.7 RL sanity (5 rollouts × 2 boots) + never-train spot-check (BFCL-AST + API-Bank Lv1/Lv2, sha-verified).
+- `p2_engine_battery_v3_result.md` — tracked top-level summary.
+- vLLM pin `e5496cc` = byte-identical to v2 (OPT-4 Part 1 / Task #37 UNLANDED).
 
 ---
 
