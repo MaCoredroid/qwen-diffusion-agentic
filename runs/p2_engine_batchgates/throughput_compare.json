@@ -1,0 +1,65 @@
+{
+  "note": "matched harness/pool (32 never-train tool-call turns, prompt_len 400-1300, nref_mean 42), both cudagraph+APC, wave method, greedy. Engine=FLARE hybrid-clean (converted 9B, gpu_mem 0.82); AR=stock Qwen3.5-9B snapshot c202236 plain-greedy (gpu_mem 0.66).",
+  "batch_sizes": [
+    {
+      "batch": 1,
+      "engine_samples_per_sec": 1.844,
+      "ar_samples_per_sec": 1.903,
+      "engine_over_ar": 0.969,
+      "engine_tok_per_sec": 76.5,
+      "ar_tok_per_sec": 80.2,
+      "engine_speedup_vs_b1": 1.0,
+      "ar_speedup_vs_b1": 1.0,
+      "engine_gpu_util": 89,
+      "ar_gpu_util": 100,
+      "engine_mean_batch_in_forward": 1.0,
+      "engine_fwd_per_turn": 27.62,
+      "ar_gen_tok_per_turn": 42.2
+    },
+    {
+      "batch": 2,
+      "engine_samples_per_sec": 2.69,
+      "ar_samples_per_sec": 2.95,
+      "engine_over_ar": 0.912,
+      "engine_tok_per_sec": 111.5,
+      "ar_tok_per_sec": 123.5,
+      "engine_speedup_vs_b1": 1.46,
+      "ar_speedup_vs_b1": 1.55,
+      "engine_gpu_util": 87,
+      "ar_gpu_util": 100,
+      "engine_mean_batch_in_forward": 1.54,
+      "engine_fwd_per_turn": 17.94,
+      "ar_gen_tok_per_turn": 41.8
+    },
+    {
+      "batch": 4,
+      "engine_samples_per_sec": 4.434,
+      "ar_samples_per_sec": 4.881,
+      "engine_over_ar": 0.908,
+      "engine_tok_per_sec": 180.0,
+      "ar_tok_per_sec": 205.8,
+      "engine_speedup_vs_b1": 2.4,
+      "ar_speedup_vs_b1": 2.56,
+      "engine_gpu_util": 87,
+      "ar_gpu_util": 100,
+      "engine_mean_batch_in_forward": 2.95,
+      "engine_fwd_per_turn": 9.19,
+      "ar_gen_tok_per_turn": 42.2
+    },
+    {
+      "batch": 8,
+      "engine_samples_per_sec": 5.771,
+      "ar_samples_per_sec": 7.221,
+      "engine_over_ar": 0.799,
+      "engine_tok_per_sec": 241.7,
+      "ar_tok_per_sec": 308.0,
+      "engine_speedup_vs_b1": 3.13,
+      "ar_speedup_vs_b1": 3.79,
+      "engine_gpu_util": 85,
+      "ar_gpu_util": 100,
+      "engine_mean_batch_in_forward": 4.86,
+      "engine_fwd_per_turn": 5.88,
+      "ar_gen_tok_per_turn": 42.7
+    }
+  ]
+}

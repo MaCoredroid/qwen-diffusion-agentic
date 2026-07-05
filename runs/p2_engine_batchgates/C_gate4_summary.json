@@ -1,0 +1,23 @@
+{
+  "gate": "gate4_audits",
+  "config": "C",
+  "gate1_batched": {
+    "n": 8,
+    "all_proj0": true,
+    "all_verify_ok": true,
+    "any_missing_stats": false
+  },
+  "gate2_batched": {
+    "n": 8,
+    "all_proj0": true,
+    "all_verify_ok": true,
+    "any_missing_stats": false
+  },
+  "gate5_batched": {
+    "n": 8,
+    "all_proj0": true,
+    "all_verify_ok": true,
+    "any_missing_stats": false
+  },
+  "PASS_audits": true
+}

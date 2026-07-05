@@ -1,0 +1,197 @@
+{
+  "gate": "gate1_invariance",
+  "config": "P",
+  "n_turns": 8,
+  "byte_identical": 8,
+  "total": 8,
+  "PASS_byte_invariance": true,
+  "batch_ledger": {
+    "forwards": 44,
+    "num_reqs_max": 8,
+    "num_reqs_hist": {
+      "1": 11,
+      "2": 5,
+      "3": 1,
+      "4": 2,
+      "5": 1,
+      "7": 1,
+      "8": 23
+    },
+    "num_decode_max": 8,
+    "num_decode_hist": {
+      "1": 12,
+      "2": 5,
+      "3": 1,
+      "4": 2,
+      "5": 1,
+      "7": 2,
+      "8": 21
+    },
+    "mixed_phase_forwards": 13,
+    "multi_req_forwards": 33,
+    "multi_decode_forwards": 32
+  },
+  "per_req_audit": [
+    {
+      "slot": 0,
+      "stats": {
+        "forwards": 22,
+        "fsm_committed_tokens": 18,
+        "value_tokens": 14,
+        "structural_model_tokens": 8,
+        "value_projection_events": 0,
+        "model_chosen_tokens": 22,
+        "generated_tokens": 40
+      },
+      "verify": {
+        "value_projection_events_is_0": true,
+        "forwards_eq_model_chosen": true,
+        "generated_eq_fsm_plus_model": true,
+        "forced_gt_0": true,
+        "ok": true
+      },
+      "proj0": true
+    },
+    {
+      "slot": 1,
+      "stats": {
+        "forwards": 30,
+        "fsm_committed_tokens": 21,
+        "value_tokens": 18,
+        "structural_model_tokens": 12,
+        "value_projection_events": 0,
+        "model_chosen_tokens": 30,
+        "generated_tokens": 51
+      },
+      "verify": {
+        "value_projection_events_is_0": true,
+        "forwards_eq_model_chosen": true,
+        "generated_eq_fsm_plus_model": true,
+        "forced_gt_0": true,
+        "ok": true
+      },
+      "proj0": true
+    },
+    {
+      "slot": 2,
+      "stats": {
+        "forwards": 24,
+        "fsm_committed_tokens": 16,
+        "value_tokens": 15,
+        "structural_model_tokens": 9,
+        "value_projection_events": 0,
+        "model_chosen_tokens": 24,
+        "generated_tokens": 40
+      },
+      "verify": {
+        "value_projection_events_is_0": true,
+        "forwards_eq_model_chosen": true,
+        "generated_eq_fsm_plus_model": true,
+        "forced_gt_0": true,
+        "ok": true
+      },
+      "proj0": true
+    },
+    {
+      "slot": 3,
+      "stats": {
+        "forwards": 40,
+        "fsm_committed_tokens": 26,
+        "value_tokens": 26,
+        "structural_model_tokens": 14,
+        "value_projection_events": 0,
+        "model_chosen_tokens": 40,
+        "generated_tokens": 66
+      },
+      "verify": {
+        "value_projection_events_is_0": true,
+        "forwards_eq_model_chosen": true,
+        "generated_eq_fsm_plus_model": true,
+        "forced_gt_0": true,
+        "ok": true
+      },
+      "proj0": true
+    },
+    {
+      "slot": 4,
+      "stats": {
+        "forwards": 22,
+        "fsm_committed_tokens": 17,
+        "value_tokens": 12,
+        "structural_model_tokens": 10,
+        "value_projection_events": 0,
+        "model_chosen_tokens": 22,
+        "generated_tokens": 39
+      },
+      "verify": {
+        "value_projection_events_is_0": true,
+        "forwards_eq_model_chosen": true,
+        "generated_eq_fsm_plus_model": true,
+        "forced_gt_0": true,
+        "ok": true
+      },
+      "proj0": true
+    },
+    {
+      "slot": 5,
+      "stats": {
+        "forwards": 24,
+        "fsm_committed_tokens": 18,
+        "value_tokens": 16,
+        "structural_model_tokens": 8,
+        "value_projection_events": 0,
+        "model_chosen_tokens": 24,
+        "generated_tokens": 42
+      },
+      "verify": {
+        "value_projection_events_is_0": true,
+        "forwards_eq_model_chosen": true,
+        "generated_eq_fsm_plus_model": true,
+        "forced_gt_0": true,
+        "ok": true
+      },
+      "proj0": true
+    },
+    {
+      "slot": 6,
+      "stats": {
+        "forwards": 21,
+        "fsm_committed_tokens": 19,
+        "value_tokens": 13,
+        "structural_model_tokens": 8,
+        "value_projection_events": 0,
+        "model_chosen_tokens": 21,
+        "generated_tokens": 40
+      },
+      "verify": {
+        "value_projection_events_is_0": true,
+        "forwards_eq_model_chosen": true,
+        "generated_eq_fsm_plus_model": true,
+        "forced_gt_0": true,
+        "ok": true
+      },
+      "proj0": true
+    },
+    {
+      "slot": 7,
+      "stats": {
+        "forwards": 20,
+        "fsm_committed_tokens": 14,
+        "value_tokens": 14,
+        "structural_model_tokens": 6,
+        "value_projection_events": 0,
+        "model_chosen_tokens": 20,
+        "generated_tokens": 34
+      },
+      "verify": {
+        "value_projection_events_is_0": true,
+        "forwards_eq_model_chosen": true,
+        "generated_eq_fsm_plus_model": true,
+        "forced_gt_0": true,
+        "ok": true
+      },
+      "proj0": true
+    }
+  ],
+  "discriminator": []
+}

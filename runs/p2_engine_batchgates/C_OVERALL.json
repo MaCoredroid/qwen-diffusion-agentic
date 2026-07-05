@@ -1,0 +1,142 @@
+{
+  "config": "C",
+  "gate1_invariance_PASS": true,
+  "gate1_byte_identical": "8/8",
+  "gate1_discriminator": [],
+  "gate2_mixedlen_PASS": false,
+  "gate2_byte_identical": "7/8",
+  "gate2_discriminator": [
+    {
+      "global_turn": 176,
+      "companions_1": [
+        158,
+        130,
+        110
+      ],
+      "companions_2": [
+        0,
+        1,
+        2
+      ],
+      "batch_determinism_same_batch_twice": false,
+      "A_out_batch1_eq_batch2": false,
+      "A_batch1_eq_bs1": false,
+      "A_batch2_eq_bs1": false,
+      "note": "companion/shape dependent; adjudicate via gate3 isolation + near-tie value-token class (see gate2.jsonl exact_arguments)"
+    }
+  ],
+  "gate3_no_cross_write_PASS": true,
+  "gate3_pure_denoise_advance0_PASS": true,
+  "gate3_2req": {
+    "name": "gate3_2req",
+    "turns": [
+      149,
+      157
+    ],
+    "total_forwards_probed": 25,
+    "n_errors": 0,
+    "error_examples": [],
+    "max_batch_probed": 2,
+    "multireq_forwards": 25,
+    "pure_denoise_forwards": 20,
+    "pure_denoise_multireq_forwards": 20,
+    "pure_denoise_cache_identical": 20,
+    "pure_denoise_multireq_cache_identical": 20,
+    "mixed_forwards": 5,
+    "cross_write_anchor_forwards": 0,
+    "cross_write_band_forwards_FP": 3,
+    "PASS_no_cross_write": true,
+    "PASS_pure_denoise_advance0": true,
+    "cross_write_anchor_examples": []
+  },
+  "gate3_gate2batch": {
+    "name": "gate3_gate2batch",
+    "turns": [
+      158,
+      176,
+      130,
+      110,
+      73,
+      70,
+      86,
+      127
+    ],
+    "total_forwards_probed": 89,
+    "n_errors": 0,
+    "error_examples": [],
+    "max_batch_probed": 8,
+    "multireq_forwards": 34,
+    "pure_denoise_forwards": 70,
+    "pure_denoise_multireq_forwards": 18,
+    "pure_denoise_cache_identical": 70,
+    "pure_denoise_multireq_cache_identical": 18,
+    "mixed_forwards": 19,
+    "cross_write_anchor_forwards": 0,
+    "cross_write_band_forwards_FP": 15,
+    "PASS_no_cross_write": true,
+    "PASS_pure_denoise_advance0": true,
+    "cross_write_anchor_examples": []
+  },
+  "gate4_audits_PASS": true,
+  "gate5_seeded_repro_PASS": true,
+  "gate6_bs1_deterministic_all": true,
+  "gate6_bs8_deterministic_all": false,
+  "gate6_bs1_nondet_turns": [],
+  "gate6_bs8_nondet_turns": [
+    176
+  ],
+  "gate1_ledger": {
+    "forwards": 44,
+    "num_reqs_max": 8,
+    "num_reqs_hist": {
+      "1": 11,
+      "2": 5,
+      "3": 1,
+      "4": 2,
+      "5": 1,
+      "7": 1,
+      "8": 23
+    },
+    "num_decode_max": 8,
+    "num_decode_hist": {
+      "1": 12,
+      "2": 5,
+      "3": 1,
+      "4": 2,
+      "5": 1,
+      "7": 2,
+      "8": 21
+    },
+    "mixed_phase_forwards": 13,
+    "multi_req_forwards": 33,
+    "multi_decode_forwards": 32
+  },
+  "gate2_ledger": {
+    "forwards": 88,
+    "num_reqs_max": 8,
+    "num_reqs_hist": {
+      "1": 55,
+      "2": 1,
+      "3": 7,
+      "4": 4,
+      "5": 4,
+      "6": 1,
+      "7": 5,
+      "8": 11
+    },
+    "num_decode_max": 8,
+    "num_decode_hist": {
+      "1": 56,
+      "2": 1,
+      "3": 7,
+      "4": 5,
+      "5": 5,
+      "6": 1,
+      "7": 5,
+      "8": 8
+    },
+    "mixed_phase_forwards": 13,
+    "multi_req_forwards": 33,
+    "multi_decode_forwards": 32
+  }
+}

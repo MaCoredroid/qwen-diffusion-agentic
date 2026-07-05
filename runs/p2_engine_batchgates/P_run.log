@@ -1,0 +1,720 @@
+Running as unit: run-p2149601-i1941216.scope; invocation ID: 262bafe051174bfb8dfd7b6718ea237b
+INFO 07-04 19:53:32 [api_utils.py:273] non-default args: {'trust_remote_code': True, 'seed': 20260701, 'max_model_len': 4096, 'enable_prefix_caching': True, 'gpu_memory_utilization': 0.82, 'max_num_batched_tokens': 4096, 'max_num_seqs': 8, 'disable_log_stats': True, 'diffusion_config': {'canvas_length': 32, 'max_denoising_steps': 8}, 'attention_config': AttentionConfig(backend=<AttentionBackendEnum.TRITON_ATTN: 'vllm.v1.attention.backends.triton_attn.TritonAttentionBackend'>, flash_attn_version=None, use_prefill_decode_attention=False, flash_attn_max_num_splits_for_cuda_graph=32, tq_max_kv_splits_for_cuda_graph=32, use_trtllm_attention=None, disable_flashinfer_q_quantization=False, mla_prefill_backend=None, use_prefill_query_quantization=False, use_fp4_indexer_cache=False, indexer_kv_dtype='bf16', use_non_causal=False, flex_attn_block_m=None, flex_attn_block_n=None, flex_attn_q_block_size=None, flex_attn_kv_block_size=None), 'mamba_ssm_cache_dtype': 'float32', 'mamba_block_size': 1024, 'mamba_cache_mode': 'align', 'model': '/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16'}
+WARNING 07-04 19:53:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_FLARE_CUDAGRAPH
+WARNING 07-04 19:53:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_ATTENTION_BACKEND
+WARNING 07-04 19:53:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_FLARE_BIDIR_PROBE
+WARNING 07-04 19:53:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_USE_V1
+WARNING 07-04 19:53:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_MASK
+WARNING 07-04 19:53:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE
+WARNING 07-04 19:53:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_DECODE
+WARNING 07-04 19:53:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_BLOCK
+WARNING 07-04 19:53:32 [arg_utils.py:1600] The global random seed is set to 20260701. Since VLLM_ENABLE_V1_MULTIPROCESSING is set to False, this may affect the random state of the Python process that launched vLLM.
+INFO 07-04 19:53:32 [model.py:606] Resolved architecture: Qwen3_5ForConditionalGeneration
+INFO 07-04 19:53:32 [model.py:1736] Using max model len 4096
+INFO 07-04 19:53:32 [scheduler.py:252] Chunked prefill is enabled with max_num_batched_tokens=4096.
+INFO 07-04 19:53:32 [config.py:575] Warning: Prefix caching in Mamba cache 'align' mode is currently enabled. Its support for Mamba layers is experimental. Please report any issues you may observe.
+INFO 07-04 19:53:32 [vllm.py:1093] Asynchronous scheduling is disabled.
+INFO 07-04 19:53:32 [kernel.py:286] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'])
+INFO 07-04 19:53:32 [vllm.py:1363] Block-diffusion (FLARE) models do not yet support FULL cudagraphs (the GDN denoise forward is prefill-classed). Overriding cudagraph_mode from FULL_AND_PIECEWISE to PIECEWISE.
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+INFO 07-04 19:53:37 [core.py:114] Initializing a V1 LLM engine (v0.1.dev200+g2665ed704) with config: model='/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16', speculative_config=None, tokenizer='/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=20260701, served_model_name=/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::qwen_gdn_attention_core', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::kda_attention', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [4096], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.PIECEWISE: 1>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, moe_backend='auto', linear_backend='auto')
+INFO 07-04 19:53:37 [parallel_state.py:1588] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.0.0.148:43747 backend=nccl
+INFO 07-04 19:53:38 [parallel_state.py:1923] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+INFO 07-04 19:53:38 [gpu_worker.py:360] Using V2 Model Runner
+INFO 07-04 19:53:39 [model_runner.py:281] Loading model from scratch...
+INFO 07-04 19:53:39 [cuda.py:542] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+INFO 07-04 19:53:39 [mm_encoder_attention.py:373] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+INFO 07-04 19:53:39 [qwen_gdn_linear_attn.py:228] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+INFO 07-04 19:53:39 [cuda.py:423] Using AttentionBackendEnum.TRITON_ATTN backend.
+INFO 07-04 19:53:39 [weight_utils.py:849] Filesystem type for checkpoints: EXT4. Checkpoint size: 17.98 GiB. Available RAM: 26.02 GiB.
+INFO 07-04 19:53:39 [weight_utils.py:872] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:00<00:01,  1.75it/s]
+Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:01<00:01,  1.97it/s]
+Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:01<00:00,  2.04it/s]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:01<00:00,  2.31it/s]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:01<00:00,  2.17it/s]
+
+INFO 07-04 19:53:41 [default_loader.py:430] Loading weights took 1.87 seconds
+INFO 07-04 19:53:41 [model_runner.py:302] Model loading took 17.65 GiB and 2.919852 seconds
+WARNING 07-04 19:53:41 [qwen3_5_flare.py:252] FLARE block size 32 is not a multiple of the GDN chunk 64; commit boundaries will land mid-chunk and the fp32 boundary snapshot will not be a clean recurrent checkpoint. Set diffusion_config.canvas_length / VLLM_QWEN3_5_FLARE_BLOCK to a multiple of 64.
+WARNING 07-04 19:53:41 [qwen3_5_flare.py:375] Qwen3_5FlareModelState: model exposes no flare_gdn_route(); the route_i GROUND invariant is UNVERIFIED and assumed from VLLM_QWEN3_5_FLARE_ROUTE='route_i'. If the served forward is not the route_i FLARE forward, denoise/commit state discipline is invalid and this will not be caught here.
+INFO 07-04 19:53:41 [topk_topp_sampler.py:39] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+INFO 07-04 19:53:42 [interface.py:773] Setting attention block size to 528 tokens to ensure that attention page size is >= mamba page size.
+INFO 07-04 19:53:42 [interface.py:797] Padding mamba page size by 0.76% to ensure that mamba page size and attention page size are exactly equal.
+INFO 07-04 19:53:45 [backends.py:1089] Using cache directory: /home/mark/.cache/vllm/torch_compile_cache/e42ceaf619/rank_0_0/backbone for vLLM's torch.compile
+INFO 07-04 19:53:45 [backends.py:1148] Dynamo bytecode transform time: 2.48 s
+INFO 07-04 19:53:46 [backends.py:378] Cache the graph of compile range (1, 4096) for later use
+INFO 07-04 19:53:56 [backends.py:393] Compiling a graph for compile range (1, 4096) takes 11.41 s
+INFO 07-04 19:53:58 [decorators.py:708] saved AOT compiled function to /home/mark/.cache/vllm/torch_compile_cache/torch_aot_compile/9ac2660817a2938f6c73e7158cf1d9c452bf187bfc9dffaddf56d97b4045e4f7/rank_0_0/model
+INFO 07-04 19:53:58 [monitor.py:53] torch.compile took 15.41 s in total
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp_0uerjb8/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp_0uerjb8/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpw9pmxzjq/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpw9pmxzjq/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpg18t3vs8/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpg18t3vs8/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp7v9vr_4j/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp7v9vr_4j/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp3bt0z48b/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp3bt0z48b/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmprykirmn1/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmprykirmn1/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpj_klqn1a/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpj_klqn1a/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+INFO 07-04 19:54:29 [monitor.py:81] Initial profiling/warmup run took 31.17 s
+INFO 07-04 19:54:29 [gpu_worker.py:538] Available KV cache memory: 7.31 GiB
+INFO 07-04 19:54:29 [kv_cache_utils.py:2146] GPU KV cache size: 132,534 tokens
+INFO 07-04 19:54:29 [kv_cache_utils.py:2147] Maximum concurrency for 4,096 tokens per request: 32.36x
+INFO 07-04 19:54:30 [qwen_triton_warmup.py:364] Warming up Qwen Triton kernels for model_type=qwen3_5_text.
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp_jcebwas/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp_jcebwas/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp_3kokk_x/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp_3kokk_x/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp039h2n8_/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp039h2n8_/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp55vv38k7/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp55vv38k7/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpkr2w516g/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpkr2w516g/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp2s6j5lez/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp2s6j5lez/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp8ddgbuuf/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp8ddgbuuf/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+INFO 07-04 19:54:31 [deep_gemm.py:175] deep_gemm not found in site-packages, trying vendored vllm.third_party.deep_gemm
+INFO 07-04 19:54:31 [deep_gemm.py:202] DeepGEMM PDL enabled on vllm.third_party.deep_gemm.
+INFO 07-04 19:54:31 [kernel_warmup.py:177] Using FlashInfer autotune cache file: /home/mark/.cache/vllm/flashinfer_autotune_cache/0.6.13/120f/1f781bb2fc9eec09c414c047afd663fa5feaaefa634b8d420d6890d0ad60f7a7/autotune_configs.json
+2026-07-04 19:54:31,561 - INFO - autotuner.py:651 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp5cdhho5n/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp5cdhho5n/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpyb_zbkfa/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpyb_zbkfa/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+2026-07-04 19:54:32,263 - INFO - autotuner.py:674 - flashinfer.jit: [Autotuner]: Autotuning process ends
+WARNING 07-04 19:54:32 [kernel_warmup.py:206] No FlashInfer autotune cache entries found.Falling back to default tactics.
+INFO 07-04 19:54:32 [cutedsl_warmup.py:97] Skipping CuTeDSL warmup because no compile units were requested.
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/16 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):  19%|█▉        | 3/16 [00:00<00:00, 22.52it/s]Capturing CUDA graphs (PIECEWISE):  38%|███▊      | 6/16 [00:00<00:00, 24.60it/s]Capturing CUDA graphs (PIECEWISE):  62%|██████▎   | 10/16 [00:00<00:00, 28.40it/s]Capturing CUDA graphs (PIECEWISE):  94%|█████████▍| 15/16 [00:00<00:00, 33.62it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 16/16 [00:00<00:00, 31.39it/s]
+INFO 07-04 19:54:33 [model_runner.py:721] Graph capturing finished in 1 secs, took 0.22 GiB
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmphk8thlmf/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmphk8thlmf/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpp7vtjf1f/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpp7vtjf1f/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpg15ss0jl/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpg15ss0jl/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpyhrou_8k/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpyhrou_8k/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmppld5w47z/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmppld5w47z/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpf16u9q18/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpf16u9q18/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmph9ggjnv8/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmph9ggjnv8/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpjcfufcw2/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpjcfufcw2/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpdpe4wv51/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpdpe4wv51/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpr352v2dp/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpr352v2dp/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmplbrqh9ad/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmplbrqh9ad/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpng4a6ffa/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpng4a6ffa/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpnsw9mb7j/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpnsw9mb7j/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpjiouf__2/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpjiouf__2/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpjkiw1jcr/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpjkiw1jcr/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpv4hswvee/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpv4hswvee/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpssg8gciw/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpssg8gciw/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+INFO 07-04 19:54:35 [jit_monitor.py:72] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+INFO 07-04 19:54:36 [core.py:337] init engine (profile, create kv cache, warmup model) took 53.96 s (compilation: 15.41 s)
+[bg] CONFIG=P booted boot_s=63.9 enforce_eager=False cudagraph=PIECEWISE apc=True max_num_seqs=8 bidir=1
+[bg] gate1_invariance: turns=[149, 157, 151, 183, 150, 153, 155, 167] prompt_lens=[522, 530, 589, 593, 627, 641, 679, 708] n_ref=[40, 40, 51, 34, 42, 66, 39, 40]
+INFO 07-04 19:54:36 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 255.25it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]WARNING 07-04 19:54:36 [jit_monitor.py:128] Triton kernel JIT compilation during inference: preprocess_mamba_align_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp28gvp9cx/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp28gvp9cx/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+WARNING 07-04 19:54:36 [jit_monitor.py:128] Triton kernel JIT compilation during inference: precopy_mamba_align_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpb24t243d/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpb24t243d/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+WARNING 07-04 19:54:36 [jit_monitor.py:128] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+WARNING 07-04 19:54:36 [jit_monitor.py:128] Triton kernel JIT compilation during inference: postprocess_mamba_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpgtstb1qh/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpgtstb1qh/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+WARNING 07-04 19:54:37 [jit_monitor.py:128] Triton kernel JIT compilation during inference: _causal_conv1d_update_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp1x37miez/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp1x37miez/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+WARNING 07-04 19:54:37 [jit_monitor.py:128] Triton kernel JIT compilation during inference: fused_recurrent_gated_delta_rule_packed_decode_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmpi8r_bnfi/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmpi8r_bnfi/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+WARNING 07-04 19:54:38 [jit_monitor.py:128] Triton kernel JIT compilation during inference: reduce_segments. This causes a latency spike; consider extending warmup to cover this shape/config.
+In file included from /home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/Python.h:12,
+                 from /tmp/tmp0ip2m_b8/__triton_launcher.c:7:
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/include/python3.12/pyconfig.h:1877:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1877 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/mark/qwen_diffusion/.venv-vllm-p2-main/lib/python3.12/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmp0ip2m_b8/__triton_launcher.c:2:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.22s/it, est. speed input: 235.53 toks/s, output: 18.05 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.22s/it, est. speed input: 235.53 toks/s, output: 18.05 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.22s/it, est. speed input: 235.53 toks/s, output: 18.05 toks/s]
+INFO 07-04 19:54:38 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3855.06it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.30it/s, est. speed input: 1221.28 toks/s, output: 92.17 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.30it/s, est. speed input: 1221.28 toks/s, output: 92.17 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.30it/s, est. speed input: 1221.28 toks/s, output: 92.17 toks/s]
+INFO 07-04 19:54:38 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4675.92it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.71it/s, est. speed input: 1008.38 toks/s, output: 87.31 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.71it/s, est. speed input: 1008.38 toks/s, output: 87.31 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.71it/s, est. speed input: 1008.38 toks/s, output: 87.31 toks/s]
+INFO 07-04 19:54:39 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4391.94it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s, est. speed input: 1418.67 toks/s, output: 81.34 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s, est. speed input: 1418.67 toks/s, output: 81.34 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s, est. speed input: 1418.67 toks/s, output: 81.34 toks/s]
+INFO 07-04 19:54:39 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4364.52it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.05it/s, est. speed input: 1285.74 toks/s, output: 86.12 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.05it/s, est. speed input: 1285.74 toks/s, output: 86.12 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.05it/s, est. speed input: 1285.74 toks/s, output: 86.12 toks/s]
+INFO 07-04 19:54:40 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4337.44it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.30it/s, est. speed input: 835.79 toks/s, output: 86.06 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.30it/s, est. speed input: 835.79 toks/s, output: 86.06 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.30it/s, est. speed input: 835.79 toks/s, output: 86.06 toks/s]
+INFO 07-04 19:54:41 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4202.71it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.18it/s, est. speed input: 1478.16 toks/s, output: 84.90 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.18it/s, est. speed input: 1478.16 toks/s, output: 84.90 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.18it/s, est. speed input: 1478.16 toks/s, output: 84.90 toks/s]
+INFO 07-04 19:54:41 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4485.89it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.04it/s, est. speed input: 1442.79 toks/s, output: 81.51 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.04it/s, est. speed input: 1442.79 toks/s, output: 81.51 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.04it/s, est. speed input: 1442.79 toks/s, output: 81.51 toks/s]
+INFO 07-04 19:54:42 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/8 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 8/8 [00:00<00:00, 9155.37it/s]
+Processed prompts:   0%|          | 0/8 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  12%|█▎        | 1/8 [00:00<00:06,  1.07it/s, est. speed input: 635.78 toks/s, output: 36.45 toks/s]Processed prompts:  75%|███████▌  | 6/8 [00:01<00:00,  7.53it/s, est. speed input: 3529.05 toks/s, output: 226.65 toks/s]Processed prompts: 100%|██████████| 8/8 [00:01<00:00,  7.53it/s, est. speed input: 3739.06 toks/s, output: 269.20 toks/s]Processed prompts: 100%|██████████| 8/8 [00:01<00:00,  6.12it/s, est. speed input: 3739.06 toks/s, output: 269.20 toks/s]
+[bg] gate1_invariance: byte_identical=8/8 ledger_maxreq=8 multi_decode_fwd=32 mixed_phase_fwd=13
+[bg] gate2_mixedlen: turns=[158, 176, 130, 110, 73, 70, 86, 127] prompt_lens=[467, 865, 1386, 1652, 1824, 2009, 2242, 2647] n_ref=[27, 103, 37, 44, 42, 25, 26, 28]
+INFO 07-04 19:54:43 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4981.36it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.23it/s, est. speed input: 1976.81 toks/s, output: 114.29 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.23it/s, est. speed input: 1976.81 toks/s, output: 114.29 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.23it/s, est. speed input: 1976.81 toks/s, output: 114.29 toks/s]
+INFO 07-04 19:54:43 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4466.78it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 575.24 toks/s, output: 68.50 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 575.24 toks/s, output: 68.50 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 575.24 toks/s, output: 68.50 toks/s]
+INFO 07-04 19:54:45 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3761.71it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.84it/s, est. speed input: 2547.84 toks/s, output: 71.69 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.84it/s, est. speed input: 2547.84 toks/s, output: 71.69 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.84it/s, est. speed input: 2547.84 toks/s, output: 71.69 toks/s]
+INFO 07-04 19:54:45 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3545.48it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.53it/s, est. speed input: 2522.52 toks/s, output: 67.19 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.53it/s, est. speed input: 2522.52 toks/s, output: 67.19 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.53it/s, est. speed input: 2522.52 toks/s, output: 67.19 toks/s]
+INFO 07-04 19:54:46 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3469.23it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2834.55 toks/s, output: 65.27 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2834.55 toks/s, output: 65.27 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2834.55 toks/s, output: 65.27 toks/s]
+INFO 07-04 19:54:47 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3492.34it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5180.55 toks/s, output: 59.31 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5180.55 toks/s, output: 59.31 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5180.55 toks/s, output: 59.31 toks/s]
+INFO 07-04 19:54:47 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3336.76it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s, est. speed input: 5403.24 toks/s, output: 62.66 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s, est. speed input: 5403.24 toks/s, output: 62.66 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s, est. speed input: 5403.24 toks/s, output: 62.66 toks/s]
+INFO 07-04 19:54:47 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3284.50it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.01it/s, est. speed input: 5330.50 toks/s, output: 56.39 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.01it/s, est. speed input: 5330.50 toks/s, output: 56.39 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.01it/s, est. speed input: 5330.50 toks/s, output: 56.39 toks/s]
+INFO 07-04 19:54:48 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/8 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 8/8 [00:00<00:00, 6060.04it/s]
+Processed prompts:   0%|          | 0/8 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  12%|█▎        | 1/8 [00:01<00:08,  1.18s/it, est. speed input: 394.20 toks/s, output: 22.79 toks/s]Processed prompts:  25%|██▌       | 2/8 [00:01<00:03,  1.81it/s, est. speed input: 1914.81 toks/s, output: 38.67 toks/s]Processed prompts:  50%|█████     | 4/8 [00:01<00:00,  4.09it/s, est. speed input: 5200.21 toks/s, output: 73.43 toks/s]Processed prompts:  75%|███████▌  | 6/8 [00:01<00:00,  5.44it/s, est. speed input: 6309.52 toks/s, output: 112.20 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.39it/s, est. speed input: 5099.38 toks/s, output: 128.54 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.39it/s, est. speed input: 5099.38 toks/s, output: 128.54 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.12it/s, est. speed input: 5099.38 toks/s, output: 128.54 toks/s]
+[bg] gate2_mixedlen: byte_identical=6/8 ledger_maxreq=8 multi_decode_fwd=32 mixed_phase_fwd=13
+INFO 07-04 19:54:50 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/4 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 4/4 [00:00<00:00, 6654.98it/s]
+Processed prompts:   0%|          | 0/4 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  25%|██▌       | 1/4 [00:00<00:01,  1.81it/s, est. speed input: 843.05 toks/s, output: 48.74 toks/s]Processed prompts:  50%|█████     | 2/4 [00:00<00:00,  2.59it/s, est. speed input: 2249.53 toks/s, output: 77.69 toks/s]Processed prompts:  75%|███████▌  | 3/4 [00:00<00:00,  3.70it/s, est. speed input: 3671.79 toks/s, output: 113.14 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  1.90it/s, est. speed input: 2330.93 toks/s, output: 112.55 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  1.90it/s, est. speed input: 2330.93 toks/s, output: 112.55 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  2.13it/s, est. speed input: 2330.93 toks/s, output: 112.55 toks/s]
+INFO 07-04 19:54:52 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/4 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 4/4 [00:00<00:00, 6660.27it/s]
+Processed prompts:   0%|          | 0/4 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  25%|██▌       | 1/4 [00:00<00:01,  1.82it/s, est. speed input: 848.58 toks/s, output: 49.06 toks/s]Processed prompts:  50%|█████     | 2/4 [00:00<00:00,  2.69it/s, est. speed input: 2322.12 toks/s, output: 80.20 toks/s]Processed prompts:  75%|███████▌  | 3/4 [00:00<00:00,  3.82it/s, est. speed input: 3778.18 toks/s, output: 116.42 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  1.91it/s, est. speed input: 2360.06 toks/s, output: 113.95 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  1.91it/s, est. speed input: 2360.06 toks/s, output: 113.95 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  2.16it/s, est. speed input: 2360.06 toks/s, output: 113.95 toks/s]
+INFO 07-04 19:54:54 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/4 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 4/4 [00:00<00:00, 5739.72it/s]
+Processed prompts:   0%|          | 0/4 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  25%|██▌       | 1/4 [00:00<00:01,  1.89it/s, est. speed input: 3073.13 toks/s, output: 47.25 toks/s]Processed prompts:  75%|███████▌  | 3/4 [00:00<00:00,  4.83it/s, est. speed input: 7222.35 toks/s, output: 118.47 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  2.02it/s, est. speed input: 3442.71 toks/s, output: 107.03 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  2.02it/s, est. speed input: 3442.71 toks/s, output: 107.03 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  2.28it/s, est. speed input: 3442.71 toks/s, output: 107.03 toks/s]
+INFO 07-04 19:54:56 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/4 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 4/4 [00:00<00:00, 6530.64it/s]
+Processed prompts:   0%|          | 0/4 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  25%|██▌       | 1/4 [00:00<00:01,  1.84it/s, est. speed input: 860.01 toks/s, output: 49.72 toks/s]Processed prompts:  50%|█████     | 2/4 [00:00<00:00,  2.70it/s, est. speed input: 2339.41 toks/s, output: 80.80 toks/s]Processed prompts:  75%|███████▌  | 3/4 [00:00<00:00,  3.85it/s, est. speed input: 3806.29 toks/s, output: 117.28 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  1.92it/s, est. speed input: 2368.63 toks/s, output: 114.37 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  1.92it/s, est. speed input: 2368.63 toks/s, output: 114.37 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  2.17it/s, est. speed input: 2368.63 toks/s, output: 114.37 toks/s]
+INFO 07-04 19:54:58 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/4 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 4/4 [00:00<00:00, 6633.93it/s]
+Processed prompts:   0%|          | 0/4 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  25%|██▌       | 1/4 [00:00<00:01,  1.84it/s, est. speed input: 859.77 toks/s, output: 49.71 toks/s]Processed prompts:  50%|█████     | 2/4 [00:00<00:00,  2.71it/s, est. speed input: 2342.19 toks/s, output: 80.90 toks/s]Processed prompts:  75%|███████▌  | 3/4 [00:00<00:00,  3.85it/s, est. speed input: 3810.30 toks/s, output: 117.41 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  1.92it/s, est. speed input: 2372.26 toks/s, output: 114.54 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  1.92it/s, est. speed input: 2372.26 toks/s, output: 114.54 toks/s]Processed prompts: 100%|██████████| 4/4 [00:01<00:00,  2.17it/s, est. speed input: 2372.26 toks/s, output: 114.54 toks/s]
+INFO 07-04 19:55:00 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/4 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 4/4 [00:00<00:00, 5645.09it/s]
+Processed prompts:   0%|          | 0/4 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  25%|██▌       | 1/4 [00:00<00:01,  1.78it/s, est. speed input: 2896.11 toks/s, output: 44.53 toks/s]Processed prompts:  75%|███████▌  | 3/4 [00:00<00:00,  4.82it/s, est. speed input: 6515.98 toks/s, output: 119.39 toks/s]Processed prompts: 100%|██████████| 4/4 [00:00<00:00,  4.82it/s, est. speed input: 8824.97 toks/s, output: 163.92 toks/s]Processed prompts: 100%|██████████| 4/4 [00:00<00:00,  5.37it/s, est. speed input: 8824.97 toks/s, output: 163.92 toks/s]
+[bg] gate2 discriminator: [{"global_turn": 176, "companions_1": [158, 130, 110], "companions_2": [0, 1, 2], "batch_determinism_same_batch_twice": false, "A_out_batch1_eq_batch2": false, "A_batch1_eq_bs1": false, "A_batch2_eq_bs1": false, "note": "companion/shape dependent; adjudicate via gate3 isolation + near-tie value-token class (see gate2.jsonl exact_arguments)"}, {"global_turn": 130, "companions_1": [158, 176, 110], "companions_2": [0, 1, 2], "batch_determinism_same_batch_twice": true, "A_out_batch1_eq_batch2": true, "A_batch1_eq_bs1": false, "A_batch2_eq_bs1": false, "note": "companion/shape dependent; adjudicate via gate3 isolation + near-tie value-token class (see gate2.jsonl exact_arguments)"}]
+INFO 07-04 19:55:00 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/2 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 2/2 [00:00<00:00, 6477.69it/s]
+Processed prompts:   0%|          | 0/2 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  50%|█████     | 1/2 [00:00<00:00,  1.36it/s, est. speed input: 711.02 toks/s, output: 54.48 toks/s]Processed prompts: 100%|██████████| 2/2 [00:00<00:00,  1.36it/s, est. speed input: 1432.77 toks/s, output: 108.96 toks/s]Processed prompts: 100%|██████████| 2/2 [00:00<00:00,  2.72it/s, est. speed input: 1432.77 toks/s, output: 108.96 toks/s]
+[bg] gate3_2req: probed=25 maxbatch=2 pure_denoise=20(multi=20) advance0=20/20 mixed=5 cross_anchor=0 cross_band_FP=3 errs=0 PASS=True
+INFO 07-04 19:55:01 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/8 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 8/8 [00:00<00:00, 6457.74it/s]
+Processed prompts:   0%|          | 0/8 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  12%|█▎        | 1/8 [00:01<00:12,  1.76s/it, est. speed input: 264.62 toks/s, output: 15.30 toks/s]Processed prompts:  25%|██▌       | 2/8 [00:02<00:05,  1.13it/s, est. speed input: 1213.76 toks/s, output: 24.51 toks/s]Processed prompts:  50%|█████     | 4/8 [00:02<00:01,  2.39it/s, est. speed input: 3182.01 toks/s, output: 44.93 toks/s]Processed prompts:  62%|██████▎   | 5/8 [00:02<00:01,  2.94it/s, est. speed input: 3523.81 toks/s, output: 56.78 toks/s]Processed prompts:  75%|███████▌  | 6/8 [00:02<00:00,  3.07it/s, est. speed input: 3748.43 toks/s, output: 66.66 toks/s]Processed prompts: 100%|██████████| 8/8 [00:04<00:00,  2.10it/s, est. speed input: 3215.32 toks/s, output: 81.05 toks/s]Processed prompts: 100%|██████████| 8/8 [00:04<00:00,  2.10it/s, est. speed input: 3215.32 toks/s, output: 81.05 toks/s]Processed prompts: 100%|██████████| 8/8 [00:04<00:00,  1.96it/s, est. speed input: 3215.32 toks/s, output: 81.05 toks/s]
+[bg] gate3_gate2batch: probed=89 maxbatch=8 pure_denoise=70(multi=18) advance0=70/70 mixed=19 cross_anchor=0 cross_band_FP=15 errs=0 PASS=True
+INFO 07-04 19:55:05 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/8 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 8/8 [00:00<00:00, 9315.50it/s]
+Processed prompts:   0%|          | 0/8 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  12%|█▎        | 1/8 [00:00<00:06,  1.06it/s, est. speed input: 627.14 toks/s, output: 35.96 toks/s]Processed prompts:  75%|███████▌  | 6/8 [00:01<00:00,  7.45it/s, est. speed input: 3490.01 toks/s, output: 224.15 toks/s]Processed prompts: 100%|██████████| 8/8 [00:01<00:00,  7.45it/s, est. speed input: 3707.83 toks/s, output: 266.96 toks/s]Processed prompts: 100%|██████████| 8/8 [00:01<00:00,  6.07it/s, est. speed input: 3707.83 toks/s, output: 266.96 toks/s]
+INFO 07-04 19:55:06 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/8 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 8/8 [00:00<00:00, 9401.63it/s]
+Processed prompts:   0%|          | 0/8 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  12%|█▎        | 1/8 [00:00<00:06,  1.04it/s, est. speed input: 618.63 toks/s, output: 35.47 toks/s]Processed prompts:  75%|███████▌  | 6/8 [00:01<00:00,  7.36it/s, est. speed input: 3446.86 toks/s, output: 221.37 toks/s]Processed prompts: 100%|██████████| 8/8 [00:01<00:00,  7.36it/s, est. speed input: 3670.39 toks/s, output: 264.26 toks/s]Processed prompts: 100%|██████████| 8/8 [00:01<00:00,  6.01it/s, est. speed input: 3670.39 toks/s, output: 264.26 toks/s]
+[bg] gate5: byte_reproducible=8/8 bounded_all=True valid_all=True
+INFO 07-04 19:55:08 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4899.89it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.20it/s, est. speed input: 1963.34 toks/s, output: 113.51 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.20it/s, est. speed input: 1963.34 toks/s, output: 113.51 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.20it/s, est. speed input: 1963.34 toks/s, output: 113.51 toks/s]
+INFO 07-04 19:55:08 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4686.37it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 576.17 toks/s, output: 68.61 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 576.17 toks/s, output: 68.61 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 576.17 toks/s, output: 68.61 toks/s]
+INFO 07-04 19:55:10 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3880.02it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.84it/s, est. speed input: 2543.50 toks/s, output: 71.57 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.84it/s, est. speed input: 2543.50 toks/s, output: 71.57 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s, est. speed input: 2543.50 toks/s, output: 71.57 toks/s]
+INFO 07-04 19:55:10 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3489.44it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2536.57 toks/s, output: 67.56 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2536.57 toks/s, output: 67.56 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2536.57 toks/s, output: 67.56 toks/s]
+INFO 07-04 19:55:11 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3387.97it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2835.04 toks/s, output: 65.28 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2835.04 toks/s, output: 65.28 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2835.04 toks/s, output: 65.28 toks/s]
+INFO 07-04 19:55:11 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3498.17it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5186.52 toks/s, output: 59.38 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5186.52 toks/s, output: 59.38 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5186.52 toks/s, output: 59.38 toks/s]
+INFO 07-04 19:55:12 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3253.92it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5386.98 toks/s, output: 62.47 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5386.98 toks/s, output: 62.47 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5386.98 toks/s, output: 62.47 toks/s]
+INFO 07-04 19:55:12 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3113.81it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5335.49 toks/s, output: 56.44 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5335.49 toks/s, output: 56.44 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5335.49 toks/s, output: 56.44 toks/s]
+INFO 07-04 19:55:13 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 5011.12it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.22it/s, est. speed input: 1971.54 toks/s, output: 113.98 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.22it/s, est. speed input: 1971.54 toks/s, output: 113.98 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.22it/s, est. speed input: 1971.54 toks/s, output: 113.98 toks/s]
+INFO 07-04 19:55:13 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4593.98it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 575.82 toks/s, output: 68.57 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 575.82 toks/s, output: 68.57 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it, est. speed input: 575.82 toks/s, output: 68.57 toks/s]
+INFO 07-04 19:55:14 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3855.06it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s, est. speed input: 2536.39 toks/s, output: 71.37 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s, est. speed input: 2536.39 toks/s, output: 71.37 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s, est. speed input: 2536.39 toks/s, output: 71.37 toks/s]
+INFO 07-04 19:55:15 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3506.94it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2541.70 toks/s, output: 67.70 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2541.70 toks/s, output: 67.70 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2541.70 toks/s, output: 67.70 toks/s]
+INFO 07-04 19:55:16 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3524.63it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2820.03 toks/s, output: 64.93 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2820.03 toks/s, output: 64.93 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2820.03 toks/s, output: 64.93 toks/s]
+INFO 07-04 19:55:16 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3382.50it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5190.59 toks/s, output: 59.42 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5190.59 toks/s, output: 59.42 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.58it/s, est. speed input: 5190.59 toks/s, output: 59.42 toks/s]
+INFO 07-04 19:55:17 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3211.57it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5391.84 toks/s, output: 62.53 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5391.84 toks/s, output: 62.53 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5391.84 toks/s, output: 62.53 toks/s]
+INFO 07-04 19:55:17 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3175.10it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5339.97 toks/s, output: 56.49 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5339.97 toks/s, output: 56.49 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5339.97 toks/s, output: 56.49 toks/s]
+INFO 07-04 19:55:18 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 5329.48it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.19it/s, est. speed input: 1954.69 toks/s, output: 113.01 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.19it/s, est. speed input: 1954.69 toks/s, output: 113.01 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  4.18it/s, est. speed input: 1954.69 toks/s, output: 113.01 toks/s]
+INFO 07-04 19:55:18 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 4223.87it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.51s/it, est. speed input: 574.02 toks/s, output: 68.35 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.51s/it, est. speed input: 574.02 toks/s, output: 68.35 toks/s]Processed prompts: 100%|██████████| 1/1 [00:01<00:00,  1.51s/it, est. speed input: 574.02 toks/s, output: 68.35 toks/s]
+INFO 07-04 19:55:19 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3695.42it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s, est. speed input: 2539.00 toks/s, output: 71.44 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s, est. speed input: 2539.00 toks/s, output: 71.44 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s, est. speed input: 2539.00 toks/s, output: 71.44 toks/s]
+INFO 07-04 19:55:20 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3477.86it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2538.10 toks/s, output: 67.60 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2538.10 toks/s, output: 67.60 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.54it/s, est. speed input: 2538.10 toks/s, output: 67.60 toks/s]
+INFO 07-04 19:55:21 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3536.51it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2828.89 toks/s, output: 65.14 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2828.89 toks/s, output: 65.14 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s, est. speed input: 2828.89 toks/s, output: 65.14 toks/s]
+INFO 07-04 19:55:21 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3469.23it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.61it/s, est. speed input: 5235.44 toks/s, output: 59.94 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.61it/s, est. speed input: 5235.44 toks/s, output: 59.94 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.61it/s, est. speed input: 5235.44 toks/s, output: 59.94 toks/s]
+INFO 07-04 19:55:22 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3486.54it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5384.36 toks/s, output: 62.44 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5384.36 toks/s, output: 62.44 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s, est. speed input: 5384.36 toks/s, output: 62.44 toks/s]
+INFO 07-04 19:55:22 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 3182.32it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5340.35 toks/s, output: 56.49 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5340.35 toks/s, output: 56.49 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s, est. speed input: 5340.35 toks/s, output: 56.49 toks/s]
+INFO 07-04 19:55:22 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/8 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 8/8 [00:00<00:00, 6442.86it/s]
+Processed prompts:   0%|          | 0/8 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  12%|█▎        | 1/8 [00:01<00:08,  1.19s/it, est. speed input: 392.73 toks/s, output: 22.71 toks/s]Processed prompts:  25%|██▌       | 2/8 [00:01<00:03,  1.81it/s, est. speed input: 1907.93 toks/s, output: 38.53 toks/s]Processed prompts:  50%|█████     | 4/8 [00:01<00:00,  4.05it/s, est. speed input: 5164.09 toks/s, output: 72.92 toks/s]Processed prompts:  75%|███████▌  | 6/8 [00:01<00:00,  5.38it/s, est. speed input: 6258.46 toks/s, output: 111.30 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.38it/s, est. speed input: 5070.84 toks/s, output: 127.82 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.38it/s, est. speed input: 5070.84 toks/s, output: 127.82 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.10it/s, est. speed input: 5070.84 toks/s, output: 127.82 toks/s]
+INFO 07-04 19:55:25 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/8 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 8/8 [00:00<00:00, 6455.26it/s]
+Processed prompts:   0%|          | 0/8 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  12%|█▎        | 1/8 [00:01<00:08,  1.20s/it, est. speed input: 388.21 toks/s, output: 22.44 toks/s]Processed prompts:  25%|██▌       | 2/8 [00:01<00:03,  1.78it/s, est. speed input: 1881.53 toks/s, output: 38.00 toks/s]Processed prompts:  50%|█████     | 4/8 [00:01<00:00,  4.01it/s, est. speed input: 5102.20 toks/s, output: 72.05 toks/s]Processed prompts:  75%|███████▌  | 6/8 [00:01<00:00,  5.32it/s, est. speed input: 6187.65 toks/s, output: 110.04 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.78it/s, est. speed input: 5368.54 toks/s, output: 131.63 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.78it/s, est. speed input: 5368.54 toks/s, output: 131.63 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.28it/s, est. speed input: 5368.54 toks/s, output: 131.63 toks/s]
+INFO 07-04 19:55:28 [block_pool.py:685] Successfully reset prefix cache
+Rendering prompts:   0%|          | 0/8 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 8/8 [00:00<00:00, 6653.66it/s]
+Processed prompts:   0%|          | 0/8 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:  12%|█▎        | 1/8 [00:01<00:08,  1.20s/it, est. speed input: 387.75 toks/s, output: 22.42 toks/s]Processed prompts:  25%|██▌       | 2/8 [00:01<00:03,  1.78it/s, est. speed input: 1878.67 toks/s, output: 37.94 toks/s]Processed prompts:  50%|█████     | 4/8 [00:01<00:01,  3.99it/s, est. speed input: 5087.85 toks/s, output: 71.84 toks/s]Processed prompts:  75%|███████▌  | 6/8 [00:01<00:00,  5.31it/s, est. speed input: 6174.89 toks/s, output: 109.81 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.36it/s, est. speed input: 5024.69 toks/s, output: 126.65 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.36it/s, est. speed input: 5024.69 toks/s, output: 126.65 toks/s]Processed prompts: 100%|██████████| 8/8 [00:02<00:00,  3.07it/s, est. speed input: 5024.69 toks/s, output: 126.65 toks/s]
+[bg] gate6 determinism: bs1_det_all=True bs8_det_all=False bs1_nondet=[] bs8_nondet=[176]
+[bg] gate4 audits: {"gate": "gate4_audits", "config": "P", "gate1_batched": {"n": 8, "all_proj0": true, "all_verify_ok": true, "any_missing_stats": false}, "gate2_batched": {"n": 8, "all_proj0": true, "all_verify_ok": true, "any_missing_stats": false}, "gate5_batched": {"n": 8, "all_proj0": true, "all_verify_ok": true, "any_missing_stats": false}, "PASS_audits": true}
+[bg] OVERALL P: {"config": "P", "gate1_invariance_PASS": true, "gate1_byte_identical": "8/8", "gate1_discriminator": [], "gate2_mixedlen_PASS": false, "gate2_byte_identical": "6/8", "gate2_discriminator": [{"global_turn": 176, "companions_1": [158, 130, 110], "companions_2": [0, 1, 2], "batch_determinism_same_batch_twice": false, "A_out_batch1_eq_batch2": false, "A_batch1_eq_bs1": false, "A_batch2_eq_bs1": false, "note": "companion/shape dependent; adjudicate via gate3 isolation + near-tie value-token class (see gate2.jsonl exact_arguments)"}, {"global_turn": 130, "companions_1": [158, 176, 110], "companions_2": [0, 1, 2], "batch_determinism_same_batch_twice": true, "A_out_batch1_eq_batch2": true, "A_batch1_eq_bs1": false, "A_batch2_eq_bs1": false, "note": "companion/shape dependent; adjudicate via gate3 isolation + near-tie value-token class (see gate2.jsonl exact_arguments)"}], "gate3_no_cross_write_PASS": true, "gate3_pure_denoise_advance0_PASS": true, "gate3_2req": {"name": "gate3_2req", "turns": [149, 157], "total_forwards_probed": 25, "n_errors": 0, "error_examples": [], "max_batch_probed": 2, "multireq_forwards": 25, "pure_denoise_forwards": 20, "pure_denoise_multireq_forwards": 20, "pure_denoise_cache_identical": 20, "pure_denoise_multireq_cache_identical": 20, "mixed_forwards": 5, "cross_write_anchor_forwards": 0, "cross_write_band_forwards_FP": 3, "PASS_no_cross_write": true, "PASS_pure_denoise_advance0": true, "cross_write_anchor_examples": []}, "gate3_gate2batch": {"name": "gate3_gate2batch", "turns": [158, 176, 130, 110, 73, 70, 86, 127], "total_forwards_probed": 89, "n_errors": 0, "error_examples": [], "max_batch_probed": 8, "multireq_forwards": 34, "pure_denoise_forwards": 70, "pure_denoise_multireq_forwards": 18, "pure_denoise_cache_identical": 70, "pure_denoise_multireq_cache_identical": 18, "mixed_forwards": 19, "cross_write_anchor_forwards": 0, "cross_write_band_forwards_FP": 15, "PASS_no_cross_write": true, "PASS_pure_denoise_advance0": true, "cross_write_anchor_examples": []}, "gate4_audits_PASS": true, "gate5_seeded_repro_PASS": true, "gate6_bs1_deterministic_all": true, "gate6_bs8_deterministic_all": false, "gate6_bs1_nondet_turns": [], "gate6_bs8_nondet_turns": [176], "gate1_ledger": {"forwards": 44, "num_reqs_max": 8, "num_reqs_hist": {"1": 11, "2": 5, "3": 1, "4": 2, "5": 1, "7": 1, "8": 23}, "num_decode_max": 8, "num_decode_hist": {"1": 12, "2": 5, "3": 1, "4": 2, "5": 1, "7": 2, "8": 21}, "mixed_phase_forwards": 13, "multi_req_forwards": 33, "multi_decode_forwards": 32}, "gate2_ledger": {"forwards": 88, "num_reqs_max": 8, "num_reqs_hist": {"1": 55, "2": 1, "3": 7, "4": 4, "5": 4, "6": 1, "7": 5, "8": 11}, "num_decode_max": 8, "num_decode_hist": {"1": 56, "2": 1, "3": 7, "4": 5, "5": 5, "6": 1, "7": 5, "8": 8}, "mixed_phase_forwards": 13, "multi_req_forwards": 33, "multi_decode_forwards": 32}}
+[bg] DONE
+[rank0]:[W704 19:55:31.098596517 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

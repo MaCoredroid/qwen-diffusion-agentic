@@ -1,0 +1,8 @@
+{"global_turn": 158, "source_family": "BFCL-AST", "prompt_len": 467, "n_ref": 27, "bs1_deterministic_x3": true, "bs8_deterministic_x3": true, "bs8_first_nondet_pos": null}
+{"global_turn": 176, "source_family": "API-Bank-Lv2", "prompt_len": 865, "n_ref": 103, "bs1_deterministic_x3": true, "bs8_deterministic_x3": false, "bs8_first_nondet_pos": 61}
+{"global_turn": 130, "source_family": "BFCL-multi_turn", "prompt_len": 1386, "n_ref": 37, "bs1_deterministic_x3": true, "bs8_deterministic_x3": true, "bs8_first_nondet_pos": null}
+{"global_turn": 110, "source_family": "BFCL-multi_turn", "prompt_len": 1652, "n_ref": 44, "bs1_deterministic_x3": true, "bs8_deterministic_x3": true, "bs8_first_nondet_pos": null}
+{"global_turn": 73, "source_family": "BFCL-multi_turn", "prompt_len": 1824, "n_ref": 42, "bs1_deterministic_x3": true, "bs8_deterministic_x3": true, "bs8_first_nondet_pos": null}
+{"global_turn": 70, "source_family": "BFCL-multi_turn", "prompt_len": 2009, "n_ref": 25, "bs1_deterministic_x3": true, "bs8_deterministic_x3": true, "bs8_first_nondet_pos": null}
+{"global_turn": 86, "source_family": "BFCL-multi_turn", "prompt_len": 2242, "n_ref": 26, "bs1_deterministic_x3": true, "bs8_deterministic_x3": true, "bs8_first_nondet_pos": null}
+{"global_turn": 127, "source_family": "BFCL-multi_turn", "prompt_len": 2647, "n_ref": 28, "bs1_deterministic_x3": true, "bs8_deterministic_x3": true, "bs8_first_nondet_pos": null}
