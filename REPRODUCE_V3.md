@@ -685,6 +685,17 @@ Each entry is a real failure that cost real time; documenting them is the point.
    gap is what **S2 consistency-distillation + entropy-gated adaptive K** must erase. Values stay K=1
    forever (chain rule; measured top-1 conditional 0.238). **Unexecuted; feasibility unproven.**
    (`goal_5x_rollout_b1.md §L3`, `l1_content_mix_result.md §4`.)
+   **S2 pilot (the cheapest decisive de-risk of this lever): DESIGNED, BLOCKED, UNRUN**
+   (`s2_pilot_design.md` @ 9ce9445, `s2_pilot_result.md`). Pre-registered PASS = `tok/fwd ≥ 2.0` at held
+   26/30 (net-loss ≤ 2, McNemar p ≥ 0.05) ∧ retention ≥ 13/20 ∧ tool-call 10/10 ∧ audits clean; KILL =
+   any of those fail ⇒ K is a wall. Cannot yet be adjudicated **PASS or KILL** — two blockers: (1) the
+   trained adapter `A_S2` does not exist because the self-trajectory corpus is only **66 raw / 31
+   audit-clean**, below the **700-trajectory yield floor** (data step stalled, gen loop not alive); (2)
+   two eval scripts are missing — `eval_flare_freetext_cad.py` (the new CAD sampler, must be authored +
+   pass its byte-exact K=1 baseline test) and `export_qwen35_9b_fastdllm_vllm.py` (absent; no file
+   matches its pinned sha). Preconditions verified good: 3 pinned eval-script sha256 match §2.4/§6, gate
+   set = 30 prompts, KILL-0 base half PASSES (`mtplus1-merged` `mask_token_id=248077`, `bd_size=32`),
+   anchor intact. **The 5×-vs-AR claim is UNRESOLVED — not funded, not retired.**
 
 2. **L2 — per-forward parity (deterministic engineering).** Reasoning per-forward 25.8 ms → ~13 ms
    via #37 `fused_recurrent` GDN for 1-token probes + killing residual host overhead. Buys at most

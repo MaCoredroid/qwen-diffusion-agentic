@@ -57,6 +57,26 @@ entropy-gated adaptive K)** raises reasoning K above 1. No-regression evidence: 
 (lone break gt44 fp-residue), read-only fingerprint **6/6 bit-identical**, determinism **2× identical**,
 value_projection **0**.
 
+## ☐ L3 / S2 PILOT STATUS — DESIGNED, BLOCKED, UNRUN (2026-07-05, `s2_pilot_result.md`)
+The cheapest decisive test of the L3 bet is designed and pre-registered (`s2_pilot_design.md` @ 9ce9445:
+reasoning-span K 1→≥2 at held GSM8K, entropy-gated CAD sampler, PASS = tok/fwd ≥2.0 at held acc / KILL =
+K=2 loses >2 items or retention/tool-call damaged). **It has not run and cannot yet be adjudicated —
+neither PASS nor KILL.** Two hard blockers:
+- **No adapter.** `A_S2` (`runs/s2_pilot/Apilot_step400_seed90101`) does not exist. The self-trajectory
+  corpus is **66 raw / 31 audit-clean**, below even the **700-trajectory yield floor** — training cannot
+  start. The gen loop is not alive (GPU idle 2.2 GB, `gen_iter.log` frozen at idx 65). The data step must
+  be restarted.
+- **Two eval scripts missing.** `scripts/eval_flare_freetext_cad.py` (the new CAD sampler) must be
+  authored + pass its byte-exact K=1 baseline test; `export_qwen35_9b_fastdllm_vllm.py` is absent (no file
+  matches its pinned sha) — blocks only an engine cross-check, not the HF-stack primary battery.
+
+**Consequence for the goal:** the **5×-vs-AR claim remains UNRESOLVED** — not funded (needs a PASS), not
+retired (a KILL is a *measured* K-wall, which we have not measured). Verified-good preconditions: spec
+HEAD 9ce9445; the 3 pinned eval-script sha256 match §6; gate set = 30 prompts; KILL-0 base half PASSES
+(`mtplus1-merged` `mask_token_id=248077`, `bd_size=32`); anchor intact (0.862 tok/fwd K=1, 26/30). The
+honest speed story is unchanged: **0.36× vs AR-cudagraph, distance to 5× ≈ 14× entirely in the K factor**,
+and whether L3 can move K above 1 is exactly what stays untested.
+
 ## The Amdahl accounting (why this is feasible)
 avg tok/fwd = 1 / (f_reason/K + f_value/1); grammar-forced tokens = 0 forwards (already live).
 - Tool-call eval content (f_value≈15%): K→∞ caps avg at 6.7; K=8 gives 3.9. Hard but not the target mix.
