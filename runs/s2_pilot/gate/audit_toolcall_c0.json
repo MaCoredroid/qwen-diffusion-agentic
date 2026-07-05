@@ -1,0 +1,27 @@
+{
+  "per_row_jsonl": "runs/s2_pilot/gate/audit_toolcall_c0_perrow.jsonl",
+  "rows": "runs/s2_pilot/gate/toolcall_c0/toolcall_c0/turns.jsonl",
+  "tokenizer": "models/qwen3.5-9b-fastdllm-mtplus1-merged",
+  "totals": {
+    "exact_args": 9,
+    "exact_rows_dependent_on_projected_values": 0,
+    "offset_source:no_projected_token_records": 10,
+    "parallel_commit_forced_tokens_counter": 0,
+    "projected_token_record_count": 0,
+    "projected_true_value_tokens_lower_bound": 0,
+    "projected_value_tokens_exact": 0,
+    "reported_model_value_tokens": 435,
+    "rows": 10,
+    "rows_with_projected_token_records": 0,
+    "rows_with_projected_true_value_tokens_lower_bound": 0,
+    "rows_with_projected_value_tokens_exact": 0,
+    "true_xml_value_tokens": 350,
+    "verification_mode": "no_projection_events",
+    "wave1_projected_tokens": 0,
+    "wave1_value_tokens_counter": 0,
+    "wave2_forced_tokens_counter": 0,
+    "zero_forward_rows": 0,
+    "zero_forward_rows_with_values": 0,
+    "zero_projected_value_tokens_verified": 1
+  }
+}

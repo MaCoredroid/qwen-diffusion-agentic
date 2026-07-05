@@ -1,0 +1,11 @@
+Running as unit: run-p3483147-i3489049.scope; invocation ID: 8cf67daa62fc4178861a1feeb75dddbc
+official=/home/mark/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a
+converted=/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-mtplus1-merged
+adapter=/home/mark/qwen_diffusion/runs/s2_pilot/Apilot_step400_seed90101
+output=/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-mtplus1-Apilot-vllm-bf16
+mapped_text_tensors=427 lora_targets=152 lora_scale=2
+wrote model.safetensors-00001-of-00004.safetensors tensors=14 elapsed_s=2.7
+wrote model.safetensors-00002-of-00004.safetensors tensors=53 elapsed_s=5.3
+wrote model.safetensors-00003-of-00004.safetensors tensors=63 elapsed_s=8.8
+wrote model.safetensors-00004-of-00004.safetensors tensors=645 elapsed_s=11.9
+done replacement_count=427 lora_merge_count=152

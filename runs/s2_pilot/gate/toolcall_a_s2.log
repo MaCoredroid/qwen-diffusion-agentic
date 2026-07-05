@@ -1,0 +1,42 @@
+Running as unit: run-p3480959-i3488950.scope; invocation ID: 760cf556f0df4d6ea78183481bbd0b70
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 234.01it/s]
+hybrid episode=0 turn=1/4 exact_args=1 valid=1 forwards=23 forced=19 value_tokens=13 wall=3.426s
+hybrid episode=0 turn=2/4 exact_args=0 valid=1 forwards=56 forced=19 value_tokens=47 wall=3.268s
+hybrid episode=0 turn=3/4 exact_args=1 valid=1 forwards=32 forced=18 value_tokens=22 wall=1.918s
+hybrid episode=0 turn=4/4 exact_args=1 valid=1 forwards=19 forced=18 value_tokens=13 wall=1.251s
+hybrid episode=1 turn=1/3 exact_args=1 valid=1 forwards=89 forced=21 value_tokens=80 wall=7.075s
+hybrid episode=1 turn=2/3 exact_args=1 valid=1 forwards=122 forced=17 value_tokens=113 wall=6.844s
+hybrid episode=1 turn=3/3 exact_args=1 valid=1 forwards=99 forced=18 value_tokens=88 wall=5.653s
+hybrid episode=2 turn=1/3 exact_args=1 valid=1 forwards=16 forced=20 value_tokens=11 wall=2.413s
+hybrid episode=2 turn=2/3 exact_args=1 valid=1 forwards=31 forced=19 value_tokens=26 wall=1.884s
+hybrid episode=2 turn=3/3 exact_args=1 valid=1 forwards=32 forced=22 value_tokens=22 wall=2.048s
+{
+  "episodes": 3,
+  "turns": 10,
+  "valid_tool_json": 10,
+  "valid_tool_call": 10,
+  "exact_tool_sequence": 10,
+  "exact_args": 9,
+  "schema_ok": 10,
+  "required_args_present": 10,
+  "episode_exact": 2,
+  "turn_wall_seconds_total": 35.77843952178955,
+  "sec_per_turn": 3.577843952178955,
+  "generated_tokens": 710,
+  "generated_tokens_per_turn": 71.0,
+  "denoise_forwards_total": 519.0,
+  "forwards_per_turn": 51.9,
+  "tokens_per_forward": 1.3680154142581888,
+  "hybrid_forced_grammar_tokens": 191,
+  "hybrid_model_value_tokens": 435,
+  "hybrid_model_structural_tokens": 84,
+  "hybrid_value_close_timing_tokens": 34,
+  "backend": "toolcall_a_s2",
+  "adapter": "runs/s2_pilot/Apilot_step400_seed90101",
+  "base_model": "models/qwen3.5-9b-fastdllm-mtplus1-merged",
+  "input_jsonl": "data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+  "episode_set_hash": "f0a92cd1dbc29f3991486908940860eb4ea1a4050a232286652ff4b4d5c85689",
+  "block_size": 32,
+  "grammar_topk": 256,
+  "sampler": "hybrid clean serving: truly-forced Qwen-native grammar tokens bulk-committed without denoise forwards; every non-forced/value token decoded sequentially with one denoise forward"
+}

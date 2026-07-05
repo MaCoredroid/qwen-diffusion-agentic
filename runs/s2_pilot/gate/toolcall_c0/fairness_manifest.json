@@ -1,0 +1,106 @@
+{
+  "input_jsonl": "data/toolcall_eval_native/flare_scaleup_native_58.jsonl",
+  "episode_count": 3,
+  "turn_count": 10,
+  "source_family_counts": {
+    "heldout_seed_multicall_clean": 3
+  },
+  "episodes": [
+    {
+      "episode_idx": 0,
+      "id": "heldout_seed_run1clean_0000",
+      "source": "heldout_seed_multicall_clean",
+      "source_family": null,
+      "source_dataset": null,
+      "source_license": null,
+      "source_row_idx": null,
+      "turns": 4,
+      "turn_user_message_count": 0,
+      "tools_hash": "c2a5dec05338c50f63a655436d0836502c651b514d0d23fbc841a741ba17211b",
+      "gold_hash": "ef6fbaa83ca81f543987126b5284450ed1e2b9209e26868e61ad7dfe936835fa"
+    },
+    {
+      "episode_idx": 1,
+      "id": "heldout_seed_run1clean_0001",
+      "source": "heldout_seed_multicall_clean",
+      "source_family": null,
+      "source_dataset": null,
+      "source_license": null,
+      "source_row_idx": null,
+      "turns": 3,
+      "turn_user_message_count": 0,
+      "tools_hash": "89cc247098de5f000332f2b867d063a433d76aa51564d6f6dd93939abac926a0",
+      "gold_hash": "1a1b3db9d75795b6437ed5e47e6456fbeadd760adb7f63c5ea8e4b580b846751"
+    },
+    {
+      "episode_idx": 2,
+      "id": "heldout_seed_run1clean_0002",
+      "source": "heldout_seed_multicall_clean",
+      "source_family": null,
+      "source_dataset": null,
+      "source_license": null,
+      "source_row_idx": null,
+      "turns": 3,
+      "turn_user_message_count": 0,
+      "tools_hash": "8c272ca91508ec92c988dcd642ca4bea8e1ce3db630b7d52e8b80838f53abd33",
+      "gold_hash": "bc2bb4525eea6855bda6cdf4de7b38d7c07a2a9d90a59e6f1ae633f5279cd038"
+    }
+  ],
+  "episode_set_hash": "f0a92cd1dbc29f3991486908940860eb4ea1a4050a232286652ff4b4d5c85689",
+  "prompt_tokenizer_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+  "chat_template_path": "/home/mark/shared/lumoFlyWheel_codex_fork/docker/chat_templates/qwen3-openai-codex.jinja",
+  "chat_template_sha256": "c166a05aaf5ad4b807a7c46497f92180e3df24e64d4b54d27fd26ec61bec38da",
+  "prompt_tokenizer_hash": "6a49d253d9fde317b4ecf2cd6b2699888bbe2220f933f4ca942c0260d6b29ccb",
+  "tool_close_token_ids": [
+    248059
+  ],
+  "stop_policy": {
+    "temperature": 0.0,
+    "stop_string": "</tool_call>",
+    "ar_include_stop_str_in_output": true,
+    "diffusion_stop_token_included": true,
+    "max_new_tokens": 384,
+    "turn_budget": "same_absolute_max_new_tokens"
+  },
+  "prompt_loop": {
+    "mode": "prefix_stable_incremental_completion_prompt",
+    "initial_prompt": "chat_template_with_tools_and_generation_prompt",
+    "followup_prompt": "previous_prompt_plus_sampled_assistant_plus_tool_response_plus_optional_next_user_plus_generation_prompt",
+    "tool_response_role": "user",
+    "next_user_role": "user",
+    "assistant_generation_prompt": "<|im_start|>assistant\n<think>\n\n</think>\n\n"
+  },
+  "ar": {
+    "backend": "vllm",
+    "model_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+    "served_model": "not_used_hybrid_clean",
+    "base_url": "not_used_hybrid_clean",
+    "dtype": "bf16",
+    "quant": "none",
+    "fr13_apc": true
+  },
+  "ar_guided": {
+    "backend": "vllm",
+    "model_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-vllm-bf16",
+    "served_model": "not_used_hybrid_clean",
+    "base_url": "not_used_hybrid_clean",
+    "dtype": "bf16",
+    "quant": "none",
+    "fr13_apc": true,
+    "structured_outputs": "regex_from_qwen_xml_tool_schema",
+    "constraint_scope": "one complete qwen-native XML tool call; allowed function names and schema properties from tools; values not gold-constrained"
+  },
+  "diffusion": {
+    "backend": "hf_route_i_flare",
+    "base_model": "models/qwen3.5-9b-fastdllm-mtplus1-merged",
+    "adapter": "/home/mark/qwen_diffusion/runs/s2_pilot/gate/__NO_ADAPTER__",
+    "merge_adapter": false,
+    "dtype": "bf16",
+    "quant": "none",
+    "decode": "hybrid_forced_grammar_bulk_seq_values",
+    "condition": "hybrid_forced_grammar_seq_values",
+    "structural_only_projection": true,
+    "block_size": 32,
+    "grammar_topk": 256
+  }
+}
