@@ -232,3 +232,9 @@ in-scope work and part of the reproducible recipe.
   grammar alternation (or drop `tools` post-work) so diffusion can terminate; (3) stand up local
   docker/swebench for real resolve@1. Running C6 today for a resolve verdict would score a diffusion
   termination artifact, not capability. **Do not launch N=25-50 for a verdict until (1)+(2)+(3) land.**
+
+## Stage-C addendum 3 (user, 2026-07-05): runtime alignment is OURS to fix
+The flywheel agent runtime misses official SWE-Verified per-instance dependencies (agent cannot run tests
+in-episode). Fix on our end (do not wait for the flywheel team): episodes run inside the official
+per-instance swebench images (runtime + scoring aligned in one move). N=5 absolute numbers carry the
+arm-invariant confound until the re-run; the three-arm attribution remains differentially valid.
