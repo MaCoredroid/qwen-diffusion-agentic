@@ -508,6 +508,62 @@ emitted per arm (5+5) for later real resolve@1.
   docker/swebench for real resolve@1. Running C6 today would score a diffusion termination artifact, not
   capability.
 
+### 3.11 THE FIRST REAL SWE RESOLVE TABLE — Stage-C N=5 v2, aligned runtime + OFFICIAL docker scoring (2026-07-05)
+
+The §3.10 smoke used a **bare-checkout** runtime (agent could not run tests in-episode) and **mock**
+verdicts — both DEPRECATED per `runs/stage_c_n5/RUNTIME_ALIGNMENT_DIRECTIVE.md`. The re-run
+`runs/stage_c_n5v2/` fixes both: every episode runs **inside the official per-instance swebench docker
+image** (`runner_metadata.json` `runtime=container`, `image=swebench/sweb.eval.x86_64.<inst>`; import +
+test-cmd acceptance 5/5), and resolve is the **OFFICIAL** `swebench.harness.run_evaluation` docker harness
+(`runs/stage_c_n5v2/logs/pipeline.log` `score rc=0`), NOT a mock. **This is the first genuine
+SWE-bench-Verified resolve@1 table in the project.** Verified against primary artifacts (official verdict
+JSON + per-instance `report.json` + `usage.jsonl` exit-proof capture + applied `patch.diff` + official
+`test_output.txt`); full detail in `runs/stage_c_n5v2/report.md`.
+
+**RESOLVE@1 (official docker), 3 arms × 5 Tier0 instances:**
+
+| arm | weights | paradigm | resolve@1 | exits |
+|---|---|---|---:|---|
+| stock-AR | stock Qwen3.5-9B | AR | **4/5** | ok:3, turn-limit:2, loops:0 |
+| merged-AR | merged **RL-v2** | AR | **2/5** | ok:3, turn-limit:1, loop-halt:1 |
+| diffusion | merged **RL-v2** | block-diffusion | **1/5** | loop-halt:2, turn-limit:3, ok:0 |
+
+Per-instance (resolved✓): stock-AR {11119✓, 12754 empty, 13741✓, pytest-8399✓, sympy-13757✓};
+merged-AR {11119✓, 12754 edit, 13741✓, pytest-8399 edit, sympy-13757 loop-halt};
+diffusion {11119 loop-halt, 12754 edit, 13741 loop-halt, pytest-8399✓, sympy-13757 turn-limit}. Spot-checked
+one resolved patch/arm — all real applied diffs with official FAIL_TO_PASS green (stock+diffusion pytest-8399
+are *different* valid fixes to the same fixture-name bug; merged django-13741 adds `disabled=True`).
+
+**ATTRIBUTION — a clean 2-way decomposition (only weights + paradigm move; runtime + scoring shared):**
+**weights effect -2** (stock-AR 4/5 -> merged-AR 2/5, both AR); **paradigm effect -1** (merged-AR 2/5 ->
+diffusion 1/5, same RL-v2 weights). A loop-halt appears in **merged-AR** as well as diffusion ⇒ **looping is
+substantially weights-driven**; the diffusion paradigm compounds it (0 clean exits). The prior
+"looping = broken-env artifact" reading is **RETIRED** — env aligned, looping persists.
+
+**BINOMIAL HONESTY — a ranking, NOT a verdict.** n=5 Wilson 95% CIs all overlap (stock [0.38,0.96], merged
+[0.12,0.77], diff [0.04,0.62]); the widest contrast 4/5-vs-1/5 is **Fisher exact p=0.206** (stock-vs-merged
+0.524, merged-vs-diffusion 1.00) — nothing significant. Detecting a plausible ~0.2–0.3 SWE-scale gap at 80%
+power needs **~80–90/arm**; **N=25–50 is the pragmatic go/no-go tier** (surfaces large effects + ranks the
+arms, small paradigm tax stays inside the CIs). Report McNemar paired stats at scale.
+
+**RL-v2 IS THE WRONG PAYLOAD FOR SWE (flywheel-loop finding — REFUTES the naive "RL always helps" prior).**
+RL-v2 (§3.4) was diffu-GRPO-trained on **short structured tool-call episodes** (matched-20 class), not
+SWE-style long-horizon repo-editing episodes. On SWE it is **-2 resolves vs stock even run as pure AR** — the
+weights, not the diffusion paradigm, are the dominant loss, and they loop. So a diffusion-vs-AR verdict on
+RL-v2 weights is **contaminated by payload mismatch**, and the reader must not credit the diffusion 1/5 as a
+paradigm indictment.
+
+**FLYWHEEL-LOOP IMPLICATION (the actionable next cycle).** The next RL cycle must train **SWE-style
+episodes** (long-horizon repo edits, in-container test feedback) through the **certified
+convert->RL->re-convert loop** — preservation is already certified (§3.9, `convert_after_rl_result.md`,
+McNemar b=0 both seeds), so re-diffusionizing an SWE-RL'd model will not eat the gain. This aligns the weights
+payload with the SWE eval distribution and is the correct use of GPU, *before* spending it on more RL-v2 SWE
+arms. The cheap decisive scale experiment first: add a **4th arm = diffusion-on-STOCK-conversion** (B@1000
+recipe §3.2, no RL-v2, ~2–3 h) to the N=25–50 run — it completes the {stock,RL-v2}x{AR,diffusion} 2×2 and
+isolates paradigm-vs-weights at significance. Turn-cap note: **6/15** episodes hit the 50-turn
+`FatalTurnLimitedError` (one *resolved at the cap*) — raise to 75 at N=25–50 (~1.5× wall/token on affected
+episodes). (`runs/stage_c_n5v2/report.md`, `report.json`, `scoring/*.json`.)
+
 ---
 
 ## 4. THE AUDIT BATTERY — MANDATORY ACCEPTANCE (not optional; the lessons are half the value)

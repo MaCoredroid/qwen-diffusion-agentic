@@ -238,3 +238,35 @@ The flywheel agent runtime misses official SWE-Verified per-instance dependencie
 in-episode). Fix on our end (do not wait for the flywheel team): episodes run inside the official
 per-instance swebench images (runtime + scoring aligned in one move). N=5 absolute numbers carry the
 arm-invariant confound until the re-run; the three-arm attribution remains differentially valid.
+
+## Stage-C status — 2026-07-05 (v2 CLEAN 3-arm DONE: aligned runtime + OFFICIAL docker scoring = the FIRST real SWE resolve table)
+The deprecated `stage_c_n5/` re-run is COMPLETE and SCORED. `runs/stage_c_n5v2/report.md` +
+`report.json`. Every episode ran **inside the official per-instance swebench docker image**
+(`runtime=container`; acceptance 5/5, task #64); resolve is the **OFFICIAL** `swebench.harness.run_evaluation`
+docker harness (`logs/pipeline.log` `score rc=0`), not a mock. Verified against primary artifacts
+(official verdict JSON + per-instance report.json + usage.jsonl exit-proof + applied patch.diff + official
+test_output).
+- **RESOLVE@1 (official): stock-AR 4/5 · merged-AR (RL-v2 as AR) 2/5 · diffusion (same RL-v2 weights) 1/5.**
+  Exits: stock {ok:3, turn-limit:2, loops:0}; merged {ok:3, turn-limit:1, loop-halt:1}; diffusion
+  {loop-halt:2, turn-limit:3, ok:0}. Spot-checked one resolved patch per arm — all real (applied diff,
+  official FAIL_TO_PASS green).
+- **ATTRIBUTION: weights effect -2 (stock->merged, both AR); paradigm effect -1 (merged->diffusion, same
+  weights).** A loop-halt appears in **merged-AR** (RL-v2 loops even as AR) ⇒ **looping is substantially
+  weights-driven**, the diffusion paradigm compounds it. The old "looping = broken-env artifact" reading
+  is **RETIRED** (env now aligned; looping persists).
+- **BINOMIAL HONESTY (n=5): a ranking, NOT a verdict.** Wilson CIs all overlap (stock [0.38,0.96], merged
+  [0.12,0.77], diff [0.04,0.62]); the widest contrast (4/5 vs 1/5) is Fisher p=0.206 — **not significant.**
+  A ~0.2–0.3 SWE-scale gap needs ~80–90/arm for power; **N=25–50 is the pragmatic go/no-go tier** (surfaces
+  large effects + ranks; a small paradigm tax stays inside the CIs).
+- **RL-v2 IS THE WRONG PAYLOAD FOR SWE (the load-bearing finding).** RL-v2 was GRPO-trained on short
+  structured tool-call episodes, not SWE-style long-horizon repo edits; as an AR payload it is **-2 vs
+  stock on SWE**. The diffusion-vs-AR question is therefore contaminated on RL-v2 weights.
+- **N=25–50 change list:** (1) **add a 4th arm = diffusion-on-STOCK-conversion** (B@1000 recipe, no RL-v2,
+  ~2–3 h) to complete the {weights}x{paradigm} 2x2 and decide paradigm-vs-weights at scale — highest-value
+  marginal GPU-hour; (2) **raise the turn cap 50->75** (VERIFIED **6/15** episodes hit the 50-turn
+  `FatalTurnLimitedError`, and one *resolved at the cap* — the limit truncates real work; ~1.5x wall/token
+  cost on the affected episodes); (3) keep aligned runtime + official scoring.
+- **GO/NO-GO: GO on N=25–50**, but as the **4-arm 2x2 paradigm-vs-weights disambiguation**, not a
+  diffusion-vs-AR verdict on RL-v2 weights. Do not over-invest GPU in RL-v2 arms; the actionable next-cycle
+  investment is **SWE-style RL data** via the certified convert->RL->re-convert loop (preservation-certified,
+  `convert_after_rl_result.md`) so the payload matches the eval distribution.
