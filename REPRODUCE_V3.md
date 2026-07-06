@@ -630,6 +630,51 @@ context only) — a ~10× DOWN-reprice of the campaign §5 "35–60 GPU-h" N=25�
 
 ---
 
+### 3.13 W2 N=50 — the paired horse race (BUILT + PRE-REGISTERED; RUN PENDING, 2026-07-06)
+
+**The scale-up of §3.12 to the go/no-go tier.** Frozen pool `runs/w2_n50/` +
+`data/swe_w2_n50_pool/pool_manifest.json` (N=50, `pool_sha256 fe1973937dfb…`, stratified seed 0,
+**leakage firewall PASS** — disjoint from the gate-ladder-5, all in Tier1-100). Arms: **stock-AR
+(`qwen3.5-9b-ar`) vs diffusion twin (`flare-hybrid-clean`, STOCK conversion, not RL-v2)** — same stock
+weights, AR vs diffusion (the clean paradigm test, unlike §3.11–3.12's RL-v2 arms). Frozen config: v3
+envelope temp 0.6 / top_p 0.95 / top_k 20 + re-drive=1, **presence_penalty DROPPED** (gate proved pp=1.5
+collapses FLARE grounding), per-request seeds identical across arms; AR c=4 @ gmu 0.85, diffusion c=4 @
+gmu 0.74 max_model_len 32768 (boot-probe-gated on `no_allocation_failure`); official docker scoring, agent
+wall 900 s, 50 turns.
+
+**STATUS: NOT YET RUN.** `runs/w2_n50/{ar,diffusion}/` hold zero scored episodes; the only artifacts are a
+4-instance AR de-risk smoke (`_derisk/`, all `verdict=skipped`). **No 2×50 table / McNemar / verdict
+exists.** The pre-run report is returned as text; `build_report.py` machine-generates the on-disk
+`runs/w2_n50/report.md` after scoring. Nothing is fabricated.
+
+**Race fix (why the run stalled, now resolved).** The prior claim logic had a non-atomic `mkdir`-based
+worker-claim race that double-ran instances (would corrupt paired McNemar). **Fix = disjoint sharding:**
+`gen_shard_plan.py` splits the 50 into C fixed round-robin lists; `run_arm.sh` drives each with `--only`.
+No shared queue ⇒ race-free by construction. `shard_plan.json` C=4 [13,13,12,12] `assignment_sha256
+520d8204…`; AR de-risk confirmed 4 distinct claims + peak 8 886 MiB host RAM.
+
+**PRE-REGISTERED ANALYSIS (`runs/w2_n50/build_report.py`).** PRIMARY = paired **resolve@1 McNemar** (exact
+two-sided binomial on discordant pairs b=AR-only, c=diff-only; net = c − b). **PARITY = ( |net| ≤ 2 ) AND
+( p ≥ 0.05 )** (C-G2 parity-or-better). SECONDARY = throughput eps/GPU-h (honest: diffusion ~20 vs AR ~55
+⇒ ~2.7× slower — resolve-quality test, not a speed claim), tokens, loop-halt covariate with
+post-resolve/pre-resolve split, per-repo resolved. **Read-time guard:** on empty data `build_report.py`
+prints `PARITY: YES` (b=c=0, p=1.0) — only valid when its ANOMALIES block is empty (both scoring present,
+50/50 episodes/arm).
+
+**Reproduce (one command, detached, self-bounded — the race-free path):**
+```bash
+cd /home/mark/qwen_diffusion
+export SUDO_ASKPASS=<scratchpad>/askpass.sh
+setsid bash runs/w2_n50/run_all.sh >runs/w2_n50/logs/run_all.console 2>&1 &
+# chains: gen_shard_plan → run_arm ar (c=4) → diffusion boot-probe (gates arm) →
+#         run_arm diffusion (c=4) → score_all ar/diffusion (official docker, no server) → build_report
+# monitor runs/w2_n50/W2_STATUS.txt ; result runs/w2_n50/report.{md,json}. Do NOT use w2_orch.sh (racy).
+```
+(`runs/w2_n50/{run_all.sh,run_arm.sh,gen_shard_plan.py,shard_plan.json,score_all.sh,build_report.py,
+merge_predictions.py,RACE_DIAGNOSIS_HANDOFF.md}`; `data/swe_w2_n50_pool/pool_manifest.json`.)
+
+---
+
 ## 4. THE AUDIT BATTERY — MANDATORY ACCEPTANCE (not optional; the lessons are half the value)
 
 A result is INVALID unless the audit battery passes. These checks are what separate a real

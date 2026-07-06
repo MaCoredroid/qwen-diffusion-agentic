@@ -303,3 +303,39 @@ Report: `runs/loop_halt_polish/report.md`, `runs/stage_c_n5v3_gate/gate_report{.
   **total wall ~1 day**. Speed reported as THROUGHPUT; b=1 latency refs (this gate): AR median 87s, diffusion
   median 250s per episode. **LAUNCH-READY** after wiring MAX_NUM_SEQS=4 + the two gmu's + a concurrency
   fan-out + Tier1 pull-stage into the N=50 orchestrator, and dropping the presence-penalty proxy force.
+
+## Stage-C status — 2026-07-06 (W2 N=50 BUILT + DE-RISKED + PRE-REGISTERED; THE RUN is PENDING — no verdict yet)
+The N=50 pipeline is fully built and frozen but **has not executed**: `runs/w2_n50/{ar,diffusion}/`
+hold **zero scored episodes**, the GPU is idle, no orchestrator is live. The only episode artifacts are
+a 4-instance AR memory/concurrency de-risk smoke (`_derisk/`, all `verdict=skipped`, 0 resolved). **No
+2×50 table, no McNemar, no parity verdict exists yet** — the pre-run report (returned as text; the
+pipeline's `build_report.py` owns the on-disk `runs/w2_n50/report.md`, generated post-scoring) registers
+the analysis and presents the table with every result cell pending. **Report authoring fabricates nothing.**
+- **BLOCKER FOUND + FIXED (structural).** The prior run agent died mid-debug on a worker-claim **race**:
+  the shared `mkdir`-based claim was non-atomic (succeeds on `EEXIST`) ⇒ two slots double-ran one instance,
+  which would corrupt the paired McNemar design (`runs/w2_n50/RACE_DIAGNOSIS_HANDOFF.md`; reproduced 3/5
+  trials). **Fix = disjoint sharding, race-free by construction:** `gen_shard_plan.py` pre-partitions the 50
+  instances into C fixed lists (round-robin over pool order → balanced repo mix per shard), `run_arm.sh`
+  drives each shard with `--only <its ids>`. No shared queue, no claim. Both arms use the SAME
+  instance→shard assignment + per-shard base seed (paired validity; seeds spaced 100 000 apart).
+  Committed `shard_plan.json` (C=4, disjoint [13,13,12,12], `assignment_sha256 520d8204…`). The AR de-risk
+  confirmed **4 distinct claims** (no double-run) + host-RAM fit (server-idle 7 357 MiB, **peak 8 886 MiB**
+  with server + 4 concurrent episode containers). **Use `runs/w2_n50/run_all.sh` (sharded, race-free), NOT
+  the older `w2_orch.sh` which chains the racy `w2_arm.sh`.**
+- **PRE-REGISTERED PRIMARY (encoded in `build_report.py`).** Paired **resolve@1 McNemar**, exact two-sided
+  binomial on the discordant pairs b=AR-only, c=diffusion-only; net = c − b (diffusion − AR).
+  **PARITY = ( |net| ≤ 2 ) AND ( McNemar exact 2-sided p ≥ 0.05 )** — the honest "parity-or-better" bar
+  (Stage-C **C-G2**), NOT a speed multiplier. |net|>2 with significance = a diffusion win (c>b) or tax (b>c).
+- **SECONDARY, pre-registered:** throughput (eps/GPU-h at c=4, single RTX 5090 — honest framing: diffusion
+  ~20 vs AR ~55 eps/GPU-h ⇒ ~2.7× **slower**; this is a resolve-quality parity test, not a speed claim);
+  tokens; loop-halt covariate with **post-resolve vs pre-resolve** split (post-resolve halts are benign;
+  the gate found 0/both at N=5); per-repo resolved (composition frozen: django22 sympy8 sphinx5 mpl3
+  sklearn3 astropy2 xarray2 pytest2 seaborn1 pylint1 requests1).
+- **ARM WEIGHTS = the clean paradigm test.** AR = stock `qwen3.5-9b-ar`; diffusion = `flare-hybrid-clean`
+  **stock-conversion (NOT RL-v2)** — same stock weights, AR vs diffusion. The N=5 priors (v2 1/5, v3 3/5)
+  were on **RL-v2** weights (shown to be the wrong SWE payload) and do **not** predict this arm.
+- **READ-TIME GUARD (defect in `build_report.py`):** on empty data (b=c=0) it computes net 0, p=1.0 ⇒
+  prints **`PARITY: YES`**. A parity claim is only valid when the ANOMALIES block is empty (both `scoring`
+  present, 50/50 episodes/arm). Never read parity from a run with `scoring MISSING` or `<50 episodes`.
+- **NEXT ACTION (the only one):** `setsid bash runs/w2_n50/run_all.sh >runs/w2_n50/logs/run_all.console 2>&1 &`
+  (detached, self-bounded; ~1 day wall — model-GPU 3–4 h, official scoring 3–6 h, 50 images already pulled).
