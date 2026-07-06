@@ -306,3 +306,13 @@ absolute numbers + the −1 paradigm-tax attribution carry a greedy-repetition c
 the ladder is treated as final: sampling-corrected re-run (temp 0.6 / top_p 0.95, seeded per the certified
 contract) of all 4 arms × 5 instances; the campaign's data-gen must also run the generator at the
 recommended envelope, not greedy. Amendment applies to swe_tuning_campaign_design.md §data-gen.
+
+## REFERENCE-CONFIG CHECK (user-directed, flywheel source): our greedy setting DEVIATED from the reference
+Flywheel SWE reference (run_swe_bench_q36_a.py Q36-A + inference_proxy.py): temp 0.6 FORCED proxy-side;
+full Qwen thinking envelope documented (0.6 / top_p 0.95 / top_k 20 / min_p 0 / presence 1.0-1.5); their
+code names our exact failure modes as the known degenerate-regime outcome ("<think> runaway ... dead turns
+(agent_gave_up) AND tool-call argument runaway") and ships a re-drive mitigation for the temp-0.6
+tool-call-free-terminal flake. CORRECTED RE-RUN SPEC: all 4 arms x 5 instances at the REFERENCE envelope
+(proxy-forced temp 0.6 + top_p 0.95 + top_k 20, seeded per-request for reproducibility), port the re-drive
+mitigation, engine arm uses the certified seeded-sampling contract. Data-gen (campaign) inherits the same
+envelope. The greedy ladder stands only as the deviation-documented lower bound.
