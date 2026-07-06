@@ -339,3 +339,52 @@ the analysis and presents the table with every result cell pending. **Report aut
   present, 50/50 episodes/arm). Never read parity from a run with `scoring MISSING` or `<50 episodes`.
 - **NEXT ACTION (the only one):** `setsid bash runs/w2_n50/run_all.sh >runs/w2_n50/logs/run_all.console 2>&1 &`
   (detached, self-bounded; ~1 day wall — model-GPU 3–4 h, official scoring 3–6 h, 50 images already pulled).
+
+## Stage-C status — 2026-07-06 (W2 N=50 EXECUTED + SCORED + SERVING-VERIFIED → VERDICT BANKED: NOT SWE-parity)
+**THE RUN is DONE and the verdict is banked.** Both arms 50/50, official docker scoring, serving
+verified clean from artifacts. `runs/w2_n50/report.{json,md}` (report.md §ADJUDICATION is the full
+banked record). C-G2 (parity-or-better) is **FAILED — decisively.**
+
+- **PRIMARY (paired resolve@1 McNemar): stock-AR 19/50 vs diffusion 2/50.** both=2, AR-only(b)=17,
+  diffusion-only(c)=**0**, neither=31, net (diff−AR) = **−17**, **McNemar exact 2-sided p ≈ 0.0000,
+  PARITY = FALSE** (`|net|≤2 AND p≥0.05`). data_sufficient=true. Pre-registered detectable effect
+  (|net|>2) **satisfied, 17 ≫ 2.** Every diffusion win (sympy-16886, django-14373) is also an AR win ⇒
+  **no diffusion-only resolve.** Pool `fe1973937dfb500b…` == frozen manifest (n=50); paired valid.
+- **SERVING VERIFIED (rule out silent regression) — CLEAN, verdict VALID.** Per-request from
+  `logs/diffusion_server.log`: `decode_mode=hybrid_clean` on the serve banner **and** engine state;
+  **2852/2852** completions on the FLARE grammar path (2684 `complete_tool_call`), 840
+  `DiffusionDecoding metrics` lines ⇒ genuine diffusion decode, **no canvas-silent-serve, no AR
+  fallback**; the A1 launcher bug did not fire. 100% of 2926 diffusion + 2364 AR requests used the
+  frozen **v3 envelope temp0.6/top_p0.95/top_k20** (per-request seeds). AR symmetric + provably pure AR
+  (0 FLARE lines, stock `Qwen/Qwen3.5-9B`). Diffusion model = `qwen3.5-9b-fastdllm-rlv2-vllm-bf16` =
+  **byte-identical path to the Tier0 v3 gate**; 3 episode dumps + a Tier0 dump spot-checked coherent.
+  The 12:26Z boot-probe failure was a transient GPU-settle-between-arms artifact — the safety gate
+  correctly SKIPPED, and `diff_launch.sh` relaunched the arm on a settled/healthy server (KV 152,917 tok,
+  4.67× conc). HTTP 400s appear in both arms (2.5%/1.7%), benign.
+- **CAVEAT (disclosed):** the 2026-07-06 pre-run paragraph above named the diffusion arm as the **b1000
+  stock-conversion (NOT RL-v2)**; the frozen serve script, the v3 gate cert, and this run all served the
+  **rlv2** twin. The run matches its own certification (so serving is valid and directly comparable to
+  the v3 prior), but the executed comparison is **stock-AR vs RL-v2-diffusion**, not the pristine
+  same-weights paradigm test that paragraph described. Net effect is conservative for the tax story: the
+  twin had an agentic-RL advantage and still posted 2 vs 19.
+- **N=5 Tier0 was small-sample + easy-pool, never a verdict.** `runs/stage_c_n5` (mock, AR-edit 3/5 /
+  diff-edit 1/5, 0 docker-resolves) and `runs/stage_c_n5v3_gate` (3-seed) were the *first 5* Tier0
+  instances with overlapping Wilson CIs — a ranking. At N=50 diverse with official scoring the tie
+  dissolves into −17.
+- **FAILURE SIGNATURE = loop-before-edit on unfamiliar repos.** Exits diffusion: **26 loop-detector /
+  13 turn-limit / 10 clean / 1 budget** (AR: 26 clean / 24 turn-limit / 0 loop). **35/50 empty patches**
+  (AR 4). Of 26 loop-halts, **18 emit no patch at all, 25 end unresolved** (pre-resolve 25 / post-resolve
+  1). On Tier0 loops fired post-edit; here they fire pre-edit — coherent-but-repetitive tool-calling that
+  never commits, median empty-patch wall 673 s vs AR 229 s. Per-repo the gap is broad, worst on django
+  (11/22 → 1/22), matplotlib (2/3 → 0/3), sklearn (2/3 → 0/3). Throughput 21.4 vs 99.6 eps/GPU-h (4.65×
+  slower) — a reported covariate, not the finding.
+- **STRATEGIC CONSEQUENCE → the fork.** (a) **Primary: the SWE-tuning campaign premise RETURNS, now
+  powered.** The missing ingredient is **SWE-trajectory training**, not decode engineering: general
+  agentic RL-v2 does not transfer to SWE resolve. The certified loop already yields the data (data-gen
+  yield 0.25, GO-priced) and a verified-clean serving spine — **train the base on SWE trajectories via
+  the certified loop (SFT on successful SWE episodes ± SWE-reward RL), then re-run W2 N=50 as the gate.**
+  (b) **Parallel engineering track: decode-policy work on the loop pattern** (edit-biased planning,
+  loop-detector stall-vs-explore discrimination, forced-edit budget, empty-patch retry) — symptom
+  mitigation, cheap, but not the cure. (c) **Do not re-litigate serving or re-run the same rlv2 twin** —
+  it will reproduce ~2/50; the next model must be SWE-tuned. **Recommended fork for the user: fund (a),
+  run (b) in parallel as a cheap hedge.**

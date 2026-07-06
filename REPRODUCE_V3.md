@@ -148,6 +148,32 @@ speedup unchanged from the 1.23× lossy number until the seam fires).
 (`runs/lossless_apc/gates2/gate_results.jsonl`, `runs/lossless_apc/gates/gate_results.jsonl`, `runs/lossless_apc/bench/bench_aggregate.json`, bench commit
 `b6586f0`; engine_build_status.md §0.J; goal_5x_rollout_b1.md END GOAL.)
 
+**IS NOT — at SWE-bench-Verified resolve-parity with stock AR (N=50 verdict, 2026-07-06).** The
+Stage-C win condition (§0: *diffusion resolve@1 ≥ AR resolve@1*, the honest "parity-or-better" bar)
+is **NOT met at N=50.** On 50 diverse SWE-bench-Verified instances (frozen pool `fe1973937dfb500b…`,
+official docker scoring), paired resolve@1 is **stock-AR 19/50 vs diffusion 2/50** — both=2,
+AR-only=17, diffusion-only=**0**, net **−17**, **McNemar exact 2-sided p ≈ 0.0000, PARITY = FALSE**.
+Every task the diffusion twin resolved, AR also resolved; there is no instance the twin wins and AR
+loses. The pre-registered detectable effect (|net|>2) is satisfied with room to spare (17 ≫ 2). This
+is the certified **RL-v2 hybrid-clean twin** (`models/qwen3.5-9b-fastdllm-rlv2-vllm-bf16`,
+`decode_mode=hybrid_clean`) — the *same* served config as the Tier0 v3 gate — vs the **stock released
+Qwen3.5-9B** AR (`Qwen/Qwen3.5-9B`); serving was independently verified clean (see §SWE-N50 below).
+The earlier N=5 Tier0 signals that motivated proceeding (`runs/stage_c_n5` mock-scored 1/5·0/5;
+`runs/stage_c_n5v3_gate` 3-seed) were **small-sample on the easy/familiar first-Tier0 pool with
+overlapping Wilson CIs — a ranking, never a verdict.** **Failure signature = loop-before-edit on
+unfamiliar repos:** 35/50 diffusion episodes emit an empty patch; 26/50 halt on the loop-detector
+(vs AR 0); 25 of 26 loop-halts end unresolved and 18 of 26 produce no patch at all (the model grinds
+coherent-but-repetitive tool calls until the loop-detector fires *before* it commits an edit —
+median empty-patch agent-wall 673 s vs AR 229 s). On Tier0 the twin's loops mostly fired *after* an
+edit already existed; on the diverse pool they fire *before*. Throughput is **21.4 vs 99.6 eps/GPU-h
+(4.65× slower)**. Quality-identical single-turn decode (130/247, §0) did **not** transfer to
+multi-turn agentic SWE resolve. Caveat: the pre-run plan paragraph named the diffusion arm as the
+b1000 *stock-conversion*; the frozen serve script, the v3 gate cert, and this run all used the
+**rlv2** twin — so this is a stock-AR vs RL-v2-diffusion comparison (consistent with the v3 prior),
+not the pristine same-weights paradigm test. If anything the twin carried an agentic-RL advantage and
+still lost 2 vs 19. (`runs/w2_n50/report.json`, `report.md` §ADJUDICATION,
+`runs/w2_n50/logs/diffusion_server.log`.)
+
 ---
 
 ## 1. SOURCES OF TRUTH (index — read these; numbers here are transcribed, not re-derived)
