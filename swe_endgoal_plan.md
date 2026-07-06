@@ -270,3 +270,36 @@ test_output).
   diffusion-vs-AR verdict on RL-v2 weights. Do not over-invest GPU in RL-v2 arms; the actionable next-cycle
   investment is **SWE-style RL data** via the certified convert->RL->re-convert loop (preservation-certified,
   `convert_after_rl_result.md`) so the payload matches the eval distribution.
+
+## Stage-C status — 2026-07-06 (LOOP-HALT PASS-GATE = FAIL; pp REJECTED; N=50 config FROZEN + boot-probed + priced)
+Full loop-halt PASS-GATE ran: 2 arms (stock-AR, diffusion) x 3 seeds x 5 Tier0, ENVELOPE +
+**presence_penalty=1.5** (arm-neutral) + re-drive=1, one server at a time, OFFICIAL docker scoring.
+Report: `runs/loop_halt_polish/report.md`, `runs/stage_c_n5v3_gate/gate_report{.json,_table.txt}`.
+- **VERDICT: FAIL (a=F, b=F, c=P).** (a) diffusion loop-halt rate 7/15 = **46.7%** (< 10% target; v3 was 60%);
+  (b) diffusion resolve **3/5 (v3) -> mean 0.67/5** (per-seed [2,0,0]) = degradation of >1 instance-equiv;
+  (c) post-resolve halts **0** on both arms.
+- **THE FINDING: `presence_penalty` is applied arm-neutrally but is NOT neutral in effect — REJECT it.**
+  stock-AR is robust under pp=1.5 (**3/5 resolved every seed**, same instances as v3, 1/15 loops); the
+  diffusion FLARE wave sampler's **exact grounding collapses** (seeds 2345/3456 = 5/5 EMPTY patches, re-drives
+  also empty). A strong presence penalty perturbs the joint canvas logits and breaks the copy/argument-
+  grounding SWE patches need — the project crux. It buys a marginal loop reduction (60->47%) for a
+  catastrophic resolve loss on the arm under test. The "probe had 0 loop-halts" premise was a **misread** of
+  the `--eval-mode skip` `verdict=skipped` marker; re-audit shows the probe itself had 2/5 loop-halts, 1/5
+  resolved (reproduced by the gate).
+- **FROZEN N=50 SAMPLING = v3 ENVELOPE (temp0.6/top_p0.95/top_k20) + re-drive=1, presence_penalty DROPPED.**
+  Loop-halts ship as a **measured covariate** (pre-registered FAIL branch), not masked by a grounding-hurting
+  knob. resolve@1 (paired McNemar) is the primary endpoint (concurrency-invariant, per-episode seeds fixed).
+- **FROZEN DIFFUSION SERVING = concurrency 4 @ gpu_memory_utilization 0.74, max_model_len 32768** (boot-probed
+  at max long-context load). The **MAMBA-CACHE RULE, measured:** idle footprint 28,631 MiB >> the 0.74 pool
+  budget because the GDN/mamba align-checkpoint cache + per-request denoise snapshots (~4.5 GiB) sit OUTSIDE
+  the KV pool; the un-profiled **FLARE wave lm_head transient** (block x vocab x fp32, scales with concurrency)
+  OOM'd the naive **c=8 @ gmu 0.82** in warmup — never copy AR's gmu. Frozen setting: peak 30,431 MiB,
+  **headroom 2,176 MiB (6.7%)**, KV pool 152,917 tok (**4.67x full-32k => zero preemption at the 32k cap**),
+  no allocation failure. c=6 @ gmu 0.70 is a probed HBM-safe throughput upgrade (2,048 MiB headroom) but only
+  3.54x full-32k (preempts under all-long load) — select only if contexts stay < ~18k. AR arm: c=4 @ native
+  gmu 0.85 (no mamba cache, ~22 GiB flat, wide headroom). `runcage_ar.sh --max-num-seqs` parametrized (gap-fix).
+- **PRICED N=50 (Tier1, 2 arms, c=4):** model-GPU **~3-4 GPU-h** (diffusion ~20 eps/GPU-h, AR ~55 eps/GPU-h);
+  Tier1 image pulls ~200 GB / 2-4 h (one-time, disk-checked); official docker scoring ~3-6 h (CPU/RAM-caged);
+  **total wall ~1 day**. Speed reported as THROUGHPUT; b=1 latency refs (this gate): AR median 87s, diffusion
+  median 250s per episode. **LAUNCH-READY** after wiring MAX_NUM_SEQS=4 + the two gmu's + a concurrency
+  fan-out + Tier1 pull-stage into the N=50 orchestrator, and dropping the presence-penalty proxy force.
