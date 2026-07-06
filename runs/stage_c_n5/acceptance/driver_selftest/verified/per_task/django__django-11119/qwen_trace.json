@@ -1,0 +1,8 @@
+{
+  "mock_agent": true,
+  "runtime": "container",
+  "action": "replay_gold_patch_in_container",
+  "gold_patch_bytes": 492,
+  "applied": true,
+  "apply_stderr": ""
+}

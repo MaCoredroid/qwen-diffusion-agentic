@@ -1,0 +1,4 @@
+$ python -c 'import django'
+rc=0
+<module 'django' from '/testbed/django/__init__.py'>
+

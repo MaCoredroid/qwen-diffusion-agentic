@@ -1,0 +1,21 @@
+>>> django__django-11119 ...
+    accepted=True import_rc=0 test_ran=True fatal_dep=False (1.4s)
+>>> django__django-12754 ...
+    accepted=True import_rc=0 test_ran=True fatal_dep=False (1.5s)
+>>> django__django-13741 ...
+    accepted=True import_rc=0 test_ran=True fatal_dep=False (1.6s)
+>>> pytest-dev__pytest-8399 ...
+    accepted=True import_rc=0 test_ran=True fatal_dep=False (1.9s)
+>>> sympy__sympy-13757 ...
+    accepted=True import_rc=0 test_ran=True fatal_dep=False (4.0s)
+
+=== ACCEPTANCE 5/5 ===
+|---|---|---|---|---|---|
+| django__django-11119 | django | 0 | yes | none | PASS |
+| django__django-12754 | django | 0 | yes | none | PASS |
+| django__django-13741 | django | 0 | yes | none | PASS |
+| pytest-dev__pytest-8399 | pytest | 0 | yes | none | PASS |
+| sympy__sympy-13757 | sympy | 0 | yes | none | PASS |
+
+Evidence: `acceptance_results.json`, `<instance>__import.log`, `<instance>__test.log` in this directory.
+

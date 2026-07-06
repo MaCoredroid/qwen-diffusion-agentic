@@ -1,0 +1,4 @@
+$ python -c 'import pytest'
+rc=0
+<module 'pytest' from '/testbed/src/pytest/__init__.py'>
+

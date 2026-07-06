@@ -239,6 +239,198 @@ def _extract_patch(workspace: Path, base_commit: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# CONTAINER RUNTIME (RUNTIME_ALIGNMENT_DIRECTIVE, 2026-07-05).
+#
+# Official SWE-bench Verified hands the agent the per-instance RUNTIME: the repo
+# checked out at base_commit and EDITABLE-INSTALLED into a conda env (`testbed`)
+# with every dependency, plus build artifacts (*.egg-info, pytest _version.py,
+# compiled extensions). Our host git-worktree path lacked all of that, so an
+# in-episode `import <pkg>` or test run died on missing deps -> the whole N=5
+# battery was deprecated. This wires each episode INSIDE the official image.
+#
+# PATTERN (documented design choice): WORKSPACE-MOUNT + DOCKER-EXEC hybrid.
+#   * The image's /testbed is the ground-truth runtime; we do NOT rebuild it. We
+#     SEED a host workspace from the image's /testbed (`docker cp`) so the
+#     editable install + build artifacts are preserved verbatim, then bind-MOUNT
+#     that workspace back over /testbed in a long-lived per-instance container.
+#     qwen-code stays on the HOST with CWD=workspace, so its native FILE tools
+#     (edit / write_file / replace) write the mount == the container's /testbed.
+#   * Every SHELL action is routed INTO the container via `docker exec` with the
+#     official conda-activation preamble (`conda activate testbed; cd /testbed`),
+#     so imports / builds / tests use the prepared per-instance environment.
+#     For a live qwen-code episode a `bash` PATH-shim (see _write_shell_shim)
+#     forwards run_shell_command into that same `docker exec`.
+#   * Patch = tracked `git diff base_commit` over the shared /testbed tree.
+# Rejected alternative: bind-mount a BARE git checkout over /testbed -> shadows
+# the editable install + build artifacts -> exactly the "troubled env" the
+# directive rejects. Seeding the mount from the image is what avoids that.
+# ---------------------------------------------------------------------------
+CONTAINER_TESTBED = "/testbed"
+# Byte-for-byte the swebench eval-script preamble (conda + locale + cd).
+CONTAINER_ACTIVATE = (
+    "source /opt/miniconda3/bin/activate testbed && cd /testbed && "
+    "export LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8"
+)
+
+
+def _docker_base() -> list[str]:
+    """Docker CLI prefix. `docker` where the docker group is active; override via
+    SWE_DOCKER_CMD (e.g. 'sudo -A docker' with SUDO_ASKPASS) where it is not."""
+    return shlex.split(os.environ.get("SWE_DOCKER_CMD", "docker"))
+
+
+def _docker_arch() -> str:
+    import platform
+    m = platform.machine().lower()
+    return "arm64" if m in ("arm64", "aarch64") else "x86_64"
+
+
+def _container_image_for(instance_id: str) -> str:
+    """Official Docker Hub image key for an instance. swebench substitutes the
+    `__` in instance ids with `_1776_` (Docker Hub forbids `__` in repo names)."""
+    slug = instance_id.replace("__", "_1776_")
+    return f"swebench/sweb.eval.{_docker_arch()}.{slug}:latest"
+
+
+def _drun(argv: list[str], *, timeout: int = 600, check: bool = False,
+          text: bool = True) -> subprocess.CompletedProcess:
+    return subprocess.run(_docker_base() + argv, capture_output=True, text=text,
+                          timeout=timeout, check=check)
+
+
+def _image_present(image: str) -> bool:
+    return _drun(["image", "inspect", image], timeout=60).returncode == 0
+
+
+def _seed_workspace_from_image(*, image: str, workspace: Path) -> None:
+    """Materialise the image's /testbed onto the host so it can be bind-mounted
+    back (preserving the editable install + build artifacts). `docker cp` from a
+    created-but-never-started throwaway container; the real container mounts the
+    result over /testbed."""
+    if workspace.exists():
+        shutil.rmtree(workspace, ignore_errors=True)
+    workspace.mkdir(parents=True, exist_ok=True)
+    cid = _drun(["create", image, "sleep", "3600"], timeout=120, check=True).stdout.strip()
+    try:
+        cp = _drun(["cp", f"{cid}:{CONTAINER_TESTBED}/.", str(workspace)], timeout=600)
+        if cp.returncode != 0:
+            raise RuntimeError(f"docker cp seed failed: {cp.stderr[-400:]}")
+    finally:
+        _drun(["rm", "-f", cid], timeout=60)
+
+
+def _start_container(*, name: str, image: str, workspace: Path) -> None:
+    """Long-lived per-instance container with the seeded workspace bind-mounted
+    over /testbed. chown the mount to the host uid (via the container's own root)
+    so host-side qwen-code file edits work; portable, needs no host sudo."""
+    _drun(["rm", "-f", name], timeout=60)
+    run = _drun(["run", "-d", "--name", name, "-v", f"{workspace}:{CONTAINER_TESTBED}",
+                 image, "sleep", "infinity"], timeout=120)
+    if run.returncode != 0:
+        raise RuntimeError(f"docker run failed: {run.stderr[-400:]}")
+    _cexec(name, f"chown -R {os.getuid()}:{os.getgid()} {CONTAINER_TESTBED} "
+                 f"&& git config --global --add safe.directory {CONTAINER_TESTBED}",
+           activate=False, timeout=180)
+
+
+def _stop_container(name: str) -> None:
+    _drun(["rm", "-f", name], timeout=120)
+
+
+def _teardown_container(name: str, workspace: Path | None = None) -> None:
+    """Robust teardown: chown the bind-mounted /testbed back to the host uid FIRST
+    (the container runs as root, so builds/tests leave root-owned __pycache__/
+    egg-info the host user otherwise cannot delete), THEN remove the container and
+    the seeded workspace. Idempotent + never raises."""
+    try:
+        _cexec(name, f"chown -R {os.getuid()}:{os.getgid()} {CONTAINER_TESTBED}",
+               activate=False, timeout=180)
+    except Exception:  # noqa: BLE001
+        pass
+    _stop_container(name)
+    if workspace is not None:
+        shutil.rmtree(workspace, ignore_errors=True)
+
+
+def _cexec(name: str, command: str, *, activate: bool = True, workdir: str = CONTAINER_TESTBED,
+           timeout: int = 1800) -> subprocess.CompletedProcess:
+    """Run a shell command INSIDE the per-instance container. When activate=True
+    the official conda `testbed` env + locale + cd /testbed preamble is prepended
+    (this is what makes in-episode imports / tests use the aligned runtime)."""
+    inner = f"{CONTAINER_ACTIVATE} && {command}" if activate else command
+    return _drun(["exec", "-w", workdir, name, "/bin/bash", "-lc", inner], timeout=timeout)
+
+
+def _container_extract_patch(name: str, base_commit: str) -> str:
+    """Tracked diff vs base_commit computed INSIDE the container (shares /testbed
+    with the host mount, so identical to a host diff but avoids ownership races)."""
+    cp = _cexec(name, f"git -c core.fileMode=false diff --no-color --binary {base_commit}",
+                activate=False, timeout=300)
+    return cp.stdout
+
+
+def _write_shell_shim(*, shim_dir: Path, container: str) -> Path:
+    """Write a `bash` shim (first on PATH) that forwards qwen-code's
+    run_shell_command (`bash -c "<cmd>"`) into `docker exec` on the per-instance
+    container, conda-activated. qwen-code's native FILE tools already reach the
+    container through the /testbed bind-mount; this covers the SHELL tool so a
+    live episode's builds/imports/tests run in the aligned env. Non-`-c`
+    invocations fall through to the real bash."""
+    shim_dir.mkdir(parents=True, exist_ok=True)
+    shim = shim_dir / "bash"
+    shim.write_text(
+        "#!/usr/bin/env python3\n"
+        "import sys, os\n"
+        f"DOCKER = {json.dumps(_docker_base())}\n"
+        f"CONTAINER = {json.dumps(container)}\n"
+        f"PRE = {json.dumps(CONTAINER_ACTIVATE)}\n"
+        "args = sys.argv[1:]\n"
+        "cmd = None\n"
+        "for i, a in enumerate(args):\n"
+        "    if a in ('-c', '-lc', '-cl') and i + 1 < len(args):\n"
+        "        cmd = args[i + 1]; break\n"
+        "    if a.startswith('-') and 'c' in a and i + 1 < len(args):\n"
+        "        cmd = args[i + 1]; break\n"
+        "if cmd is None:\n"
+        "    os.execv('/bin/bash', ['/bin/bash'] + args)\n"
+        "os.execvp(DOCKER[0], DOCKER + ['exec', '-w', '/testbed', CONTAINER,\n"
+        "          '/bin/bash', '-lc', PRE + ' && ' + cmd])\n",
+        encoding="utf-8",
+    )
+    shim.chmod(0o755)
+    return shim
+
+
+def _run_mock_agent_container(*, container: str, instance: dict, base_commit: str,
+                              workspace: Path, trace_path: Path) -> dict[str, Any]:
+    """Scripted (NO model) agent for the container runtime: replay the dataset
+    gold `patch` THROUGH the container (git apply via docker exec) to prove the
+    hydrate -> in-container edit -> in-container patch-extract plumbing."""
+    started = time.monotonic()
+    gold = instance.get("patch") or ""
+    applied = False
+    apply_err = ""
+    if gold.strip():
+        (workspace / ".mock_gold.patch").write_text(gold, encoding="utf-8")
+        cp = _cexec(container, "git apply --whitespace=nowarn .mock_gold.patch",
+                    activate=False, timeout=180)
+        applied = cp.returncode == 0
+        apply_err = (cp.stderr or "").strip()[:800]
+        (workspace / ".mock_gold.patch").unlink(missing_ok=True)
+    trace_path.write_text(json.dumps({
+        "mock_agent": True, "runtime": "container", "action": "replay_gold_patch_in_container",
+        "gold_patch_bytes": len(gold), "applied": applied, "apply_stderr": apply_err,
+    }, indent=2) + "\n", encoding="utf-8")
+    return {
+        "elapsed_s": round(time.monotonic() - started, 3), "exit_code": 0 if applied else 1,
+        "timed_out": False, "cli_exit_is_verdict": False, "parsed": True,
+        "subtype": "mock_gold_replay_container", "num_turns": 1, "duration_api_ms": 0,
+        "usage": None, "tool_calls": 1, "tool_by_name": {"mock_apply_in_container": 1},
+        "result_tail": f"gold_replay_in_container applied={applied}", "mock_apply_err": apply_err,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Qwen Code proxy lifecycle (Stage-A qwen_code_sglang_proxy.py adapter).
 # ---------------------------------------------------------------------------
 def _wait_http(url: str, timeout: float) -> bool:
@@ -371,12 +563,16 @@ def _run_qwen_code(
     trace_path: Path,
     stderr_path: Path,
     prompt: str = DEFAULT_AGENT_PROMPT,
+    extra_path: Path | None = None,
 ) -> dict[str, Any]:
     """Run the local Qwen Code CLI headless with CWD=workspace, capturing the
     --output-format json event stream to trace_path and CLI stderr to stderr_path.
 
     Mirrors the Stage-A-proven invocation (runs/stage_a_smoke) + the flywheel
-    QWEN_CODE_TEMPLATE budgets (--max-session-turns, MAX_OUTPUT_TOKENS)."""
+    QWEN_CODE_TEMPLATE budgets (--max-session-turns, MAX_OUTPUT_TOKENS).
+
+    extra_path: dir prepended to PATH (the container runtime passes the `bash`
+    shell-shim dir here so run_shell_command routes into `docker exec`)."""
     env = os.environ.copy()
     env.update({
         "QWEN_CODE_MAX_OUTPUT_TOKENS": str(args.qwen_max_output_tokens),
@@ -386,6 +582,8 @@ def _run_qwen_code(
         "OPENAI_MODEL": model,
         "QWEN_MODEL": model,
     })
+    if extra_path is not None:
+        env["PATH"] = str(extra_path) + os.pathsep + env.get("PATH", "")
     cmd = [
         str(args.qwen_bin),
         "--bare",
@@ -795,6 +993,127 @@ def _process_one(*, instance_id: str, instance: dict, dataset_name: str, per_tas
     return summary
 
 
+def _process_one_container(*, instance_id: str, instance: dict, dataset_name: str,
+                           per_task_root: Path, proxy_base_url: str | None, model: str,
+                           model_name: str, agent: str, agent_wall_s: int, eval_mode: str,
+                           eval_host: str | None, eval_timeout_s: int, skip_existing: bool,
+                           args) -> dict[str, Any]:
+    """CONTAINER runtime (RUNTIME_ALIGNMENT_DIRECTIVE): episode runs inside the
+    official per-instance swebench image. Same artifact set as `_process_one`;
+    the workspace is seeded from the image /testbed and bind-mounted into a
+    long-lived container, the agent's shell routes through `docker exec`, and the
+    patch is the in-container tracked diff vs base_commit."""
+    task_dir = (per_task_root / instance_id).resolve()
+    task_dir.mkdir(parents=True, exist_ok=True)
+    runner_meta_path = task_dir / "runner_metadata.json"
+    if skip_existing and runner_meta_path.is_file():
+        return {"instance_id": instance_id, "status": "skipped_existing"}
+
+    workspace_path = task_dir / "workspace"
+    patch_path = task_dir / "patch.diff"
+    qwen_trace = task_dir / "qwen_trace.json"
+    qwen_stderr = task_dir / "qwen_stderr.log"
+    prompt_md = task_dir / "prompt.md"
+    eval_log = task_dir / "eval_invocation.log"
+    eval_output = task_dir / "eval"
+    eval_output.mkdir(parents=True, exist_ok=True)
+    shim_dir = task_dir / "shim"
+
+    base_commit = instance["base_commit"]
+    image = _container_image_for(instance_id)
+    container = f"{args.container_name_prefix}_{instance_id.replace('__', '_').replace('/', '_')}"
+
+    summary: dict[str, Any] = {
+        "instance_id": instance_id, "dataset_name": dataset_name, "started_at": _iso_now(),
+        "repo": instance.get("repo"), "base_commit": base_commit, "agent": agent,
+        "eval_mode": eval_mode, "runtime": "container", "image": image, "container": container,
+    }
+
+    try:
+        if not _image_present(image):
+            raise RuntimeError(f"official image not present locally: {image} "
+                               f"(docker pull {image})")
+        _seed_workspace_from_image(image=image, workspace=workspace_path)
+        _start_container(name=container, image=image, workspace=workspace_path)
+        _write_agents_md(workspace_path, instance)
+    except Exception as exc:  # noqa: BLE001
+        summary["status"] = "hydration_failed"
+        summary["error"] = f"{type(exc).__name__}: {exc}"
+        summary["traceback"] = traceback.format_exc()
+        runner_meta_path.write_text(json.dumps(summary, indent=2))
+        _teardown_container(container, workspace_path if not args.container_keep else None)
+        return summary
+
+    prompt_md.write_text(
+        "## Qwen Code invocation prompt (container runtime)\n\n" + DEFAULT_AGENT_PROMPT + "\n\n"
+        f"## AGENTS.md (workspace/{instance_id})\n\n"
+        + (workspace_path / "AGENTS.md").read_text(encoding="utf-8"), encoding="utf-8")
+
+    def _extract() -> str:
+        try:
+            return _container_extract_patch(container, base_commit)
+        except Exception:  # noqa: BLE001
+            return ""
+
+    try:
+        # --- agent episode (edits land in the container via mount + docker exec)
+        if agent == "mock":
+            agent_meta = _run_mock_agent_container(container=container, instance=instance,
+                                                   base_commit=base_commit,
+                                                   workspace=workspace_path, trace_path=qwen_trace)
+        else:
+            _write_shell_shim(shim_dir=shim_dir, container=container)
+            agent_meta = _run_qwen_code(workspace=workspace_path, proxy_base_url=proxy_base_url,
+                                        model=model, timeout_s=agent_wall_s, instance_id=instance_id,
+                                        args=args, trace_path=qwen_trace, stderr_path=qwen_stderr,
+                                        extra_path=shim_dir)
+        summary["qwen"] = agent_meta
+
+        patch_text = _extract()
+
+        # --- optional state-conditional empty-patch retry (default 0) ----------
+        if not patch_text.strip() and agent != "mock":
+            cause = _classify_empty_patch_cause(qwen_trace)
+            max_retries = max(0, int(os.environ.get("SWE_EMPTY_PATCH_RETRIES", "0")))
+            summary["empty_patch_retry"] = {"cause": cause, "max_retries": max_retries,
+                                            "recovered_patch_bytes": 0}
+            for ridx in range(1, max_retries + 1):
+                retry_prompt = RETRY_PROMPT_SETUP_LOOP if cause == "setup_loop" else RETRY_PROMPT_EMPTY
+                rmeta = _run_qwen_code(workspace=workspace_path, proxy_base_url=proxy_base_url,
+                                       model=model, timeout_s=agent_wall_s, instance_id=instance_id,
+                                       args=args, trace_path=task_dir / f"qwen_trace_retry{ridx}.json",
+                                       stderr_path=task_dir / f"qwen_stderr_retry{ridx}.log",
+                                       prompt=retry_prompt, extra_path=shim_dir)
+                summary[f"qwen_retry{ridx}"] = rmeta
+                rp = _extract()
+                if rp.strip():
+                    patch_text = rp
+                    summary["empty_patch_retry"]["recovered_patch_bytes"] = len(rp)
+                    break
+
+        patch_path.write_text(patch_text, encoding="utf-8")
+        summary["patch_bytes"] = len(patch_text)
+
+        eval_meta = _run_eval(mode=eval_mode, eval_host=eval_host, instance_id=instance_id,
+                              instance=instance, patch_text=patch_text, patch_path=patch_path,
+                              output_dir=eval_output, dataset_name=dataset_name,
+                              model_name=model_name, timeout_s=eval_timeout_s, eval_log_path=eval_log)
+        summary["eval"] = eval_meta
+        report_path = eval_output / "eval_report.json"
+        if report_path.is_file():
+            try:
+                summary["eval_report"] = json.loads(report_path.read_text())
+            except Exception:  # noqa: BLE001
+                pass
+    finally:
+        if not args.container_keep:
+            _teardown_container(container, workspace_path)
+
+    summary["ended_at"] = _iso_now()
+    runner_meta_path.write_text(json.dumps(summary, indent=2))
+    return summary
+
+
 def _aggregate(per_task_root: Path, summary_path: Path, predictions_path: Path,
                started_at: str, ended_at: str, model_name: str) -> dict[str, Any]:
     """Ported from the flywheel: verdict_counts / resolved_rate / per-repo /
@@ -881,6 +1200,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--proxy-max-tokens", type=int, default=DEFAULT_PROXY_MAX_TOKENS)
     p.add_argument("--proxy-tool-choice", default="", help="'' = natural (default); 'required' forces")
     p.add_argument("--proxy-dump-dir", type=Path, default=None)
+    p.add_argument("--runtime", choices=("host", "container"), default="host",
+                   help="host = git-worktree bare checkout (legacy, deps absent); "
+                        "container = official per-instance swebench image with the "
+                        "prepared conda env (RUNTIME_ALIGNMENT_DIRECTIVE)")
+    p.add_argument("--container-name-prefix", default="swe_ep",
+                   help="prefix for the per-instance docker container name")
+    p.add_argument("--container-keep", action="store_true",
+                   help="keep the container + seeded workspace after each instance (debug)")
     args = p.parse_args(argv)
 
     dataset_name, instance_ids = _load_subset(args.subset)
@@ -924,13 +1251,23 @@ def main(argv: list[str] | None = None) -> int:
             t0 = time.time()
             print(f"[{_iso_now()}] -> {iid}", flush=True)
             try:
-                res = _process_one(instance_id=iid, instance=dataset_records[iid],
-                                   dataset_name=dataset_name, per_task_root=per_task_root,
-                                   repo_cache_root=args.repo_cache, proxy_base_url=proxy_base_url,
-                                   model=args.model, model_name=args.model_name, agent=args.agent,
-                                   agent_wall_s=args.agent_wall_s, eval_mode=args.eval_mode,
-                                   eval_host=args.eval_host, eval_timeout_s=args.eval_timeout_s,
-                                   skip_existing=args.skip_existing, args=args)
+                if args.runtime == "container":
+                    res = _process_one_container(
+                        instance_id=iid, instance=dataset_records[iid],
+                        dataset_name=dataset_name, per_task_root=per_task_root,
+                        proxy_base_url=proxy_base_url, model=args.model,
+                        model_name=args.model_name, agent=args.agent,
+                        agent_wall_s=args.agent_wall_s, eval_mode=args.eval_mode,
+                        eval_host=args.eval_host, eval_timeout_s=args.eval_timeout_s,
+                        skip_existing=args.skip_existing, args=args)
+                else:
+                    res = _process_one(instance_id=iid, instance=dataset_records[iid],
+                                       dataset_name=dataset_name, per_task_root=per_task_root,
+                                       repo_cache_root=args.repo_cache, proxy_base_url=proxy_base_url,
+                                       model=args.model, model_name=args.model_name, agent=args.agent,
+                                       agent_wall_s=args.agent_wall_s, eval_mode=args.eval_mode,
+                                       eval_host=args.eval_host, eval_timeout_s=args.eval_timeout_s,
+                                       skip_existing=args.skip_existing, args=args)
             except Exception as exc:  # noqa: BLE001
                 res = {"instance_id": iid, "status": "orchestrator_crash",
                        "error": f"{type(exc).__name__}: {exc}", "traceback": traceback.format_exc()}
