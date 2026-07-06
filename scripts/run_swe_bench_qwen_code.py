@@ -119,6 +119,18 @@ def _iso_now() -> str:
     return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _empty_patch_retries(args) -> int:
+    """Re-drive count for the empty-patch (tool-call-free-terminal) mitigation.
+
+    Precedence: --empty-patch-retries (if given) > env SWE_EMPTY_PATCH_RETRIES >
+    0. Clamped to >= 0. Default 0 keeps a plain single attempt (byte-identical to
+    the pre-envelope behaviour); the reference-envelope run sets >= 1."""
+    cli = getattr(args, "empty_patch_retries", None)
+    if cli is not None:
+        return max(0, int(cli))
+    return max(0, int(os.environ.get("SWE_EMPTY_PATCH_RETRIES", "0")))
+
+
 # ---------------------------------------------------------------------------
 # Dataset / subset loading (ported verbatim from the flywheel).
 # ---------------------------------------------------------------------------
@@ -1081,10 +1093,17 @@ def _process_one_container(*, instance_id: str, instance: dict, dataset_name: st
 
         patch_text = _extract()
 
-        # --- optional state-conditional empty-patch retry (default 0) ----------
+        # --- re-drive mitigation: state-conditional empty-patch retry ----------
+        # The reference envelope (temp 0.6) has a documented tool-call-free-terminal
+        # flake: the agent EXPLORES then emits a text-only terminal reply with no
+        # edit (flywheel run_swe_bench_q36_a.py:976 area). When the episode leaves
+        # NO patch, classify why (setup_loop vs agent_gave_up) and RE-DRIVE the
+        # agent up to N times with a hard must-act directive. N comes from
+        # --empty-patch-retries (env SWE_EMPTY_PATCH_RETRIES fallback); default 0 =
+        # OFF (byte-identical to a plain single attempt), the envelope run sets >=1.
         if not patch_text.strip() and agent != "mock":
             cause = _classify_empty_patch_cause(qwen_trace)
-            max_retries = max(0, int(os.environ.get("SWE_EMPTY_PATCH_RETRIES", "0")))
+            max_retries = _empty_patch_retries(args)
             summary["empty_patch_retry"] = {"cause": cause, "max_retries": max_retries,
                                             "recovered_patch_bytes": 0}
             for ridx in range(1, max_retries + 1):
@@ -1218,6 +1237,11 @@ def main(argv: list[str] | None = None) -> int:
                    help="prefix for the per-instance docker container name")
     p.add_argument("--container-keep", action="store_true",
                    help="keep the container + seeded workspace after each instance (debug)")
+    p.add_argument("--empty-patch-retries", type=int, default=None,
+                   help="re-drive mitigation: N re-launches with a must-act directive "
+                        "when an episode leaves NO patch (the temp-0.6 tool-call-free-"
+                        "terminal flake). Default None -> env SWE_EMPTY_PATCH_RETRIES "
+                        "-> 0 (off). The reference-envelope run sets >=1.")
     args = p.parse_args(argv)
 
     dataset_name, instance_ids = _load_subset(args.subset)
