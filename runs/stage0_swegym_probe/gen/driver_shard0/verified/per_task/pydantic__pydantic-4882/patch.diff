@@ -1,0 +1,59 @@
+diff --git a/pydantic/_internal/_model_construction.py b/pydantic/_internal/_model_construction.py
+index 94f80d2c1..08ef6c4a1 100644
+--- a/pydantic/_internal/_model_construction.py
++++ b/pydantic/_internal/_model_construction.py
+@@ -139,6 +139,13 @@ def complete_model_class(
+     except PydanticUndefinedAnnotation as e:
+         if raise_errors:
+             raise
++        if getattr(cls, "__config__", None) is not None:
++            if getattr(cls.__config__, "warn_missing_annotations", True):
++                warnings.warn(
++                    f"Model `{name}` is not fully defined; you should define `{e}`, then call `{name}.model_rebuild()`",
++                    UserWarning,
++                    stacklevel=4
++                )
+         cls.__pydantic_validator__ = MockValidator(  # type: ignore[assignment]
+             f'`{name}` is not fully defined, you should define `{e}`, then call `{name}.model_rebuild()`'
+         )
+diff --git a/pydantic/config.py b/pydantic/config.py
+index b5f63afab..7e7a8aa9a 100644
+--- a/pydantic/config.py
++++ b/pydantic/config.py
+@@ -57,6 +57,7 @@ class ConfigDict(TypedDict, total=False):
+     json_loads: Callable[[str], object]
+     json_dumps: Callable[..., Any]
+     json_encoders: Dict[Type[object], Callable[..., Any]]
++    warn_missing_annotations: bool
+     underscore_attrs_are_private: bool
+     allow_inf_nan: bool
+     copy_on_model_validation: Literal['none', 'deep', 'shallow']
+@@ -103,6 +104,7 @@ class BaseConfig:
+     smart_union: bool = False  # TODO remove
+     # whether dataclass `__post_init__` should be run before or after validation
+     post_init_call: Literal['before_validation', 'after_validation'] = 'before_validation'  # TODO remove
++    warn_missing_annotations: bool = True
+ 
+     @classmethod
+     def get_field_info(cls, name: str) -> Dict[str, Any]:
+diff --git a/pyproject.toml b/pyproject.toml
+index 82255f17a..66605a987 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -17,6 +17,8 @@ include = [
+     '/requirements',
+ ]
+ 
++
++[tool.pdm]
+ [project]
+ name = 'pydantic'
+ description = 'Data validation using Python type hints'
+@@ -53,6 +55,7 @@ dependencies = [
+     'typing-extensions>=4.1.0',
+     'pydantic-core>=0.7.1',
+     'annotated-types>=0.4.0',
++    "pre-commit>=2.21.0",
+ ]
+ optional-dependencies = { email = ['email-validator>=1.0.3'] }
+ dynamic = ['version', 'readme']

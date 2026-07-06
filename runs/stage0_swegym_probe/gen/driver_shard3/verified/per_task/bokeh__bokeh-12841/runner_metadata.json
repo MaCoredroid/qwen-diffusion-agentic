@@ -1,0 +1,48 @@
+{
+  "instance_id": "bokeh__bokeh-12841",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T03:39:59Z",
+  "repo": "bokeh/bokeh",
+  "base_commit": "78dc3e238194302b5daadf11d47bdd69bd07a2b8",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.bokeh_1776_bokeh-12841:latest",
+  "container": "swe_ep_s3_bokeh_bokeh-12841",
+  "qwen": {
+    "elapsed_s": 191.466,
+    "exit_code": 53,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": false,
+    "subtype": null,
+    "num_turns": null,
+    "duration_api_ms": null,
+    "usage": null,
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "patch_bytes": 2387,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "bokeh__bokeh-12841",
+    "model_id": "probe-stockAR",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard3/verified/per_task/bokeh__bokeh-12841/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard3/verified/per_task/bokeh__bokeh-12841/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T03:43:14Z"
+}

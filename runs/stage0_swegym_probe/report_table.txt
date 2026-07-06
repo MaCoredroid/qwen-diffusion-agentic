@@ -1,0 +1,18 @@
+STAGE 0 PHASE 2 PROBE — MEASURED (20 SWE-Gym instances, stock-AR @concurrency 4)
+==============================================================================
+ENV ACQUISITION (pull prebuilt xingyaoww + retag):
+  pulled=19 cached=1 failed=0  pull_s mean=36.0 median=20.2 p90=81.8  total=684.1s
+  size GB mean=1.95 total=39.1  env_min/instance=0.6
+GENERATION (concurrency=4):
+  server_up_wall=13.2min  GPU util%% mean=97.5 median=100.0 p90=100.0 (n=158)
+  GPU mem MiB median=30259.0  power W median=400.0
+  episode wall_s median=143.7 p90=185.367  turns median=45  patch_produced=15/20
+SCORING (SWE-Gym/SWE-Bench-Fork @242429c (patched: reuse prebuilt instance image)):
+  resolved=3/20  completed=15  empty_patch=5 errors=0  score_wall=458s maxw=2
+  resolved_ids=['iterative__dvc-10218', 'pydantic__pydantic-4911', 'python__mypy-10036']
+------------------------------------------------------------------------------
+MEASURED yield resolve@1 = 0.15 (Wilson95 [0.0524, 0.3604])   patch_produced_rate = 0.75
+MEASURED GPU-min/attempt = 0.66   docker-min/eval = 0.38   env-min/instance = 0.6
+------------------------------------------------------------------------------
+PRICE for 600-1000 keepers @ measured yield 0.15:
+  attempts needed = [4000, 6667]   serving GPU-h = [43.9, 73.1]   docker-eval wall-h = [25.4, 42.4]

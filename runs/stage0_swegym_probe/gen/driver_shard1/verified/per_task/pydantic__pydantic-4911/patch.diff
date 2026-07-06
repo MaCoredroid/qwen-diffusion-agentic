@@ -1,0 +1,51 @@
+diff --git a/pydantic/_internal/_model_construction.py b/pydantic/_internal/_model_construction.py
+index d6f511ee9..820d1ee99 100644
+--- a/pydantic/_internal/_model_construction.py
++++ b/pydantic/_internal/_model_construction.py
+@@ -3,6 +3,7 @@ Private logic for creating models.
+ """
+ from __future__ import annotations as _annotations
+ 
++import copy
+ import re
+ import sys
+ import typing
+@@ -224,7 +225,16 @@ def build_inner_schema(  # noqa: C901
+         try:
+             default = getattr(cls, ann_name)
+         except AttributeError:
+-            fields[ann_name] = FieldInfo.from_annotation(ann_type)
++            # First try to get the field info from parent classes' model_fields
++            inherited_field_info = None
++            for base in bases:
++                if hasattr(base, 'model_fields') and ann_name in base.model_fields:
++                    inherited_field_info = base.model_fields[ann_name]
++                    break
++            if inherited_field_info is not None:
++                fields[ann_name] = copy.copy(inherited_field_info)
++            else:
++                fields[ann_name] = FieldInfo.from_annotation(ann_type)
+         else:
+             fields[ann_name] = FieldInfo.from_annotated_attribute(ann_type, default)
+             # attributes which are fields are removed from the class namespace:
+diff --git a/pyproject.toml b/pyproject.toml
+index 911c2462d..25f0a63da 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -17,6 +17,8 @@ include = [
+     '/requirements',
+ ]
+ 
++
++[tool.pdm]
+ [project]
+ name = 'pydantic'
+ description = 'Data validation using Python type hints'
+@@ -53,6 +55,7 @@ dependencies = [
+     'typing-extensions>=4.2.0',
+     'pydantic-core>=0.7.1',
+     'annotated-types>=0.4.0',
++    "pre-commit>=2.21.0",
+ ]
+ optional-dependencies = { email = ['email-validator>=1.0.3'] }
+ dynamic = ['version', 'readme']

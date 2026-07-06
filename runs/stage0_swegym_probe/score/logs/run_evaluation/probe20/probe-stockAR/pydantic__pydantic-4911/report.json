@@ -1,0 +1,100 @@
+{
+    "pydantic__pydantic-4911": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "tests/test_edge_cases.py::test_str_method_inheritance",
+                    "tests/test_edge_cases.py::test_repr_method_inheritance",
+                    "tests/test_edge_cases.py::test_partial_inheritance_config",
+                    "tests/test_edge_cases.py::test_parent_field_with_default",
+                    "tests/test_json.py::test_json_encoder_inheritance_override"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include13-expected13]",
+                    "tests/test_json.py::test_custom_encoder",
+                    "tests/test_edge_cases.py::test_skip_defaults_deprecated",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude6-expected6]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include3-expected3]",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude12-expected12]",
+                    "tests/test_edge_cases.py::test_illegal_extra_value",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude3-expected3]",
+                    "tests/test_json.py::test_custom_encode_error",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude11-expected11]",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude2-expected2]",
+                    "tests/test_edge_cases.py::test_model_issubclass",
+                    "tests/test_edge_cases.py::test_values_order",
+                    "tests/test_json.py::test_custom_encoder_arg",
+                    "tests/test_json.py::test_iso_timedelta[input1-P1001DT1H2M3.654321S]",
+                    "tests/test_json.py::test_encode_dataclass",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude4-expected4]",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude13-expected13]",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude14-expected14]",
+                    "tests/test_edge_cases.py::test_arbitrary_types_allowed_custom_eq",
+                    "tests/test_edge_cases.py::test_dict_any",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude0-expected0]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include8-expected8]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include1-expected1]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include5-expected5]",
+                    "tests/test_edge_cases.py::test_field_set_allow_extra",
+                    "tests/test_edge_cases.py::test_list_bare",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include11-expected11]",
+                    "tests/test_json.py::test_custom_encode_fallback_basemodel",
+                    "tests/test_edge_cases.py::test_field_set_field_name",
+                    "tests/test_json.py::test_invalid_model",
+                    "tests/test_edge_cases.py::test_any_none",
+                    "tests/test_edge_cases.py::test_any_dict",
+                    "tests/test_edge_cases.py::test_str_enum",
+                    "tests/test_json.py::test_path_encoding",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include0-expected0]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include7-expected7]",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude5-expected5]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include9-expected9]",
+                    "tests/test_edge_cases.py::test_exclude_none",
+                    "tests/test_edge_cases.py::test_field_set_ignore_extra",
+                    "tests/test_json.py::test_iso_timedelta[input3-P0DT0H0M0.000000S]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include2-expected2]",
+                    "tests/test_json.py::test_iso_timedelta[input2--P1DT23H59M59.000000S]",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude9-expected9]",
+                    "tests/test_json.py::test_custom_iso_timedelta",
+                    "tests/test_edge_cases.py::test_bytes_subclass",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include6-expected6]",
+                    "tests/test_edge_cases.py::test_self_recursive",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude1-expected1]",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude7-expected7]",
+                    "tests/test_edge_cases.py::test_submodel_different_type",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include14-expected14]",
+                    "tests/test_edge_cases.py::test_exclude_none_with_extra",
+                    "tests/test_edge_cases.py::test_iter_coverage",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude10-expected10]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include10-expected10]",
+                    "tests/test_edge_cases.py::test_exclude_none_recursive",
+                    "tests/test_edge_cases.py::test_inheritance",
+                    "tests/test_edge_cases.py::test_force_extra",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include4-expected4]",
+                    "tests/test_json.py::test_iso_timedelta[input0-P12DT0H0M34.000056S]",
+                    "tests/test_edge_cases.py::test_advanced_include_nested_lists[include12-expected12]",
+                    "tests/test_edge_cases.py::test_dict_dict",
+                    "tests/test_edge_cases.py::test_dict_bare",
+                    "tests/test_edge_cases.py::test_advanced_exclude_nested_lists[exclude8-expected8]",
+                    "tests/test_edge_cases.py::test_init_inspection"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

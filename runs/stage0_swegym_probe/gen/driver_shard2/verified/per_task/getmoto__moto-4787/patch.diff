@@ -1,0 +1,129 @@
+diff --git a/moto/dynamodb2/models/__init__.py b/moto/dynamodb2/models/__init__.py
+index adb51a1c7..da22d5c1b 100644
+--- a/moto/dynamodb2/models/__init__.py
++++ b/moto/dynamodb2/models/__init__.py
+@@ -1564,20 +1564,53 @@ class DynamoDBBackend(BaseBackend):
+         return table.ttl
+ 
+     def transact_write_items(self, transact_items):
++        # Check for duplicate items across all transactions
++        # AWS DynamoDB requires that no two actions target the same item
++        item_keys = {}
++        for item in transact_items:
++            if "ConditionCheck" in item:
++                sub_item = item["ConditionCheck"]
++                table_name = sub_item["TableName"]
++                key = sub_item["Key"]
++            elif "Put" in item:
++                sub_item = item["Put"]
++                table_name = sub_item["TableName"]
++                key = self.get_keys_value(self.get_table(table_name), sub_item["Item"])
++            elif "Delete" in item:
++                sub_item = item["Delete"]
++                table_name = sub_item["TableName"]
++                key = sub_item["Key"]
++            elif "Update" in item:
++                sub_item = item["Update"]
++                table_name = sub_item["TableName"]
++                key = sub_item["Key"]
++            else:
++                raise ValueError
++
++            item_key = (table_name, key)
++            if item_key in item_keys:
++                msg_parts = [
++                    "Transaction request cannot include multiple operations on one item",
++                    "Found multiple operations targeting the same item",
++                ]
++                raise TransactionCanceledException([msg_parts])
++
++            item_keys[item_key] = True
++
+         # Create a backup in case any of the transactions fail
+         original_table_state = copy.deepcopy(self.tables)
+         errors = []
+         for item in transact_items:
+             try:
+                 if "ConditionCheck" in item:
+-                    item = item["ConditionCheck"]
+-                    key = item["Key"]
+-                    table_name = item["TableName"]
+-                    condition_expression = item.get("ConditionExpression", None)
+-                    expression_attribute_names = item.get(
++                    item_dict = item["ConditionCheck"]
++                    key = item_dict["Key"]
++                    table_name = item_dict["TableName"]
++                    condition_expression = item_dict.get("ConditionExpression", None)
++                    expression_attribute_names = item_dict.get(
+                         "ExpressionAttributeNames", None
+                     )
+-                    expression_attribute_values = item.get(
++                    expression_attribute_values = item_dict.get(
+                         "ExpressionAttributeValues", None
+                     )
+                     current = self.get_item(table_name, key)
+@@ -1590,14 +1623,14 @@ class DynamoDBBackend(BaseBackend):
+                     if not condition_op.expr(current):
+                         raise ConditionalCheckFailed()
+                 elif "Put" in item:
+-                    item = item["Put"]
+-                    attrs = item["Item"]
+-                    table_name = item["TableName"]
+-                    condition_expression = item.get("ConditionExpression", None)
+-                    expression_attribute_names = item.get(
++                    item_dict = item["Put"]
++                    attrs = item_dict["Item"]
++                    table_name = item_dict["TableName"]
++                    condition_expression = item_dict.get("ConditionExpression", None)
++                    expression_attribute_names = item_dict.get(
+                         "ExpressionAttributeNames", None
+                     )
+-                    expression_attribute_values = item.get(
++                    expression_attribute_values = item_dict.get(
+                         "ExpressionAttributeValues", None
+                     )
+                     self.put_item(
+@@ -1608,14 +1641,14 @@ class DynamoDBBackend(BaseBackend):
+                         expression_attribute_values=expression_attribute_values,
+                     )
+                 elif "Delete" in item:
+-                    item = item["Delete"]
+-                    key = item["Key"]
+-                    table_name = item["TableName"]
+-                    condition_expression = item.get("ConditionExpression", None)
+-                    expression_attribute_names = item.get(
++                    item_dict = item["Delete"]
++                    key = item_dict["Key"]
++                    table_name = item_dict["TableName"]
++                    condition_expression = item_dict.get("ConditionExpression", None)
++                    expression_attribute_names = item_dict.get(
+                         "ExpressionAttributeNames", None
+                     )
+-                    expression_attribute_values = item.get(
++                    expression_attribute_values = item_dict.get(
+                         "ExpressionAttributeValues", None
+                     )
+                     self.delete_item(
+@@ -1626,15 +1659,15 @@ class DynamoDBBackend(BaseBackend):
+                         expression_attribute_values=expression_attribute_values,
+                     )
+                 elif "Update" in item:
+-                    item = item["Update"]
+-                    key = item["Key"]
+-                    table_name = item["TableName"]
+-                    update_expression = item["UpdateExpression"]
+-                    condition_expression = item.get("ConditionExpression", None)
+-                    expression_attribute_names = item.get(
++                    item_dict = item["Update"]
++                    key = item_dict["Key"]
++                    table_name = item_dict["TableName"]
++                    update_expression = item_dict["UpdateExpression"]
++                    condition_expression = item_dict.get("ConditionExpression", None)
++                    expression_attribute_names = item_dict.get(
+                         "ExpressionAttributeNames", None
+                     )
+-                    expression_attribute_values = item.get(
++                    expression_attribute_values = item_dict.get(
+                         "ExpressionAttributeValues", None
+                     )
+                     self.update_item(

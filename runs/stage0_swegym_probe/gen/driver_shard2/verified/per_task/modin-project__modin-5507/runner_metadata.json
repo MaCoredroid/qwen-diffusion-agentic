@@ -1,0 +1,95 @@
+{
+  "instance_id": "modin-project__modin-5507",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T03:34:11Z",
+  "repo": "modin-project/modin",
+  "base_commit": "e1d42410c3900f93be420303e745de29c1e6bda1",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.modin-project_1776_modin-5507:latest",
+  "container": "swe_ep_s2_modin-project_modin-5507",
+  "qwen": {
+    "elapsed_s": 112.018,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 49,
+    "duration_api_ms": 111058,
+    "usage": {
+      "input_tokens": 970731,
+      "output_tokens": 5897,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 976628
+    },
+    "tool_calls": 49,
+    "tool_by_name": {
+      "read_file": {
+        "count": 5,
+        "success": 1,
+        "fail": 4,
+        "durationMs": 6,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 5
+        }
+      },
+      "glob": {
+        "count": 2,
+        "success": 0,
+        "fail": 2,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 42,
+        "success": 42,
+        "fail": 0,
+        "durationMs": 7186,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 42
+        }
+      }
+    },
+    "result_tail": "[API Error: 400 This model's maximum context length is 32768 tokens. However, you requested 2048 output tokens and your prompt contains at least 30721 input tokens, for a total of at least 32769 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=30721)]"
+  },
+  "empty_patch_retry": {
+    "cause": "agent_gave_up",
+    "max_retries": 0,
+    "recovered_patch_bytes": 0
+  },
+  "patch_bytes": 0,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "modin-project__modin-5507",
+    "model_id": "probe-stockAR",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard2/verified/per_task/modin-project__modin-5507/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard2/verified/per_task/modin-project__modin-5507/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T03:36:04Z"
+}

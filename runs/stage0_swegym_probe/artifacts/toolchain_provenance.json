@@ -1,0 +1,9 @@
+{
+  "scorer_harness": "https://github.com/SWE-Gym/SWE-Bench-Fork",
+  "scorer_commit": "242429c188fcfd06aad13fce9a54d450470bf0ac",
+  "scorer_patch": "artifacts/fork_reuse_prebuilt.patch (build_instance_image reuses a pre-pulled instance image; skips env-image requirement)",
+  "prebuilt_images": "xingyaoww/sweb.eval.x86_64.<instance_id with __ -> _s_>:latest (Docker Hub)",
+  "driver_image_key": "swebench/sweb.eval.x86_64.<instance_id with __ -> _1776_>:latest (re-tagged from pull)",
+  "venv": ".venv-swegym (uv, py3.12, editable install of the fork)",
+  "note": "MONAI excluded: Project-MONAI/MONAI not in fork MAP_REPO_VERSION_TO_SPECS; other 10 SWE-Gym repos covered"
+}

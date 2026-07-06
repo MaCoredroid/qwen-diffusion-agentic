@@ -1,0 +1,56 @@
+diff --git a/src/bokeh/core/serialization.py b/src/bokeh/core/serialization.py
+index 670047097..e0fc73d55 100644
+--- a/src/bokeh/core/serialization.py
++++ b/src/bokeh/core/serialization.py
+@@ -448,12 +448,12 @@ class Serializer:
+         if np.issubdtype(type(obj), np.bool_):
+             return self._encode_bool(bool(obj))
+ 
+-        # avoid importing pandashere unless it is actually in use
++        # avoid importing pandas here unless it is actually in use
+         module = type(obj).__module__
+         if module is not None and module.startswith("pandas"):
+             import pandas as pd
+-            from pandas.core.arrays import PandasArray
+-            if isinstance(obj, (pd.Series, pd.Index, PandasArray)):
++            from pandas.core.arrays.string_ import StringArray
++            if isinstance(obj, (pd.Series, pd.Index, StringArray)):
+                 return self._encode_ndarray(transform_series(obj))
+ 
+         self.error(f"can't serialize {type(obj)}")
+diff --git a/src/bokeh/util/serialization.py b/src/bokeh/util/serialization.py
+index 50d45e78e..cb3deef09 100644
+--- a/src/bokeh/util/serialization.py
++++ b/src/bokeh/util/serialization.py
+@@ -45,7 +45,6 @@ from .strings import format_docstring
+ if TYPE_CHECKING:
+     import numpy.typing as npt
+     import pandas as pd
+-    from pandas.core.arrays import PandasArray
+     from typing_extensions import TypeGuard
+ 
+ #-----------------------------------------------------------------------------
+@@ -339,7 +338,7 @@ def transform_array(array: npt.NDArray[Any]) -> npt.NDArray[Any]:
+ 
+     return array
+ 
+-def transform_series(series: pd.Series[Any] | pd.Index | PandasArray) -> npt.NDArray[Any]:
++def transform_series(series: pd.Series[Any] | pd.Index) -> npt.NDArray[Any]:
+     ''' Transforms a Pandas series into serialized form
+ 
+     Args:
+@@ -350,14 +349,11 @@ def transform_series(series: pd.Series[Any] | pd.Index | PandasArray) -> npt.NDA
+ 
+     '''
+     import pandas as pd
+-    from pandas.core.arrays import PandasArray
+ 
+     # not checking for pd here, this function should only be called if it
+     # is already known that series is a Pandas Series type
+     if isinstance(series, pd.PeriodIndex):
+         vals = series.to_timestamp().values  # type: ignore
+-    elif isinstance(series, PandasArray):
+-        vals = series.to_numpy()
+     else:
+         vals = series.values
+     return vals

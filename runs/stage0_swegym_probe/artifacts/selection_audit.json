@@ -1,0 +1,162 @@
+[
+  {
+    "instance_id": "pandas-dev__pandas-47157",
+    "repo": "pandas-dev/pandas",
+    "version": "1.5",
+    "slug_s": "pandas-dev_s_pandas-47157",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "pandas-dev__pandas-47222",
+    "repo": "pandas-dev/pandas",
+    "version": "1.5",
+    "slug_s": "pandas-dev_s_pandas-47222",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "getmoto__moto-4787",
+    "repo": "getmoto/moto",
+    "version": "3.0",
+    "slug_s": "getmoto_s_moto-4787",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "getmoto__moto-4792",
+    "repo": "getmoto/moto",
+    "version": "3.0",
+    "slug_s": "getmoto_s_moto-4792",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "python__mypy-10032",
+    "repo": "python/mypy",
+    "version": "0.810",
+    "slug_s": "python_s_mypy-10032",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "python__mypy-10036",
+    "repo": "python/mypy",
+    "version": "0.810",
+    "slug_s": "python_s_mypy-10036",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "iterative__dvc-10213",
+    "repo": "iterative/dvc",
+    "version": "3.37",
+    "slug_s": "iterative_s_dvc-10213",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "iterative__dvc-10218",
+    "repo": "iterative/dvc",
+    "version": "3.37",
+    "slug_s": "iterative_s_dvc-10218",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "dask__dask-10009",
+    "repo": "dask/dask",
+    "version": "2023.9",
+    "slug_s": "dask_s_dask-10009",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "dask__dask-10027",
+    "repo": "dask/dask",
+    "version": "2023.3",
+    "slug_s": "dask_s_dask-10027",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "modin-project__modin-5507",
+    "repo": "modin-project/modin",
+    "version": "0.23",
+    "slug_s": "modin-project_s_modin-5507",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "modin-project__modin-5940",
+    "repo": "modin-project/modin",
+    "version": "0.23",
+    "slug_s": "modin-project_s_modin-5940",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "pydantic__pydantic-4882",
+    "repo": "pydantic/pydantic",
+    "version": "2.0",
+    "slug_s": "pydantic_s_pydantic-4882",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "pydantic__pydantic-4911",
+    "repo": "pydantic/pydantic",
+    "version": "2.0",
+    "slug_s": "pydantic_s_pydantic-4911",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "conan-io__conan-10213",
+    "repo": "conan-io/conan",
+    "version": "1.44",
+    "slug_s": "conan-io_s_conan-10213",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "conan-io__conan-10408",
+    "repo": "conan-io/conan",
+    "version": "1.45",
+    "slug_s": "conan-io_s_conan-10408",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "facebookresearch__hydra-1006",
+    "repo": "facebookresearch/hydra",
+    "version": "1.0",
+    "slug_s": "facebookresearch_s_hydra-1006",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "facebookresearch__hydra-1265",
+    "repo": "facebookresearch/hydra",
+    "version": "1.1",
+    "slug_s": "facebookresearch_s_hydra-1265",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "bokeh__bokeh-12779",
+    "repo": "bokeh/bokeh",
+    "version": "3.0",
+    "slug_s": "bokeh_s_bokeh-12779",
+    "ok": true,
+    "reason": null
+  },
+  {
+    "instance_id": "bokeh__bokeh-12841",
+    "repo": "bokeh/bokeh",
+    "version": "3.0",
+    "slug_s": "bokeh_s_bokeh-12841",
+    "ok": true,
+    "reason": null
+  }
+]

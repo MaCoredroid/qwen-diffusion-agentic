@@ -1,0 +1,78 @@
+{
+  "instance_id": "bokeh__bokeh-12779",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T03:38:33Z",
+  "repo": "bokeh/bokeh",
+  "base_commit": "0da7e85d29e529c2e5278d5021cc75ecbf4b0d3c",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.bokeh_1776_bokeh-12779:latest",
+  "container": "swe_ep_s2_bokeh_bokeh-12779",
+  "qwen": {
+    "elapsed_s": 9.679,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 4,
+    "duration_api_ms": 8807,
+    "usage": {
+      "input_tokens": 42399,
+      "output_tokens": 517,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 42916
+    },
+    "tool_calls": 3,
+    "tool_by_name": {
+      "read_file": {
+        "count": 2,
+        "success": 2,
+        "fail": 0,
+        "durationMs": 6,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 2
+        }
+      },
+      "edit": {
+        "count": 1,
+        "success": 1,
+        "fail": 0,
+        "durationMs": 18,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 1
+        }
+      }
+    },
+    "result_tail": "The fix has been applied. The `open(init_py)` call on line 129 is now wrapped in a `with` statement to properly close the file, which prevents the `ResourceWarning`. The file content is read into `init_content` before being passed to `CodeRunner`."
+  },
+  "patch_bytes": 783,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "bokeh__bokeh-12779",
+    "model_id": "probe-stockAR",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard2/verified/per_task/bokeh__bokeh-12779/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard2/verified/per_task/bokeh__bokeh-12779/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T03:38:46Z"
+}

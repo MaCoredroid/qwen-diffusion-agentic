@@ -1,0 +1,53 @@
+{
+  "instance_id": "iterative__dvc-10213",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T03:32:28Z",
+  "repo": "iterative/dvc",
+  "base_commit": "987b1c421346a9e1faf518a9cf64f0d16c86ac53",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.iterative_1776_dvc-10213:latest",
+  "container": "swe_ep_s2_iterative_dvc-10213",
+  "qwen": {
+    "elapsed_s": 102.15,
+    "exit_code": 53,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": false,
+    "subtype": null,
+    "num_turns": null,
+    "duration_api_ms": null,
+    "usage": null,
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "empty_patch_retry": {
+    "cause": "agent_gave_up",
+    "max_retries": 0,
+    "recovered_patch_bytes": 0
+  },
+  "patch_bytes": 0,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "iterative__dvc-10213",
+    "model_id": "probe-stockAR",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard2/verified/per_task/iterative__dvc-10213/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard2/verified/per_task/iterative__dvc-10213/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T03:34:11Z"
+}

@@ -1,0 +1,24 @@
+diff --git a/mypy/server/update.py b/mypy/server/update.py
+index d2ac5bb2e..26fdd0de1 100644
+--- a/mypy/server/update.py
++++ b/mypy/server/update.py
+@@ -1172,6 +1172,10 @@ def refresh_suppressed_submodules(
+         return None
+     # Find any submodules present in the directory.
+     pkgdir = os.path.dirname(path)
++    if not os.path.exists(pkgdir):
++        # The submodule's package directory no longer exists, so there's
++        # nothing to do here.
++        return None
+     for fnam in fscache.listdir(pkgdir):
+         if (not fnam.endswith(('.py', '.pyi'))
+                 or fnam.startswith("__init__.")
+diff --git a/test-requirements.txt b/test-requirements.txt
+index 0adbfe1ce..33d0cd5d6 100644
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -1,3 +1,4 @@
++types-typing-extensions==3.7.3
+ -r mypy-requirements.txt
+ attrs>=18.0
+ flake8>=3.8.1

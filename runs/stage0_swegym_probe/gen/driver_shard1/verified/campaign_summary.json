@@ -1,0 +1,27 @@
+{
+  "model_name_or_path": "probe-stockAR",
+  "started_at": "2026-07-06T03:30:01Z",
+  "ended_at": "2026-07-06T03:42:44Z",
+  "instances_total": 5,
+  "verdict_counts": {
+    "skipped": 5
+  },
+  "failure_mode_counts": {
+    "null": 5
+  },
+  "per_repo_total": {
+    "dask/dask": 1,
+    "facebookresearch/hydra": 1,
+    "pandas-dev/pandas": 1,
+    "pydantic/pydantic": 1,
+    "python/mypy": 1
+  },
+  "per_repo_resolved": {},
+  "agent_wall_seconds": {
+    "p50": 161.679,
+    "p90": 185.367,
+    "min": 110.956,
+    "max": 185.367
+  },
+  "resolved_rate": 0.0
+}

@@ -1,0 +1,43 @@
+diff --git a/moto/cloudfront/models.py b/moto/cloudfront/models.py
+index 2ccf700fa..2588e3f01 100644
+--- a/moto/cloudfront/models.py
++++ b/moto/cloudfront/models.py
+@@ -125,6 +125,25 @@ class DistributionConfig:
+         self.price_class = "PriceClass_All"
+         self.http_version = "http2"
+         self.is_ipv6_enabled = True
++        self.comment = config.get("Comment", "")
++        
++        # Parse aliases
++        self.aliases = []
++        if "Aliases" in config and config["Aliases"].get("Items"):
++            aliases_items = config["Aliases"]["Items"]
++            if isinstance(aliases_items, list):
++                self.aliases = aliases_items
++            elif isinstance(aliases_items, dict) and "CNAME" in aliases_items:
++                # Single CNAME case
++                self.aliases = [aliases_items["CNAME"]]
++        self.max_ttl, self.min_ttl, self.default_ttl = 0, 0, 0
++        self.cache_policy_id = config.get("CachePolicyId", "")
++        self.response_headers_policy_id = config.get("ResponseHeadersPolicyId", "")
++        self.origin_request_policy_id = config.get("OriginRequestPolicyId", "")
++        self.realtime_log_config_arn = config.get("RealtimeLogConfigArn", "")
++        self.field_level_encryption_id = config.get("FieldLevelEncryptionId", "")
++        self.http_version = "http2"
++        self.is_ipv6_enabled = True
+ 
+ 
+ class Distribution(BaseModel):
+diff --git a/moto/cloudfront/responses.py b/moto/cloudfront/responses.py
+index 153b558bc..8af7efca1 100644
+--- a/moto/cloudfront/responses.py
++++ b/moto/cloudfront/responses.py
+@@ -381,7 +381,7 @@ DIST_CONFIG_TEMPLATE = """
+         </Items>
+         {% endif %}
+       </CustomErrorResponses>
+-      <Comment>{{ CommentType }}</Comment>
++      <Comment>{{ distribution.distribution_config.comment }}</Comment>
+       <Logging>
+         <Enabled>{{ distribution.distribution_config.logging.enabled }}</Enabled>
+         <IncludeCookies>{{ distribution.distribution_config.logging.include_cookies }}</IncludeCookies>

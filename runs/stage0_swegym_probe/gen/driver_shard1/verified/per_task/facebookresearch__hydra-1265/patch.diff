@@ -1,0 +1,35 @@
+diff --git a/hydra/core/default_element.py b/hydra/core/default_element.py
+index d04c1a4867..1663e46e58 100644
+--- a/hydra/core/default_element.py
++++ b/hydra/core/default_element.py
+@@ -118,6 +118,20 @@ class InputDefault:
+             or self.get_default_package() == package_header
+         ):
+             return
++
++        if package_header == "_group_":
++            msg = dedent(
++                f"""
++        It is deprecated to use the literal string '_group_' as a package header.
++        Please use the absolute group path directly.
++        See http://hydra.cc/docs/upgrades/1.1_changes_to_package_header for details.
++        """
++            )
++            warnings.warn(
++                category=UserWarning,
++                message=msg,
++            )
++
+         # package header is always interpreted as absolute.
+         # if it does not have a _global_ prefix, add it.
+         if package_header != "_global_" and not package_header.startswith("_global_."):
+diff --git a/requirements/requirements.txt b/requirements/requirements.txt
+index 8790f863f5..4eca1614a5 100644
+--- a/requirements/requirements.txt
++++ b/requirements/requirements.txt
+@@ -1,3 +1,5 @@
+ omegaconf>=2.1.0dev13
+ antlr4-python3-runtime==4.8
+ importlib-resources;python_version<'3.9'
++
++pip==24.0

@@ -1,0 +1,114 @@
+{
+  "instance_id": "pydantic__pydantic-4911",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T03:38:10Z",
+  "repo": "pydantic/pydantic",
+  "base_commit": "f55515820a407c5d31c45a7b0307925eecf21f34",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.pydantic_1776_pydantic-4911:latest",
+  "container": "swe_ep_s1_pydantic_pydantic-4911",
+  "qwen": {
+    "elapsed_s": 161.679,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 48,
+    "duration_api_ms": 160871,
+    "usage": {
+      "input_tokens": 968616,
+      "output_tokens": 9793,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 978409
+    },
+    "tool_calls": 51,
+    "tool_by_name": {
+      "read_file": {
+        "count": 12,
+        "success": 7,
+        "fail": 5,
+        "durationMs": 15,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 12
+        }
+      },
+      "glob": {
+        "count": 3,
+        "success": 0,
+        "fail": 3,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 30,
+        "success": 30,
+        "fail": 0,
+        "durationMs": 5772,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 30
+        }
+      },
+      "edit": {
+        "count": 5,
+        "success": 5,
+        "fail": 0,
+        "durationMs": 86,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 5
+        }
+      },
+      "write_file": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      }
+    },
+    "result_tail": ":\n   - Loop through parent classes to find one with `model_fields` containing the field\n   - If found, copy and use that `FieldInfo`, preserving all attributes (default, default_factory, title, description, etc.)\n   - If not found, fall back to original `FieldInfo.from_annotation()` behavior\n\n### Testing\nThe fix has been verified to work for:\n- Basic inheritance: `class Parent(BaseModel): a: int = 3` \u2192 `class Child(Parent): b: str = Field(alias='bbb')`\n- Multi-level inheritance (grandparent \u2192 parent \u2192 child)\n- `default_factory` inheritance\n- Field options inheritance (title, description, etc.)"
+  },
+  "patch_bytes": 1872,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "pydantic__pydantic-4911",
+    "model_id": "probe-stockAR",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard1/verified/per_task/pydantic__pydantic-4911/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard1/verified/per_task/pydantic__pydantic-4911/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T03:40:52Z"
+}

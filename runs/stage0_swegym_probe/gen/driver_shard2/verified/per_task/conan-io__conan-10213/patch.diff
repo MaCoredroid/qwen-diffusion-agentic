@@ -1,0 +1,35 @@
+diff --git a/conan/tools/cmake/toolchain.py b/conan/tools/cmake/toolchain.py
+index bed91da29..b1af78112 100644
+--- a/conan/tools/cmake/toolchain.py
++++ b/conan/tools/cmake/toolchain.py
+@@ -653,6 +653,30 @@ class ToolchainBlocks:
+         del self._blocks[name]
+ 
+     def __setitem__(self, name, block_type):
++        # Support custom blocks that don't inherit from Block using Python dynamism
++        # The base Block class has __init__(self, conanfile, toolchain), but we allow
++        # classes to be defined without inheritance by auto-injecting the __init__
++        has_template = hasattr(block_type, 'template')
++        has_context = hasattr(block_type, 'context')
++        
++        if has_template:
++            # Validate that template is a string
++            if not isinstance(block_type.template, str):
++                raise ConanException(
++                    "Block class 'template' must be a string, got {}" 
++                    .format(type(block_type.template).__name__)
++                )
++        
++        if has_context and hasattr(block_type, '__init__') and block_type.__init__ is object.__init__:
++            # Class has template but no __init__, auto-inject the proper one
++            # Similar to what Block base class does
++            original_init = block_type.__init__
++            def inject_init(self, conanfile, toolchain):
++                original_init(self)
++                self._conanfile = conanfile
++                self._toolchain = toolchain
++            block_type.__init__ = inject_init
++        
+         self._blocks[name] = block_type(self._conanfile, self._toolchain)
+ 
+     def __getitem__(self, name):

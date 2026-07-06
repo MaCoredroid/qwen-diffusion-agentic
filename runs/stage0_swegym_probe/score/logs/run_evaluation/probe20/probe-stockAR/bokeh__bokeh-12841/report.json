@@ -1,0 +1,96 @@
+{
+    "bokeh__bokeh-12841": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": false,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_pd_series"
+                ],
+                "failure": [
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_series"
+                ]
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_ndarray_dtypes_shape",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_Model_unset",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_convert_datetime_type_array_ignores_non_datetime_array",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt1]",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_convert_datetime_type_non_pandas_types",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_typed_array_base64",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_Model",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_convert_datetime_type_array",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_ndarray_int64_uint64",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_bytes",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_binary_array_types",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_convert_datetime_type_pandas_types",
+                    "tests/unit/bokeh/util/test_util__serialization.py::Test_make_id::test_simple_ids_yes",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_np_bool",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_ndarray_base64",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_np_datetime64",
+                    "tests/unit/bokeh/util/test_util__serialization.py::Test_make_id::test_default",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_dataclass_Model_nested",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt8]",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_bytes_base64",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_primitive",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_color_rgba",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_Model_circular",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt6]",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_dict_circular",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_non_serializable",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_list_circular",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_pd_timestamp",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_dataclass",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_set",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_dataclass_nested",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_np_consts",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_array_encoding_disabled_by_dtype",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_color_rgb",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt5]",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_dt_time",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_slice",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_ndarray",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_ndarray_object",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_dataclass_HasProps_nested",
+                    "tests/unit/bokeh/util/test_util__serialization.py::Test_make_globally_unique_id::test_basic",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_convert_timedelta_type_pandas_types",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_list_empty",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt7]",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_dict_empty",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_HasProps",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt0]",
+                    "tests/unit/bokeh/util/test_util__serialization.py::Test_make_id::test_simple_ids_no",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_convert_datetime_type_with_tz",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_datetime_types",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_is_timedelta_type_pandas_types",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_is_timedelta_type_non_pandas_types",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_dict",
+                    "tests/unit/bokeh/core/test_serialization.py::TestDeserializer::test_slice",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_is_datetime_type_pandas_types",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt3]",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_typed_array",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_np_int64",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_list",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt4]",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_max_int",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_transform_array[dt2]",
+                    "tests/unit/bokeh/core/test_serialization.py::TestSerializer::test_np_float64",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_is_datetime_type_non_pandas_types",
+                    "tests/unit/bokeh/util/test_util__serialization.py::test_convert_timedelta_type_non_pandas_types"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

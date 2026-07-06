@@ -1,0 +1,7 @@
+{
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "split": "train",
+  "instance_ids": [
+    "facebookresearch__hydra-1006"
+  ]
+}

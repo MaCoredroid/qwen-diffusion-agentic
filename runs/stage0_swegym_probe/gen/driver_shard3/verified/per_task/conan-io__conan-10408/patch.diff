@@ -1,0 +1,22 @@
+diff --git a/conan/tools/files/patches.py b/conan/tools/files/patches.py
+index 1dd15f3e1..0f33c6141 100644
+--- a/conan/tools/files/patches.py
++++ b/conan/tools/files/patches.py
+@@ -57,7 +57,16 @@ def patch(conanfile, base_path=None, patch_file=None, patch_string=None, strip=0
+     if not patchset:
+         raise ConanException("Failed to parse patch: %s" % (patch_file if patch_file else "string"))
+ 
+-    root = os.path.join(conanfile.source_folder, base_path) if base_path else conanfile.source_folder
++    if base_path:
++        # If base_path looks like an absolute path, use it directly. This is needed when
++        # base_path is something like self.build_folder from cmake_layout which points
++        # to an absolute path, not a relative subdirectory path.
++        if os.path.isabs(base_path):
++            root = base_path
++        else:
++            root = os.path.join(conanfile.source_folder, base_path)
++    else:
++        root = conanfile.source_folder
+     if not patchset.apply(strip=strip, root=root, fuzz=fuzz):
+         raise ConanException("Failed to apply patch: %s" % patch_file)
+ 

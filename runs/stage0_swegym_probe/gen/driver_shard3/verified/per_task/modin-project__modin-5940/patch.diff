@@ -1,0 +1,56 @@
+diff --git a/modin/core/io/io.py b/modin/core/io/io.py
+index f79ce04f..f455f08b 100644
+--- a/modin/core/io/io.py
++++ b/modin/core/io/io.py
+@@ -592,17 +592,40 @@ class BaseIO:
+         """
+         ErrorMessage.default_to_pandas("`to_sql`")
+         df = qc.to_pandas()
+-        df.to_sql(
+-            name=name,
+-            con=con,
+-            schema=schema,
+-            if_exists=if_exists,
+-            index=index,
+-            index_label=index_label,
+-            chunksize=chunksize,
+-            dtype=dtype,
+-            method=method,
+-        )
++        import pickle
++
++        import sqlalchemy as sa
++
++        # Handle non-pickleable SQLAlchemy Connection/Engine objects
++        try:
++            if isinstance(con, (sa.engine.Engine, sa.engine.Connection)):
++                con = repr(con.engine.url)
++            df.to_sql(
++                name=name,
++                con=con,
++                schema=schema,
++                if_exists=if_exists,
++                index=index,
++                index_label=index_label,
++                chunksize=chunksize,
++                dtype=dtype,
++                method=method,
++            )
++        except (pickle.PickleError, AttributeError):
++            # Try again with URL string if pickle fails
++            if isinstance(con, (sa.engine.Engine, sa.engine.Connection)):
++                con = repr(con.engine.url)
++            df.to_sql(
++                name=name,
++                con=con,
++                schema=schema,
++                if_exists=if_exists,
++                index=index,
++                index_label=index_label,
++                chunksize=chunksize,
++                dtype=dtype,
++                method=method,
++            )
+ 
+     @classmethod
+     @_inherit_docstrings(

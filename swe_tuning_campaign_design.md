@@ -125,6 +125,35 @@ constant-or-lower GPU-h. This is the [[gpu-utilization-standard]] applied: do no
 model as a documented purity caveat (changes "self-generated" → "distilled"; report it, do not silently mix). Primary
 remains self-generated per the task; levers are pulled only on a measured pilot shortfall (§5 decision point D1).
 
+### 1.4 PHASE-2 PROBE — MEASURED (2026-07-06; 20 SWE-Gym instances, stock-AR @concurrency 4)
+
+`runs/stage0_swegym_probe/` (README + `report.json`). Stratified 20 (2× each of the 10 repos the SWE-Gym harness-fork
+spec map covers; **MONAI excluded** — its repo is absent from `SWE-Bench-Fork`'s `MAP_REPO_VERSION_TO_SPECS`). All 20 are
+`source=SWE-Gym` rows in `pool_manifest.json` (KILL-D1 clean: disjoint from verified_500 ∪ Tier0 ∪ Tier1 by
+construction). Toolchain, all three legs measured:
+- **Env acquisition = docker PULL of the official prebuilt `xingyaoww/sweb.eval.x86_64.<id: __→_s_>` images (NOT a
+  from-scratch env build), re-tagged** to the driver key (`swebench/…_1776_…`) + the fork scorer key. **This retires the
+  design's dominant priced risk:** SWE-Gym images are *pullable*, not buildable-only — **0.6 min/instance, 39 GB/20, 0
+  failures**, vs the assumed one-time BUILD cost.
+- **Generation = one stock-AR vLLM server at `max_num_seqs=4`** + 4 concurrent qwen-code shards (episode-in-official-
+  container, native `qwen3_xml`, temp-0). **GPU util mean 97.5% / median 100%** (158 samples, 400 W) — the batching keeps
+  the GPU saturated ([[gpu-utilization-standard]] met). Episode wall median 144 s (turns median 45; 5/20 hit the 50-turn
+  cap). **13.2 min wall for all 20 ⇒ 0.66 GPU-min/attempt** (design assumed 1.5–3).
+- **Official filter = SWE-Gym/`SWE-Bench-Fork`@242429c** (one-line patch `artifacts/fork_reuse_prebuilt.patch` so the
+  harness *reuses the pulled instance image* instead of rebuilding env images). Validated on the gold patch
+  (`hydra-1006`→resolved). **0.38 docker-min/eval, 0 harness errors.**
+
+| measured | value | vs design assumption |
+|---|---|---|
+| **generator yield resolve@1** | **3/20 = 0.15** (Wilson95 **[0.05, 0.36]**) | assumed 25–45% (SWE-Gym); **BELOW** |
+| patch-produced rate | 15/20 = 0.75 (5 empty patches) | — (empty-patch = fixable gen shortfall) |
+| env acquisition / instance | **0.6 min (PULL)** | assumed one-time BUILD; **far cheaper** |
+| GPU-min / attempt (conc. 4) | **0.66** | assumed 1.5–3 |
+| GPU util during gen | **97.5% mean / 100% median** | util-standard: PASS |
+| docker-min / eval | **0.38** | assumed 1–5 |
+
+resolved: `dvc-10218`, `pydantic-4911`, `mypy-10036`. empty-patch: both pandas, `dask-10027`, `dvc-10213`, `modin-5507`.
+
 ---
 
 ## 2. TRAINING — what gets trained, and onto which base
@@ -293,6 +322,7 @@ that honestly, as the report already does.
 | phase | 5090 GPU-h | off-GPU eval wall | eng/wall | note |
 |---|---:|---:|---|---|
 | **1. Data-gen** (self-gen + docker-filter, 600–1k keepers @ ~40%, concurrency 4–8) | **30–60** | 40–90 h (parallelizable) | ~1 wk | + one-time SWE-Gym env-build cost if SWE-Gym primary |
+| **1. Data-gen — MEASURED-REPRICE @ probe yield 0.15 (best-of-1)** | **44–73** | 25–42 h | ~1–1.5 wk | env-build cost **retired** (images PULL @0.6 min/inst); GPU-min/attempt 0.66, docker-min/eval 0.38 (all measured) |
 | **2a. SWE-SFT** (2 arms × step-sweep, long seqs, 2 seeds) | **6–12** | — | ~2–3 d | LoRA SFT; ≤600 steps/arm |
 | **2b. AR spot-gate + N=5 AR SWE** (both arms) | **3–6** | 5–15 h docker | ~2 d | tool-call anchor + GSM8K + SWE resolve |
 | **3a. Re-conversion (#29, winner, 2 seeds)** | **3–5** | — | ~1–1.5 d | ~0.6 train + preservation battery |
@@ -303,6 +333,18 @@ that honestly, as the report already does.
 **Decision points for the user (each is a commit + a short report; the user steers, not dictated):**
 - **D1 — after the data-gen pilot (~50–100 instances):** measured yield + coverage. GO full-scale generation / pull a
   rescue lever / descope. (Guards against burning 30–60 GPU-h on a weak generator.)
+  > **D1 RESOLVED (2026-07-06 phase-2 probe, n=20) → ADJUST (fall back per design; NOT a clean GO, NOT KILL).** §1.4.
+  > **Yield resolve@1 = 3/20 = 0.15 (Wilson95 [0.05, 0.36])**, below the 20% GO bar → per the task rule the *single-attempt*
+  > SWE-Gym self-gen is **mispriced** (repriced ~44–73 GPU-h for 600–1k keepers, ≈2× the estimate; still tractable). It is
+  > **not** KILL-D2: coverage is broad (resolves span dvc/pydantic/mypy), harness errors = 0, and the toolchain is proven.
+  > Two measured wins de-risk the path regardless: **(i) the env-build risk is retired** — SWE-Gym images *pull* prebuilt
+  > (0.6 min/inst, no build); **(ii) generation is cheap + 97.5%-util** (0.66 GPU-min/attempt). The shortfall is *patch
+  > correctness*, and 25% of attempts (5/20) produced **no patch at all** (turn/wall-cap or non-committing episodes) — a
+  > fixable generation loss, not a hard ceiling. **Recommended levers before full-scale spend (user steers):** (a)
+  > **best-of-k** (k=3–5, temp>0, keep-any-resolve — the design's primary lever; lifts effective yield the most); (b)
+  > **diagnose/close the 25% empty-patch rate** (raise turn cap 50→75, enforce a final edit); (c) the **Verified-train-
+  > adjacent fallback** is now *also* cheap (prebuilt images, easier ~40–70%) and can supplement/replace SWE-Gym after the
+  > belt is relaxed to Tier0∪Tier1. Do **not** launch the full 600–1k self-gen at best-of-1 0.15 without pulling (a).
 - **D2 — after Stage-1 (both SWE-SFT arms, AR spot-gate + N=5 AR SWE):** **pick the base** (S vs T) by
   `max SWE resolve × anchor-held`; or KILL-T1/T2. This is the pivotal go/no-go — the re-conversion is only spent on a base
   that measurably has SWE *and* holds the certified tool-call anchor.

@@ -1,0 +1,12 @@
+diff --git a/dvc/repo/imp_url.py b/dvc/repo/imp_url.py
+index b243fa811..35df53eb5 100644
+--- a/dvc/repo/imp_url.py
++++ b/dvc/repo/imp_url.py
+@@ -79,6 +79,7 @@ def imp_url(  # noqa: PLR0913
+         stage.outs[0].transfer(url, odb=remote_odb, jobs=jobs)
+         stage.save_deps()
+         stage.md5 = stage.compute_md5()
++        stage.ignore_outs()
+     else:
+         if stage.deps[0].fs.version_aware:
+             stage.outs[0].can_push = False

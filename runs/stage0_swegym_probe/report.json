@@ -1,0 +1,97 @@
+{
+  "artifact": "runs/stage0_swegym_probe/report.json",
+  "n_attempts": 20,
+  "instances": [
+    "pandas-dev__pandas-47157",
+    "pandas-dev__pandas-47222",
+    "getmoto__moto-4787",
+    "getmoto__moto-4792",
+    "python__mypy-10032",
+    "python__mypy-10036",
+    "iterative__dvc-10213",
+    "iterative__dvc-10218",
+    "dask__dask-10009",
+    "dask__dask-10027",
+    "modin-project__modin-5507",
+    "modin-project__modin-5940",
+    "pydantic__pydantic-4882",
+    "pydantic__pydantic-4911",
+    "conan-io__conan-10213",
+    "conan-io__conan-10408",
+    "facebookresearch__hydra-1006",
+    "facebookresearch__hydra-1265",
+    "bokeh__bokeh-12779",
+    "bokeh__bokeh-12841"
+  ],
+  "env_acquisition": {
+    "mode": "docker pull xingyaoww prebuilt + re-tag (NO from-scratch build)",
+    "n_pulled": 19,
+    "n_cached": 1,
+    "n_failed": 0,
+    "pull_s_mean": 36.0,
+    "pull_s_median": 20.2,
+    "pull_s_p90": 81.8,
+    "pull_s_total": 684.1,
+    "env_min_per_instance": 0.6,
+    "size_gb_mean": 1.95,
+    "size_gb_total": 39.1
+  },
+  "generation": {
+    "concurrency": 4,
+    "server_up_wall_min": 13.2,
+    "gpu_util_pct_mean": 97.5,
+    "gpu_util_pct_median": 100.0,
+    "gpu_util_pct_p90": 100.0,
+    "gpu_util_samples": 158,
+    "gpu_mem_mib_median": 30259.0,
+    "gpu_power_w_median": 400.0,
+    "episode_wall_s_median": 143.7,
+    "episode_wall_s_p90": 185.367,
+    "episode_turns_median": 45,
+    "patch_produced": 15,
+    "gpu_min_per_attempt": 0.66
+  },
+  "scoring": {
+    "harness": "SWE-Gym/SWE-Bench-Fork @242429c (patched: reuse prebuilt instance image)",
+    "resolved": 3,
+    "completed": 15,
+    "empty_patch": 5,
+    "errors": 0,
+    "resolved_ids": [
+      "iterative__dvc-10218",
+      "pydantic__pydantic-4911",
+      "python__mypy-10036"
+    ],
+    "score_wall_s": 458,
+    "max_workers": 2,
+    "docker_min_per_eval": 0.38
+  },
+  "MEASURED": {
+    "yield_resolve_at_1": 0.15,
+    "yield_wilson95": [
+      0.0524,
+      0.3604
+    ],
+    "patch_produced_rate": 0.75,
+    "gpu_min_per_attempt": 0.66,
+    "docker_min_per_eval": 0.38,
+    "env_min_per_instance": 0.6
+  },
+  "PRICE_full_campaign": {
+    "note": "attempts = target/yield; GPU-h = attempts*gpu_min_per_attempt/60; docker wall = attempts*docker_min_per_eval/60. best-of-k not modeled (1 attempt/instance here).",
+    "at_measured_yield": {
+      "attempts_needed": [
+        4000,
+        6667
+      ],
+      "serving_gpu_h": [
+        43.9,
+        73.1
+      ],
+      "docker_eval_wall_h": [
+        25.4,
+        42.4
+      ]
+    }
+  }
+}

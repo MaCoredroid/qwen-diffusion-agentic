@@ -1,0 +1,47 @@
+{
+    "getmoto__moto-4787": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": false,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [],
+                "failure": [
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_multiple_transactions_on_same_item"
+                ]
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_put_item_wrong_attribute_type",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_update_item_range_key_set",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_query_gsi_with_wrong_key_attribute_names_throws_exception",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_empty_expressionattributenames_with_empty_projection",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_create_table_with_missing_attributes",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_hash_key_can_only_use_equals_operations[<]",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_empty_expressionattributenames_with_projection",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_empty_expressionattributenames",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_hash_key_can_only_use_equals_operations[>=]",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_create_table_with_redundant_attributes",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_creating_table_with_0_local_indexes",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_hash_key_cannot_use_begins_with_operations",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_create_table_with_redundant_and_missing_attributes",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_hash_key_can_only_use_equals_operations[<=]",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_batch_write_item_non_existing_table",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_creating_table_with_0_global_indexes",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_hash_key_can_only_use_equals_operations[>]",
+                    "tests/test_dynamodb2/exceptions/test_dynamodb_exceptions.py::test_batch_get_item_non_existing_table"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

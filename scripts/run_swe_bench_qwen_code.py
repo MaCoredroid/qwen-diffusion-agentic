@@ -127,11 +127,21 @@ def _load_subset(subset_json: Path) -> tuple[str, list[str]]:
     return payload["dataset_name"], list(payload["instance_ids"])
 
 
-def _load_dataset(dataset_name: str) -> dict[str, dict]:
+def _load_dataset(dataset_name: str, split: str = "test") -> dict[str, dict]:
+    # Local .json / .jsonl (e.g. the SWE-Gym probe pool dumped to a file) — no HF,
+    # arbitrary split. Keeps the container/patch path identical; only the record
+    # source differs.
+    if dataset_name.endswith(".json") or dataset_name.endswith(".jsonl"):
+        p = Path(dataset_name)
+        if dataset_name.endswith(".jsonl"):
+            recs = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+        else:
+            recs = json.loads(p.read_text())
+        return {ex["instance_id"]: dict(ex) for ex in recs}
     os.environ.setdefault("HF_HOME", str(DEFAULT_HF_HOME))
     from datasets import load_dataset
 
-    ds = load_dataset(dataset_name, split="test")
+    ds = load_dataset(dataset_name, split=split)
     return {ex["instance_id"]: dict(ex) for ex in ds}
 
 

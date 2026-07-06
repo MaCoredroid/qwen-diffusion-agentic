@@ -1,0 +1,30 @@
+{
+    "python__mypy-10036": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "mypy/test/testfinegrained.py::FineGrainedSuite::testFollowImportsNormalDeletePackage"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "mypy/test/testfinegrainedcache.py::FineGrainedCacheSuite::testFollowImportsNormalDeletePackage_cached"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

@@ -1,0 +1,102 @@
+{
+  "instance_id": "python__mypy-10032",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T03:32:24Z",
+  "repo": "python/mypy",
+  "base_commit": "82dd59ee8da387c41b9edfe577c88d172f2c7091",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.python_1776_mypy-10032:latest",
+  "container": "swe_ep_s0_python_mypy-10032",
+  "qwen": {
+    "elapsed_s": 178.956,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 45,
+    "duration_api_ms": 178117,
+    "usage": {
+      "input_tokens": 823989,
+      "output_tokens": 10105,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 834094
+    },
+    "tool_calls": 44,
+    "tool_by_name": {
+      "read_file": {
+        "count": 3,
+        "success": 1,
+        "fail": 2,
+        "durationMs": 5,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 3
+        }
+      },
+      "todo_write": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "list_files_detailed": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 39,
+        "success": 39,
+        "fail": 0,
+        "durationMs": 7212,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 39
+        }
+      }
+    },
+    "result_tail": "[API Error: 400 This model's maximum context length is 32768 tokens. However, you requested 2048 output tokens and your prompt contains at least 30721 input tokens, for a total of at least 32769 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=30721)]"
+  },
+  "patch_bytes": 251,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "python__mypy-10032",
+    "model_id": "probe-stockAR",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard0/verified/per_task/python__mypy-10032/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard0/verified/per_task/python__mypy-10032/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T03:35:24Z"
+}

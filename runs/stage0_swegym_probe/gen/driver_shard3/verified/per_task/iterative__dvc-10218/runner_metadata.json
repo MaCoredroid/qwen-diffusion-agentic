@@ -1,0 +1,126 @@
+{
+  "instance_id": "iterative__dvc-10218",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T03:32:52Z",
+  "repo": "iterative/dvc",
+  "base_commit": "fe008d974848b2241195d9e37afd1a6f2e323c59",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.iterative_1776_dvc-10218:latest",
+  "container": "swe_ep_s3_iterative_dvc-10218",
+  "qwen": {
+    "elapsed_s": 108.166,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 45,
+    "duration_api_ms": 107394,
+    "usage": {
+      "input_tokens": 776552,
+      "output_tokens": 5964,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 782516
+    },
+    "tool_calls": 44,
+    "tool_by_name": {
+      "read_file": {
+        "count": 11,
+        "success": 1,
+        "fail": 10,
+        "durationMs": 13,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 11
+        }
+      },
+      "todo_write": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "grep_search": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 29,
+        "success": 29,
+        "fail": 0,
+        "durationMs": 5258,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 29
+        }
+      },
+      "glob": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "edit": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 1,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 1
+        }
+      }
+    },
+    "result_tail": "The fix is complete. The `stage.ignore_outs()` call has been added to the `to_remote` branch, which will ensure that `.gitignore` entries are created for files imported with `dvc import-url --to-remote`."
+  },
+  "patch_bytes": 449,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "iterative__dvc-10218",
+    "model_id": "probe-stockAR",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard3/verified/per_task/iterative__dvc-10218/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard3/verified/per_task/iterative__dvc-10218/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T03:34:41Z"
+}

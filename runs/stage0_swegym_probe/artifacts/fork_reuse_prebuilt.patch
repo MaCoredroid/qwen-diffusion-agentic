@@ -1,0 +1,37 @@
+diff --git a/swebench/harness/docker_build.py b/swebench/harness/docker_build.py
+index fd53863..914df72 100644
+--- a/swebench/harness/docker_build.py
++++ b/swebench/harness/docker_build.py
+@@ -224,6 +224,15 @@ def get_env_configs_to_build(
+     test_specs = get_test_specs_from_dataset(dataset)
+ 
+     for test_spec in test_specs:
++        # PROBE PATCH (stage0_swegym_probe): if the prebuilt instance image is
++        # already present (pulled from xingyaoww + re-tagged), we do NOT need its
++        # intermediate env image at all -- build_instance_image reuses the instance
++        # image directly. Skip the (slow, from-scratch) env build for it.
++        try:
++            client.images.get(test_spec.instance_image_key)
++            continue
++        except docker.errors.ImageNotFound:
++            pass
+         # Check if the base image exists
+         try:
+             if test_spec.base_image_key not in base_images:
+@@ -427,6 +436,16 @@ def build_instance_image(
+         logger (logging.Logger): Logger to use for logging the build process
+         nocache (bool): Whether to use the cache when building
+     """
++    # PROBE PATCH (stage0_swegym_probe): if the instance image is ALREADY present
++    # (we pulled the official prebuilt xingyaoww image and re-tagged it to this
++    # local key), reuse it as-is. This avoids requiring the intermediate env image
++    # (which we never built). force_rebuild removes the image before this call, so
++    # this only short-circuits genuine reuse.
++    try:
++        client.images.get(test_spec.instance_image_key)
++        return
++    except docker.errors.ImageNotFound:
++        pass
+     # Set up logging for the build process
+     build_dir = INSTANCE_IMAGE_BUILD_DIR / test_spec.instance_image_key.replace(":", "__")
+     new_logger = False

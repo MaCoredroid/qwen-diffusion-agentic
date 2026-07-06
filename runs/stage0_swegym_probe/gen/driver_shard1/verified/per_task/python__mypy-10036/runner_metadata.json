@@ -1,0 +1,102 @@
+{
+  "instance_id": "python__mypy-10036",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T03:33:08Z",
+  "repo": "python/mypy",
+  "base_commit": "a1a74fe4bb8ac4e094bf6345da461bae21791e95",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.python_1776_mypy-10036:latest",
+  "container": "swe_ep_s1_python_mypy-10036",
+  "qwen": {
+    "elapsed_s": 123.828,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 49,
+    "duration_api_ms": 122992,
+    "usage": {
+      "input_tokens": 873525,
+      "output_tokens": 6028,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 879553
+    },
+    "tool_calls": 48,
+    "tool_by_name": {
+      "read_file": {
+        "count": 6,
+        "success": 2,
+        "fail": 4,
+        "durationMs": 8,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 6
+        }
+      },
+      "glob": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 40,
+        "success": 40,
+        "fail": 0,
+        "durationMs": 14799,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 40
+        }
+      },
+      "edit": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 1,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 1
+        }
+      }
+    },
+    "result_tail": "The fix has already been implemented in the file. The code at lines 1175-1184 shows:\n\n```python\npkgdir = os.path.dirname(path)\nif not os.path.exists(pkgdir):\n    # The submodule's package directory no longer exists, so there's\n    # nothing to do here.\n    return None\nfor fnam in fscache.listdir(pkgdir):\n```\n\nThis matches the fix described in the problem statement. The check for `os.path.exists(pkgdir)` before calling `fscache.listdir()` prevents the daemon crash when a stub package is removed."
+  },
+  "patch_bytes": 869,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "python__mypy-10036",
+    "model_id": "probe-stockAR",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard1/verified/per_task/python__mypy-10036/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/gen/driver_shard1/verified/per_task/python__mypy-10036/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T03:35:13Z"
+}

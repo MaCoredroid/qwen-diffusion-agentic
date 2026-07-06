@@ -1,0 +1,27 @@
+{
+  "model_name_or_path": "probe-stockAR",
+  "started_at": "2026-07-06T03:30:05Z",
+  "ended_at": "2026-07-06T03:43:14Z",
+  "instances_total": 5,
+  "verdict_counts": {
+    "skipped": 5
+  },
+  "failure_mode_counts": {
+    "null": 5
+  },
+  "per_repo_total": {
+    "bokeh/bokeh": 1,
+    "conan-io/conan": 1,
+    "getmoto/moto": 1,
+    "iterative/dvc": 1,
+    "modin-project/modin": 1
+  },
+  "per_repo_resolved": {},
+  "agent_wall_seconds": {
+    "p50": 166.337,
+    "p90": 196.674,
+    "min": 108.166,
+    "max": 196.674
+  },
+  "resolved_rate": 0.0
+}
