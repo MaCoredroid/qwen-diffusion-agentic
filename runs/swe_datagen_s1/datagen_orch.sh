@@ -101,6 +101,7 @@ while :; do
         echo "KILL_YIELD_COLLAPSE $(stamp) $ST" > "$KILLF"; break;;
   esac
   cycle=$((cycle+1))
+  GEN_RC=0   # reset per cycle; only the REAL gen branch overwrites it
   if [[ $cycle -gt $MAX_CYCLES ]]; then echo "[stop] MAX_CYCLES=$MAX_CYCLES backstop $(stamp)"; break; fi
 
   # ---- select the next batch (resume-aware) --------------------------------
@@ -139,7 +140,8 @@ while :; do
       echo "[pull] aborted (disk floor) -> halt"; echo "HALT_DISK_FLOOR $(stamp)" > "$KILLF"; break; }
     echo "[gen] $(stamp)"
     bash "$ROOT/datagen_gen.sh" "$BATCHDIR" "$GEN_ROOT" "$C" > "$BATCHDIR/logs_gen.txt" 2>&1
-    echo "[gen] rc=$? $(stamp)"
+    GEN_RC=$?
+    echo "[gen] rc=$GEN_RC $(stamp)"
     echo "[score] $(stamp)"
     bash "$ROOT/datagen_score.sh" "$BATCHDIR" "$GEN_ROOT" "$C" > "$BATCHDIR/logs_score.txt" 2>&1
     echo "[score] rc=$? $(stamp)"
@@ -154,7 +156,16 @@ while :; do
   tail -1 "$BATCHDIR/logs_keepers.txt"
 
   # ---- record attempts (drives resume + rolling yield) ---------------------
-  "$PY" "$ROOT/ledger.py" record "$BATCHDIR" "$BID" "$ATTEMPTS"
+  # If gen FAILED (rc!=0 -> preflight timeout / server never booted), the whole
+  # batch is INFRA-INVALID: flag every row so it is excluded from yield, the kill
+  # window and coverage, and the ids stay re-drawable. The kill must judge the
+  # TEACHER, never our infra failure.
+  REC_FLAGS=()
+  if [[ "${GEN_RC:-0}" -ne 0 && "$DATAGEN_DRYRUN" != "1" ]]; then
+    echo "[record] gen rc=$GEN_RC -> recording batch INFRA-INVALID (excluded from yield/kill; ids re-drawable)"
+    REC_FLAGS=(--infra-invalid "gen_rc=${GEN_RC}")
+  fi
+  "$PY" "$ROOT/ledger.py" record "$BATCHDIR" "$BID" "$ATTEMPTS" "${REC_FLAGS[@]}"
 
   # ---- rmi the batch images (reclaim disk) ---------------------------------
   if [[ "$DATAGEN_DRYRUN" == "1" ]]; then

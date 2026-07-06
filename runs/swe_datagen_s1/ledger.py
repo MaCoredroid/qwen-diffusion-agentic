@@ -46,8 +46,10 @@ subcommands:
       <status_file>, and print a JSON blob the shell parses. Verdict is one of:
         DONE_TARGET | DONE_EXHAUSTED | KILL_YIELD_COLLAPSE | CONTINUE
       Rolling yield = resolved / real-attempts over the last <kill-window> REAL
-      attempts (env_unavailable excluded — a missing image is a skip, not a
-      generator failure). The kill only fires once the window is full.
+      attempts (env_unavailable AND infra_invalid excluded — a missing image is a
+      skip, and an infra_invalid batch [gen never booted a server] is our bug, not
+      a teacher signal; the kill must judge the teacher). The kill only fires once
+      the window is full.
       DONE_EXHAUSTED tracks the SAME eligibility nextbatch uses (best-of-k aware).
 """
 from __future__ import annotations
@@ -56,6 +58,16 @@ from collections import Counter
 from pathlib import Path
 
 REAL_VERDICTS = {"resolved", "unresolved", "empty_patch", "error", "no_prediction"}
+
+
+def _valid(rows: list[dict]) -> list[dict]:
+    """Drop INFRA-INVALID rows. An attempt is infra_invalid when the batch never
+    got a real shot at the teacher (e.g. gen preflight-timed-out / server never
+    booted -> the whole batch is no_prediction). Such rows are NOT evidence about
+    the teacher, so they must be invisible to yield, the kill window, coverage
+    (attempt_count) and exhaustion — the instance is re-drawable, and the kill
+    judges the teacher, not our infra bug. Written by `record --infra-invalid`."""
+    return [r for r in rows if not r.get("infra_invalid")]
 
 
 def _fam(iid: str) -> str:
@@ -77,7 +89,7 @@ def _read_jsonl(p: Path) -> list[dict]:
 
 
 def _attempted_ids(attempts: Path) -> set[str]:
-    return {r["instance_id"] for r in _read_jsonl(attempts) if "instance_id" in r}
+    return {r["instance_id"] for r in _valid(_read_jsonl(attempts)) if "instance_id" in r}
 
 
 # ---------------------------------------------------------------------------
@@ -85,11 +97,12 @@ def _attempted_ids(attempts: Path) -> set[str]:
 # batch draw can NEVER disagree)
 # ---------------------------------------------------------------------------
 def _attempt_stats(attempt_rows: list[dict]):
-    """Per-instance: real-attempt count, resolved?, env_unavailable? (terminal)."""
+    """Per-instance: real-attempt count, resolved?, env_unavailable? (terminal).
+    INFRA-INVALID rows are dropped first (never a real attempt)."""
     real = Counter()
     resolved: set[str] = set()
     env_unavail: set[str] = set()
-    for r in attempt_rows:
+    for r in _valid(attempt_rows):
         iid = r.get("instance_id")
         v = r.get("verdict")
         if not iid:
@@ -187,7 +200,8 @@ def _load_report(batchdir: Path) -> dict:
     return {}
 
 
-def cmd_record(batchdir: Path, batch_id: str, attempts: Path) -> int:
+def cmd_record(batchdir: Path, batch_id: str, attempts: Path,
+               infra_invalid: str | None = None) -> int:
     ids = json.loads((batchdir / "subset.json").read_text())["instance_ids"]
     rep = _load_report(batchdir)
     resolved = set(rep.get("resolved_ids", []))
@@ -218,10 +232,17 @@ def cmd_record(batchdir: Path, batch_id: str, attempts: Path) -> int:
                 v = "unresolved"
             else:
                 v = "no_prediction"
-            f.write(json.dumps({"instance_id": iid, "batch_id": batch_id,
-                                "verdict": v, "ts": ts}) + "\n")
+            row = {"instance_id": iid, "batch_id": batch_id, "verdict": v, "ts": ts}
+            # INFRA-INVALID: the batch never got a real shot at the teacher (gen
+            # failed -> server never booted). Flag every row so ledger yield / the
+            # kill window / coverage all ignore it and the id stays re-drawable.
+            if infra_invalid:
+                row["infra_invalid"] = True
+                row["infra_reason"] = infra_invalid
+            f.write(json.dumps(row) + "\n")
             added[v] += 1
     print(json.dumps({"batch_id": batch_id, "recorded": sum(added.values()),
+                      "infra_invalid": bool(infra_invalid),
                       "by_verdict": added}))
     return 0
 
@@ -245,7 +266,11 @@ def cmd_state(a: argparse.Namespace) -> int:
         remaining = len([i for i in order if i not in attempted_ids])
         remaining_detail = None
 
-    real = [r for r in attempt_rows if r.get("verdict") in REAL_VERDICTS]
+    n_infra_invalid = len(attempt_rows) - len(_valid(attempt_rows))
+    # yield / kill window / lifetime are computed over VALID real attempts only:
+    # infra_invalid rows are our bug, not teacher evidence, so the kill judges the
+    # teacher, not the infra failure.
+    real = [r for r in _valid(attempt_rows) if r.get("verdict") in REAL_VERDICTS]
     n_real = len(real)
     window = real[-a.kill_window:]
     win_resolved = sum(1 for r in window if r["verdict"] == "resolved")
@@ -270,6 +295,7 @@ def cmd_state(a: argparse.Namespace) -> int:
         "floor_met": n_keepers >= a.floor,
         "attempts_real": n_real,
         "attempts_total": len(attempt_rows),
+        "attempts_infra_invalid": n_infra_invalid,
         "remaining_frontier": remaining,
         "remaining_detail": remaining_detail,
         "best_of_k": bool(cfg and cfg.get("enabled", True)),
@@ -296,6 +322,9 @@ def main() -> int:
 
     p = sub.add_parser("nextbatch"); p.add_argument("frontier"); p.add_argument("attempts"); p.add_argument("batch_size", type=int)
     p = sub.add_parser("record"); p.add_argument("batchdir"); p.add_argument("batch_id"); p.add_argument("attempts")
+    p.add_argument("--infra-invalid", default=None,
+                   help="reason string; flags every recorded row infra_invalid "
+                        "(excluded from yield/kill/coverage; id stays re-drawable)")
     p = sub.add_parser("state")
     p.add_argument("attempts"); p.add_argument("keepers"); p.add_argument("frontier"); p.add_argument("status_file")
     p.add_argument("--target", type=int, default=1000)
@@ -307,7 +336,8 @@ def main() -> int:
     if a.cmd == "nextbatch":
         return cmd_nextbatch(Path(a.frontier), Path(a.attempts), a.batch_size)
     if a.cmd == "record":
-        return cmd_record(Path(a.batchdir), a.batch_id, Path(a.attempts))
+        return cmd_record(Path(a.batchdir), a.batch_id, Path(a.attempts),
+                          infra_invalid=a.infra_invalid)
     if a.cmd == "state":
         return cmd_state(a)
     return 2

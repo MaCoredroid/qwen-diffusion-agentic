@@ -23,6 +23,17 @@ AGENT_WALL_S="${AGENT_WALL_S:-900}"
 QWEN_MAX_WALL="${QWEN_MAX_WALL:-840s}"
 MAX_TURNS="${MAX_TURNS:-50}"          # design allows 50->75; keep 50 (envelope probe cap)
 BOOT_DL="${BOOT_DL:-600}"
+# GPU preflight clear-threshold. This is NOT "GPU must be empty" — this host runs a
+# GNOME desktop whose compositor (gnome-shell) holds a PERSISTENT ~3.9 GiB of VRAM
+# that never releases. The old hardcoded 3600 MiB gate passed cycle-1 by 13 MiB
+# (3587 clear) but the desktop crept to ~3923 MiB by cycle-2, so cycles 2-3
+# preflight-TIMED-OUT (600s) and the server NEVER booted -> every instance recorded
+# no_prediction. The gate's real job is to catch a LEAKED model server (a 9B AR
+# server holds ~18-27 GiB), so the bar must sit ABOVE the desktop baseline and well
+# BELOW a leaked server. 8000 MiB tolerates the desktop (+~4 GiB creep headroom) and
+# still trips on any leaked vLLM. vLLM boots fine on top: gpu_util=0.85 leaves ~15%
+# (~4.9 GiB) free, which absorbs the ~3.9 GiB desktop (cycle-1 proved boot at 3587).
+PREFLIGHT_MAX_MIB="${PREFLIGHT_MAX_MIB:-8000}"
 mkdir -p "$GEN_ROOT" "$BATCHDIR/logs"
 
 # --- reference envelope, FORCED per-request via each shard driver's proxy ------
@@ -48,9 +59,9 @@ preflight() {
   local deadline=$((SECONDS+600))
   while :; do
     local u; u=$(gpu_used)
-    [[ "$u" -lt 3600 ]] && { echo "[preflight] GPU ${u} MiB clear" >&2; return 0; }
-    [[ $SECONDS -gt $deadline ]] && { echo "[preflight] TIMEOUT ${u} MiB" >&2; return 1; }
-    echo "[preflight] GPU ${u} MiB busy..." >&2; sleep 10
+    [[ "$u" -lt "$PREFLIGHT_MAX_MIB" ]] && { echo "[preflight] GPU ${u} MiB clear (<${PREFLIGHT_MAX_MIB} MiB; ~desktop baseline)" >&2; return 0; }
+    [[ $SECONDS -gt $deadline ]] && { echo "[preflight] TIMEOUT ${u} MiB (>=${PREFLIGHT_MAX_MIB}; leaked server?)" >&2; return 1; }
+    echo "[preflight] GPU ${u} MiB busy (>=${PREFLIGHT_MAX_MIB})..." >&2; sleep 10
   done
 }
 wait_ready() {
@@ -120,7 +131,7 @@ kill "$SAMPLER_PID" 2>/dev/null || true; SAMPLER_PID=""
 systemctl --user stop "${SCOPE}.scope" 2>/dev/null || true; ACTIVE_SCOPE=""
 sleep 5
 settle=$((SECONDS+180))
-while :; do u=$(gpu_used); [[ "$u" -lt 3600 ]] && { echo "[gen] GPU settled ${u} MiB" >&2; break; }
+while :; do u=$(gpu_used); [[ "$u" -lt "$PREFLIGHT_MAX_MIB" ]] && { echo "[gen] GPU settled ${u} MiB" >&2; break; }
   [[ $SECONDS -gt $settle ]] && { echo "[gen] settle timeout ${u} MiB" >&2; break; }; sleep 5; done
 echo "==== BATCH GEN END rc=$rc $(date -u +%FT%TZ) ====" >&2
 exit $rc
