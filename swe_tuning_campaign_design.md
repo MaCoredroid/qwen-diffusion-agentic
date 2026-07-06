@@ -354,6 +354,31 @@ that honestly, as the report already does.
   base / stop. (Guards the ~35–60 GPU-h N=25–50 tier.)
 - **D5 — after N=25–50:** the deliverable AR-vs-diffusion verdict at ranking-tier significance, with the honest CI caveat.
 
+### 5.1 PHASE-3 PRICED DECISION LEDGER (measured vs thresholds → verdict)
+
+The D1 gate reduced to its governing thresholds, each measured on the n=20 probe (§1.4). Verdict is per-threshold, then the
+overall call is the join.
+
+| governing threshold | bar | measured (n=20) | per-threshold |
+|---|---|---|---|
+| **GO — generator yield resolve@1** | ≥ 0.20 (task GO bar) | **0.15** (Wilson95 [0.05, 0.36]) | **MISS** — CI straddles the bar; best-of-1 self-gen is mispriced |
+| **KILL-D2 — yield collapse** | < 0.15 **AND** coverage thin | 0.15 (at bar, not below) **AND** coverage **broad** (resolves span dvc/pydantic/mypy) | **NOT triggered** (both conjuncts must hold) |
+| **KILL-D1 — leakage** | any `train_id ∩ (verified_500 ∪ Tier0 ∪ Tier1)` | 0 (all 20 `source=SWE-Gym`, disjoint by construction) | **CLEAN** |
+| **util-standard — GPU util in gen** | not LOW | **97.5% mean / 100% median** (158 samples) | **PASS** |
+| harness integrity | 0 errors | **0** harness errors, 0.75 patch-produced | **PASS** |
+
+**Recomputed campaign price (measured inputs, best-of-1 @ yield 0.15):** for 600–1,000 keepers → **4,000–6,667 attempts ·
+44–73 serving GPU-h · 25–42 docker-eval wall-h**. This is ≈2× the design's 30–60 GPU-h data-gen line, but two measured wins
+lower total risk: **env-build cost is retired** (SWE-Gym images *pull* prebuilt at 0.6 min/inst, not build) and **generation
+is cheap + GPU-saturated** (0.66 GPU-min/attempt at 97.5% util). The shortfall is patch *correctness*, and 25% of attempts
+(5/20) produced **no patch at all** — a fixable generation loss, not a capability ceiling.
+
+**Overall verdict: ADJUST** (not a clean GO — yield below the 0.20 bar; not KILL — KILL-D2 not triggered, KILL-D1 clean,
+toolchain proven). **Do not launch the full 600–1k self-gen at best-of-1 0.15.** Pull the design's primary lever first —
+**best-of-k** (k=3–5, temp>0, keep-any-resolve) — and/or close the 25% empty-patch rate (turn cap 50→75 + forced final
+edit); the now-also-cheap **Verified-train-adjacent** pool (prebuilt images, easier ~40–70%) can supplement after the belt
+ring is relaxed to Tier0∪Tier1. User steers the lever choice at D1.
+
 **Composability with the rest of the plan:** this campaign is the "SWE-style training data" investment the `stage_c_n5v2`
 GO/NO-GO called for; it feeds the winning `M_swe*` into Stage-C's existing serve path (Stage A certified, NVFP4 optional
 per Stage B). If it succeeds, the next cycle is on-policy **SWE-GRPO** with a terminal resolve reward on the now-SWE-capable
