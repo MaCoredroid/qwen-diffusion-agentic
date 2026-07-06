@@ -1,0 +1,1923 @@
+{
+ "firewall": {
+  "train_ids_n": 2438,
+  "rechecked_rings": {
+   "inner5": {
+    "n": 5,
+    "intersect": 0,
+    "overlap": []
+   },
+   "tier0_20": {
+    "n": 20,
+    "intersect": 0,
+    "overlap": [],
+    "source": "runs/stage_c_driver/data/swe-bench-tier0-verified-instances-20260520.json",
+    "resolved": true
+   },
+   "tier1_100": {
+    "n": 100,
+    "intersect": 0,
+    "overlap": [],
+    "source": "/home/mark/shared/lumoFlyWheel/docs/reports/auto_research/swe-bench-tier1-verified-instances-20260520.json",
+    "resolved": true
+   },
+   "verified_500_tier2": {
+    "n": 500,
+    "intersect": 0,
+    "overlap": [],
+    "source": "/home/mark/shared/lumoFlyWheel/docs/reports/auto_research/swe-bench-tier2-verified-instances-20260520.json",
+    "resolved": true
+   }
+  },
+  "heldout_union_resolved_n": 500,
+  "recomputed_intersection_n": 0,
+  "recomputed_overlap_sample": [],
+  "manifest_kill_d1_check": {
+   "train_ids_n": 2438,
+   "intersect_verified_500": 0,
+   "intersect_tier0_union_tier1": 0,
+   "repo_overlap_with_verified": [],
+   "result": "PASS"
+  },
+  "result": "PASS"
+ },
+ "eligibility": {
+  "swebench_screen_applied": true,
+  "make_test_spec_applied": false,
+  "n_in": 2438,
+  "n_kept": 2064,
+  "n_dropped": 374
+ },
+ "dropped": [
+  {
+   "instance_id": "Project-MONAI__MONAI-3837",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7121",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2238",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4800",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-855",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2621",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7548",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4402",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2421",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4186",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3464",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2214",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6429",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6034",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2576",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5526",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3340",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5965",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7180",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7754",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4688",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2530",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3715",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5405",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3208",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2061",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4044",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4796",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3882",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2325",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4344",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3186",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6008",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1836",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2482",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5416",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3636",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4843",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2952",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4638",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6385",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3923",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3378",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1884",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1684",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4251",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5183",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6514",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1030",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2096",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6912",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7318",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5845",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2696",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3001",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4601",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7734",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4749",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-511",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1933",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5807",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5117",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3326",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3979",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2454",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1065",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6719",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4725",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2508",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5686",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3782",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4908",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5710",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5129",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6969",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-865",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4633",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-578",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6459",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2808",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1571",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4676",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3524",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2305",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2492",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2942",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2465",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5428",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3419",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-440",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6955",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3373",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3305",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5433",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3255",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5877",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3113",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4363",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1961",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4249",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3135",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5550",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7395",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1532",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1012",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5932",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4174",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4695",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6775",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4446",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6975",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3711",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3130",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7098",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5223",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5980",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5212",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3440",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-543",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5543",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5075",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7000",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5119",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-646",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6400",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6058",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1885",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-673",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3794",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1116",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3619",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3198",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4991",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5067",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2780",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1765",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6793",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5236",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7549",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3061",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3250",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6446",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3062",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3205",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2751",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5506",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6344",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6686",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6756",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4297",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4738",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1832",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2166",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2228",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3946",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5908",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3662",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4925",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6405",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6246",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4272",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2921",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3157",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3042",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3038",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3235",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1037",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2010",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1890",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3675",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3785",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6244",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6144",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3945",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4686",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5503",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2955",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5856",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5252",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4218",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3530",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6965",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2645",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4943",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4109",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1645",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5916",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1121",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5089",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2395",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4689",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4733",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6895",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5468",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2356",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1095",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4567",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2753",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3952",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5982",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-524",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7604",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3824",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6935",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5107",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5680",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6924",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5518",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3796",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4709",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3393",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2553",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3547",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3436",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5397",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2156",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7108",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5306",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6413",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2393",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4662",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3412",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-506",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5182",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-648",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6544",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7104",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2379",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6997",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1608",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3041",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5388",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6774",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5415",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3277",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3143",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6986",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-458",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5217",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5077",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2178",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1079",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1070",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3338",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1535",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2436",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2837",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6412",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5248",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1805",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4877",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3678",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4163",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-645",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4972",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5208",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3125",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6849",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5003",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7749",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2112",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6977",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-890",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-459",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3384",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-803",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1690",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5560",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3094",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2104",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-600",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4876",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2513",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4168",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5254",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2344",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5950",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4819",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6736",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4745",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-941",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2487",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7542",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-907",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6943",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4775",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6080",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2784",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6662",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5656",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1596",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5093",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3913",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4729",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7163",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6681",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1922",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3385",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1746",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6874",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3493",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4590",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6910",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4511",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3358",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4263",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6735",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3566",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6795",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2848",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4977",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2326",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1011",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6271",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-489",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6055",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-763",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1887",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4642",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1093",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5507",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7137",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3560",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3690",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1948",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2170",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4036",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4159",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5771",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4847",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6147",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1086",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6158",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5640",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5423",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6139",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4721",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1906",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4716",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2321",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1010",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-682",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5924",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5854",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3478",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1946",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6090",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3403",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2446",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2937",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1777",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3107",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5880",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3735",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4736",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1829",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6523",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3289",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4583",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5189",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5473",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4282",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-2288",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-1107",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3325",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-4479",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6560",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6308",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3532",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-5486",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-7025",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-3469",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6781",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  },
+  {
+   "instance_id": "Project-MONAI__MONAI-6127",
+   "repo": "Project-MONAI/MONAI",
+   "reason": "excluded_repo(not_in_fork_spec_map)"
+  }
+ ]
+}

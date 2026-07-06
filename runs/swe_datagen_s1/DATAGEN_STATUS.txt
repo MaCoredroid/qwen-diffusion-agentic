@@ -1,0 +1,1 @@
+CONTINUE keepers=4/1000 (floor 400·) attempts=50 lifetime_yield=0.08 rolling_yield=0.08(w=50) remaining=2014 2026-07-06T17:30:55Z
