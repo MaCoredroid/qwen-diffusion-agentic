@@ -1,0 +1,90 @@
+{
+  "instance_id": "getmoto__moto-4787",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T05:37:17Z",
+  "repo": "getmoto/moto",
+  "base_commit": "01f5193cb644ea97e65cec4827b8ccc36565e69f",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.getmoto_1776_moto-4787:latest",
+  "container": "swe_ep_s2_getmoto_moto-4787",
+  "qwen": {
+    "elapsed_s": 146.156,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 40,
+    "duration_api_ms": 145362,
+    "usage": {
+      "input_tokens": 670469,
+      "output_tokens": 8140,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 678609
+    },
+    "tool_calls": 40,
+    "tool_by_name": {
+      "read_file": {
+        "count": 9,
+        "success": 4,
+        "fail": 5,
+        "durationMs": 11,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 9
+        }
+      },
+      "run_shell_command": {
+        "count": 28,
+        "success": 28,
+        "fail": 0,
+        "durationMs": 6065,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 28
+        }
+      },
+      "edit": {
+        "count": 3,
+        "success": 1,
+        "fail": 2,
+        "durationMs": 10,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 3
+        }
+      }
+    },
+    "result_tail": "action request cannot include multiple operations on one item\"\n\n2. **Modified `transact_write_items`** in `models/__init__.py` to:\n   - Import `MultipleTransactionsException`\n   - Check all transaction items for duplicate table+key combinations before processing\n   - Extract table_name and key from each item type (ConditionCheck, Put, Delete, Update)\n   - Convert dictionary keys to hashable form (tuple of sorted items) for Put operations\n   - Raise `MultipleTransactionsException` if duplicate found\n\nThe fix handles the TypeError by converting the key dictionary to a hashable tuple when needed."
+  },
+  "patch_bytes": 2724,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "getmoto__moto-4787",
+    "model_id": "probe-stockAR-env",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard2/verified/per_task/getmoto__moto-4787/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard2/verified/per_task/getmoto__moto-4787/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:39:44Z"
+}

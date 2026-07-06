@@ -1,0 +1,14 @@
+=== [2026-07-06T04:31:05Z] dataset=princeton-nlp/SWE-bench_Verified tag=verified n=5 agent=qwen_code eval=skip endpoint=http://127.0.0.1:9951/v1 ===
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[proxy] http://127.0.0.1:30031/v1 -> http://127.0.0.1:9951/v1
+[2026-07-06T04:31:13Z] -> django__django-11119
+[2026-07-06T04:32:23Z] <- django__django-11119 verdict=skipped patch_bytes=485 elapsed=70.3s
+[2026-07-06T04:32:23Z] -> django__django-12754
+[2026-07-06T04:35:34Z] <- django__django-12754 verdict=skipped patch_bytes=1809 elapsed=191.0s
+[2026-07-06T04:35:34Z] -> django__django-13741
+[2026-07-06T04:36:55Z] <- django__django-13741 verdict=skipped patch_bytes=465 elapsed=81.0s
+[2026-07-06T04:36:55Z] -> pytest-dev__pytest-8399
+[2026-07-06T04:37:54Z] <- pytest-dev__pytest-8399 verdict=skipped patch_bytes=549 elapsed=58.2s
+[2026-07-06T04:37:54Z] -> sympy__sympy-13757
+[2026-07-06T04:39:58Z] <- sympy__sympy-13757 verdict=skipped patch_bytes=520 elapsed=124.7s
+=== [2026-07-06T04:39:58Z] DONE n=5 resolved_rate=0.0 verdicts={'skipped': 5} ===

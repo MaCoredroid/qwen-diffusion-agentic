@@ -1,0 +1,15 @@
+diff --git a/conan/tools/files/patches.py b/conan/tools/files/patches.py
+index 1dd15f3e1..cefdf81ba 100644
+--- a/conan/tools/files/patches.py
++++ b/conan/tools/files/patches.py
+@@ -50,6 +50,10 @@ def patch(conanfile, base_path=None, patch_file=None, patch_string=None, strip=0
+     patchlog.addHandler(PatchLogHandler(conanfile, patch_file))
+ 
+     if patch_file:
++        # Resolve patch_file relative to source_folder if it's a relative path
++        # This is needed when using cmake_layout where the current directory is the build folder
++        if not os.path.isabs(patch_file):
++            patch_file = os.path.normpath(os.path.join(conanfile.source_folder, patch_file))
+         patchset = patch_ng.fromfile(patch_file)
+     else:
+         patchset = patch_ng.fromstring(patch_string.encode())

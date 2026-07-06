@@ -1,0 +1,48 @@
+{
+  "instance_id": "facebookresearch__hydra-1265",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T05:47:47Z",
+  "repo": "facebookresearch/hydra",
+  "base_commit": "797c1ed8a554434b4823b534983bdc630ace562c",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.facebookresearch_1776_hydra-1265:latest",
+  "container": "swe_ep_s1_facebookresearch_hydra-1265",
+  "qwen": {
+    "elapsed_s": 125.127,
+    "exit_code": 53,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": false,
+    "subtype": null,
+    "num_turns": null,
+    "duration_api_ms": null,
+    "usage": null,
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "patch_bytes": 306,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "facebookresearch__hydra-1265",
+    "model_id": "probe-stockAR-env",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard1/verified/per_task/facebookresearch__hydra-1265/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard1/verified/per_task/facebookresearch__hydra-1265/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:49:53Z"
+}

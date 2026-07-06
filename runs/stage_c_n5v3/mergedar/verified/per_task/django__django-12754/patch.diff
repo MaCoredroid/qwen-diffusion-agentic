@@ -1,0 +1,48 @@
+diff --git a/django/db/migrations/autodetector.py b/django/db/migrations/autodetector.py
+index 30616c0172..ffe26067a2 100644
+--- a/django/db/migrations/autodetector.py
++++ b/django/db/migrations/autodetector.py
+@@ -191,6 +191,11 @@ class MigrationAutodetector:
+         self.generate_altered_db_table()
+         self.generate_altered_order_with_respect_to()
+ 
++        # Reorder operations when a field is moved from a base class to a subclass.
++        # When a CreateModel for model X has a RemoveField from a base of X,
++        # the RemoveField must come before the CreateModel.
++        self._reverse_operations_for_moved_fields()
++
+         self._sort_migrations()
+         self._build_migration_list(graph)
+         self._optimize_migrations()
+@@ -355,6 +360,31 @@ class MigrationAutodetector:
+             # we use a stable sort for deterministic tests & general behavior
+             self.generated_operations[app_label] = stable_topological_sort(ops, dependency_graph)
+ 
++    def _reverse_operations_for_moved_fields(self):
++        """
++        Reorder operations when a field is moved from a base class to a subclass.
++        When a CreateModel for model X has a RemoveField from a base of X,
++        the RemoveField must come before the CreateModel.
++        """
++        for app_label, ops in self.generated_operations.items():
++            # Find all RemoveField operations for this app
++            removed_fields = {
++                op for op in ops
++                if isinstance(op, operations.RemoveField)
++            }
++            # For each CreateModel, check if any of its bases have a corresponding RemoveField
++            for i, op in enumerate(ops):
++                if isinstance(op, operations.CreateModel):
++                    for base in op.bases:
++                        if isinstance(base, str) and "." in base:
++                            base_app_label, base_name = base.split(".", 1)
++                            # Check if there's a RemoveField for this base
++                            for j in range(i - 1, -1, -1):
++                                if isinstance(ops[j], operations.RemoveField) and ops[j].model_name == base_name:
++                                    # Swap the operations
++                                    ops[i], ops[j] = ops[j], ops[i]
++                                    break
++
+     def _optimize_migrations(self):
+         # Add in internal dependencies among the migrations
+         for app_label, migrations in self.migrations.items():

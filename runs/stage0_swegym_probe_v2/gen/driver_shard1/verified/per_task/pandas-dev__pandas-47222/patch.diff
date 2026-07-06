@@ -1,0 +1,15 @@
+diff --git a/pandas/core/apply.py b/pandas/core/apply.py
+index c0200c7d7c..bd3ec1a684 100644
+--- a/pandas/core/apply.py
++++ b/pandas/core/apply.py
+@@ -804,6 +804,10 @@ class FrameApply(NDFrameApply):
+ 
+             return self.obj._constructor_sliced(r, index=self.agg_axis)
+         else:
++            # GH#53015 When axis=1 and DataFrame is empty, return a Series
++            # instead of a DataFrame to match the behavior of non-empty DataFrames
++            if self.axis == 1:
++                return self.obj._constructor_sliced(np.nan, index=self.obj.index)
+             return self.obj.copy()
+ 
+     def apply_raw(self):

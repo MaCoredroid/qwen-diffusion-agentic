@@ -1,0 +1,40 @@
+diff --git a/pydantic/_internal/_model_construction.py b/pydantic/_internal/_model_construction.py
+index 94f80d2c1..1474acfc5 100644
+--- a/pydantic/_internal/_model_construction.py
++++ b/pydantic/_internal/_model_construction.py
+@@ -139,6 +139,14 @@ def complete_model_class(
+     except PydanticUndefinedAnnotation as e:
+         if raise_errors:
+             raise
++        
++        # Warn about missing annotations if configured
++        if cls.__config__.warn_missing_annotations:
++            warnings.warn(
++                f'`{name}` is not fully defined, you should define `{e}`, then call `{name}.model_rebuild()`',
++                UserWarning,
++            )
++        
+         cls.__pydantic_validator__ = MockValidator(  # type: ignore[assignment]
+             f'`{name}` is not fully defined, you should define `{e}`, then call `{name}.model_rebuild()`'
+         )
+diff --git a/pydantic/config.py b/pydantic/config.py
+index b5f63afab..f61082f52 100644
+--- a/pydantic/config.py
++++ b/pydantic/config.py
+@@ -61,6 +61,7 @@ class ConfigDict(TypedDict, total=False):
+     allow_inf_nan: bool
+     copy_on_model_validation: Literal['none', 'deep', 'shallow']
+     post_init_call: Literal['before_validation', 'after_validation']
++    warn_missing_annotations: bool
+ 
+ 
+ config_keys = set(ConfigDict.__annotations__.keys())
+@@ -103,6 +104,8 @@ class BaseConfig:
+     smart_union: bool = False  # TODO remove
+     # whether dataclass `__post_init__` should be run before or after validation
+     post_init_call: Literal['before_validation', 'after_validation'] = 'before_validation'  # TODO remove
++    # whether to warn about missing annotations
++    warn_missing_annotations: bool = True
+ 
+     @classmethod
+     def get_field_info(cls, name: str) -> Dict[str, Any]:

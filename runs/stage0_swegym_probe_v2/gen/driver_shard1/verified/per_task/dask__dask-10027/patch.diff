@@ -1,0 +1,33 @@
+diff --git a/dask/array/rechunk.py b/dask/array/rechunk.py
+index 6a6e97013..259919c6b 100644
+--- a/dask/array/rechunk.py
++++ b/dask/array/rechunk.py
+@@ -309,8 +309,27 @@ def rechunk(
+     )
+ 
+     # Now chunks are tuple of tuples
+-    if not balance and (chunks == x.chunks):
++    if not balance and chunks == x.chunks:
+         return x
++    # Handle case where chunks are the same but with NaN values
++    # (NaN != NaN, so we need to check if they match accounting for NaN)
++    if not balance and all(
++        _chunks_equal(c1, c2)
++        for c1, c2 in zip(chunks, x.chunks)
++    ):
++        return x
++
++def _chunks_equal(c1, c2):
++    """Check if two chunks are equal, accounting for NaN values."""
++    if c1 == c2:
++        return True
++    if isinstance(c1, tuple) and isinstance(c2, tuple):
++        return all(_chunks_equal(a, b) for a, b in zip(c1, c2))
++    # Handle NaN values
++    try:
++        return math.isnan(c1) and math.isnan(c2)
++    except (TypeError, ValueError):
++        return False
+     ndim = x.ndim
+     if not len(chunks) == ndim:
+         raise ValueError("Provided chunks are not consistent with shape")

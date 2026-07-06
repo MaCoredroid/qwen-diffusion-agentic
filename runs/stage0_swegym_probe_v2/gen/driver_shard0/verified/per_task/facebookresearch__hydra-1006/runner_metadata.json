@@ -1,0 +1,90 @@
+{
+  "instance_id": "facebookresearch__hydra-1006",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T05:48:51Z",
+  "repo": "facebookresearch/hydra",
+  "base_commit": "94bbaaad028678166896cf139f778240e02d0a69",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.facebookresearch_1776_hydra-1006:latest",
+  "container": "swe_ep_s0_facebookresearch_hydra-1006",
+  "qwen": {
+    "elapsed_s": 77.165,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 30,
+    "duration_api_ms": 76307,
+    "usage": {
+      "input_tokens": 527251,
+      "output_tokens": 3942,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 531193
+    },
+    "tool_calls": 29,
+    "tool_by_name": {
+      "read_file": {
+        "count": 7,
+        "success": 2,
+        "fail": 5,
+        "durationMs": 9,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 7
+        }
+      },
+      "run_shell_command": {
+        "count": 20,
+        "success": 20,
+        "fail": 0,
+        "durationMs": 4203,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 20
+        }
+      },
+      "edit": {
+        "count": 2,
+        "success": 1,
+        "fail": 1,
+        "durationMs": 18,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 2
+        }
+      }
+    },
+    "result_tail": "The fix has been applied. The change from `resolve=False` to `resolve=True` on line 598 ensures that string interpolations like `${foo}` are properly resolved when extracting config values for instantiation."
+  },
+  "patch_bytes": 1195,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "facebookresearch__hydra-1006",
+    "model_id": "probe-stockAR-env",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard0/verified/per_task/facebookresearch__hydra-1006/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard0/verified/per_task/facebookresearch__hydra-1006/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:50:09Z"
+}

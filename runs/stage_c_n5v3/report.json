@@ -1,0 +1,746 @@
+{
+  "envelope": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 20,
+    "seed_base": 1234,
+    "empty_patch_retries": 1
+  },
+  "arms": {
+    "ar": {
+      "label": "stock-AR",
+      "instances": {
+        "django__django-11119": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 485,
+          "edit": true,
+          "turns": 38,
+          "turns_src": "qwen",
+          "in_tok": 570597,
+          "out_tok": 4790,
+          "tot_tok": 575387,
+          "tok_src": "qwen",
+          "wall_s": 68.348,
+          "exit_code": 0,
+          "exit_meaning": "ok",
+          "subtype": "success",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 38,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": null,
+          "status": null
+        },
+        "django__django-12754": {
+          "resolved": false,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 1809,
+          "edit": true,
+          "turns": 103,
+          "turns_src": "proxy_reqs",
+          "in_tok": 1799722,
+          "out_tok": 9169,
+          "tot_tok": 1808891,
+          "tok_src": "proxy",
+          "wall_s": 72.203,
+          "exit_code": 53,
+          "exit_meaning": "turn-limit",
+          "subtype": null,
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 103,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 1809
+          },
+          "status": null
+        },
+        "django__django-13741": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 465,
+          "edit": true,
+          "turns": 47,
+          "turns_src": "qwen",
+          "in_tok": 802868,
+          "out_tok": 5154,
+          "tot_tok": 808022,
+          "tok_src": "qwen",
+          "wall_s": 79.165,
+          "exit_code": 0,
+          "exit_meaning": "ok",
+          "subtype": "success",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 48,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": null,
+          "status": null
+        },
+        "pytest-dev__pytest-8399": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 549,
+          "edit": true,
+          "turns": 38,
+          "turns_src": "qwen",
+          "in_tok": 697655,
+          "out_tok": 3942,
+          "tot_tok": 701597,
+          "tok_src": "qwen",
+          "wall_s": 57.488,
+          "exit_code": 0,
+          "exit_meaning": "ok",
+          "subtype": "success",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 39,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": null,
+          "status": null
+        },
+        "sympy__sympy-13757": {
+          "resolved": false,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 520,
+          "edit": true,
+          "turns": 50,
+          "turns_src": "proxy_reqs",
+          "in_tok": 902630,
+          "out_tok": 7961,
+          "tot_tok": 910591,
+          "tok_src": "proxy",
+          "wall_s": 123.771,
+          "exit_code": 53,
+          "exit_meaning": "turn-limit",
+          "subtype": null,
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 50,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": null,
+          "status": null
+        }
+      },
+      "official": {
+        "resolved": [
+          "django__django-11119",
+          "django__django-13741",
+          "pytest-dev__pytest-8399"
+        ],
+        "completed": [
+          "django__django-11119",
+          "django__django-12754",
+          "django__django-13741",
+          "pytest-dev__pytest-8399",
+          "sympy__sympy-13757"
+        ],
+        "error": [],
+        "empty": [],
+        "report_file": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/scoring/n5v3-stock-ar.n5v3_ar.json"
+      },
+      "rollup": {
+        "resolve_at_1": 0.6,
+        "n_resolved": 3,
+        "edit_rate": 1.0,
+        "n_edit": 5,
+        "turns_mean": 55.2,
+        "wall_mean_s": 80.2,
+        "tot_tok_mean": 960897.6,
+        "exit_dist": {
+          "ok": 3,
+          "turn-limit": 2
+        },
+        "n_loop_detected": 0,
+        "n_gave_up": 0
+      }
+    },
+    "mergedar": {
+      "label": "merged-AR",
+      "instances": {
+        "django__django-11119": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 485,
+          "edit": true,
+          "turns": 35,
+          "turns_src": "qwen",
+          "in_tok": 573356,
+          "out_tok": 3815,
+          "tot_tok": 577171,
+          "tok_src": "qwen",
+          "wall_s": 55.933,
+          "exit_code": 0,
+          "exit_meaning": "ok",
+          "subtype": "success",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 34,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": null,
+          "status": null
+        },
+        "django__django-12754": {
+          "resolved": false,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 2514,
+          "edit": true,
+          "turns": 102,
+          "turns_src": "proxy_reqs",
+          "in_tok": 1908463,
+          "out_tok": 10572,
+          "tot_tok": 1919035,
+          "tok_src": "proxy",
+          "wall_s": 81.817,
+          "exit_code": 53,
+          "exit_meaning": "turn-limit",
+          "subtype": null,
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 102,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 2514
+          },
+          "status": null
+        },
+        "django__django-13741": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 465,
+          "edit": true,
+          "turns": 43,
+          "turns_src": "qwen",
+          "in_tok": 703528,
+          "out_tok": 4216,
+          "tot_tok": 707744,
+          "tok_src": "qwen",
+          "wall_s": 65.003,
+          "exit_code": 0,
+          "exit_meaning": "ok",
+          "subtype": "success",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 44,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": null,
+          "status": null
+        },
+        "pytest-dev__pytest-8399": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 729,
+          "edit": true,
+          "turns": 37,
+          "turns_src": "qwen",
+          "in_tok": 678817,
+          "out_tok": 4755,
+          "tot_tok": 683572,
+          "tok_src": "qwen",
+          "wall_s": 66.299,
+          "exit_code": 0,
+          "exit_meaning": "ok",
+          "subtype": "success",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 38,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": null,
+          "status": null
+        },
+        "sympy__sympy-13757": {
+          "resolved": false,
+          "official_completed": false,
+          "official_error": false,
+          "official_empty": true,
+          "patch_bytes": 0,
+          "edit": false,
+          "turns": 100,
+          "turns_src": "proxy_reqs",
+          "in_tok": 1807756,
+          "out_tok": 13509,
+          "tot_tok": 1821265,
+          "tok_src": "proxy",
+          "wall_s": 85.575,
+          "exit_code": 53,
+          "exit_meaning": "turn-limit",
+          "subtype": null,
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 100,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 0
+          },
+          "status": null
+        }
+      },
+      "official": {
+        "resolved": [
+          "django__django-11119",
+          "django__django-13741",
+          "pytest-dev__pytest-8399"
+        ],
+        "completed": [
+          "django__django-11119",
+          "django__django-12754",
+          "django__django-13741",
+          "pytest-dev__pytest-8399"
+        ],
+        "error": [],
+        "empty": [
+          "sympy__sympy-13757"
+        ],
+        "report_file": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/scoring/n5v3-merged-ar.n5v3_mergedar.json"
+      },
+      "rollup": {
+        "resolve_at_1": 0.6,
+        "n_resolved": 3,
+        "edit_rate": 0.8,
+        "n_edit": 4,
+        "turns_mean": 63.4,
+        "wall_mean_s": 70.93,
+        "tot_tok_mean": 1141757.4,
+        "exit_dist": {
+          "ok": 3,
+          "turn-limit": 2
+        },
+        "n_loop_detected": 0,
+        "n_gave_up": 0
+      }
+    },
+    "diffusion": {
+      "label": "diffusion",
+      "instances": {
+        "django__django-11119": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 485,
+          "edit": true,
+          "turns": 50,
+          "turns_src": "proxy_reqs",
+          "in_tok": 793203,
+          "out_tok": 3085,
+          "tot_tok": 796288,
+          "tok_src": "proxy",
+          "wall_s": 81.619,
+          "exit_code": 53,
+          "exit_meaning": "turn-limit",
+          "subtype": null,
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 50,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": null,
+          "status": null
+        },
+        "django__django-12754": {
+          "resolved": false,
+          "official_completed": false,
+          "official_error": false,
+          "official_empty": true,
+          "patch_bytes": 0,
+          "edit": false,
+          "turns": 35,
+          "turns_src": "qwen",
+          "in_tok": 637569,
+          "out_tok": 2530,
+          "tot_tok": 640099,
+          "tok_src": "qwen",
+          "wall_s": 71.454,
+          "exit_code": 1,
+          "exit_meaning": "loop-halt",
+          "subtype": "error_during_execution",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 66,
+          "loop_detected": true,
+          "loop_reason": "consecutive_identical_tool_calls: the model repeated the same tool call with identical arguments",
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 0
+          },
+          "status": null
+        },
+        "django__django-13741": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 465,
+          "edit": true,
+          "turns": 50,
+          "turns_src": "qwen",
+          "in_tok": 960033,
+          "out_tok": 4389,
+          "tot_tok": 964422,
+          "tok_src": "qwen",
+          "wall_s": 149.517,
+          "exit_code": 1,
+          "exit_meaning": "loop-halt",
+          "subtype": "error_during_execution",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 51,
+          "loop_detected": true,
+          "loop_reason": "consecutive_identical_tool_calls: the model repeated the same tool call with identical arguments",
+          "empty_patch_retry": null,
+          "status": null
+        },
+        "pytest-dev__pytest-8399": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 549,
+          "edit": true,
+          "turns": 49,
+          "turns_src": "qwen",
+          "in_tok": 932639,
+          "out_tok": 2820,
+          "tot_tok": 935459,
+          "tok_src": "qwen",
+          "wall_s": 78.165,
+          "exit_code": 1,
+          "exit_meaning": "loop-halt",
+          "subtype": "error_during_execution",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 69,
+          "loop_detected": true,
+          "loop_reason": "consecutive_identical_tool_calls: the model repeated the same tool call with identical arguments",
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 549
+          },
+          "status": null
+        },
+        "sympy__sympy-13757": {
+          "resolved": false,
+          "official_completed": false,
+          "official_error": false,
+          "official_empty": true,
+          "patch_bytes": 0,
+          "edit": false,
+          "turns": 81,
+          "turns_src": "proxy_reqs",
+          "in_tok": 1335113,
+          "out_tok": 4797,
+          "tot_tok": 1339910,
+          "tok_src": "proxy",
+          "wall_s": 154.999,
+          "exit_code": 53,
+          "exit_meaning": "turn-limit",
+          "subtype": null,
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 81,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 0
+          },
+          "status": null
+        }
+      },
+      "official": {
+        "resolved": [
+          "django__django-11119",
+          "django__django-13741",
+          "pytest-dev__pytest-8399"
+        ],
+        "completed": [
+          "django__django-11119",
+          "django__django-13741",
+          "pytest-dev__pytest-8399"
+        ],
+        "error": [],
+        "empty": [
+          "django__django-12754",
+          "sympy__sympy-13757"
+        ],
+        "report_file": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/scoring/n5v3-diffusion.n5v3_diffusion.json"
+      },
+      "rollup": {
+        "resolve_at_1": 0.6,
+        "n_resolved": 3,
+        "edit_rate": 0.6,
+        "n_edit": 3,
+        "turns_mean": 53.0,
+        "wall_mean_s": 107.15,
+        "tot_tok_mean": 935235.6,
+        "exit_dist": {
+          "turn-limit": 2,
+          "loop-halt": 3
+        },
+        "n_loop_detected": 3,
+        "n_gave_up": 0
+      }
+    },
+    "diffstock": {
+      "label": "diffstock",
+      "instances": {
+        "django__django-11119": {
+          "resolved": true,
+          "official_completed": true,
+          "official_error": false,
+          "official_empty": false,
+          "patch_bytes": 485,
+          "edit": true,
+          "turns": 102,
+          "turns_src": "proxy_reqs",
+          "in_tok": 1578118,
+          "out_tok": 13201,
+          "tot_tok": 1591319,
+          "tok_src": "proxy",
+          "wall_s": 227.49,
+          "exit_code": 53,
+          "exit_meaning": "turn-limit",
+          "subtype": null,
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 102,
+          "loop_detected": false,
+          "loop_reason": null,
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 485
+          },
+          "status": null
+        },
+        "django__django-12754": {
+          "resolved": false,
+          "official_completed": false,
+          "official_error": false,
+          "official_empty": true,
+          "patch_bytes": 0,
+          "edit": false,
+          "turns": 19,
+          "turns_src": "qwen",
+          "in_tok": 275560,
+          "out_tok": 1060,
+          "tot_tok": 276620,
+          "tok_src": "qwen",
+          "wall_s": 32.706,
+          "exit_code": 1,
+          "exit_meaning": "loop-halt",
+          "subtype": "error_during_execution",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 65,
+          "loop_detected": true,
+          "loop_reason": "consecutive_identical_tool_calls: the model repeated the same tool call with identical arguments",
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 0
+          },
+          "status": null
+        },
+        "django__django-13741": {
+          "resolved": false,
+          "official_completed": false,
+          "official_error": false,
+          "official_empty": true,
+          "patch_bytes": 0,
+          "edit": false,
+          "turns": 23,
+          "turns_src": "qwen",
+          "in_tok": 249737,
+          "out_tok": 1471,
+          "tot_tok": 251208,
+          "tok_src": "qwen",
+          "wall_s": 41.667,
+          "exit_code": 1,
+          "exit_meaning": "loop-halt",
+          "subtype": "error_during_execution",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 74,
+          "loop_detected": true,
+          "loop_reason": "consecutive_identical_tool_calls: the model repeated the same tool call with identical arguments",
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 0
+          },
+          "status": null
+        },
+        "pytest-dev__pytest-8399": {
+          "resolved": false,
+          "official_completed": false,
+          "official_error": false,
+          "official_empty": true,
+          "patch_bytes": 0,
+          "edit": false,
+          "turns": 13,
+          "turns_src": "qwen",
+          "in_tok": 117855,
+          "out_tok": 655,
+          "tot_tok": 118510,
+          "tok_src": "qwen",
+          "wall_s": 18.437,
+          "exit_code": 1,
+          "exit_meaning": "loop-halt",
+          "subtype": "error_during_execution",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 68,
+          "loop_detected": true,
+          "loop_reason": "consecutive_identical_tool_calls: the model repeated the same tool call with identical arguments",
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 0
+          },
+          "status": null
+        },
+        "sympy__sympy-13757": {
+          "resolved": false,
+          "official_completed": false,
+          "official_error": false,
+          "official_empty": true,
+          "patch_bytes": 0,
+          "edit": false,
+          "turns": 12,
+          "turns_src": "qwen",
+          "in_tok": 113098,
+          "out_tok": 608,
+          "tot_tok": 113706,
+          "tok_src": "qwen",
+          "wall_s": 19.29,
+          "exit_code": 1,
+          "exit_meaning": "loop-halt",
+          "subtype": "error_during_execution",
+          "timed_out": false,
+          "n_length_finish": 0,
+          "n_proxy_reqs": 16,
+          "loop_detected": true,
+          "loop_reason": "consecutive_identical_tool_calls: the model repeated the same tool call with identical arguments",
+          "empty_patch_retry": {
+            "cause": "agent_gave_up",
+            "max_retries": 1,
+            "recovered_patch_bytes": 0
+          },
+          "status": null
+        }
+      },
+      "official": {
+        "resolved": [
+          "django__django-11119"
+        ],
+        "completed": [
+          "django__django-11119"
+        ],
+        "error": [],
+        "empty": [
+          "django__django-12754",
+          "django__django-13741",
+          "pytest-dev__pytest-8399",
+          "sympy__sympy-13757"
+        ],
+        "report_file": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/scoring/n5v3-diffstock.n5v3_diffstock.json"
+      },
+      "rollup": {
+        "resolve_at_1": 0.2,
+        "n_resolved": 1,
+        "edit_rate": 0.2,
+        "n_edit": 1,
+        "turns_mean": 33.8,
+        "wall_mean_s": 67.92,
+        "tot_tok_mean": 470272.6,
+        "exit_dist": {
+          "turn-limit": 1,
+          "loop-halt": 4
+        },
+        "n_loop_detected": 4,
+        "n_gave_up": 0
+      }
+    }
+  },
+  "instances": [
+    "django__django-11119",
+    "django__django-12754",
+    "django__django-13741",
+    "pytest-dev__pytest-8399",
+    "sympy__sympy-13757"
+  ],
+  "greedy_baseline": {
+    "ar": {
+      "resolve": "4/5",
+      "loops": 0,
+      "exits": {
+        "ok": 3,
+        "turn-limit": 2
+      }
+    },
+    "mergedar": {
+      "resolve": "2/5",
+      "loops": 1,
+      "exits": {
+        "ok": 3,
+        "turn-limit": 1,
+        "loop-halt": 1
+      }
+    },
+    "diffusion": {
+      "resolve": "1/5",
+      "loops": 2,
+      "exits": {
+        "loop-halt": 2,
+        "turn-limit": 3
+      }
+    },
+    "diffstock": {
+      "resolve": "0/5",
+      "loops": 2,
+      "exits": {
+        "turn-limit": 3,
+        "loop-halt": 2
+      }
+    }
+  }
+}

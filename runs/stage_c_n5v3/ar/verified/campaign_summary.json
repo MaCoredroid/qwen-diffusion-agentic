@@ -1,0 +1,25 @@
+{
+  "model_name_or_path": "n5v3-stock-ar",
+  "started_at": "2026-07-06T04:31:13Z",
+  "ended_at": "2026-07-06T04:39:58Z",
+  "instances_total": 5,
+  "verdict_counts": {
+    "skipped": 5
+  },
+  "failure_mode_counts": {
+    "null": 5
+  },
+  "per_repo_total": {
+    "django/django": 3,
+    "pytest-dev/pytest": 1,
+    "sympy/sympy": 1
+  },
+  "per_repo_resolved": {},
+  "agent_wall_seconds": {
+    "p50": 72.203,
+    "p90": 123.771,
+    "min": 57.488,
+    "max": 123.771
+  },
+  "resolved_rate": 0.0
+}

@@ -1,0 +1,172 @@
+diff --git a/pandas/core/algorithms.py b/pandas/core/algorithms.py
+index e841d32bb4..e5c2ba78ad 100644
+--- a/pandas/core/algorithms.py
++++ b/pandas/core/algorithms.py
+@@ -576,6 +576,17 @@ def factorize_array(
+         relationship.
+     """
+     ),
++    use_na_sentinel=dedent(
++        """\
++    use_na_sentinel : bool, default True
++        If True, the result codes will contain `-1` for NA values.
++        If False, NA values will be included in the result codes.
++
++        .. deprecated:: 2.1.0
++            `use_na_sentinel` is deprecated and will be removed in a future version.
++            Use `dropna` parameter instead.
++    """
++    ),
+     size_hint=dedent(
+         """\
+     size_hint : int, optional
+@@ -587,6 +598,7 @@ def factorize(
+     values,
+     sort: bool = False,
+     na_sentinel: int | None = -1,
++    use_na_sentinel: bool | None = None,
+     size_hint: int | None = None,
+ ) -> tuple[np.ndarray, np.ndarray | Index]:
+     """
+@@ -604,7 +616,13 @@ def factorize(
+         Value to mark "not found". If None, will not drop the NaN
+         from the uniques of the values.
+ 
+-        .. versionchanged:: 1.1.2
++        .. deprecated:: 2.1.0
++            `na_sentinel` is deprecated. Use `use_na_sentinel` instead.
++    use_na_sentinel : bool, default True
++        If True, the result codes will contain `-1` for NA values.
++        If False, NA values will be included in the result codes.
++
++        .. versionadded:: 2.1.0
+     {size_hint}\
+ 
+     Returns
+@@ -720,10 +738,26 @@ def factorize(
+     if not isinstance(values, ABCMultiIndex):
+         values = extract_array(values, extract_numpy=True)
+ 
+-    # GH35667, if na_sentinel=None, we will not dropna NaNs from the uniques
++    # Handle deprecated na_sentinel parameter
++    if use_na_sentinel is None:
++        if na_sentinel is not None:
++            # na_sentinel is deprecated, use use_na_sentinel instead
++            from pandas.util._exceptions import find_stack_level
++            from pandas.core.common import is_bool
++
++            if not is_bool(na_sentinel):
++                raise ValueError(
++                    "na_sentinel must be a boolean value when use_na_sentinel is not "
++                    "specified. Use use_na_sentinel=True/False instead."
++                )
++            use_na_sentinel = na_sentinel
++        else:
++            use_na_sentinel = True
++
++    # GH35667, if use_na_sentinel=False, we will not dropna NaNs from the uniques
+     # of values, assign na_sentinel=-1 to replace code value for NaN.
+     dropna = True
+-    if na_sentinel is None:
++    if not use_na_sentinel:
+         na_sentinel = -1
+         dropna = False
+ 
+diff --git a/pandas/core/arrays/arrow/array.py b/pandas/core/arrays/arrow/array.py
+index 18d965ff26..dfd06f51cb 100644
+--- a/pandas/core/arrays/arrow/array.py
++++ b/pandas/core/arrays/arrow/array.py
+@@ -286,7 +286,7 @@ class ArrowExtensionArray(OpsMixin, ExtensionArray):
+             return type(self)(pc.drop_null(self._data))
+ 
+     @doc(ExtensionArray.factorize)
+-    def factorize(self, na_sentinel: int = -1) -> tuple[np.ndarray, ExtensionArray]:
++    def factorize(self, na_sentinel: int = -1, sort: bool = False) -> tuple[np.ndarray, ExtensionArray]:
+         encoded = self._data.dictionary_encode()
+         indices = pa.chunked_array(
+             [c.indices for c in encoded.chunks], type=encoded.type.index_type
+diff --git a/pandas/core/arrays/base.py b/pandas/core/arrays/base.py
+index eb3c6d6d26..9460a5795a 100644
+--- a/pandas/core/arrays/base.py
++++ b/pandas/core/arrays/base.py
+@@ -1002,7 +1002,7 @@ class ExtensionArray:
+         """
+         return self.astype(object), np.nan
+ 
+-    def factorize(self, na_sentinel: int = -1) -> tuple[np.ndarray, ExtensionArray]:
++    def factorize(self, na_sentinel: int = -1, sort: bool = False) -> tuple[np.ndarray, ExtensionArray]:
+         """
+         Encode the extension array as an enumerated type.
+ 
+@@ -1011,6 +1011,14 @@ class ExtensionArray:
+         na_sentinel : int, default -1
+             Value to use in the `codes` array to indicate missing values.
+ 
++            .. deprecated:: 2.1.0
++                `na_sentinel` is deprecated. Use `dropna` instead.
++        sort : bool, default False
++            Sort `uniques` and shuffle `codes` to maintain the
++            relationship.
++
++            .. versionadded:: 2.1.0
++
+         Returns
+         -------
+         codes : ndarray
+@@ -1031,7 +1039,7 @@ class ExtensionArray:
+ 
+         Notes
+         -----
+-        :meth:`pandas.factorize` offers a `sort` keyword as well.
++        :meth:`pandas.factorize` offers a `use_na_sentinel` keyword as well.
+         """
+         # Implementer note: There are two ways to override the behavior of
+         # pandas.factorize
+diff --git a/pandas/core/arrays/datetimelike.py b/pandas/core/arrays/datetimelike.py
+index f7de291f83..49ffb3f1ea 100644
+--- a/pandas/core/arrays/datetimelike.py
++++ b/pandas/core/arrays/datetimelike.py
+@@ -1996,7 +1996,7 @@ class TimelikeOps(DatetimeLikeArrayMixin):
+ 
+     # --------------------------------------------------------------
+ 
+-    def factorize(self, na_sentinel=-1, sort: bool = False):
++    def factorize(self, na_sentinel: int = -1, sort: bool = False):
+         if self.freq is not None:
+             # We must be unique, so can short-circuit (and retain freq)
+             codes = np.arange(len(self), dtype=np.intp)
+@@ -2006,7 +2006,7 @@ class TimelikeOps(DatetimeLikeArrayMixin):
+                 uniques = uniques[::-1]
+             return codes, uniques
+         # FIXME: shouldn't get here; we are ignoring sort
+-        return super().factorize(na_sentinel=na_sentinel)
++        return super().factorize(na_sentinel=na_sentinel, sort=sort)
+ 
+ 
+ # -------------------------------------------------------------------
+diff --git a/pandas/core/arrays/masked.py b/pandas/core/arrays/masked.py
+index 78c82d9a4e..25dcaae155 100644
+--- a/pandas/core/arrays/masked.py
++++ b/pandas/core/arrays/masked.py
+@@ -869,7 +869,7 @@ class BaseMaskedArray(OpsMixin, ExtensionArray):
+         return self._data.searchsorted(value, side=side, sorter=sorter)
+ 
+     @doc(ExtensionArray.factorize)
+-    def factorize(self, na_sentinel: int = -1) -> tuple[np.ndarray, ExtensionArray]:
++    def factorize(self, na_sentinel: int = -1, sort: bool = False) -> tuple[np.ndarray, ExtensionArray]:
+         arr = self._data
+         mask = self._mask
+ 
+diff --git a/pandas/core/arrays/sparse/array.py b/pandas/core/arrays/sparse/array.py
+index 0c34229fb5..33d10c24f3 100644
+--- a/pandas/core/arrays/sparse/array.py
++++ b/pandas/core/arrays/sparse/array.py
+@@ -848,7 +848,7 @@ class SparseArray(OpsMixin, PandasObject, ExtensionArray):
+         # Still override this for hash_pandas_object
+         return np.asarray(self), self.fill_value
+ 
+-    def factorize(self, na_sentinel: int = -1) -> tuple[np.ndarray, SparseArray]:
++    def factorize(self, na_sentinel: int = -1, sort: bool = False) -> tuple[np.ndarray, SparseArray]:
+         # Currently, ExtensionArray.factorize -> Tuple[ndarray, EA]
+         # The sparsity on this is backwards from what Sparse would want. Want
+         # ExtensionArray.factorize -> Tuple[EA, EA]

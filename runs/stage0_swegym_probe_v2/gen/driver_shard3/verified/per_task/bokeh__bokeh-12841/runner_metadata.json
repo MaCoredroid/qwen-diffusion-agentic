@@ -1,0 +1,90 @@
+{
+  "instance_id": "bokeh__bokeh-12841",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T05:50:30Z",
+  "repo": "bokeh/bokeh",
+  "base_commit": "78dc3e238194302b5daadf11d47bdd69bd07a2b8",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.bokeh_1776_bokeh-12841:latest",
+  "container": "swe_ep_s3_bokeh_bokeh-12841",
+  "qwen": {
+    "elapsed_s": 124.618,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 49,
+    "duration_api_ms": 123694,
+    "usage": {
+      "input_tokens": 1098319,
+      "output_tokens": 8987,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 1107306
+    },
+    "tool_calls": 52,
+    "tool_by_name": {
+      "read_file": {
+        "count": 12,
+        "success": 4,
+        "fail": 8,
+        "durationMs": 11,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 12
+        }
+      },
+      "run_shell_command": {
+        "count": 36,
+        "success": 36,
+        "fail": 0,
+        "durationMs": 12006,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 36
+        }
+      },
+      "edit": {
+        "count": 4,
+        "success": 4,
+        "fail": 0,
+        "durationMs": 120,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 4
+        }
+      }
+    },
+    "result_tail": "All 68 tests pass. The fix is already implemented in the codebase:\n\n1. **`/testbed/src/bokeh/core/serialization.py`** - The `_encode_other` method (lines 451-462) handles `ExtensionArray` instances (including `StringArray`) by converting them to numpy arrays using `transform_series()`.\n\n2. **`/testbed/src/bokeh/util/serialization.py`** - The `transform_series` function uses `series.to_numpy()` instead of checking for the deprecated `PandasArray` type.\n\nThe fix has been verified to work with the example code from the bug report, and all serialization tests pass."
+  },
+  "patch_bytes": 2604,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "bokeh__bokeh-12841",
+    "model_id": "probe-stockAR-env",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard3/verified/per_task/bokeh__bokeh-12841/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard3/verified/per_task/bokeh__bokeh-12841/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:52:39Z"
+}

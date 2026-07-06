@@ -1,0 +1,72 @@
+{
+  "instance_id": "sympy__sympy-13757",
+  "dataset_name": "princeton-nlp/SWE-bench_Verified",
+  "started_at": "2026-07-06T05:00:46Z",
+  "repo": "sympy/sympy",
+  "base_commit": "a5e6a101869e027e7930e694f8b1cfb082603453",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13757:latest",
+  "container": "swe_ep_sympy_sympy-13757",
+  "qwen": {
+    "elapsed_s": 154.999,
+    "exit_code": 53,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": false,
+    "subtype": null,
+    "num_turns": null,
+    "duration_api_ms": null,
+    "usage": null,
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "empty_patch_retry": {
+    "cause": "agent_gave_up",
+    "max_retries": 1,
+    "recovered_patch_bytes": 0
+  },
+  "qwen_retry1": {
+    "elapsed_s": 51.578,
+    "exit_code": 1,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "error_during_execution",
+    "num_turns": 28,
+    "duration_api_ms": 50817,
+    "usage": {
+      "input_tokens": 372940,
+      "output_tokens": 1877,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 374817
+    },
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "patch_bytes": 0,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "sympy__sympy-13757",
+    "model_id": "n5v3-diffusion",
+    "dataset_name": "princeton-nlp/SWE-bench_Verified",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/diffusion/verified/per_task/sympy__sympy-13757/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/diffusion/verified/per_task/sympy__sympy-13757/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:04:14Z"
+}

@@ -1,0 +1,41 @@
+diff --git a/conan/tools/cmake/toolchain.py b/conan/tools/cmake/toolchain.py
+index bed91da29..6beaf70e1 100644
+--- a/conan/tools/cmake/toolchain.py
++++ b/conan/tools/cmake/toolchain.py
+@@ -653,6 +653,36 @@ class ToolchainBlocks:
+         del self._blocks[name]
+ 
+     def __setitem__(self, name, block_type):
++        # Use Python dynamism to avoid requiring explicit import of Block/CMakeToolchainBlock
++        # Check if block_type is already a Block instance (not a class)
++        if isinstance(block_type, Block):
++            self._blocks[name] = block_type
++            return
++        
++        # Check if it's a class that inherits from Block
++        if issubclass(block_type, Block):
++            self._blocks[name] = block_type(self._conanfile, self._toolchain)
++            return
++        
++        # Check if it's a class with the necessary Block-like attributes
++        # (has 'template' and 'context' method) - allow dynamic subclassing without import
++        if hasattr(block_type, 'template') and hasattr(block_type, 'context'):
++            # It's a class that looks like a Block but doesn't inherit from Block
++            # Wrap it dynamically to provide conanfile and toolchain access
++            class DynamicBlock(Block):
++                template = block_type.template
++                
++                def context(self):
++                    # Create an instance of the user's block class and delegate to it
++                    block_instance = block_type()
++                    block_instance._conanfile = self._conanfile
++                    block_instance._toolchain = self._toolchain
++                    return block_instance.context()
++            
++            self._blocks[name] = DynamicBlock(self._conanfile, self._toolchain)
++            return
++        
++        # Fallback: treat it as a class that needs instantiation
+         self._blocks[name] = block_type(self._conanfile, self._toolchain)
+ 
+     def __getitem__(self, name):

@@ -1,0 +1,114 @@
+{
+  "instance_id": "pydantic__pydantic-4882",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T05:46:35Z",
+  "repo": "pydantic/pydantic",
+  "base_commit": "2e17c85810fd7e335422dcbf2525d019cfeb5d8c",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.pydantic_1776_pydantic-4882:latest",
+  "container": "swe_ep_s0_pydantic_pydantic-4882",
+  "qwen": {
+    "elapsed_s": 134.887,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 36,
+    "duration_api_ms": 134087,
+    "usage": {
+      "input_tokens": 705302,
+      "output_tokens": 7613,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 712915
+    },
+    "tool_calls": 37,
+    "tool_by_name": {
+      "read_file": {
+        "count": 9,
+        "success": 4,
+        "fail": 5,
+        "durationMs": 12,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 9
+        }
+      },
+      "grep_search": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "glob": {
+        "count": 2,
+        "success": 0,
+        "fail": 2,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 21,
+        "success": 21,
+        "fail": 0,
+        "durationMs": 4009,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 21
+        }
+      },
+      "edit": {
+        "count": 4,
+        "success": 2,
+        "fail": 2,
+        "durationMs": 35,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 4
+        }
+      }
+    },
+    "result_tail": "The implementation is complete. The changes add:\n\n1. **`pydantic/config.py`**: `warn_missing_annotations: bool` config option (default `True`) in both `ConfigDict` and `BaseConfig`\n\n2. **`pydantic/_internal/_model_construction.py`**: Warning logic that emits a `UserWarning` when a model is constructed with missing type annotations and the config flag is enabled\n\nThe `pyproject.toml` changes have been reverted. The implementation matches the requirements in AGENTS.md."
+  },
+  "patch_bytes": 1776,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "pydantic__pydantic-4882",
+    "model_id": "probe-stockAR-env",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard0/verified/per_task/pydantic__pydantic-4882/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard0/verified/per_task/pydantic__pydantic-4882/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:48:51Z"
+}

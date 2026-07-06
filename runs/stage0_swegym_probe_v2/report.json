@@ -1,0 +1,186 @@
+{
+  "artifact": "runs/stage0_swegym_probe_v2/report.json",
+  "run": "stage0_swegym_probe_v2 (ENVELOPE-CORRECTED)",
+  "envelope": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 20,
+    "seed_base": 1234,
+    "empty_patch_retries": 1,
+    "source": "reference envelope banked in runs/stage_c_n5v2/report.md; forced proxy-side via LUMO_PROXY_FORCE_* (default-OFF passthrough otherwise)"
+  },
+  "n_attempts": 20,
+  "instances": [
+    "pandas-dev__pandas-47157",
+    "pandas-dev__pandas-47222",
+    "getmoto__moto-4787",
+    "getmoto__moto-4792",
+    "python__mypy-10032",
+    "python__mypy-10036",
+    "iterative__dvc-10213",
+    "iterative__dvc-10218",
+    "dask__dask-10009",
+    "dask__dask-10027",
+    "modin-project__modin-5507",
+    "modin-project__modin-5940",
+    "pydantic__pydantic-4882",
+    "pydantic__pydantic-4911",
+    "conan-io__conan-10213",
+    "conan-io__conan-10408",
+    "facebookresearch__hydra-1006",
+    "facebookresearch__hydra-1265",
+    "bokeh__bokeh-12779",
+    "bokeh__bokeh-12841"
+  ],
+  "env_acquisition": {
+    "mode": "docker pull xingyaoww prebuilt + re-tag (NO from-scratch build)",
+    "n_pulled": 19,
+    "n_cached": 1,
+    "n_failed": 0,
+    "pull_s_mean": 36.0,
+    "pull_s_median": 20.2,
+    "pull_s_p90": 81.8,
+    "pull_s_total": 684.1,
+    "env_min_per_instance": 0.6,
+    "size_gb_mean": 1.95,
+    "size_gb_total": 39.1,
+    "note": "carried over from greedy v1 (same pre-pulled images; no pull stage in v2)"
+  },
+  "generation": {
+    "concurrency": 4,
+    "server_up_wall_min": 15.3,
+    "gpu_util_pct_mean": 97.8,
+    "gpu_util_pct_median": 100.0,
+    "gpu_util_pct_p90": 100.0,
+    "gpu_util_samples": 184,
+    "gpu_mem_mib_median": 30325.0,
+    "gpu_power_w_median": 395.0,
+    "episode_wall_s_median": 124.9,
+    "episode_wall_s_p90": 174.389,
+    "patch_produced": 19,
+    "empty_patch_retry_fired": 0,
+    "gpu_min_per_attempt": 0.77
+  },
+  "scoring": {
+    "harness": "SWE-Gym/SWE-Bench-Fork @242429c (patched: reuse prebuilt instance image); reused from v1",
+    "resolved": 5,
+    "completed": 19,
+    "empty_patch": 1,
+    "errors": 0,
+    "resolved_ids": [
+      "bokeh__bokeh-12841",
+      "conan-io__conan-10213",
+      "conan-io__conan-10408",
+      "iterative__dvc-10218",
+      "pydantic__pydantic-4911"
+    ],
+    "score_wall_s": 733,
+    "max_workers": 2,
+    "docker_min_per_eval": 0.61
+  },
+  "MEASURED": {
+    "yield_resolve_at_1": 0.25,
+    "yield_wilson95": [
+      0.1119,
+      0.4687
+    ],
+    "patch_produced_rate": 0.95,
+    "gpu_min_per_attempt": 0.77,
+    "docker_min_per_eval": 0.61,
+    "env_min_per_instance": 0.6
+  },
+  "GREEDY_VS_ENVELOPE": {
+    "yield_resolve_at_1": {
+      "greedy": 0.15,
+      "envelope": 0.25
+    },
+    "resolved_of_20": {
+      "greedy": 3,
+      "envelope": 5
+    },
+    "patch_produced_of_20": {
+      "greedy": 15,
+      "envelope": 19
+    },
+    "exit_code_buckets": {
+      "greedy": {
+        "clean": 9,
+        "turn_limit": 11,
+        "loop_detect": 0,
+        "budget": 0,
+        "other": 0
+      },
+      "envelope": {
+        "clean": 7,
+        "turn_limit": 13,
+        "loop_detect": 0,
+        "budget": 0,
+        "other": 0
+      }
+    },
+    "exit_code_raw": {
+      "greedy": {
+        "0": 9,
+        "53": 11
+      },
+      "envelope": {
+        "0": 7,
+        "53": 13
+      }
+    },
+    "turn_limit_rate": {
+      "greedy": 0.55,
+      "envelope": 0.65
+    },
+    "clean_terminal_rate": {
+      "greedy": 0.45,
+      "envelope": 0.35
+    },
+    "loop_or_turnlimit_rate": {
+      "greedy": 0.55,
+      "envelope": 0.65
+    },
+    "gpu_min_per_attempt": {
+      "greedy": 0.66,
+      "envelope": 0.77
+    },
+    "note": "turn-limit (exit 53) + loop-detect (exit 1) is the qwen greedy-repetition degenerate-regime signature; a materially lower rate under the envelope confirms it."
+  },
+  "D1_DECISION": {
+    "go_bar_yield": 0.2,
+    "corrected_yield": 0.25,
+    "verdict": "GO_single_attempt",
+    "note": "corrected yield >= 0.2 => single-attempt GO"
+  },
+  "PRICE_full_campaign": {
+    "note": "attempts = target/yield; GPU-h = attempts*gpu_min_per_attempt/60; docker wall = attempts*docker_min_per_eval/60. 1 attempt/instance (best-of-k not modeled).",
+    "at_corrected_yield": {
+      "attempts_needed": [
+        2400,
+        4000
+      ],
+      "serving_gpu_h": [
+        30.7,
+        51.2
+      ],
+      "docker_eval_wall_h": [
+        24.4,
+        40.7
+      ]
+    },
+    "at_greedy_yield": {
+      "attempts_needed": [
+        4000,
+        6667
+      ],
+      "serving_gpu_h": [
+        44.0,
+        73.3
+      ],
+      "docker_eval_wall_h": [
+        25.3,
+        42.2
+      ]
+    }
+  }
+}

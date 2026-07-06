@@ -510,6 +510,12 @@ emitted per arm (5+5) for later real resolve@1.
 
 ### 3.11 THE FIRST REAL SWE RESOLVE TABLE — Stage-C N=5 v2, aligned runtime + OFFICIAL docker scoring (2026-07-05)
 
+> **SUPERSEDED by §3.12 (2026-07-06).** This v2 table was produced under **greedy `temp=0`**, a
+> deviation from the flywheel SWE reference (temp 0.6 proxy-forced) that the user caught. The
+> envelope-corrected re-run (§3.12, `runs/stage_c_n5v3/`) **erases the −2 weights tax and −1 paradigm tax
+> claimed below** — they were sampling artifacts. Read §3.11 as the deviation-documented greedy lower
+> bound; §3.12 is the standing baseline.
+
 The §3.10 smoke used a **bare-checkout** runtime (agent could not run tests in-episode) and **mock**
 verdicts — both DEPRECATED per `runs/stage_c_n5/RUNTIME_ALIGNMENT_DIRECTIVE.md`. The re-run
 `runs/stage_c_n5v2/` fixes both: every episode runs **inside the official per-instance swebench docker
@@ -563,6 +569,62 @@ recipe §3.2, no RL-v2, ~2–3 h) to the N=25–50 run — it completes the {sto
 isolates paradigm-vs-weights at significance. Turn-cap note: **6/15** episodes hit the 50-turn
 `FatalTurnLimitedError` (one *resolved at the cap*) — raise to 75 at N=25–50 (~1.5× wall/token on affected
 episodes). (`runs/stage_c_n5v2/report.md`, `report.json`, `scoring/*.json`.)
+
+---
+
+### 3.12 THE STANDING SWE BASELINE — Stage-C N=5 v3, ENVELOPE-CORRECTED (2026-07-06)
+
+**Supersedes §3.11.** Same aligned runtime (episode-in-official-container, import+test-cmd 5/5) and
+OFFICIAL `swebench.harness.run_evaluation` docker scoring (`score rc=0`), **4 arms × 5 Tier0**, but the
+sampler is corrected from greedy `temp=0` to the **reference envelope temp 0.6 / top_p 0.95 / top_k 20,
+seed 1234**, forced proxy-side (`LUMO_PROXY_FORCE_*`, commit `289f023`), + empty-patch re-drive
+retries=1. Session cap `--max-session-turns 50`. Verified against primary artifacts (official verdict
+JSON + per-instance `report.json` + applied `patch.diff` + `test_output.txt` + `usage.jsonl` +
+`qwen_trace.json`); full detail in `runs/stage_c_n5v3/report.md`.
+
+**RESOLVE@1 (official docker), 4 arms × 5 Tier0 — THE ENVELOPE LADDER:**
+
+| arm | weights | paradigm | resolve@1 | exits |
+|---|---|---|---:|---|
+| stock-AR | stock Qwen3.5-9B | AR | **3/5** | ok:3, turn-limit:2, loops:0 |
+| merged-AR | merged **RL-v2** | AR | **3/5** | ok:3, turn-limit:2, loops:0 |
+| diffusion | merged **RL-v2** | block-diffusion | **3/5** | loop-halt:3, turn-limit:2, ok:0 |
+| diffstock | stock B@1000 (no RL-v2) | block-diffusion | **1/5** | loop-halt:4, turn-limit:1 |
+
+**The three model arms resolve the IDENTICAL set** {django-11119, django-13741, pytest-8399}; fail
+{django-12754, sympy-13757}. diffstock resolves only {django-11119}. Spot-checked diffusion
+django-13741: real minimal fix `kwargs.setdefault("disabled", True)`, `resolved=true`, FAIL_TO_PASS
+green.
+
+**REVISED ATTRIBUTIONS — the greedy taxes are RETIRED.** §3.11's −2 RL-v2 weights tax (4/5→2/5) and −1
+diffusion paradigm tax (2/5→1/5) **both vanish** under the envelope: merged-AR ties stock-AR, and the
+diffusion twin ties both. **Paired McNemar discordance b=c=0** for every pair among the three model arms
+— not one instance distinguishes them. At n=5 there is **no detectable SWE tax** (marginal or paired);
+the greedy ordering measured differential susceptibility to the greedy-repetition degenerate regime, not
+capability. Wilson95: 3/5=[0.231,0.882], 1/5=[0.036,0.624]; Fisher 3/5-vs-1/5 (diffstock) p=0.524 (n.s.).
+diffstock's 1/5 is the pre-RL foundation's general-agentic floor (loops out of 4/5 episodes in 12–23
+turns), not a paradigm tax.
+
+**GREEDY (v2) → ENVELOPE (v3):** stock-AR 4/5→3/5 (loop 0→0); merged-AR 2/5→3/5 (loop-halt **1→0
+eliminated**); diffusion 1/5→**3/5 (TRIPLED)**; diffstock 0/5→1/5. The sampler correction *converges* the
+model arms onto a tie — the signature of a greedy-repetition confound in v2.
+
+**DIFFUSION TEXTURE REMAINS (behavioral, not resolve-rate).** Diffusion keeps a distinct signature: **3
+loop-halts** (`consecutive_identical_tool_calls`) vs 0 in both AR arms, **2 of them POST-RESOLVE**
+(django-13741, pytest-8399 landed their resolving patch then looped until halted), **0 clean exits**, and
+**~107s/episode wall vs stock-AR ~80s (≈1.34×)** at comparable token volume. This is a serving/decode-loop
+problem to fix in the engine, NOT a capability deficit.
+
+**CONSEQUENCE FOR THE PLAN.** The SWE-tuning campaign (`swe_tuning_campaign_design.md`) existed to recover
+the −2 RL-v2 tax; **there is no −2** ⇒ premise **DISSOLVED**, campaign **PARKED** (data path is GO-priced:
+Stage-0 probe v2 yield 0.25 ≥ 0.20 bar, patch_produced 19/20 — but no measured deficit to close). The
+**justified next step is the N=25–50 horse race** (stock-AR vs diffusion, envelope-seeded, aligned
+runtime, official scoring, **turn cap 75** — v3 diffusion resolves land at turns 49–50 pressed against the
+50 cap while all clean AR resolves finish by 47; the 100+ turn table values are proxy-req counts, not
+session turns). Priced from measured v3 per-episode walls (stock ~107s, diffusion ~141s): **~2–6 GPU-h +
+~1–2 h off-GPU docker** — a ~10× DOWN-reprice of the campaign §5 "35–60 GPU-h" N=25–50 line (that estimate
+conflated eval with data-gen). (`runs/stage_c_n5v3/report.md`, `report_table.txt`, `report.json`,
+`scoring/*.json`; `runs/stage0_swegym_probe_v2/report.json`.)
 
 ---
 

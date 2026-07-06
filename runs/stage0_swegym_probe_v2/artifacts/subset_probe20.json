@@ -1,0 +1,150 @@
+{
+  "dataset_name": "SWE-Gym/SWE-Gym",
+  "split": "train",
+  "source": "Stage 0 phase 2 PROBE: 20 SWE-Gym instances, stratified <=2/repo, validated (fork spec-covered + make_test_spec ok + prebuilt xingyaoww image)",
+  "n": 20,
+  "instance_ids": [
+    "pandas-dev__pandas-47157",
+    "pandas-dev__pandas-47222",
+    "getmoto__moto-4787",
+    "getmoto__moto-4792",
+    "python__mypy-10032",
+    "python__mypy-10036",
+    "iterative__dvc-10213",
+    "iterative__dvc-10218",
+    "dask__dask-10009",
+    "dask__dask-10027",
+    "modin-project__modin-5507",
+    "modin-project__modin-5940",
+    "pydantic__pydantic-4882",
+    "pydantic__pydantic-4911",
+    "conan-io__conan-10213",
+    "conan-io__conan-10408",
+    "facebookresearch__hydra-1006",
+    "facebookresearch__hydra-1265",
+    "bokeh__bokeh-12779",
+    "bokeh__bokeh-12841"
+  ],
+  "slugmap": {
+    "pandas-dev__pandas-47157": {
+      "slug_s": "pandas-dev_s_pandas-47157",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.pandas-dev_s_pandas-47157:latest",
+      "repo": "pandas-dev/pandas",
+      "version": "1.5"
+    },
+    "pandas-dev__pandas-47222": {
+      "slug_s": "pandas-dev_s_pandas-47222",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.pandas-dev_s_pandas-47222:latest",
+      "repo": "pandas-dev/pandas",
+      "version": "1.5"
+    },
+    "getmoto__moto-4787": {
+      "slug_s": "getmoto_s_moto-4787",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.getmoto_s_moto-4787:latest",
+      "repo": "getmoto/moto",
+      "version": "3.0"
+    },
+    "getmoto__moto-4792": {
+      "slug_s": "getmoto_s_moto-4792",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.getmoto_s_moto-4792:latest",
+      "repo": "getmoto/moto",
+      "version": "3.0"
+    },
+    "python__mypy-10032": {
+      "slug_s": "python_s_mypy-10032",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.python_s_mypy-10032:latest",
+      "repo": "python/mypy",
+      "version": "0.810"
+    },
+    "python__mypy-10036": {
+      "slug_s": "python_s_mypy-10036",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.python_s_mypy-10036:latest",
+      "repo": "python/mypy",
+      "version": "0.810"
+    },
+    "iterative__dvc-10213": {
+      "slug_s": "iterative_s_dvc-10213",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.iterative_s_dvc-10213:latest",
+      "repo": "iterative/dvc",
+      "version": "3.37"
+    },
+    "iterative__dvc-10218": {
+      "slug_s": "iterative_s_dvc-10218",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.iterative_s_dvc-10218:latest",
+      "repo": "iterative/dvc",
+      "version": "3.37"
+    },
+    "dask__dask-10009": {
+      "slug_s": "dask_s_dask-10009",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.dask_s_dask-10009:latest",
+      "repo": "dask/dask",
+      "version": "2023.9"
+    },
+    "dask__dask-10027": {
+      "slug_s": "dask_s_dask-10027",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.dask_s_dask-10027:latest",
+      "repo": "dask/dask",
+      "version": "2023.3"
+    },
+    "modin-project__modin-5507": {
+      "slug_s": "modin-project_s_modin-5507",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.modin-project_s_modin-5507:latest",
+      "repo": "modin-project/modin",
+      "version": "0.23"
+    },
+    "modin-project__modin-5940": {
+      "slug_s": "modin-project_s_modin-5940",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.modin-project_s_modin-5940:latest",
+      "repo": "modin-project/modin",
+      "version": "0.23"
+    },
+    "pydantic__pydantic-4882": {
+      "slug_s": "pydantic_s_pydantic-4882",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.pydantic_s_pydantic-4882:latest",
+      "repo": "pydantic/pydantic",
+      "version": "2.0"
+    },
+    "pydantic__pydantic-4911": {
+      "slug_s": "pydantic_s_pydantic-4911",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.pydantic_s_pydantic-4911:latest",
+      "repo": "pydantic/pydantic",
+      "version": "2.0"
+    },
+    "conan-io__conan-10213": {
+      "slug_s": "conan-io_s_conan-10213",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.conan-io_s_conan-10213:latest",
+      "repo": "conan-io/conan",
+      "version": "1.44"
+    },
+    "conan-io__conan-10408": {
+      "slug_s": "conan-io_s_conan-10408",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.conan-io_s_conan-10408:latest",
+      "repo": "conan-io/conan",
+      "version": "1.45"
+    },
+    "facebookresearch__hydra-1006": {
+      "slug_s": "facebookresearch_s_hydra-1006",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.facebookresearch_s_hydra-1006:latest",
+      "repo": "facebookresearch/hydra",
+      "version": "1.0"
+    },
+    "facebookresearch__hydra-1265": {
+      "slug_s": "facebookresearch_s_hydra-1265",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.facebookresearch_s_hydra-1265:latest",
+      "repo": "facebookresearch/hydra",
+      "version": "1.1"
+    },
+    "bokeh__bokeh-12779": {
+      "slug_s": "bokeh_s_bokeh-12779",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.bokeh_s_bokeh-12779:latest",
+      "repo": "bokeh/bokeh",
+      "version": "3.0"
+    },
+    "bokeh__bokeh-12841": {
+      "slug_s": "bokeh_s_bokeh-12841",
+      "xingyaoww": "xingyaoww/sweb.eval.x86_64.bokeh_s_bokeh-12841:latest",
+      "repo": "bokeh/bokeh",
+      "version": "3.0"
+    }
+  }
+}

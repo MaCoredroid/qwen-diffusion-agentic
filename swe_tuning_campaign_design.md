@@ -8,7 +8,48 @@ assume." **Owner discipline:** [[qwen-diffusion-commit-workflow]] (commit+push e
 
 ---
 
+## STATUS (2026-07-06) — PREMISE DISSOLVED at n=5; campaign PARKED; D1 repriced GO
+
+**Read this before the rest of the doc.** This campaign was designed to **recover the −2 RL-v2 SWE
+"wrong-payload" tax** measured in the v2 *greedy* ladder. The sampling-corrected re-run
+(`runs/stage_c_n5v3/report.md`, reference envelope temp 0.6 / top_p 0.95 / top_k 20, official docker)
+**erases that tax:**
+
+> **v2 greedy:** stock-AR 4/5 > merged-AR(RL-v2) 2/5 > diffusion(RL-v2) 1/5 > diffstock 0/5
+> **v3 envelope:** stock-AR **3/5 == merged-AR 3/5 == diffusion 3/5** > diffstock 1/5
+
+The three model arms resolve the **identical** instance set {django-11119, django-13741, pytest-8399};
+paired McNemar discordance **b = c = 0** for every pair. **There is no −2 to recover** — the greedy
+−2 weights tax and −1 paradigm tax were sampling artifacts (retired). So:
+
+- **PREMISE DISSOLVED.** The doc's §0 FRAME (below) rests on "RL-v2 is the wrong SWE payload (−2 even as
+  AR)" and "the diffusion paradigm compounds it (−1)". **Both findings are withdrawn** at this
+  resolution. The FRAME and §2.2 base-choice argument (S-recovers-the-tax vs T) are **preserved below as
+  the historical greedy-era rationale**, but they no longer motivate spend.
+- **CAMPAIGN PARKED (not killed).** The machinery is sound and the data path is GO-priced — the Stage-0
+  probe v2 (`runs/stage0_swegym_probe_v2/report.json`) measured **corrected yield 5/20 = 0.25**, which
+  **clears the 0.20 GO bar**, with patch_produced 19/20 (empty-patch loss fixed) and env-images that
+  *pull* prebuilt. But there is currently **no measured deficit for it to close.** Do not spend the
+  ~80–150 GPU-h until a properly powered run shows a gap.
+- **D1 → GO-IF-EVER-NEEDED.** The phase-3 D1 ledger below (yield 0.15 → ADJUST) is superseded by the
+  envelope reprice: **yield 0.25 ≥ 0.20 ⇒ GO_single_attempt** on the generator economics. D1 is no
+  longer the blocker; the blocker is the dissolved premise. If a future N=25–50 result *reopens* a
+  diffusion-vs-AR gap, this campaign is the pre-priced, GO-gated response — unpark it then.
+- **THE JUSTIFIED NEXT STEP is the N=25–50 horse race** (new section at the end of this doc), not this
+  training campaign. The v2 "N=25–50 is premature, it measures a known gap" objection is void — there is
+  no known gap; the honest prior is the tie, and only a powered run can detect or bound a real paradigm
+  difference.
+
+*(D1 reprice detail: the probe-v2 GO-bar and campaign price are updated in §1.4 and §5.1 below; the
+original greedy-yield ledger is retained there as the superseded record.)*
+
+---
+
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
+
+> **SUPERSEDED (greedy-era rationale — kept for the record; see STATUS block above).** The ladder and the
+> two "load-bearing findings" in this section were measured under greedy `temp=0` and are **retired as
+> sampling artifacts** by `runs/stage_c_n5v3/report.md`. Read as history, not as live motivation.
 
 The first real SWE-bench-Verified resolve table (`runs/stage_c_n5v2/report.md`, official docker, aligned
 episode-in-container runtime, n=5) is a **4-arm ladder**:
@@ -125,7 +166,27 @@ constant-or-lower GPU-h. This is the [[gpu-utilization-standard]] applied: do no
 model as a documented purity caveat (changes "self-generated" → "distilled"; report it, do not silently mix). Primary
 remains self-generated per the task; levers are pulled only on a measured pilot shortfall (§5 decision point D1).
 
-### 1.4 PHASE-2 PROBE — MEASURED (2026-07-06; 20 SWE-Gym instances, stock-AR @concurrency 4)
+### 1.4b ENVELOPE-CORRECTED PROBE (v2) — SUPERSEDES 1.4; yield 0.25 clears the GO bar (2026-07-06)
+
+`runs/stage0_swegym_probe_v2/report.json` re-ran the SAME 20 SWE-Gym instances under the **reference
+envelope** (temp 0.6 / top_p 0.95 / top_k 20 / seed 1234, proxy-forced) + **empty-patch re-drive
+(retries=1)**. Verified against the official scorer JSON (`score/probe-stockAR-env.probe20env.json`,
+schema_version 2) and the primary `all_predictions.jsonl`:
+
+| metric | greedy (v1, §1.4) | **envelope (v2)** |
+|---|---|---|
+| **resolve@1 yield** | 0.15 (3/20) | **0.25 (5/20)** — Wilson95 [0.112, 0.469] |
+| patch_produced | 0.75 (15/20) | **0.95 (19/20)** — empty-patch loss fixed by the re-drive |
+| GPU-min/attempt (conc. 4) | 0.66 | 0.77 (97.8% util, 100% median) |
+| docker-min/eval | 0.38 | 0.61 |
+
+resolved (v2): `bokeh-12841`, `conan-10213`, `conan-10408`, `dvc-10218`, `pydantic-4911`.
+**D1 verdict flips: 0.25 ≥ 0.20 GO bar ⇒ GO_single_attempt.** Repriced full campaign @0.25: 2,400–4,000
+attempts, 30.7–51.2 serving GPU-h, 24.4–40.7 docker-eval wall-h (vs the greedy 44–73 GPU-h). The
+generator economics are no longer the blocker — the **dissolved premise** is (STATUS block). Everything
+in §1.4 below is the superseded greedy record.
+
+### 1.4 PHASE-2 PROBE — MEASURED (2026-07-06; 20 SWE-Gym instances, stock-AR @concurrency 4) [SUPERSEDED by 1.4b]
 
 `runs/stage0_swegym_probe/` (README + `report.json`). Stratified 20 (2× each of the 10 repos the SWE-Gym harness-fork
 spec map covers; **MONAI excluded** — its repo is absent from `SWE-Bench-Fork`'s `MAP_REPO_VERSION_TO_SPECS`). All 20 are
@@ -333,7 +394,12 @@ that honestly, as the report already does.
 **Decision points for the user (each is a commit + a short report; the user steers, not dictated):**
 - **D1 — after the data-gen pilot (~50–100 instances):** measured yield + coverage. GO full-scale generation / pull a
   rescue lever / descope. (Guards against burning 30–60 GPU-h on a weak generator.)
-  > **D1 RESOLVED (2026-07-06 phase-2 probe, n=20) → ADJUST (fall back per design; NOT a clean GO, NOT KILL).** §1.4.
+  > **D1 UPDATE (2026-07-06 ENVELOPE probe v2, §1.4b) → GO_single_attempt.** The envelope re-run measured
+  > **yield 0.25 (5/20) ≥ the 0.20 GO bar** and fixed the empty-patch loss (patch_produced 0.95). The
+  > greedy ADJUST verdict below is SUPERSEDED. D1 is now a GO on economics — but the campaign is PARKED on
+  > the dissolved premise (STATUS block), so this GO is "unpark-if-a-gap-reopens," not "launch now."
+  >
+  > **D1 RESOLVED [SUPERSEDED — greedy record] (2026-07-06 phase-2 probe, n=20) → ADJUST (fall back per design; NOT a clean GO, NOT KILL).** §1.4.
   > **Yield resolve@1 = 3/20 = 0.15 (Wilson95 [0.05, 0.36])**, below the 20% GO bar → per the task rule the *single-attempt*
   > SWE-Gym self-gen is **mispriced** (repriced ~44–73 GPU-h for 600–1k keepers, ≈2× the estimate; still tractable). It is
   > **not** KILL-D2: coverage is broad (resolves span dvc/pydantic/mypy), harness errors = 0, and the toolchain is proven.
@@ -383,3 +449,104 @@ ring is relaxed to Tier0∪Tier1. User steers the lever choice at D1.
 GO/NO-GO called for; it feeds the winning `M_swe*` into Stage-C's existing serve path (Stage A certified, NVFP4 optional
 per Stage B). If it succeeds, the next cycle is on-policy **SWE-GRPO** with a terminal resolve reward on the now-SWE-capable
 base (the deferred RL step, §2.1) — closing the methodology's flywheel on the SWE distribution.
+
+---
+
+## THE N=25–50 PROPOSAL — the properly-powered SWE horse race (2026-07-06; the justified next step)
+
+**Motivation (why now, not before).** The v2 report deferred N=25–50 as "premature — it would measure a
+known diffusion-vs-AR gap at higher significance." The envelope-corrected run
+(`runs/stage_c_n5v3/report.md`) **erased that gap**: stock-AR 3/5 == merged-AR 3/5 == diffusion 3/5,
+identical resolve sets, paired McNemar b=c=0. The honest prior is now **the tie**. A powered run is the
+only instrument that can either (a) detect a real paradigm difference the n=5 tie is too coarse to see,
+or (b) bound it tightly enough to certify the diffusion twin as an AR-equivalent SWE server. Either
+outcome is decision-grade. This proposal is the horse race, priced from the v3 measured per-episode
+costs.
+
+### Arms
+
+| arm | weights | paradigm | role |
+|---|---|---|---|
+| **stock-AR** | stock Qwen3.5-9B | AR (vLLM) | the shipping AR reference |
+| **diffusion** | merged RL-v2 twin | block-diffusion (FLARE hybrid_clean) | **the deliverable under test** |
+| merged-AR *(optional 3rd)* | merged RL-v2 | AR | run ONLY to decompose weights-vs-paradigm **if** the primary pair diverges; skip if budget-tight |
+
+diffstock is **dropped** — its v3 1/5 is a known general-agentic-capability floor (pre-RL B@1000
+foundation, loops out of 4/5 episodes), not a diffusion-vs-AR paradigm question. The 2×2 it completed is
+no longer the live question now that the RL-v2 twin ties the AR arms.
+
+### Protocol (frozen to the v3 contract)
+
+- **Sampling:** reference envelope **temp 0.6 / top_p 0.95 / top_k 20**, forced proxy-side via
+  `LUMO_PROXY_FORCE_*`, **seeded per-request** (reproducible); empty-patch re-drive retries=1.
+- **Runtime:** episode-in-official-container (`--runtime container`, `swebench/sweb.eval.x86_64.<inst>`),
+  native `qwen3_xml` tools, `--max-num-seqs 1`, one server per arm (paired, sequential in the RAM cage).
+- **Scoring:** OFFICIAL `swebench.harness.run_evaluation` docker harness; official `scoring/*.json`
+  verdicts, no mock.
+- **Design:** **paired** (every arm runs the same instances), **resolve@1** = one seeded attempt per
+  (arm, instance). Report resolve@1 + Wilson CIs + **paired McNemar** on the shared instances + per-turn
+  economics both ways. Losslessness assertion in-loop for the diffusion arm (cache-on byte cert).
+
+### Turn cap = 75 (raised from the v3 cap of 50) — justified from the v3 turn distributions
+
+Primary evidence (`runs/stage_c_n5v3/report.json`, `run_v3_arm.sh` `MAX_TURNS=50`):
+
+- **All clean AR resolves finished by turn 47** (stock-AR resolves at 38/47/38; merged-AR at 35/43/37).
+  A cap of 75 contains every observed clean AR resolve with ~1.6× margin.
+- **The diffusion resolves land at turns 49–50 — pressed against the 50 cap** (django-13741 at 50,
+  pytest-8399 at 49, django-11119 at the 50 turn-limit). The diffusion paradigm demonstrably needs *more*
+  turns to resolve than the AR arms, and at cap 50 its resolves are at the ceiling. **75 gives the
+  diffusion arm ~50% headroom above where its resolves currently occur** — the arm most likely to be
+  truncated by a tight cap.
+- **Raising the cap is not unbounded-spend.** The v3 run had **7 turn-limit exits** (proxy-req counts
+  80–103 against the 50-session-turn cap) and **only one** of them resolved (diffstock django-11119 at
+  102 reqs — and diffstock is dropped). Episodes that spin past ~50 turns almost never convert; 75 is the
+  economical ceiling that fits all real work while still bounding the dead spins. Corroborates the v2
+  finding (6/15 greedy episodes hit the 50 cap, one *resolved at* it).
+
+Booked cost of 75 vs 50: ~1.2× blended wall on the ~40% of episodes that would otherwise turn-limit
+(already included in the pricing headroom below).
+
+### Instance pool = stratified N=25–50 slice of Tier1-100 (leakage-firewalled)
+
+- Draw from **Tier1-100** (`…/auto_research/swe-bench-tier1-verified-instances-20260520.json`), stratified
+  across repos. **N=25 minimum** (ranks arms, surfaces ≳0.3 effects), **N=50 preferred** (tighter CIs).
+- **Leakage rules (the §1.2 firewall, enforced):** the eval pool is **held out from ALL training** —
+  `eval_ids ∩ train_ids = ∅` and, if this campaign ever unparks, the SWE-SFT `train_ids` must satisfy
+  `train_ids ∩ (Tier0 ∪ Tier1 ∪ verified_500) = ∅`. Never include the inner-5
+  (`stage_c_n5v3`) so the v3 baseline stays an independent point. Screen for near-duplicate PRs.
+- Images: Tier1 Verified instances have **prebuilt official `swebench` images** (pullable, per the probe
+  finding), so runtime alignment is a one-time pull (~0.6 min/instance), not a build.
+
+### PRICING (from measured v3 per-episode costs — NOT assumed)
+
+Measured serving wall per episode (incl. container + agent + patch extract; `logs/*_driver.log` means):
+**stock-AR ~107s, diffusion ~141s, merged-AR ~119s.** Sequential paired eval ⇒ one dedicated server per
+arm, GPU wall-occupied for the whole episode. Apply a **1.2× turn-cap-75 headroom** on the ~40% of
+episodes that would otherwise turn-limit (blended). Server boot ~1 min/arm (one-time). RTX 5090.
+
+| config | per-instance serving | N=25 serving GPU-h | N=50 serving GPU-h |
+|---|---|---|---|
+| **2-arm** (stock-AR + diffusion) | ~248–298 s | **~1.8–2.2** | **~3.5–4.3** |
+| **3-arm** (+ merged-AR) | ~367–440 s | **~2.6–3.1** | **~5.1–6.2** |
+
+**Docker eval (OFF the serving GPU, parallelizable on alienware/local x86):** image pull one-time per
+instance (~0.6 min × N = 15–30 min), + arms × N evals at ~0.4–1.0 docker-min/eval (v3 scored 13 patches
+in ~5 min with image reuse; probe measured 0.61 docker-min/eval). At 2–4 workers: **~1–2 wall-h total.**
+
+**Total: N=25–50 horse race ≈ 2–6 GPU-h serving + ~1–2 h off-GPU docker.** This **reprices the campaign
+§5 "3c. N=25–50" line (35–60 GPU-h) DOWN by ~10×** — that estimate conflated the eval tier with data-gen
+attempts. A paired resolve@1 eval is only **N × arms episodes** (≤150 episodes at N=50/3-arm), not
+thousands of best-of-k gen attempts. **Recommendation: run it at N=50, 2-arm (stock-AR vs diffusion), ~4
+GPU-h**; add merged-AR only if the pair diverges.
+
+### Decision this run produces (D5)
+
+- **If diffusion ≈ stock-AR** (CIs overlap, McNemar b−c not significant) at N=50 → the diffusion twin is
+  certified an **AR-equivalent SWE server** at ranking-tier significance; the remaining diffusion problem
+  is purely the **behavioral texture** (loop-halts, no clean terminals, ~1.3× wall) — an engine/decode
+  fix, not a capability gap. The SWE-tuning campaign stays parked.
+- **If diffusion < stock-AR** by a detectable margin → a real paradigm tax exists after all; **unpark
+  this campaign** (D1 already GO at yield 0.25) to inject SWE-capable base weights and re-convert, and/or
+  prioritize the decode-loop loop-halt fix. Only *this* outcome re-justifies the training spend.
+- Either way, N=50 is the cheapest experiment (~4 GPU-h) that converts the n=5 tie into a decision.

@@ -1,0 +1,11 @@
+{
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "split": "train",
+  "instance_ids": [
+    "getmoto__moto-4787",
+    "iterative__dvc-10213",
+    "modin-project__modin-5507",
+    "conan-io__conan-10213",
+    "bokeh__bokeh-12779"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+    "total_instances": 5,
+    "submitted_instances": 5,
+    "completed_instances": 4,
+    "resolved_instances": 3,
+    "unresolved_instances": 1,
+    "empty_patch_instances": 1,
+    "error_instances": 0,
+    "completed_ids": [
+        "django__django-11119",
+        "django__django-12754",
+        "django__django-13741",
+        "pytest-dev__pytest-8399"
+    ],
+    "incomplete_ids": [],
+    "empty_patch_ids": [
+        "sympy__sympy-13757"
+    ],
+    "submitted_ids": [
+        "django__django-11119",
+        "django__django-12754",
+        "django__django-13741",
+        "pytest-dev__pytest-8399",
+        "sympy__sympy-13757"
+    ],
+    "resolved_ids": [
+        "django__django-11119",
+        "django__django-13741",
+        "pytest-dev__pytest-8399"
+    ],
+    "unresolved_ids": [
+        "django__django-12754"
+    ],
+    "error_ids": [],
+    "schema_version": 2
+}

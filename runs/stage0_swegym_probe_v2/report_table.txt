@@ -1,0 +1,31 @@
+STAGE 0 PHASE 2 PROBE v2 — ENVELOPE-CORRECTED yield (20 SWE-Gym instances, stock-AR @concurrency 4)
+envelope: temp=0.6 top_p=0.95 top_k=20 seed=1234 (proxy-forced) + empty-patch-retries=1
+============================================================================================
+GENERATION (concurrency=4):
+  server_up_wall=15.3min  GPU util%% mean=97.8 median=100.0 p90=100.0 (n=184)
+  GPU mem MiB median=30325.0  power W median=395.0
+  episode wall_s median=124.9 p90=174.389  patch_produced=19/20  empty_patch_retry_fired=0
+SCORING (SWE-Gym/SWE-Bench-Fork @242429c (patched: reuse prebuilt instance image); reused from v1):
+  resolved=5/20  completed=19  empty_patch=1 errors=0  score_wall=733s maxw=2
+  resolved_ids=['bokeh__bokeh-12841', 'conan-io__conan-10213', 'conan-io__conan-10408', 'iterative__dvc-10218', 'pydantic__pydantic-4911']
+--------------------------------------------------------------------------------------------
+CORRECTED yield resolve@1 = 0.25 (Wilson95 [0.1119, 0.4687])   patch_produced_rate = 0.95
+CORRECTED GPU-min/attempt = 0.77   docker-min/eval = 0.61   env-min/instance = 0.6
+============================================================================================
+YIELD TABLE — GREEDY (v1) vs ENVELOPE (v2), SAME 20 instances / SAME scorer:
+  metric                     greedy      envelope
+  resolve@1 yield            0.15        0.25
+  resolved / 20              3           5
+  patch_produced / 20        15          19
+  turn-limit rate (exit53)   0.55        0.65
+  loop+turnlimit rate        0.55        0.65
+  clean-terminal rate        0.45        0.35
+  GPU-min/attempt            0.66        0.77
+  exit-code buckets greedy   = {'clean': 9, 'turn_limit': 11, 'loop_detect': 0, 'budget': 0, 'other': 0}
+  exit-code buckets envelope = {'clean': 7, 'turn_limit': 13, 'loop_detect': 0, 'budget': 0, 'other': 0}
+  (degenerate-regime test: turn-limit+loop = qwen greedy-repetition non-termination signature)
+--------------------------------------------------------------------------------------------
+D1 DECISION @ GO-bar 0.2: corrected yield 0.25 -> GO_single_attempt
+PRICE 600-1000 keepers @ corrected yield 0.25:
+  attempts=[2400, 4000]  serving GPU-h=[30.7, 51.2]  docker-eval wall-h=[24.4, 40.7]
+  (greedy 0.15 was: attempts=[4000, 6667]  serving GPU-h=[44.0, 73.3]  docker-eval wall-h=[25.3, 42.2])

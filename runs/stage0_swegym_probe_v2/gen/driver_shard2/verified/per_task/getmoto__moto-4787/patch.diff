@@ -1,0 +1,67 @@
+diff --git a/moto/dynamodb2/exceptions.py b/moto/dynamodb2/exceptions.py
+index bab5404f1..2995c9a8b 100644
+--- a/moto/dynamodb2/exceptions.py
++++ b/moto/dynamodb2/exceptions.py
+@@ -202,3 +202,10 @@ class TooManyAddClauses(InvalidUpdateExpression):
+ 
+     def __init__(self):
+         super().__init__(self.msg)
++
++
++class MultipleTransactionsException(MockValidationException):
++    msg = "Transaction request cannot include multiple operations on one item"
++
++    def __init__(self):
++        super().__init__(self.msg)
+diff --git a/moto/dynamodb2/models/__init__.py b/moto/dynamodb2/models/__init__.py
+index adb51a1c7..46e5c3e5d 100644
+--- a/moto/dynamodb2/models/__init__.py
++++ b/moto/dynamodb2/models/__init__.py
+@@ -14,6 +14,7 @@ from moto.core.exceptions import JsonRESTError
+ from moto.dynamodb2.comparisons import get_filter_expression
+ from moto.dynamodb2.comparisons import get_expected
+ from moto.dynamodb2.exceptions import (
++    MultipleTransactionsException,
+     InvalidIndexNameError,
+     ItemSizeTooLarge,
+     ItemSizeToUpdateTooLarge,
+@@ -1564,6 +1565,39 @@ class DynamoDBBackend(BaseBackend):
+         return table.ttl
+ 
+     def transact_write_items(self, transact_items):
++        # Check for multiple operations on the same item
++        seen_items = {}
++        for item in transact_items:
++            if "ConditionCheck" in item:
++                item_data = item["ConditionCheck"]
++                table_name = item_data["TableName"]
++                key = item_data["Key"]
++            elif "Put" in item:
++                item_data = item["Put"]
++                table_name = item_data["TableName"]
++                # For Put, the key is part of the Item
++                key = item_data["Item"]
++            elif "Delete" in item:
++                item_data = item["Delete"]
++                table_name = item_data["TableName"]
++                key = item_data["Key"]
++            elif "Update" in item:
++                item_data = item["Update"]
++                table_name = item_data["TableName"]
++                key = item_data["Key"]
++            else:
++                raise ValueError("Invalid transaction item")
++
++            # Create a unique identifier for the item (table + key)
++            # Convert key dict to hashable form (tuple of sorted key-value pairs)
++            if isinstance(key, dict):
++                key = tuple(sorted(key.items()))
++            item_key = (table_name, key)
++
++            if item_key in seen_items:
++                raise MultipleTransactionsException()
++            seen_items[item_key] = True
++
+         # Create a backup in case any of the transactions fail
+         original_table_state = copy.deepcopy(self.tables)
+         errors = []

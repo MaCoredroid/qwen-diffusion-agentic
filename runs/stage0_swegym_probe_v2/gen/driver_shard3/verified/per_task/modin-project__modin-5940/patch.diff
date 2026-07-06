@@ -1,0 +1,21 @@
+diff --git a/modin/core/io/sql/sql_dispatcher.py b/modin/core/io/sql/sql_dispatcher.py
+index 38e65fe8..b7df06d2 100644
+--- a/modin/core/io/sql/sql_dispatcher.py
++++ b/modin/core/io/sql/sql_dispatcher.py
+@@ -128,6 +128,16 @@ class SQLDispatcher(FileDispatcher):
+         # since the mapping operation is non-blocking, each partition will return an empty DF
+         # so at the end, the blocking operation will be this empty DF to_pandas
+ 
++        con = kwargs.get("con")
++        # Convert SQLAlchemy engine/connection objects to string URLs since they cannot be pickled
++        # when sent to worker processes. When a string is passed to to_sql, pandas will create
++        # a new engine from the connection string.
++        if con is not None:
++            from sqlalchemy.engine import Engine, Connection
++
++            if isinstance(con, (Engine, Connection)):
++                kwargs["con"] = str(con.url)
++
+         empty_df = qc.getitem_row_array([0]).to_pandas().head(0)
+         empty_df.to_sql(**kwargs)
+         # so each partition will append its respective DF

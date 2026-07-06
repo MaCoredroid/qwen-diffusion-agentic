@@ -1,0 +1,90 @@
+{
+  "instance_id": "django__django-13741",
+  "dataset_name": "princeton-nlp/SWE-bench_Verified",
+  "started_at": "2026-07-06T04:35:34Z",
+  "repo": "django/django",
+  "base_commit": "d746f28949c009251a8741ba03d156964050717f",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.django_1776_django-13741:latest",
+  "container": "swe_ep_django_django-13741",
+  "qwen": {
+    "elapsed_s": 79.165,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 47,
+    "duration_api_ms": 78263,
+    "usage": {
+      "input_tokens": 802868,
+      "output_tokens": 5154,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 808022
+    },
+    "tool_calls": 46,
+    "tool_by_name": {
+      "read_file": {
+        "count": 7,
+        "success": 4,
+        "fail": 3,
+        "durationMs": 8,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 7
+        }
+      },
+      "run_shell_command": {
+        "count": 38,
+        "success": 38,
+        "fail": 0,
+        "durationMs": 12134,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 38
+        }
+      },
+      "edit": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 1,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 1
+        }
+      }
+    },
+    "result_tail": "The fix is verified and working correctly:\n- The `disabled` property is set to `True` by default on `ReadOnlyPasswordHashField`\n- The `required` property is set to `False` by default (as before)\n\nAll 570 auth tests pass. The fix for django issue #13741 has been successfully implemented."
+  },
+  "patch_bytes": 465,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "django__django-13741",
+    "model_id": "n5v3-stock-ar",
+    "dataset_name": "princeton-nlp/SWE-bench_Verified",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/ar/verified/per_task/django__django-13741/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/ar/verified/per_task/django__django-13741/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T04:36:55Z"
+}

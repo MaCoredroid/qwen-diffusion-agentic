@@ -1,0 +1,50 @@
+diff --git a/pydantic/_internal/_model_construction.py b/pydantic/_internal/_model_construction.py
+index d6f511ee9..01986df43 100644
+--- a/pydantic/_internal/_model_construction.py
++++ b/pydantic/_internal/_model_construction.py
+@@ -224,7 +224,23 @@ def build_inner_schema(  # noqa: C901
+         try:
+             default = getattr(cls, ann_name)
+         except AttributeError:
+-            fields[ann_name] = FieldInfo.from_annotation(ann_type)
++            # If the attribute is not found in the current class (e.g., inherited field),
++            # look up the FieldInfo from parent classes to preserve default values
++            from copy import copy
++            inherited_field_info = None
++            for base in cls.__mro__[1:]:  # Skip cls itself, start from parent classes
++                if hasattr(base, 'model_fields') and ann_name in base.model_fields:
++                    inherited_field_info = base.model_fields[ann_name]
++                    break
++            
++            if inherited_field_info is not None:
++                # Copy the inherited FieldInfo, preserving its default value and other properties
++                # but update the annotation to match the child's annotation if different
++                new_field_info = copy(inherited_field_info)
++                new_field_info.annotation = ann_type
++                fields[ann_name] = new_field_info
++            else:
++                fields[ann_name] = FieldInfo.from_annotation(ann_type)
+         else:
+             fields[ann_name] = FieldInfo.from_annotated_attribute(ann_type, default)
+             # attributes which are fields are removed from the class namespace:
+diff --git a/pyproject.toml b/pyproject.toml
+index 911c2462d..25f0a63da 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -17,6 +17,8 @@ include = [
+     '/requirements',
+ ]
+ 
++
++[tool.pdm]
+ [project]
+ name = 'pydantic'
+ description = 'Data validation using Python type hints'
+@@ -53,6 +55,7 @@ dependencies = [
+     'typing-extensions>=4.2.0',
+     'pydantic-core>=0.7.1',
+     'annotated-types>=0.4.0',
++    "pre-commit>=2.21.0",
+ ]
+ optional-dependencies = { email = ['email-validator>=1.0.3'] }
+ dynamic = ['version', 'readme']

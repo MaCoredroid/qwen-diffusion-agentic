@@ -1,0 +1,77 @@
+{
+  "instance_id": "django__django-12754",
+  "dataset_name": "princeton-nlp/SWE-bench_Verified",
+  "started_at": "2026-07-06T04:54:01Z",
+  "repo": "django/django",
+  "base_commit": "18759b2209ff556aed7f20d83cbf23e3d234e41c",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.django_1776_django-12754:latest",
+  "container": "swe_ep_django_django-12754",
+  "qwen": {
+    "elapsed_s": 71.454,
+    "exit_code": 1,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "error_during_execution",
+    "num_turns": 35,
+    "duration_api_ms": 70597,
+    "usage": {
+      "input_tokens": 637569,
+      "output_tokens": 2530,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 640099
+    },
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "empty_patch_retry": {
+    "cause": "agent_gave_up",
+    "max_retries": 1,
+    "recovered_patch_bytes": 0
+  },
+  "qwen_retry1": {
+    "elapsed_s": 54.933,
+    "exit_code": 1,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "error_during_execution",
+    "num_turns": 31,
+    "duration_api_ms": 54161,
+    "usage": {
+      "input_tokens": 422311,
+      "output_tokens": 1917,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 424228
+    },
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "patch_bytes": 0,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "django__django-12754",
+    "model_id": "n5v3-diffusion",
+    "dataset_name": "princeton-nlp/SWE-bench_Verified",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/diffusion/verified/per_task/django__django-12754/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/diffusion/verified/per_task/django__django-12754/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T04:56:09Z"
+}

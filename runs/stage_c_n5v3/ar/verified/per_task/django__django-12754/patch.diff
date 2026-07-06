@@ -1,0 +1,32 @@
+diff --git a/django/db/migrations/operations/models.py b/django/db/migrations/operations/models.py
+index 8c06c4d157..0a3b6d955f 100644
+--- a/django/db/migrations/operations/models.py
++++ b/django/db/migrations/operations/models.py
+@@ -236,6 +236,27 @@ class CreateModel(ModelOperation):
+                         managers=self.managers,
+                     ),
+                 ]
++            elif isinstance(operation, RemoveField):
++                # Check if the RemoveField is from a base class that this CreateModel inherits from.
++                # If so, return them in the order [RemoveField, CreateModel] so the field is removed
++                # from the base class before the subclass is created.
++                if self.bases:
++                    for base in self.bases:
++                        if base is not models.Model:
++                            try:
++                                base_model = resolve_relation(base, app_label)
++                                if base_model == (app_label, operation.model_name_lower):
++                                    # RemoveField is from a base class. Return them in the correct order.
++                                    return [operation,
++                                            CreateModel(
++                                                self.name,
++                                                fields=self.fields,
++                                                options=self.options,
++                                                bases=self.bases,
++                                                managers=self.managers,
++                                            )]
++                            except (ValueError, TypeError):
++                                pass
+         return super().reduce(operation, app_label)
+ 
+ 

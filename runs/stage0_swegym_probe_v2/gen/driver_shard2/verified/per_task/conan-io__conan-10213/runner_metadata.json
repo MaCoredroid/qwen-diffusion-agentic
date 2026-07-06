@@ -1,0 +1,114 @@
+{
+  "instance_id": "conan-io__conan-10213",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T05:47:23Z",
+  "repo": "conan-io/conan",
+  "base_commit": "106e54c96118a1345899317bf3bebaf393c41574",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.conan-io_1776_conan-10213:latest",
+  "container": "swe_ep_s2_conan-io_conan-10213",
+  "qwen": {
+    "elapsed_s": 174.389,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 48,
+    "duration_api_ms": 173552,
+    "usage": {
+      "input_tokens": 789257,
+      "output_tokens": 9605,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 798862
+    },
+    "tool_calls": 50,
+    "tool_by_name": {
+      "read_file": {
+        "count": 10,
+        "success": 1,
+        "fail": 9,
+        "durationMs": 10,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 10
+        }
+      },
+      "grep_search": {
+        "count": 3,
+        "success": 0,
+        "fail": 3,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 35,
+        "success": 35,
+        "fail": 0,
+        "durationMs": 8454,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 35
+        }
+      },
+      "edit": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 2,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 1
+        }
+      },
+      "glob": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      }
+    },
+    "result_tail": "blem statement.\n\n**Summary:**\n\nThe fix described in the problem statement is **already implemented** in `/testbed/conan/tools/cmake/toolchain.py` in the `ToolchainBlocks.__setitem__` method. The code:\n\n1. Checks if `block_type` is already a `Block` instance\n2. Checks if it's a class inheriting from `Block`\n3. **Dynamically wraps classes with `template` and `context` attributes** (no import needed)\n4. Falls back to standard instantiation\n\nThis allows users to define custom CMakeToolchain blocks without importing `CMakeToolchainBlock`, using Python dynamism as described in the problem statement."
+  },
+  "patch_bytes": 1976,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "conan-io__conan-10213",
+    "model_id": "probe-stockAR-env",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard2/verified/per_task/conan-io__conan-10213/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard2/verified/per_task/conan-io__conan-10213/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:50:18Z"
+}

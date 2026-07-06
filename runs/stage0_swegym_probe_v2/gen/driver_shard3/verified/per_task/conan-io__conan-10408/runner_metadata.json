@@ -1,0 +1,121 @@
+{
+  "instance_id": "conan-io__conan-10408",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T05:45:45Z",
+  "repo": "conan-io/conan",
+  "base_commit": "45d7983565868c9211eabc1b1a46e54cc2fb7ada",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.conan-io_1776_conan-10408:latest",
+  "container": "swe_ep_s3_conan-io_conan-10408",
+  "qwen": {
+    "elapsed_s": 115.512,
+    "exit_code": 53,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": false,
+    "subtype": null,
+    "num_turns": null,
+    "duration_api_ms": null,
+    "usage": null,
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "empty_patch_retry": {
+    "cause": "agent_gave_up",
+    "max_retries": 1,
+    "recovered_patch_bytes": 803
+  },
+  "qwen_retry1": {
+    "elapsed_s": 168.836,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 38,
+    "duration_api_ms": 168052,
+    "usage": {
+      "input_tokens": 597979,
+      "output_tokens": 9765,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 607744
+    },
+    "tool_calls": 38,
+    "tool_by_name": {
+      "read_file": {
+        "count": 10,
+        "success": 1,
+        "fail": 9,
+        "durationMs": 11,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 10
+        }
+      },
+      "glob": {
+        "count": 2,
+        "success": 0,
+        "fail": 2,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 23,
+        "success": 23,
+        "fail": 0,
+        "durationMs": 4944,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 23
+        }
+      },
+      "edit": {
+        "count": 3,
+        "success": 0,
+        "fail": 3,
+        "durationMs": 1,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 2
+        }
+      }
+    },
+    "result_tail": "f patch_file:\n    # Resolve patch_file relative to source_folder if it's a relative path\n    # This is needed when using cmake_layout where the current directory is the build folder\n    if not os.path.isabs(patch_file):\n        patch_file = os.path.normpath(os.path.join(conanfile.source_folder, patch_file))\n    patchset = patch_ng.fromfile(patch_file)\n```\n\nThis ensures that relative patch file paths are resolved relative to `conanfile.source_folder` instead of the current working directory, which fixes the issue when using `cmake_layout` where the build folder is the current working directory."
+  },
+  "patch_bytes": 803,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "conan-io__conan-10408",
+    "model_id": "probe-stockAR-env",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard3/verified/per_task/conan-io__conan-10408/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard3/verified/per_task/conan-io__conan-10408/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:50:30Z"
+}

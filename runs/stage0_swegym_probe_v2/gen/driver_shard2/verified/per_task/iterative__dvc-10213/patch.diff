@@ -1,0 +1,22 @@
+diff --git a/dvc/output.py b/dvc/output.py
+index 2f6fa42ff..b2c25c24f 100644
+--- a/dvc/output.py
++++ b/dvc/output.py
+@@ -525,7 +525,7 @@ class Output:
+         if not self.is_in_repo:
+             return False
+ 
+-        return self.use_cache or self.stage.is_repo_import
++        return self.use_cache or self.stage.is_import
+ 
+     @property
+     def cache(self):
+@@ -1165,7 +1165,7 @@ class Output:
+             return {}
+ 
+         push: bool = kwargs.pop("push", False)
+-        if self.stage.is_repo_import:
++        if self.stage.is_import:
+             return {}
+ 
+         if push and not self.can_push:

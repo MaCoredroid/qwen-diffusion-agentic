@@ -1,0 +1,34 @@
+================================================================================================
+ENVELOPE-CORRECTED 4-ARM N=5 (v3)  |  temp0.6/top_p0.95/top_k20/seed1234  |  OFFICIAL docker scoring
+================================================================================================
+
+RESOLVE@1 (official)
+instance                   stock-AR      merged-AR      diffusion      diffstock
+django-11119               RESOLVED       RESOLVED       RESOLVED       RESOLVED
+django-12754                   edit           edit        no-edit        no-edit
+django-13741               RESOLVED       RESOLVED       RESOLVED        no-edit
+pytest-8399                RESOLVED       RESOLVED       RESOLVED        no-edit
+sympy-13757                    edit        no-edit        no-edit        no-edit
+
+turns | tok | wall | exit
+instance                   stock-AR      merged-AR      diffusion      diffstock
+django-11119        38|575387|68s|ok35|577171|56s|ok50|796288|82s|turn-limit102|1591319|227s|turn-limit
+django-12754        103|1808891|72s|turn-limit102|1919035|82s|turn-limit35|640099|71s|loop-halt19|276620|33s|loop-halt
+django-13741        47|808022|79s|ok43|707744|65s|ok50|964422|150s|loop-halt23|251208|42s|loop-halt
+pytest-8399         38|701597|57s|ok37|683572|66s|ok49|935459|78s|loop-halt13|118510|18s|loop-halt
+sympy-13757         50|910591|124s|turn-limit100|1821265|86s|turn-limit81|1339910|155s|turn-limit12|113706|19s|loop-halt
+
+PER-ARM ROLLUP (v3 ENVELOPE)
+  stock-AR    resolve@1=0.6 (3/5)  edit=1.0 (5/5)  turns~55.2  wall~80.2s  tok~960897.6  exits={'ok': 3, 'turn-limit': 2}  loops=0  gave_up=0
+  merged-AR   resolve@1=0.6 (3/5)  edit=0.8 (4/5)  turns~63.4  wall~70.93s  tok~1141757.4  exits={'ok': 3, 'turn-limit': 2}  loops=0  gave_up=0
+  diffusion   resolve@1=0.6 (3/5)  edit=0.6 (3/5)  turns~53.0  wall~107.15s  tok~935235.6  exits={'turn-limit': 2, 'loop-halt': 3}  loops=3  gave_up=0
+  diffstock   resolve@1=0.2 (1/5)  edit=0.2 (1/5)  turns~33.8  wall~67.92s  tok~470272.6  exits={'turn-limit': 1, 'loop-halt': 4}  loops=4  gave_up=0
+
+GREEDY (v2) -> ENVELOPE (v3)   [the degenerate-regime test]
+  arm                 resolve@1      loop-halts    turn-limit
+  stock-AR           4/5 -> 3/5          0 -> 0        2 -> 2
+  merged-AR          2/5 -> 3/5          1 -> 0        1 -> 2
+  diffusion          1/5 -> 3/5          2 -> 3        3 -> 2
+  diffstock          0/5 -> 1/5          2 -> 4        3 -> 1
+
+wrote /home/mark/qwen_diffusion/runs/stage_c_n5v3/report.json

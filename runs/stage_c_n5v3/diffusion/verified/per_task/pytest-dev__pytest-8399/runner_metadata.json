@@ -1,0 +1,77 @@
+{
+  "instance_id": "pytest-dev__pytest-8399",
+  "dataset_name": "princeton-nlp/SWE-bench_Verified",
+  "started_at": "2026-07-06T04:58:40Z",
+  "repo": "pytest-dev/pytest",
+  "base_commit": "6e7dc8bac831cd8cf7a53b08efa366bd84f0c0fe",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-8399:latest",
+  "container": "swe_ep_pytest-dev_pytest-8399",
+  "qwen": {
+    "elapsed_s": 78.165,
+    "exit_code": 1,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "error_during_execution",
+    "num_turns": 49,
+    "duration_api_ms": 77376,
+    "usage": {
+      "input_tokens": 932639,
+      "output_tokens": 2820,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 935459
+    },
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "empty_patch_retry": {
+    "cause": "agent_gave_up",
+    "max_retries": 1,
+    "recovered_patch_bytes": 549
+  },
+  "qwen_retry1": {
+    "elapsed_s": 47.074,
+    "exit_code": 1,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "error_during_execution",
+    "num_turns": 21,
+    "duration_api_ms": 46312,
+    "usage": {
+      "input_tokens": 330661,
+      "output_tokens": 1689,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 332350
+    },
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "patch_bytes": 549,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "pytest-dev__pytest-8399",
+    "model_id": "n5v3-diffusion",
+    "dataset_name": "princeton-nlp/SWE-bench_Verified",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/diffusion/verified/per_task/pytest-dev__pytest-8399/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/diffusion/verified/per_task/pytest-dev__pytest-8399/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:00:46Z"
+}

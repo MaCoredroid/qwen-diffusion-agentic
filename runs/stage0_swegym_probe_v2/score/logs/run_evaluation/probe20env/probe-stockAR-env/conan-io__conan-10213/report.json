@@ -1,0 +1,49 @@
+{
+    "conan-io__conan-10213": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "conans/test/integration/toolchains/cmake/test_cmaketoolchain_blocks.py::test_custom_block"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_fpic_when_shared_true[True]",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_replace_block",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_remove",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_no_fpic_when_not_an_option",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_osx_deployment_target",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_add_new_block",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_fpic_when_shared_true[False]",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_template_change",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_toolset",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_libcxx_abi_flag",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_fpic_enabled",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_template_remove",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_user_toolchain",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_context_replace",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_context_change",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_no_fpic_on_windows",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_cmake_toolchain",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_context_update",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_fpic_disabled",
+                    "conans/test/unittests/tools/cmake/test_cmaketoolchain.py::test_fpic_when_not_shared"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

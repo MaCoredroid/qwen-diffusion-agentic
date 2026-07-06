@@ -1,0 +1,11 @@
+{
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "split": "train",
+  "instance_ids": [
+    "pandas-dev__pandas-47222",
+    "python__mypy-10036",
+    "dask__dask-10027",
+    "pydantic__pydantic-4911",
+    "facebookresearch__hydra-1265"
+  ]
+}

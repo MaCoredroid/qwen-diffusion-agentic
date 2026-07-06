@@ -1,0 +1,49 @@
+{
+    "iterative__dvc-10218": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "tests/func/test_import_url.py::test_import_url_to_remote_absolute"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "tests/func/test_import_url.py::test_should_remove_outs_before_import",
+                    "tests/func/test_import_url.py::test_import_stage_accompanies_target",
+                    "tests/func/test_import_url.py::test_import_url_with_no_exec",
+                    "tests/func/test_import_url.py::test_default_output",
+                    "tests/func/test_import_url.py::test_import_url_to_dir[dir]",
+                    "tests/func/test_import_url.py::TestImport::test_import_empty_dir",
+                    "tests/func/test_import_url.py::test_import_url_no_download",
+                    "tests/func/test_import_url.py::test_cmd_import",
+                    "tests/func/test_import_url.py::test_cmd_unsupported_scheme",
+                    "tests/func/test_import_url.py::test_import_url_to_dir[.]",
+                    "tests/func/test_import_url.py::test_import_url_to_remote_invalid_combinations",
+                    "tests/func/test_import_url.py::TestImport::test_import",
+                    "tests/func/test_import_url.py::test_import_url_fs_config",
+                    "tests/func/test_import_url.py::test_import_url_nonexistent",
+                    "tests/func/test_import_url.py::test_import_url_preserve_fields",
+                    "tests/func/test_import_url.py::test_import_conflict_and_override",
+                    "tests/func/test_import_url.py::TestImport::test_import_dir",
+                    "tests/func/test_import_url.py::test_import_url_to_dir[dir/subdir]",
+                    "tests/func/test_import_url.py::test_partial_import_pull",
+                    "tests/func/test_import_url.py::test_import_url_to_remote_status"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "iterative__dvc-10213": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": false,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [],
+                "failure": [
+                    "tests/func/test_repo_index.py::test_data_index"
+                ]
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "tests/func/test_repo_index.py::test_deps_outs_getters",
+                    "tests/func/test_repo_index.py::test_view_granular_dir",
+                    "tests/func/test_repo_index.py::test_view_combined_filter",
+                    "tests/func/test_repo_index.py::test_update",
+                    "tests/func/test_repo_index.py::test_with_gitignore",
+                    "tests/func/test_repo_index.py::test_param_keys_top_level_params",
+                    "tests/func/test_repo_index.py::test_index",
+                    "tests/func/test_repo_index.py::test_param_keys_no_params",
+                    "tests/func/test_repo_index.py::test_skip_graph_checks",
+                    "tests/func/test_repo_index.py::test_view_outs_filter",
+                    "tests/func/test_repo_index.py::test_view_stage_filter",
+                    "tests/func/test_repo_index.py::test_ignored_dir_unignored_pattern",
+                    "tests/func/test_repo_index.py::test_param_keys_returns_default_file",
+                    "tests/func/test_repo_index.py::test_view_onerror"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

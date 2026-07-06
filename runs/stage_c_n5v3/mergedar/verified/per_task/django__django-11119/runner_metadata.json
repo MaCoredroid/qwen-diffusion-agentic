@@ -1,0 +1,102 @@
+{
+  "instance_id": "django__django-11119",
+  "dataset_name": "princeton-nlp/SWE-bench_Verified",
+  "started_at": "2026-07-06T04:41:53Z",
+  "repo": "django/django",
+  "base_commit": "d4df5e1b0b1c643fe0fc521add0236764ec8e92a",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.django_1776_django-11119:latest",
+  "container": "swe_ep_django_django-11119",
+  "qwen": {
+    "elapsed_s": 55.933,
+    "exit_code": 0,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": true,
+    "subtype": "success",
+    "num_turns": 35,
+    "duration_api_ms": 55057,
+    "usage": {
+      "input_tokens": 573356,
+      "output_tokens": 3815,
+      "cache_read_input_tokens": 0,
+      "total_tokens": 577171
+    },
+    "tool_calls": 34,
+    "tool_by_name": {
+      "read_file": {
+        "count": 4,
+        "success": 1,
+        "fail": 3,
+        "durationMs": 6,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 4
+        }
+      },
+      "glob": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 0,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        }
+      },
+      "run_shell_command": {
+        "count": 28,
+        "success": 28,
+        "fail": 0,
+        "durationMs": 6286,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 28
+        }
+      },
+      "edit": {
+        "count": 1,
+        "success": 0,
+        "fail": 1,
+        "durationMs": 1,
+        "decisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 1
+        }
+      }
+    },
+    "result_tail": "The fix has been successfully implemented. The change was minimal:\n- In `django/template/engine.py`, the `render_to_string` method now passes `autoescape=self.autoescape` when creating a new `Context` object.\n\nThis ensures that when `render_to_string()` is called with a dict context, the resulting Context inherits the engine's `autoescape` setting, fixing the bug where it was always autoescaped regardless of the engine configuration."
+  },
+  "patch_bytes": 485,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "django__django-11119",
+    "model_id": "n5v3-merged-ar",
+    "dataset_name": "princeton-nlp/SWE-bench_Verified",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/mergedar/verified/per_task/django__django-11119/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage_c_n5v3/mergedar/verified/per_task/django__django-11119/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T04:42:50Z"
+}

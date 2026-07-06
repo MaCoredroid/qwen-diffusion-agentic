@@ -1,0 +1,48 @@
+{
+  "instance_id": "getmoto__moto-4792",
+  "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+  "started_at": "2026-07-06T05:37:19Z",
+  "repo": "getmoto/moto",
+  "base_commit": "05f5bbc568b3e1b9de402d194b3e93a39b6b2c27",
+  "agent": "qwen_code",
+  "eval_mode": "skip",
+  "runtime": "container",
+  "image": "swebench/sweb.eval.x86_64.getmoto_1776_moto-4792:latest",
+  "container": "swe_ep_s3_getmoto_moto-4792",
+  "qwen": {
+    "elapsed_s": 136.843,
+    "exit_code": 53,
+    "timed_out": false,
+    "cli_exit_is_verdict": false,
+    "parsed": false,
+    "subtype": null,
+    "num_turns": null,
+    "duration_api_ms": null,
+    "usage": null,
+    "tool_calls": null,
+    "tool_by_name": null,
+    "result_tail": ""
+  },
+  "patch_bytes": 1408,
+  "eval": {
+    "exit_code": 0,
+    "elapsed_s": 0.0,
+    "backend": "skip"
+  },
+  "eval_report": {
+    "track": "swe_bench",
+    "instance_id": "getmoto__moto-4792",
+    "model_id": "probe-stockAR-env",
+    "dataset_name": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe/artifacts/swegym_probe20_dataset.json",
+    "patch_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard3/verified/per_task/getmoto__moto-4792/patch.diff",
+    "prediction_path": "/home/mark/qwen_diffusion/runs/stage0_swegym_probe_v2/gen/driver_shard3/verified/per_task/getmoto__moto-4792/eval/predictions.jsonl",
+    "verdict": "skipped",
+    "passed": false,
+    "failure_mode": null,
+    "harness_exit_code": 0,
+    "eval_wall_clock_seconds": 0.0,
+    "error": null,
+    "eval_backend": "skip"
+  },
+  "ended_at": "2026-07-06T05:39:37Z"
+}

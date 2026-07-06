@@ -1,0 +1,1 @@
+{"instance_id": "python__mypy-10032", "model_name_or_path": "probe-stockAR-env", "model_patch": "diff --git a/test-requirements.txt b/test-requirements.txt\nindex 0adbfe1ce..33d0cd5d6 100644\n--- a/test-requirements.txt\n+++ b/test-requirements.txt\n@@ -1,3 +1,4 @@\n+types-typing-extensions==3.7.3\n -r mypy-requirements.txt\n attrs>=18.0\n flake8>=3.8.1\n"}
