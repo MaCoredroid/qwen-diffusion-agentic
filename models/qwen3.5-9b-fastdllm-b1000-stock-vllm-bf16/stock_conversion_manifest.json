@@ -1,0 +1,70 @@
+{
+  "schema": "lumo.stock_conversion_lineage.v1",
+  "purpose": "diffusion-on-STOCK-conversion 4th arm (Stage-C N=25-50 decider): B@1000 two-stream conversion foundation of stock Qwen3.5-9B, NO Run-1, NO RL-v2. Completes the 2x2 {weights: stock, RL-v2} x {paradigm: AR, diffusion}.",
+  "created_at_utc": "2026-07-06T01:34:00Z",
+  "output": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-b1000-stock-vllm-bf16",
+  "reproduce_ref": "REPRODUCE_V2.md sections 3-4 (base conversion + B@1000 two-stream conversion foundation); export per section 4 export block",
+  "lineage_chain": [
+    {
+      "stage": "official_base",
+      "id": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "path": "/home/mark/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+    },
+    {
+      "stage": "diffusion_conversion_init",
+      "path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+      "mask_token_id": 248077,
+      "bd_size": 32,
+      "gdn_mode": "option_a_causal_gdn_v0",
+      "has_weights": true,
+      "index_sha256": "c163bf790ffaf8e1d409a301271035471d31d86a4d17038dcc07b17c43b3ce9e"
+    },
+    {
+      "stage": "conversion_foundation_adapter_B1000",
+      "path": "/home/mark/qwen_diffusion/runs/flare_stage1_ab_pilot/two_stream_B_s1024_step1000",
+      "kind": "two_stream Fast-dLLM LoRA, 1000 steps",
+      "lora_r": 8,
+      "lora_alpha": 16,
+      "lora_dropout": 0.05,
+      "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj"],
+      "base_model_name_or_path": "/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-init",
+      "global_step": 1000,
+      "train_loss": 3.9429622707366945,
+      "train_runtime_s": 18922.0906,
+      "gpu_peak_memory_mib": 29612,
+      "adapter_model_safetensors_sha256": "f06b78c26c15a1af1f34ae6caf53cfcf0612a878627fcd79f27923a20bdda8f4",
+      "adapter_config_sha256": "4a369744153637f31fdcad1c4e55d76866528a19c996864c04a3fed96ef8a096"
+    }
+  ],
+  "excluded_stages": {
+    "run1_copy_grounding": "NOT applied (would be runs/flare_redesign_run1_copy_grounded_qwen35_9b)",
+    "rl_v2_diffu_grpo": "NOT applied (would be runs/rl_multiturn_grpo_v2/from_selected_base_g4_step300/adapter_model)"
+  },
+  "merge": {
+    "strategy": "official_qwen35_conditional_layout_with_converted_language_model_and_merged_lora",
+    "replacement_count": 427,
+    "mapped_text_tensors": 427,
+    "lora_merge_count": 32,
+    "lora_scale": 2.0,
+    "lora_target_tensor_count": 32,
+    "export_script": "/home/mark/shared/lumoFlyWheel_codex_fork/scripts/export_qwen35_9b_fastdllm_vllm.py",
+    "export_script_sha256": "6d507ec9ba3308ff7e0f600bc0b5ec7c4ff96f66eff4e4e92175d42af7a119d5",
+    "export_script_sha256_matches_reproduce_v2_pin": true,
+    "qwen_diffusion_git_commit": "c68bcf00e797d0260c6f9c9f62ff646a52566b54",
+    "flywheel_git_commit": "f063387bdb2a05dafb157eb4258efe4b5de2087c",
+    "venv": ".venv-fastdllm (Python 3.10, torch 2.12.1+cu130, peft 0.19.1)"
+  },
+  "exported_shards_sha256": {
+    "model.safetensors-00001-of-00004.safetensors": "db6f444b43d318c92f360a13a25561a6a65b10c0631b8ed305a426dbaa6c380e",
+    "model.safetensors-00002-of-00004.safetensors": "31c7d7e2dd5d207840b31cc59083c8f4c4718959149e0358c0364052bb9a0330",
+    "model.safetensors-00003-of-00004.safetensors": "60c75252c1bc9297b468b30b6d4348c7cfe36d9a170c424e5a3efe5a7faa9320",
+    "model.safetensors-00004-of-00004.safetensors": "fd4b5a52cd663ac970c7e641fa001c91a602a14b8dc139dfbc9c02c5fe941c2a",
+    "model.safetensors.index.json": "b930fffd76536e902fd0acb01ab556f4f9098bee73cd276627dfe14a9eeafd77"
+  },
+  "twin_note": "Byte-identical lineage to models/qwen3.5-9b-fastdllm-b1000-vllm-bf16 (same official snapshot + init + B@1000 adapter + deterministic export script). This -stock- copy is the explicitly-labeled 4th-arm serving payload with its own self-contained lineage/sha manifest.",
+  "expected_hf_floors_pre_rl": {
+    "matched20_hybrid_clean_exact_args": "34/63-class (pre-RL floor; sanity = valid + plausible, not RL-level exactness)",
+    "gsm8k_first20_legacy_strict": "11/20-class (B@1000 continuity floor per REPRODUCE_V2 section 4)"
+  }
+}

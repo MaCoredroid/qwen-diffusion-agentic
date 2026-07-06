@@ -1,0 +1,420 @@
+{
+  "args": {
+    "base_model": "models/qwen3.5-9b-fastdllm-init",
+    "adapter_a": "/home/mark/qwen_diffusion/runs/flare_stage1_ab_pilot/diffusion_only_A_s1024_step200",
+    "adapter_b": "runs/flare_stage1_ab_pilot/two_stream_B_s1024_step1000",
+    "model_names": "B_two_stream",
+    "train_path": "data/flare_stage1_ab_pilot_train/train_agentic_mix.json",
+    "heldout_nll": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+    "gsm8k_path": "data/phaseA_retention/gsm8k_main_test_first20.jsonl",
+    "gsm8k_fewshot_path": "data/phaseA_retention/gsm8k_main_train_first5.jsonl",
+    "mbpp_path": "data/phaseA_retention/mbpp_full_test_first20.jsonl",
+    "out_dir": "runs/stage_c_n5v2/diffusion/stock_sanity_gsm8k5",
+    "max_length": 1024,
+    "nll_block_size": 32,
+    "nll_seed": 20260702,
+    "generation_limit": 5,
+    "generation_batch_size": 1,
+    "generation_tasks": "gsm8k",
+    "full_context_generation": true,
+    "fresh_generation_blocks": true,
+    "gsm8k_fewshot": 5,
+    "block_size": 32,
+    "small_block_size": 32,
+    "max_new_tokens": 256,
+    "threshold": 0.9,
+    "temperature": 0.0,
+    "top_p": 0.95,
+    "mask_id": 248077,
+    "stop_token_id": 248046,
+    "mbpp_timeout": 5.0,
+    "gpu_index": 0,
+    "no_4bit": false,
+    "skip_generation": false,
+    "skip_nll": true,
+    "ar_reference_json": null,
+    "stop_token_ids": [
+      248046,
+      248044,
+      248045
+    ],
+    "_last_generation_sampler_metrics": [
+      {
+        "blocks": [
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 32,
+            "selected_mask_tokens": 0
+          },
+          {
+            "block_pad": 32,
+            "initial_masks": 32,
+            "denoise_steps": 13,
+            "selected_mask_tokens": 0
+          }
+        ],
+        "denoise_forwards": 141,
+        "selected_mask_tokens": 0,
+        "natural_commits": 77,
+        "forced_commits": 64,
+        "stop_token_ids": [
+          248046,
+          248044,
+          248045
+        ],
+        "stop_token_hit": 248046,
+        "stop_offset": 140
+      }
+    ]
+  },
+  "disjointness": {
+    "train_path": "data/flare_stage1_ab_pilot_train/train_agentic_mix.json",
+    "heldout_path": "data/flare_stage1_ab_pilot/heldout_nll.jsonl",
+    "train_count": 256,
+    "heldout_count": 40,
+    "full_hash_overlap_count": 0,
+    "content_hash_overlap_count": 0,
+    "sources": {
+      "train": [
+        "google-research-datasets/mbpp:full:train",
+        "openai/gsm8k:main:train"
+      ],
+      "heldout": [
+        "None"
+      ]
+    }
+  },
+  "fixed_mask_manifest": {
+    "heldout_rows": 40,
+    "nll_batches": 40,
+    "total_eval_tokens": 4180,
+    "view0_tokens": 2123,
+    "view1_tokens": 2057,
+    "nll_seed": 20260702,
+    "nll_block_size": 32,
+    "max_length": 1024
+  },
+  "ar_reference": {
+    "path": "/home/mark/qwen_diffusion/runs/phaseA_retention_snapshot_n5_t384/ar_qwen35_9b_bf16_thinkingoff/Qwen__Qwen3.5-9B/results_2026-06-28T22-41-27.782083.json",
+    "gsm8k_flex": 1.0,
+    "gsm8k_strict": 1.0,
+    "mbpp_pass_at_1": 0.2
+  },
+  "models": {
+    "B_two_stream": {
+      "adapter": "runs/flare_stage1_ab_pilot/two_stream_B_s1024_step1000",
+      "generation": {
+        "summary": {
+          "gsm8k": {
+            "examples": 5,
+            "strict_correct": 3,
+            "strict_accuracy": 0.6,
+            "flex_correct": 3,
+            "flex_accuracy": 0.6
+          },
+          "mbpp": {
+            "examples": 0,
+            "passed": 0,
+            "pass_at_1": 0.0
+          },
+          "elapsed_seconds": 79.84110191289801,
+          "generated_tokens": 572,
+          "generated_tokens_per_second": 7.164229780095203,
+          "unresolved_mask_examples": 0
+        },
+        "per_example": [
+          {
+            "task": "gsm8k",
+            "idx": 0,
+            "id": "gsm8k-0",
+            "gold": "18",
+            "strict_pred": "18",
+            "flex_pred": "18",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 75,
+            "seconds": 10.55657010001596,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 28,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 18,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 76,
+              "selected_mask_tokens": 0,
+              "natural_commits": 49,
+              "forced_commits": 33,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 74
+            },
+            "generated": "Janet uses 3+4 = <<3+4=7>>7 eggs for herself and her friends.\nShe sells 16-7 = <<16-7=9>>9 eggs at the farmers' market.\nShe makes 9*2 = <<9*2=18>>118 dollars every day#### 18"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 1,
+            "id": "gsm8k-1",
+            "gold": "3",
+            "strict_pred": "3",
+            "flex_pred": "3",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 47,
+            "seconds": 6.146050528041087,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 30,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 18,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 48,
+              "selected_mask_tokens": 0,
+              "natural_commits": 35,
+              "forced_commits": 17,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 46
+            },
+            "generated": "The robe takes 2/2 = <<2/2=1>>1 bolt of white fiber.\nSo total, it  2+1 = <<2+1=3>>3 bolts.\n#### 3"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 2,
+            "id": "gsm8k-2",
+            "gold": "70000",
+            "strict_pred": null,
+            "flex_pred": "80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "strict_correct": false,
+            "flex_correct": false,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 256,
+            "seconds": 36.98927040898707,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 256,
+              "selected_mask_tokens": 0,
+              "natural_commits": 209,
+              "forced_commits": 47,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ]
+            },
+            "generated": "The value of the house increased by 80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 3,
+            "id": "gsm8k-3",
+            "gold": "540",
+            "strict_pred": "540",
+            "flex_pred": "540",
+            "strict_correct": true,
+            "flex_correct": true,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 53,
+            "seconds": 5.875704253092408,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 28,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 17,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 45,
+              "selected_mask_tokens": 0,
+              "natural_commits": 35,
+              "forced_commits": 18,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 52
+            },
+            "generated": "James runs 3*3 = <<3*3=9>>9 sprints a week.\nHe runs 9*60 = <<9*60=540>>540 meters a week.\n#### 540"
+          },
+          {
+            "task": "gsm8k",
+            "idx": 4,
+            "id": "gsm8k-4",
+            "gold": "20",
+            "strict_pred": "40",
+            "flex_pred": "40",
+            "strict_correct": false,
+            "flex_correct": false,
+            "mask_count": 0,
+            "nonmask_generated_tokens": 141,
+            "seconds": 20.27239755296614,
+            "sampler": {
+              "blocks": [
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 32,
+                  "selected_mask_tokens": 0
+                },
+                {
+                  "block_pad": 32,
+                  "initial_masks": 32,
+                  "denoise_steps": 13,
+                  "selected_mask_tokens": 0
+                }
+              ],
+              "denoise_forwards": 141,
+              "selected_mask_tokens": 0,
+              "natural_commits": 77,
+              "forced_commits": 64,
+              "stop_token_ids": [
+                248046,
+                248044,
+                248045
+              ],
+              "stop_token_hit": 248046,
+              "stop_offset": 140
+            },
+            "generated": "In the morning, Wendi gives 15 cups of feed to her flock of 20 chickens, so each chicken gets 1 15/20 = 0.75 cups of feedIn the afternoon, she gives 25 cups of feed to her flock of 20 chickens, so each chicken gets 25/20 = 1.25 cups of feed.\nIn total feed per day is  0.75 + 1.25 = 2 cups per chicken.\nIn the final meal of the day, she gives her 2020 = 40 cups of feed.\n#### 40"
+          }
+        ],
+        "gpu": {
+          "samples": 79,
+          "gpu_peak_memory_mib": 12431,
+          "gpu_util_mean_pct": 97.9620253164557,
+          "gpu_util_max_pct": 100
+        },
+        "cuda_peak_allocated_gb": 8.169146537780762,
+        "cuda_peak_reserved_gb": 8.677734375
+      }
+    }
+  }
+}
