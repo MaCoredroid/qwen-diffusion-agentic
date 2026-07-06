@@ -480,12 +480,18 @@ no longer the live question now that the RL-v2 twin ties the AR arms.
 - **Sampling:** reference envelope **temp 0.6 / top_p 0.95 / top_k 20**, forced proxy-side via
   `LUMO_PROXY_FORCE_*`, **seeded per-request** (reproducible); empty-patch re-drive retries=1.
 - **Runtime:** episode-in-official-container (`--runtime container`, `swebench/sweb.eval.x86_64.<inst>`),
-  native `qwen3_xml` tools, `--max-num-seqs 1`, one server per arm (paired, sequential in the RAM cage).
+  native `qwen3_xml` tools, one server per arm.
+- **Execution = BATCHED, concurrency 4+ (USER FROZEN CONFIG, `runs/loop_halt_polish/USER_DIRECTIVE_BATCHED_NRUN.md`, 2026-07-06).**
+  NOT serial. Each arm runs its N episodes **concurrently against its server via continuous batching**:
+  baseline **concurrency 4**, probe **6/8 if HBM headroom holds** (engine correctness certified to **bs=8 @
+  gpu_mem 0.82**; **b16 needs gmu ≤ 0.62** — pick the safest high setting, measure, don't assume). This
+  overrides the v3 `--max-num-seqs 1` cage; no week-long serial run.
 - **Scoring:** OFFICIAL `swebench.harness.run_evaluation` docker harness; official `scoring/*.json`
   verdicts, no mock.
 - **Design:** **paired** (every arm runs the same instances), **resolve@1** = one seeded attempt per
-  (arm, instance). Report resolve@1 + Wilson CIs + **paired McNemar** on the shared instances + per-turn
-  economics both ways. Losslessness assertion in-loop for the diffusion arm (cache-on byte cert).
+  (arm, instance). **resolve@1 + paired McNemar is the PRIMARY output and is UNAFFECTED by batching** —
+  per-request seeds stay deterministic per episode. Report resolve@1 + Wilson CIs + paired McNemar on the
+  shared instances. Losslessness assertion in-loop for the diffusion arm (cache-on byte cert).
 
 ### Turn cap = 75 (raised from the v3 cap of 50) — justified from the v3 turn distributions
 
@@ -518,27 +524,33 @@ Booked cost of 75 vs 50: ~1.2× blended wall on the ~40% of episodes that would 
 - Images: Tier1 Verified instances have **prebuilt official `swebench` images** (pullable, per the probe
   finding), so runtime alignment is a one-time pull (~0.6 min/instance), not a build.
 
-### PRICING (from measured v3 per-episode costs — NOT assumed)
+### PRICING — throughput, not latency (batched c=4+; USER FROZEN CONFIG)
 
-Measured serving wall per episode (incl. container + agent + patch extract; `logs/*_driver.log` means):
-**stock-AR ~107s, diffusion ~141s, merged-AR ~119s.** Sequential paired eval ⇒ one dedicated server per
-arm, GPU wall-occupied for the whole episode. Apply a **1.2× turn-cap-75 headroom** on the ~40% of
-episodes that would otherwise turn-limit (blended). Server boot ~1 min/arm (one-time). RTX 5090.
+Per the directive, **speed is reported as THROUGHPUT (episodes/GPU-h) at the chosen concurrency; the v3
+b=1 per-episode walls are cited for latency CONTEXT only — concurrent wall is queue-inflated and must NOT
+be presented as latency.**
 
-| config | per-instance serving | N=25 serving GPU-h | N=50 serving GPU-h |
-|---|---|---|---|
-| **2-arm** (stock-AR + diffusion) | ~248–298 s | **~1.8–2.2** | **~3.5–4.3** |
-| **3-arm** (+ merged-AR) | ~367–440 s | **~2.6–3.1** | **~5.1–6.2** |
+*Latency context (v3, b=1, `logs/*_driver.log` means, do NOT read as the batched cost):* stock-AR
+~107s/episode, diffusion ~141s, merged-AR ~119s.
 
-**Docker eval (OFF the serving GPU, parallelizable on alienware/local x86):** image pull one-time per
-instance (~0.6 min × N = 15–30 min), + arms × N evals at ~0.4–1.0 docker-min/eval (v3 scored 13 patches
-in ~5 min with image reuse; probe measured 0.61 docker-min/eval). At 2–4 workers: **~1–2 wall-h total.**
+**GPU-compute (occupancy) is ~concurrency-invariant to first order** — total episode-compute is the same;
+batching compresses WALL, not GPU-h. So the compute envelope is unchanged: **N=50 ≈ 3.5–4.3 GPU-h (2-arm)
+/ 5.1–6.2 GPU-h (3-arm)** with a 1.2× turn-cap-75 headroom booked. What batching changes is the **wall**:
 
-**Total: N=25–50 horse race ≈ 2–6 GPU-h serving + ~1–2 h off-GPU docker.** This **reprices the campaign
-§5 "3c. N=25–50" line (35–60 GPU-h) DOWN by ~10×** — that estimate conflated the eval tier with data-gen
-attempts. A paired resolve@1 eval is only **N × arms episodes** (≤150 episodes at N=50/3-arm), not
-thousands of best-of-k gen attempts. **Recommendation: run it at N=50, 2-arm (stock-AR vs diffusion), ~4
-GPU-h**; add merged-AR only if the pair diverges.
+| item | serial (v3 cage, superseded) | **BATCHED c=4 (frozen)** |
+|---|---|---|
+| serving wall / arm, N=50 | ~1.5–2 h | **~2–4 h/arm** at the queue-inflated envelope in the directive |
+| image pulls | ~0.6 min/inst off-GPU | **~50 Tier1 pulls (~200 GB class), ~2–4 h**, pull stage in the orchestrator, **disk-checked** |
+| official scoring | ~1–2 h off-GPU | hours (off-GPU, parallel) |
+| **total wall** | ~half a day | **~1–2 days** (dominated by pulls + serving + scoring) |
+| **throughput (report this)** | — | **episodes/GPU-h at c=4** (probe c=6/8), e.g. ~50 episodes / (3.5–4.3 GPU-h) ≈ **12–14 ep/GPU-h** for the 2-arm compute |
+
+**Compute reprice still stands: ~4–6 GPU-h (N=50) vs the campaign §5 "3c" line's 35–60 GPU-h — ~10× DOWN**
+(that estimate conflated the eval tier with data-gen attempts; a paired resolve@1 eval is only N × arms
+episodes, ≤150 at N=50/3-arm). **What the frozen config corrects vs my first draft: the WALL is ~1–2 days
+(batched, ~200 GB pulls), not ~half a day, and speed is throughput not latency.** Recommendation: **N=50,
+2-arm (stock-AR vs diffusion), batched c=4 (probe 6/8 HBM-gated), ~4–6 GPU-h compute / ~1–2 days wall**;
+add merged-AR only if the pair diverges.
 
 ### Decision this run produces (D5)
 

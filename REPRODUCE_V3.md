@@ -621,9 +621,11 @@ Stage-0 probe v2 yield 0.25 ≥ 0.20 bar, patch_produced 19/20 — but no measur
 **justified next step is the N=25–50 horse race** (stock-AR vs diffusion, envelope-seeded, aligned
 runtime, official scoring, **turn cap 75** — v3 diffusion resolves land at turns 49–50 pressed against the
 50 cap while all clean AR resolves finish by 47; the 100+ turn table values are proxy-req counts, not
-session turns). Priced from measured v3 per-episode walls (stock ~107s, diffusion ~141s): **~2–6 GPU-h +
-~1–2 h off-GPU docker** — a ~10× DOWN-reprice of the campaign §5 "35–60 GPU-h" N=25–50 line (that estimate
-conflated eval with data-gen). (`runs/stage_c_n5v3/report.md`, `report_table.txt`, `report.json`,
+session turns). **Execution is BATCHED c=4+ (USER FROZEN CONFIG,
+`runs/loop_halt_polish/USER_DIRECTIVE_BATCHED_NRUN.md`); speed = THROUGHPUT not latency.** Compute
+~concurrency-invariant: **N=50 ≈ 4–6 GPU-h** (v3 b=1 walls stock ~107s / diffusion ~141s for latency
+context only) — a ~10× DOWN-reprice of the campaign §5 "35–60 GPU-h" N=25–50 compute line; batched WALL
+~1–2 days (≈50 Tier1 pulls ~200 GB + serving ~2–4 h/arm + scoring). (`runs/stage_c_n5v3/report.md`, `report_table.txt`, `report.json`,
 `scoring/*.json`; `runs/stage0_swegym_probe_v2/report.json`.)
 
 ---

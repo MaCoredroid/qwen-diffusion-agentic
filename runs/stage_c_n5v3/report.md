@@ -243,6 +243,10 @@ first run that can actually detect (or bound) a paradigm difference. Full spec +
 - **Sampling:** reference envelope `temp 0.6 / top_p 0.95 / top_k 20`, **seeded per-request** (this run's
   contract); aligned runtime (episode-in-official-container); OFFICIAL docker scoring; **paired** (same
   instances every arm), resolve@1 one attempt/instance/arm.
+- **Execution = BATCHED, concurrency 4+ (USER FROZEN CONFIG, `runs/loop_halt_polish/USER_DIRECTIVE_BATCHED_NRUN.md`).**
+  Continuous batching per arm (baseline c=4, probe 6/8 HBM-gated: engine certified bs=8 @ gpu_mem 0.82,
+  b16 needs gmu ≤ 0.62); NOT serial. resolve@1 / paired McNemar is unaffected (per-request seeds stay
+  deterministic per episode).
 - **Turn cap 75** (raised from 50). Justified from v3: all clean AR resolves finished by **turn 47**; the
   diffusion resolves land at **turns 49–50 — pressed against the 50 cap**; turn-limited episodes spun to
   the cap generating 80–103 proxy-reqs and resolved almost nothing (7 turn-limit exits across the run, 1
@@ -250,12 +254,12 @@ first run that can actually detect (or bound) a paradigm difference. Full spec +
   bounding the dead spins; unbounded buys no resolves.
 - **Pool:** stratified **N=25–50 slice of Tier1-100**, held out from all training under the campaign
   firewall (`train_ids ∩ (Tier0 ∪ Tier1 ∪ verified_500) = ∅`); never the inner-5.
-- **Priced from measured v3 per-episode costs** (serving walls stock-AR ~107s, diffusion ~141s,
-  merged-AR ~119s incl. container; docker scoring ~0.4–0.6 min/patch with image reuse):
-  **2-arm ≈ 1.8–2.2 GPU-h (N=25) / 3.5–4.3 GPU-h (N=50); 3-arm ≈ 2.6–3.1 / 5.1–6.2 GPU-h**, plus
-  **~1–2 h off-GPU docker-eval wall** (parallelizable). This **reprices the campaign §5 N=25–50 line
-  (35–60 GPU-h) DOWN ~10×** — that estimate conflated eval with data-gen; a paired eval is only
-  N × arms episodes.
+- **Priced from measured v3 costs; speed = THROUGHPUT not latency** (frozen config). GPU-compute is
+  ~concurrency-invariant: **N=50 ≈ 3.5–4.3 GPU-h (2-arm) / 5.1–6.2 GPU-h (3-arm)** (v3 b=1 walls
+  stock ~107s / diffusion ~141s / merged ~119s cited for latency CONTEXT only — batched wall is
+  queue-inflated). Batched **wall ~1–2 days** (≈50 Tier1 image pulls ~200 GB + serving ~2–4 h/arm at c=4
+  + official scoring hours). This **reprices the campaign §5 N=25–50 line (35–60 GPU-h) DOWN ~10× in
+  compute** — that estimate conflated eval with data-gen; a paired eval is only N × arms episodes.
 
 ---
 
