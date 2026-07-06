@@ -1,0 +1,18 @@
+{
+ "status": "DONE",
+ "n_requested": 50,
+ "n_scheduled": 50,
+ "n_ok": 50,
+ "n_fail": 0,
+ "failed_images": [],
+ "total_wall_s": 504.3,
+ "sum_per_image_wall_s": 2008.2,
+ "workers": 4,
+ "disk_used_delta_gb": 65.82,
+ "docker_images_size_start_gb": 93.93,
+ "docker_images_size_end_gb": 159.7,
+ "docker_images_size_delta_gb": 65.77,
+ "sum_per_image_virtual_gb": 63.65,
+ "df_avail_gb_end": 3195.2,
+ "disk_floor_gb": 150.0
+}
