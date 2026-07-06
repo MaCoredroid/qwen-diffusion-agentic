@@ -295,3 +295,14 @@ Goal: capture, per `value_projection_event`, the token-level context to decide (
    identical `raw_top` → a genuine value/tag collision (would need the emitted value inspected for the
    corrected byte). Cost: 6 greedy single-shot completions on the existing checkpoints — minutes on one
    GPU; no retraining.
+
+## SAMPLING-CONFOUND AUDIT (user-caught, 2026-07-05 late)
+ALL arms ran greedy temp=0 (server default via override-generation-config; requests carried no params —
+verified from dumps). Qwen3-family guidance for thinking mode: temp 0.6 / top_p 0.95, explicit warning
+that greedy causes endless repetitions — our loop-halt exits (consecutive-identical-tool-calls) match that
+documented signature. Byte-certificates correctly used greedy; carrying it into behavioral SWE episodes
+was an unexamined default. CONSEQUENCE: the 4-arm ladder is arm-fair (same setting everywhere) but the
+absolute numbers + the −1 paradigm-tax attribution carry a greedy-repetition confound. REQUIRED before
+the ladder is treated as final: sampling-corrected re-run (temp 0.6 / top_p 0.95, seeded per the certified
+contract) of all 4 arms × 5 instances; the campaign's data-gen must also run the generator at the
+recommended envelope, not greedy. Amendment applies to swe_tuning_campaign_design.md §data-gen.
