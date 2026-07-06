@@ -4,6 +4,34 @@ Workflow follow-on to `p2_serving_reuse_plan.md` (the reuse decision, milestones
 Date: 2026-07-04 (last verified 2026-07-05). Author: build+review sweep + real-export gauntlet + post-wiring acceptance +
 IMA-fix / sequential-decode-rebuild acceptance + **GAP-5A forward-view fix acceptance (§0.C)**.
 
+> **UPDATE (2026-07-05 — PROJ-COUNTER FORENSICS: the zero-value-projection tripwire's SWE-length nonzero
+> class explained; full writeup + minimal GPU repro in `runs/stage_c_n5v2/report.md`).** The
+> `projected_value_tokens_exact` counter (`= decoder.stats.value_projection_events`, incremented at
+> `hybrid_clean.py:1160-1161` when a token *inside a parameter value* differs from the model's raw argmax)
+> fired **5× in the diffstock SWE run and 1× in the 3-arm diffusion run — all `proj=1`** (the ARM-4
+> addendum's "3" was a hand-count; `diffstock_report.py` per-instance bucketing shows `proj=-` for all,
+> a UTC-vs-local ts-window mismatch — full server log is authoritative). Forensics from the request dumps:
+> **(a)** every firing request is an ACTIVE TOOL CALL — free-text cannot fire it (grammar disabled →
+> `inside_value` always False); **(b)** the correlated emitted values contain **no** `<`/`</`/`\n<`
+> (a `cat`, a numeric `offset:140`, code, `ls -la`, a garbled aborted path), refuting the tag-ambiguity
+> mechanism; **(c)** exactly 1 event per call regardless of value length (6→129 tokens) ⇒ a single
+> per-call boundary token, not mid-value corruption; **(d)** 2 of 5 fired outside any scored instance
+> window and one had `stop_reason=None` (aborted). **Mechanism:** `qwen_native_inside_parameter_value`
+> (`hybrid_clean.py:461-470`) uses an inclusive regex that stays True until a *complete* `</parameter>` is
+> committed, and `bulk_commit_forced` (`:1055-1056`) hands every in-value position to a model forward — so
+> the `\n</parameter>` close is decoded model-chosen and *still labeled in_value*; steering that structural
+> close (or rejecting an engine noisy-read `raw_top` at the value→close seam, the documented block-decoder
+> non-parity seam ~`qwen3_5_flare.py:1215-1222`) is mis-attributed to the value. **It is a boundary
+> counting-artifact / engine-seam correction, NOT a corrupted value byte — the emitted values are all
+> clean and the tool calls executed.** Two sub-cases (pure close-tag miscount vs engine noisy-read seam)
+> are NOT separable from the artifacts (the counter is a bare per-request int; no token-level capture
+> exists) → a **minimal instrumented GPU repro is specified** (6 greedy single-shot replays of the firing
+> dumps with a token-context capture flag; no docker/scoring/retrain). **Bearing:** this class does NOT
+> indict the diffusion weights on decode quality, but it *does* violate the strict `MUST==0` tripwire, so
+> the fix (tighten `inside_value` to exclude `\n</parameter>`-prefix positions) + the repro must land
+> before the strict byte-parity/tripwire certificate can absorb SWE-length episodes. **No code changed;
+> forensics only.**
+
 > **UPDATE (2026-07-05 — LOSSLESS-APC GATE BATTERY, live at HEAD `9cb5e7a`, RTX 5090, RAM cage, 5 GPU boots ~15 min; battery commit `8b98aaf`; artifacts `runs/lossless_apc/gates2/`). CACHE-ON CERTIFICATE STATUS: quality-lossless CERTIFIED (via Stage-3), strict-bitwise NOT (seam inert).**
 > Two distinct findings. **(A) The canonical-publish seam (W1+W2, commit `9cb5e7a`) is STILL LIVE-INERT.** Runtime callpath
 > assertion re-run at HEAD: `canonical_publish_calls`/`canonical_apply_calls` = **0** on the gt4 2048-crosser, on all 63

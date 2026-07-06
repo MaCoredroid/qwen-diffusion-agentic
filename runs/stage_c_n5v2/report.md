@@ -187,3 +187,111 @@ level; (3) diffusion-twin SWE performance tracks the twin's general agentic capa
 at higher significance. The path to a competitive diffusion twin on SWE is the methodology's own loop:
 train toward SWE-style episodes (SFT/RL on SWE trajectories) and re-convert — the machinery certified by
 #29. Recommendation: pause Stage-C scale-up; decision needed on the SWE-tuning campaign.
+
+---
+
+## PROJ-COUNTER FORENSICS — `projected_value_tokens_exact` nonzero class (2026-07-05)
+
+Closes the ARM-4 loose end ("proj counter 3 events ... nonzero class NEEDS a per-row explanation before
+any promotion claim"). Sources: `logs/{diffstock,diffusion}_server.log` (the authoritative per-request
+counters), `dumps_*/chat_*.json` (request payloads), `dumps_*/usage.jsonl`, and the engine code path in
+the vLLM pin (`vllm/v1/worker/gpu/model_states/qwen3_5_flare.py`,
+`vllm/v1/sample/hybrid_clean.py`).
+
+### Counter code path (what the number means)
+- Emitted per request at `remove_request` → `qwen3_5_flare.py:633`; value =
+  `decoder.stats.value_projection_events` summed over the request's hybrid_clean decoders
+  (`qwen3_5_flare.py:513, :642`).
+- Incremented at `hybrid_clean.py:1160-1161`: `if in_value and replacement: value_projection_events += 1`,
+  where `in_value = qwen_native_inside_parameter_value(committed_text)` and
+  `replacement = (emitted token_id != raw_top)`, `raw_top` = the model's own suppressed-argmax (`ranked[0]`).
+- Design intent (docstring `qwen3_5_flare.py:501-503`): the zero-value-projection tripwire — MUST be 0;
+  a nonzero value is *asserted* to be "a real correctness regression."
+
+### WHICH requests fired — authoritative full-log count is 5 (diffstock) + 1 (diffusion), each proj=1
+Correlation: firing done-line ts ↔ `usage.jsonl` ts (Δ < 0.6 s; observed `completion_tokens =
+generated_tokens + 1`); `usage.idx` == dump number; the emitted call is the last assistant message in
+dump `idx+1`. All firing requests are ACTIVE TOOL CALLS.
+
+| arm | req id | dump idx | srv line | gen | value_tok | stop_reason | emitted tool | value content (correlated) | has `<`/tag |
+|-----|--------|----------|----------|-----|-----------|-------------|--------------|----------------------------|-------------|
+| diffstock | chatcmpl-826bc812…8676c0bc | 100 | 361 | 161 | 129 | complete_tool_call | `edit` | Python `old/new_string`, multi-line | NO |
+| diffstock | chatcmpl-b9133cbb…b395a612 | 101 | 363 | 53 | 26 | complete_tool_call | `run_shell_command` | `cat …/auth/forms.py` | NO |
+| diffstock | chatcmpl-8c877cbb…a33fd645 | 156 | 516 | 77 | 52 | complete_tool_call | `read_file` | long `file_path` + numeric `offset:140` | NO |
+| diffstock | chatcmpl-b86bf42e…a53a9dac | 171 | 609 | 131 | 118 | **None (aborted)** | `edit` | GARBLED `file_path` (runaway, ends ` ``` `) | NO |
+| diffstock | chatcmpl-80a1c78c…b66f822a | 188 | 665 | 70 | 49 | complete_tool_call | `run_shell_command` | `python -c "…symbols('x')…"` | NO |
+| diffusion | chatcmpl-ba052fea…af76bc0c | ~7 | 138 | 27 | 6 | complete_tool_call | `run_shell_command` | `ls -la …/runs/` (looser corr., B@1000 token acct) | NO |
+
+Reconciliation of the "3 vs 5": `diffstock_report.py`'s per-instance engine bucketing shows `proj = -`
+for all 5 instances (`diffstock_report_table.txt`) — a UTC-vs-local timestamp window mismatch left the
+counters unattributed — so the addendum's "3" is a hand-count, not machine-derived. The full server log
+is the source of truth: **5** in diffstock, **1** in diffusion.
+
+### Content class — DEFINITIVE: tool-call parameter VALUE region; NOT free-text; NOT tag-bearing
+1. **Free-text is structurally impossible.** In free-text mode the grammar is disabled
+   (`HybridCleanGrammar.enabled` requires schemas), so `inside_value()` returns False unconditionally
+   (`hybrid_clean.py:633-635`) and the counter cannot increment. Every firing request is an active tool
+   call (5× `complete_tool_call`, 1× `None`/aborted).
+2. **No tag/`<` content.** All six correlated emitted values (a `cat` command, a numeric `offset:140`,
+   Python code, a `pwd`-class python one-liner, `ls -la`, one garbled path) contain **no** `<`, `</`, or
+   `\n<`. This **refutes** the "literal-tag-inside-a-code-value ambiguity" mechanism.
+3. **Exactly 1 event per call, independent of value length** (value spans 6→129 tokens) ⇒ a single
+   per-call boundary token, NOT pervasive mid-value corruption. All emitted tool calls parsed and
+   executed; the values are clean.
+
+### Mechanism hypothesis (code-grounded): a value→close BOUNDARY event, not mid-value corruption
+Three load-bearing code facts:
+1. `bulk_commit_forced` hands off to a MODEL forward the instant `inside_value` is True
+   (`hybrid_clean.py:1055-1056`) → **every** position while `inside_value` is model-chosen
+   (`decode_model_token`), including the close tag.
+2. `qwen_native_inside_parameter_value` (`hybrid_clean.py:461-470`) uses an **inclusive regex** that
+   stays True until a *complete* `</parameter>` is committed — so the whole `\n</parameter>` close is
+   decoded as model-chosen tokens **still labeled `in_value`**.
+3. Inside a value, `legal_top_token` returns `raw_top` unless `raw_top` makes the prefix non-completable;
+   `native_tool_prefix_completable` rejects a value prefix that forms `\n</function>` / `\n</tool_call>`
+   or a trailing `\n<…` that is not a `\n</parameter>` prefix (`hybrid_clean.py:406-421`).
+
+⇒ The single event is the grammar steering the **structural close** (or rejecting an engine noisy-read
+`raw_top`) at the value→`\n</parameter>` boundary, mis-attributed to the value because the inclusive
+`inside_value` regex still reads True there. It is a **boundary counting artifact / engine-seam
+correction, not a corrupted value byte.** Corroboration: (a) all emitted values are clean; (b) exactly 1
+per call, length-independent; (c) 2 of the 5 fired **outside** any scored instance window (the 3-vs-5
+gap) and one had `stop_reason=None` (aborted mid-flight) — i.e. tied to abort/gap lifecycles, consistent
+with "artifact at a stop/boundary condition."
+
+Two residual sub-cases the artifacts **cannot** disambiguate (the counter is a bare per-request integer;
+no token-level capture exists — `turns.jsonl` carries no per-token projection detail):
+- **(A) pure close-tag miscount** — a structural close token mislabeled `in_value`. Benign. Fix =
+  tighten `inside_value` to exclude positions whose committed tail is a proper prefix of `\n</parameter>`.
+- **(B) engine noisy-read seam** — the block decoder's single bidirectional NOISY read surfaced a
+  `raw_top` at the boundary that the reference's clean per-token re-forward would not (the documented
+  block-decoder seam, `qwen3_5_flare.py` note ~lines 1215-1222); the grammar then CORRECTED it, so the
+  emitted value stays right. A real projection event, but engine-attributable and self-healing — not a
+  weights decode-quality regression.
+
+**Promotion bearing:** this nonzero class is NOT evidence of value corruption and does not, on
+decode-quality grounds, indict the diffusion weights. But it DOES violate the strict tripwire
+(`MUST == 0`), so any promotion resting on the byte-parity/tripwire certificate stays blocked until the
+boundary-exclusion fix lands and the sub-case is confirmed by the repro below.
+
+### Minimal instrumented GPU repro (specified — DO NOT run here)
+Goal: capture, per `value_projection_event`, the token-level context to decide (A) vs (B).
+1. **Instrument** (`hybrid_clean.py decode_model_token`, guarded by an env flag so byte-parity holds when
+   off): at the `in_value and replacement` site, before the increment, append to a per-`req_id` JSONL:
+   `position=len(committed)`, `committed_tail=grammar.text(committed)[-64:]`,
+   `raw_top_id`+`decode([raw_top])`, `emitted_id`+`decode([token_id])`, `ranked_top5`+their logits,
+   `can_stop`, `is_close_prefix` (committed_tail ends with a proper prefix of `\n</parameter>`), and the
+   completability-rejection reason (which of `\n</function>`/`\n</tool_call>`/non-`\n</parameter>` `\n<`
+   the `raw_top` proposal triggered).
+2. **Replay** the exact firing payloads — `dumps_diffstock/chat_{0100,0101,0156,0171,0188}.json` and
+   `dumps_diffusion/chat_0008.json` (full history + tools + `max_tokens` + `chat_template_kwargs`) — as
+   single-shot greedy (`temperature=0`) completions against the SAME hybrid_clean engine pin (same mask
+   id, `grammar_topk=256`), capture flag ON. These are self-contained chat completions: no docker /
+   episode harness, no scoring. Confirm each deterministically re-emits `proj=1`.
+3. **Adjudicate** from the capture: if `committed_tail` is a `\n</parameter>` prefix or the fired token is
+   the structural close → **(A) miscount** (apply the `inside_value` boundary-exclusion fix, re-run, expect
+   proj→0). Else cross-check against the **reference** `HybridCleanDecodePolicy.generate` (HF clean
+   per-token re-forward) on the identical prefix: divergent `raw_top` → **(B) engine noisy-read seam**;
+   identical `raw_top` → a genuine value/tag collision (would need the emitted value inspected for the
+   corrected byte). Cost: 6 greedy single-shot completions on the existing checkpoints — minutes on one
+   GPU; no retraining.
