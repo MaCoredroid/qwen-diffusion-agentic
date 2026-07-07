@@ -160,6 +160,16 @@ def main() -> int:
         for r in json.loads(dspath.read_text()):
             dsmap[r["instance_id"]] = r
 
+    # per-id provenance (belt-lever): swe_gym vs swe_verified. Absent -> all gym.
+    src_map = {}
+    spath = batchdir / "sources.json"
+    if spath.exists():
+        try:
+            src_map = json.loads(spath.read_text())
+        except Exception:
+            src_map = {}
+    SRC_LABEL = {"swe_gym": "SWE-Gym", "swe_verified": "SWE-bench_Verified"}
+
     already = set()
     if kfile.exists():
         for l in kfile.read_text().splitlines():
@@ -231,7 +241,7 @@ def main() -> int:
             "repo": meta.get("repo") or dsr.get("repo"),
             "base_commit": meta.get("base_commit") or dsr.get("base_commit"),
             "image": meta.get("image"),
-            "source": "SWE-Gym",
+            "source": SRC_LABEL.get(src_map.get(iid, "swe_gym"), "SWE-Gym"),
             "split": "train",
             "verify": {
                 "resolved": True,

@@ -66,9 +66,17 @@ preflight() {
 }
 wait_ready() {
   local deadline=$((SECONDS+BOOT_DL))
+  # Grace before the first liveness check: `systemd-run --user --scope &` returns
+  # before the transient scope unit is registered, so an immediate check races the
+  # unit's "activating" window and mis-reads not-yet-registered as death. 5s lets
+  # systemd register + start the scope (a --scope goes active the moment its process
+  # forks). Fixes a flaky false "[ready] scope died" that aborted a fully-healthy boot.
+  sleep 5
   while :; do
     curl -sf "http://127.0.0.1:${PORT}/v1/models" >/dev/null 2>&1 && { echo "[ready] :${PORT} up" >&2; return 0; }
-    systemctl --user is-active --quiet "${SCOPE}.scope" || { echo "[ready] scope died" >&2; return 2; }
+    # Bail ONLY on a definitively dead scope (failed/inactive), NOT on "activating".
+    local st; st=$(systemctl --user show -p ActiveState --value "${SCOPE}.scope" 2>/dev/null)
+    [[ "$st" == "failed" || "$st" == "inactive" ]] && { echo "[ready] scope died (state=$st)" >&2; return 2; }
     [[ $SECONDS -gt $deadline ]] && { echo "[ready] BOOT TIMEOUT" >&2; return 1; }
     sleep 5
   done

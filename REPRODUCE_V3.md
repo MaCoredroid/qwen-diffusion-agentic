@@ -701,6 +701,68 @@ merge_predictions.py,RACE_DIAGNOSIS_HANDOFF.md}`; `data/swe_w2_n50_pool/pool_man
 
 ---
 
+### 3.14 SFT data-gen leakage firewall — belt-lever RELAXED 2026-07-07 (USER greenlit)
+
+**Context.** The `runs/swe_datagen_s1` campaign self-generates verified-correct SWE
+trajectories (stock-Qwen3.5-9B-AR teacher, rejection-sampled on the official docker
+reward) for the SFT pool. Its leakage firewall (`build_frontier.py::firewall_assert`,
+`data/swe_sft_pool/pool_manifest.json`) originally held out **625** ids — the eval
+rings PLUS the belt-and-suspenders `verified_500_tier2` ring (the entire
+SWE-bench_Verified 500).
+
+**The relaxation (USER decision, 2026-07-07).** The outer `verified_500_tier2` ring is
+**DROPPED from enforcement**. The ENFORCED training holdout is now
+**`inner5 ∪ tier0_20 ∪ tier1_100` = 113 DISTINCT `instance_id`s** (the rings
+nest/overlap — inner5 ⊂ tier0, tier0 ⊄ tier1 — so the nominal 5+20+100=125 dedupes to
+113). This holds out exactly the eval surface: the inner-5 smoke, Tier0-20, and
+Tier1-100 (which CONTAINS the W2 N=50 pool `fe1973937dfb…` of §3.13 and the Tier1-C46
+K-gate slice). **KILL-D1 is now hash-asserted:** `expand_frontier.py` pins
+`sha256(sorted(eval_holdout)) = c56f473ad31e52bee0f85151562f4e2122e4815dfa3f1b776b15fe121e8d168e`
+(`runs/swe_datagen_s1/.eval_holdout_sha256`); any ring-source drift trips the build.
+
+**What entered training.** The **387 Verified-adjacent** ids (all 500 Verified test ids
+− the 113 held) were prepended to the data-gen frontier's exploit head
+(`frontier.json`, 2064 → 2451; `pool_manifest.json`, 2438 → 2825 train ids). All 387
+official `swebench/sweb.eval.x86_64.<slug_1776>` images confirmed present (387/387,
+`runs/swe_datagen_s1/verified_adjacent_image_check.json`). The pipeline was made
+**dual-source**: metadata from `SWE-Gym/SWE-Gym` (SWE-Gym ids) + `princeton-nlp/
+SWE-bench_Verified` (Verified ids); Verified ids scored by the OFFICIAL swebench-4.1.0
+harness (the §3.x W2-proven path, matches the image provenance), SWE-Gym ids by the
+SWE-Bench-Fork harness; reports merged.
+
+**What it means (the caveat, stated plainly).** The protected never-trained eval
+surface shrinks **625 → 113**. The SFT pool becomes **repo/era-adjacent to
+SWE-bench_Verified** (same repos: django, sympy, astropy, sklearn, sphinx, … — the
+population many public SWE eval sets draw from). This is a **standard-practice-level**
+firewall, NOT an air-gap: the binding, hash-asserted invariant is **NO evaluated
+instance ever trains** (the 113-id rings stay out); but any future eval expansion
+beyond Tier1-100 would collide with trained ids, and diffusion-vs-AR promotion
+decisions ([[diffusion-promotion-discipline]]) must be read on the still-clean 113-id
+rings. It is a one-way trade — the 387 ids are burned for eval. Kill bar unchanged
+(0.10 rolling / 200). Full record + backups (`frontier_prebelt.json`,
+`pool_manifest.json.bak_prebelt_*`) in `runs/swe_datagen_s1/USER_LEVER_BELT.md`
+(§ ENACTMENT 2026-07-07).
+
+**Operational caveat — the dual-source SCORING bug (found + fixed 2026-07-07).** The
+first genuinely mixed batch, **batch_0007** (43 Verified + 6 SWE-Gym), *generated* 49
+real patches but recorded 50/50 `no_prediction`. Cause: `datagen_score.sh` fed the
+merged `all_predictions.jsonl` (both sources) to *each* single-source harness, and
+swebench's `get_dataset_from_preds` rejects the whole run if **any** prediction id is
+absent from the (single-source) dataset — the check runs **before** the
+`--instance_ids` filter — so both harnesses aborted (`Some prediction IDs not found in
+dataset!`) → empty report → all `no_prediction`. Generation was never the problem (the
+driver logged real non-zero patches for both sources). **Fix:** score now writes
+per-source filtered prediction files (`pred_gym.jsonl` / `pred_ver.jsonl`) and feeds
+each harness only its own rows; backward-compat (no `sources.json` ⇒ all-gym)
+unchanged. batch_0007 + the orphaned batch_0008 were re-marked `infra_invalid`
+(excluded from yield/kill; ids re-drawable). **Standing rule:** any dual-source change
+must pass a **both-sources LIVE gate** — ≥2 SWE-Gym + ≥2 Verified real episodes each
+producing a real patch through pull → gen → **score** with a non-empty merged report
+(`_merged_from` = both sub-reports); scratch/dry-run validation is insufficient because
+this class of bug only surfaces when a mixed batch's patches hit the real harnesses.
+
+---
+
 ## 4. THE AUDIT BATTERY — MANDATORY ACCEPTANCE (not optional; the lessons are half the value)
 
 A result is INVALID unless the audit battery passes. These checks are what separate a real

@@ -18,6 +18,14 @@ df_avail_gb() { df -B1 --output=avail /home/mark | tail -1 | awk '{printf "%.0f"
 
 IDS=$(.venv/bin/python -c 'import json,sys;print(" ".join(json.load(open(sys.argv[1]))["instance_ids"]))' "$BATCHDIR/subset.json")
 N=$(wc -w <<<"$IDS")
+# per-id source (swe_gym|swe_verified) from build_batch_dataset; absent -> swe_gym.
+src_of() { .venv/bin/python -c '
+import json,sys
+p=sys.argv[1]; iid=sys.argv[2]
+try:
+    print(json.load(open(p)).get(iid,"swe_gym"))
+except Exception:
+    print("swe_gym")' "$BATCHDIR/sources.json" "$1"; }
 echo "==== BATCH PULL START $(date -u +%FT%TZ) n=$N floor=${PULL_DISK_FLOOR_GB}GB ====" >&2
 i=0; failed=0
 for iid in $IDS; do
@@ -29,8 +37,9 @@ for iid in $IDS; do
     echo "==== BATCH PULL ABORTED_DISK_FLOOR $(date -u +%FT%TZ) ====" >&2
     exit 7
   fi
-  echo "[pull $i/$N] $iid avail=${avail}GB $(date -u +%FT%TZ)" >&2
-  timeout 1800 bash "$HERE/pull_and_tag.sh" "$iid" "$OUT" \
+  SRC=$(src_of "$iid")
+  echo "[pull $i/$N] $iid source=$SRC avail=${avail}GB $(date -u +%FT%TZ)" >&2
+  timeout 1800 bash "$HERE/pull_and_tag.sh" "$iid" "$OUT" "$SRC" \
     || { echo "[pull] $iid FAILED (env_unavailable; continuing)" >&2; failed=$((failed+1)); }
 done
 echo "==== BATCH PULL DONE $(date -u +%FT%TZ) rows=$(wc -l < "$OUT") failed=$failed avail=$(df_avail_gb)GB ====" >&2

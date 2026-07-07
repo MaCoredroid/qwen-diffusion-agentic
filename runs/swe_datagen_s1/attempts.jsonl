@@ -148,3 +148,403 @@
 {"instance_id": "modin-project__modin-6267", "batch_id": "batch_0003_20260706T180535Z", "verdict": "no_prediction", "ts": "2026-07-06T18:33:48Z", "infra_invalid": true, "infra_reason": "gen_preflight_timeout_gnome_shell_vram: cycles 2-3 gen never booted the AR server (preflight GPU-clear gate 3600MiB < desktop gnome-shell ~3923MiB -> 600s TIMEOUT -> exit before boot); every row is a no-op batch, not teacher evidence."}
 {"instance_id": "facebookresearch__hydra-1487", "batch_id": "batch_0003_20260706T180535Z", "verdict": "no_prediction", "ts": "2026-07-06T18:33:48Z", "infra_invalid": true, "infra_reason": "gen_preflight_timeout_gnome_shell_vram: cycles 2-3 gen never booted the AR server (preflight GPU-clear gate 3600MiB < desktop gnome-shell ~3923MiB -> 600s TIMEOUT -> exit before boot); every row is a no-op batch, not teacher evidence."}
 {"instance_id": "bokeh__bokeh-13298", "batch_id": "batch_0003_20260706T180535Z", "verdict": "no_prediction", "ts": "2026-07-06T18:33:48Z", "infra_invalid": true, "infra_reason": "gen_preflight_timeout_gnome_shell_vram: cycles 2-3 gen never booted the AR server (preflight GPU-clear gate 3600MiB < desktop gnome-shell ~3923MiB -> 600s TIMEOUT -> exit before boot); every row is a no-op batch, not teacher evidence."}
+{"instance_id": "python__mypy-10174", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5177", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-10875", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-10386", "batch_id": "batch_0001_20260706T190526Z", "verdict": "env_unavailable", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10284", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5196", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-10917", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1603", "batch_id": "batch_0001_20260706T190526Z", "verdict": "env_unavailable", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10288", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5272", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-10941", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1637", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10308", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5322", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-10959", "batch_id": "batch_0001_20260706T190526Z", "verdict": "resolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1638", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10361", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5362", "batch_id": "batch_0001_20260706T190526Z", "verdict": "env_unavailable", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-10960", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1650", "batch_id": "batch_0001_20260706T190526Z", "verdict": "empty_patch", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10382", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5386", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-10975", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1651", "batch_id": "batch_0001_20260706T190526Z", "verdict": "resolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10389", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5390", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-10978", "batch_id": "batch_0001_20260706T190526Z", "verdict": "empty_patch", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1661", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10392", "batch_id": "batch_0001_20260706T190526Z", "verdict": "resolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5398", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-11330", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1681", "batch_id": "batch_0001_20260706T190526Z", "verdict": "empty_patch", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10401", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5506", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-11348", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1684", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10415", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5529", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-11505", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1690", "batch_id": "batch_0001_20260706T190526Z", "verdict": "empty_patch", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10424", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pydantic__pydantic-5587", "batch_id": "batch_0001_20260706T190526Z", "verdict": "resolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "conan-io__conan-11560", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "iterative__dvc-1700", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "pandas-dev__pandas-47361", "batch_id": "batch_0001_20260706T190526Z", "verdict": "empty_patch", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "getmoto__moto-4809", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "dask__dask-10128", "batch_id": "batch_0001_20260706T190526Z", "verdict": "resolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "modin-project__modin-5983", "batch_id": "batch_0001_20260706T190526Z", "verdict": "empty_patch", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "facebookresearch__hydra-1404", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "bokeh__bokeh-13147", "batch_id": "batch_0001_20260706T190526Z", "verdict": "unresolved", "ts": "2026-07-06T20:02:51Z"}
+{"instance_id": "python__mypy-10430", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5589", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-11594", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1712", "batch_id": "batch_0002_20260706T200304Z", "verdict": "empty_patch", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10432", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5591", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-11655", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1713", "batch_id": "batch_0002_20260706T200304Z", "verdict": "empty_patch", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10458", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5624", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-11666", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1733", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10478", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5662", "batch_id": "batch_0002_20260706T200304Z", "verdict": "resolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-11799", "batch_id": "batch_0002_20260706T200304Z", "verdict": "resolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1749", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10508", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5706", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-11803", "batch_id": "batch_0002_20260706T200304Z", "verdict": "env_unavailable", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1759", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10560", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5744", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-12086", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1781", "batch_id": "batch_0002_20260706T200304Z", "verdict": "resolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10572", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5834", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-12307", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1782", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10579", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5841", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-12353", "batch_id": "batch_0002_20260706T200304Z", "verdict": "resolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1785", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10582", "batch_id": "batch_0002_20260706T200304Z", "verdict": "resolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5861", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-12397", "batch_id": "batch_0002_20260706T200304Z", "verdict": "resolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1808", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10609", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5868", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-12578", "batch_id": "batch_0002_20260706T200304Z", "verdict": "resolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1809", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10658", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pydantic__pydantic-5874", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "conan-io__conan-12695", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "iterative__dvc-1817", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pandas-dev__pandas-47371", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "getmoto__moto-4817", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "modin-project__modin-6043", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "facebookresearch__hydra-1422", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "bokeh__bokeh-13198", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "pandas-dev__pandas-47387", "batch_id": "batch_0002_20260706T200304Z", "verdict": "unresolved", "ts": "2026-07-06T20:55:22Z"}
+{"instance_id": "python__mypy-10683", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-5889", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-12762", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1829", "batch_id": "batch_0003_20260706T205537Z", "verdict": "empty_patch", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-10689", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-5897", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-12854", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1841", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-10712", "batch_id": "batch_0003_20260706T205537Z", "verdict": "empty_patch", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6043", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13230", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1848", "batch_id": "batch_0003_20260706T205537Z", "verdict": "empty_patch", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-10766", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6100", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13326", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1855", "batch_id": "batch_0003_20260706T205537Z", "verdict": "empty_patch", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-10775", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6104", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13390", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1857", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-10777", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6111", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13403", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1877", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-10852", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6115", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13450", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1882", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-10864", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6126", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13610", "batch_id": "batch_0003_20260706T205537Z", "verdict": "empty_patch", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1892", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-10937", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6212", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13622", "batch_id": "batch_0003_20260706T205537Z", "verdict": "env_unavailable", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1907", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-11119", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6274", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13623", "batch_id": "batch_0003_20260706T205537Z", "verdict": "env_unavailable", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1926", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-11125", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pydantic__pydantic-6282", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "conan-io__conan-13721", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "iterative__dvc-1942", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "getmoto__moto-4833", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "modin-project__modin-6057", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "facebookresearch__hydra-1450", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "bokeh__bokeh-13239", "batch_id": "batch_0003_20260706T205537Z", "verdict": "env_unavailable", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "pandas-dev__pandas-47434", "batch_id": "batch_0003_20260706T205537Z", "verdict": "resolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "getmoto__moto-4846", "batch_id": "batch_0003_20260706T205537Z", "verdict": "unresolved", "ts": "2026-07-06T21:47:49Z"}
+{"instance_id": "python__mypy-11126", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-6283", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-13729", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-1944", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11134", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-6288", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-13757", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-1950", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11135", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-6293", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-13788", "batch_id": "batch_0004_20260706T214803Z", "verdict": "empty_patch", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-1965", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11137", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-7825", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-14051", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-1980", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11140", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-8004", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-14164", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-1992", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11150", "batch_id": "batch_0004_20260706T214803Z", "verdict": "empty_patch", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-8027", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-14167", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-2017", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11151", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-8066", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-14177", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-2068", "batch_id": "batch_0004_20260706T214803Z", "verdict": "empty_patch", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11162", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-8072", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-14185", "batch_id": "batch_0004_20260706T214803Z", "verdict": "env_unavailable", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-2112", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11204", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-8159", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-14195", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-2118", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11207", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-8190", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-14254", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-2126", "batch_id": "batch_0004_20260706T214803Z", "verdict": "resolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11213", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "pydantic__pydantic-8262", "batch_id": "batch_0004_20260706T214803Z", "verdict": "env_unavailable", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "conan-io__conan-14296", "batch_id": "batch_0004_20260706T214803Z", "verdict": "empty_patch", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "iterative__dvc-2130", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "modin-project__modin-6260", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "facebookresearch__hydra-1456", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "bokeh__bokeh-13258", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "getmoto__moto-4847", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "modin-project__modin-6263", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "facebookresearch__hydra-1458", "batch_id": "batch_0004_20260706T214803Z", "verdict": "unresolved", "ts": "2026-07-06T22:53:23Z"}
+{"instance_id": "python__mypy-11215", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8316", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14362", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2133", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11220", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8352", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14378", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2141", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11236", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8437", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14397", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2142", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11241", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8500", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14532", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2153", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11244", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8511", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14616", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2164", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11247", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8525", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14709", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2190", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11267", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8537", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14727", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2231", "batch_id": "batch_0005_20260706T225335Z", "verdict": "empty_patch", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11273", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8552", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14760", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2254", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11290", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8567", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-14795", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2266", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11292", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8583", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-15007", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-2275", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11314", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "pydantic__pydantic-8650", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "conan-io__conan-15109", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "iterative__dvc-3315", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "bokeh__bokeh-13289", "batch_id": "batch_0005_20260706T225335Z", "verdict": "resolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "getmoto__moto-4848", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "modin-project__modin-6267", "batch_id": "batch_0005_20260706T225335Z", "verdict": "empty_patch", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "facebookresearch__hydra-1487", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "bokeh__bokeh-13298", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "getmoto__moto-4849", "batch_id": "batch_0005_20260706T225335Z", "verdict": "unresolved", "ts": "2026-07-06T23:50:07Z"}
+{"instance_id": "python__mypy-11317", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-8734", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-15121", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3472", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11329", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-8751", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-15185", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3490", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11338", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-8793", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-15422", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3493", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11345", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-8920", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-15514", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3524", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11352", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-8947", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-15699", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3527", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11361", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-8965", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-15931", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3532", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11396", "batch_id": "batch_0006_20260706T235024Z", "verdict": "empty_patch", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-8977", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-15950", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3537", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11417", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-9001", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-16028", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3559", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11420", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-9004", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-16038", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3576", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11434", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-9023", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-16103", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3620", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "python__mypy-11448", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "pydantic__pydantic-9053", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "conan-io__conan-16350", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "iterative__dvc-3628", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "modin-project__modin-6270", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "facebookresearch__hydra-1488", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "getmoto__moto-4853", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "modin-project__modin-6275", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "facebookresearch__hydra-1531", "batch_id": "batch_0006_20260706T235024Z", "verdict": "unresolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "getmoto__moto-4860", "batch_id": "batch_0006_20260706T235024Z", "verdict": "resolved", "ts": "2026-07-07T00:49:01Z"}
+{"instance_id": "django__django-10097", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sympy__sympy-11618", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sphinx-doc__sphinx-10323", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "matplotlib__matplotlib-14623", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "scikit-learn__scikit-learn-10297", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "astropy__astropy-12907", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pydata__xarray-2905", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pytest-dev__pytest-10051", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pylint-dev__pylint-4551", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "psf__requests-1142", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "mwaskom__seaborn-3187", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pallets__flask-5014", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "django__django-10554", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sympy__sympy-12096", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sphinx-doc__sphinx-10435", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "matplotlib__matplotlib-20488", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "scikit-learn__scikit-learn-10844", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "astropy__astropy-13236", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pydata__xarray-3095", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pytest-dev__pytest-10081", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pylint-dev__pylint-4604", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "psf__requests-1724", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "django__django-10880", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sympy__sympy-12419", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sphinx-doc__sphinx-10449", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "matplotlib__matplotlib-20676", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "scikit-learn__scikit-learn-10908", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "astropy__astropy-13398", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pydata__xarray-3305", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pytest-dev__pytest-5262", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pylint-dev__pylint-4661", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "psf__requests-1766", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "django__django-10914", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sympy__sympy-12481", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sphinx-doc__sphinx-10466", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "matplotlib__matplotlib-20826", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "scikit-learn__scikit-learn-11578", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "astropy__astropy-13453", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pydata__xarray-3677", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pytest-dev__pytest-5787", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "pylint-dev__pylint-6386", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "psf__requests-1921", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "django__django-10973", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sympy__sympy-13091", "batch_id": "batch_0007_20260707T004916Z", "verdict": "env_unavailable", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "modin-project__modin-6292", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "modin-project__modin-6298", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "modin-project__modin-6324", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "modin-project__modin-6333", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "modin-project__modin-6344", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "modin-project__modin-6369", "batch_id": "batch_0007_20260707T004916Z", "verdict": "no_prediction", "ts": "2026-07-07T01:41:24Z", "infra_invalid": true, "infra_reason": "dual_source_scoring_bug_predfile_unfiltered__gen_ok_score_aborted"}
+{"instance_id": "sphinx-doc__sphinx-10614", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "matplotlib__matplotlib-21568", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "scikit-learn__scikit-learn-12682", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "astropy__astropy-13579", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pydata__xarray-3993", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pytest-dev__pytest-5809", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pylint-dev__pylint-6903", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "psf__requests-2317", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "django__django-10999", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "sympy__sympy-13372", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "sphinx-doc__sphinx-10673", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "matplotlib__matplotlib-22719", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "scikit-learn__scikit-learn-12973", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "astropy__astropy-13977", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pydata__xarray-4356", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pytest-dev__pytest-6197", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pylint-dev__pylint-7080", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "psf__requests-2931", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "django__django-11066", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "sympy__sympy-13480", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "sphinx-doc__sphinx-11445", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "matplotlib__matplotlib-22865", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "scikit-learn__scikit-learn-13124", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "astropy__astropy-14096", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pydata__xarray-4629", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pytest-dev__pytest-6202", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pylint-dev__pylint-7277", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "django__django-11087", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "sympy__sympy-13551", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "sphinx-doc__sphinx-7454", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "matplotlib__matplotlib-22871", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "scikit-learn__scikit-learn-13135", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "astropy__astropy-14309", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pydata__xarray-4695", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pytest-dev__pytest-7205", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "django__django-11095", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "sympy__sympy-13615", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "sphinx-doc__sphinx-7462", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "matplotlib__matplotlib-23299", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "scikit-learn__scikit-learn-13328", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "astropy__astropy-14365", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pydata__xarray-4966", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "pytest-dev__pytest-7236", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "django__django-11099", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "modin-project__modin-6370", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "modin-project__modin-6371", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "modin-project__modin-6381", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "modin-project__modin-6400", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "modin-project__modin-6403", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}
+{"instance_id": "modin-project__modin-6404", "batch_id": "batch_0008_20260707T014135Z", "verdict": "no_prediction", "ts": "2026-07-07T02:10:18Z", "infra_invalid": true, "infra_reason": "orphaned_partial__monitor_killed_orch_exit_trap_stopped_server_midgen"}

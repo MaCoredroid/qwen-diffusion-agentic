@@ -109,6 +109,29 @@ resolve reward is a **future cycle**, gated on this campaign first standing up a
 
 ### 1.2 Leakage firewall (spell it out — this is the correctness spine of the whole campaign)
 
+> **⚠ BELT-LEVER ENACTED 2026-07-07 (USER greenlit) — the firewall was RELAXED to the
+> "Verified-train-adjacent" fallback documented later in this section.** The
+> belt-and-suspenders `verified_500_tier2` ring (500) is **DROPPED from enforcement**;
+> the ENFORCED holdout is now **`inner5 ∪ tier0_20 ∪ tier1_100` = 113 DISTINCT ids**
+> (the rings nest/overlap, so the nominal 125 dedupes to 113), and the **387
+> Verified-adjacent** ids (500 Verified − the 113 held) were added to the data-gen
+> frontier's exploit head. KILL-D1 now **hash-asserts** the trainable pool is disjoint
+> from those 113 (sha256 pinned, `runs/swe_datagen_s1/.eval_holdout_sha256`). What this
+> buys/costs and the exact enactment mechanics are in
+> `runs/swe_datagen_s1/USER_LEVER_BELT.md` (§ ENACTMENT 2026-07-07). **Standard-practice
+> invariant still held: NO evaluated instance ever trains.** The three rings below are
+> now the ENFORCED holdout; the `verified_500` row is retained for provenance but is no
+> longer enforced.
+>
+> **Dual-source scoring caveat (fixed 2026-07-07).** The first genuinely mixed batch
+> (batch_0007: 43 Verified + 6 SWE-Gym) generated 49 real patches but recorded 50/50
+> `no_prediction` — `datagen_score.sh` fed the merged predictions file to each
+> single-source harness and swebench's `get_dataset_from_preds` aborts the whole run
+> when any prediction id is absent from its dataset (checked before `--instance_ids`).
+> Fixed with per-source filtered prediction files; batch_0007 + orphaned batch_0008
+> re-marked `infra_invalid` (excluded from yield/kill; re-drawable). Any future
+> dual-source change must pass a both-sources LIVE gate. See `USER_LEVER_BELT.md`.
+
 The eval sets are **frozen and held out by `instance_id`**. A single leaked instance would invalidate every downstream
 resolve number, so the firewall is explicit, over-inclusive, and asserted in code (mirroring the RL-v2 pool's
 `selected_overlap_counts==0` leak-check).
@@ -136,9 +159,13 @@ foreclosing eval-tier expansion. Use only if SWE-Gym env-building proves too cos
 relaxed to `Tier0∪Tier1` (never touching held-out ids). Recommend SWE-Gym primary; document the fallback.
 
 **Firewall artifact (required):** `data/swe_sft_pool/pool_manifest.json` listing every training `instance_id` + source +
-env-build status, with a hard assertion at build time and at train-launch:
-`train_ids ∩ verified_500 == ∅` **and** `train_ids ∩ (Tier0 ∪ Tier1) == ∅`. Any nonzero overlap ⇒ **KILL-D1** (do not
-train). This is the `rl_v2_leak_check` convention extended to SWE.
+env-build status, with a hard assertion at build time and at train-launch.
+**Pre-2026-07-07:** `train_ids ∩ verified_500 == ∅` **and** `train_ids ∩ (Tier0 ∪ Tier1) == ∅`.
+**Post-belt-lever (2026-07-07, ENFORCED):** `train_ids ∩ (inner5 ∪ tier0_20 ∪ tier1_100) == ∅`, **hash-asserted**
+against the pinned sha256 of the 113-id eval holdout (`expand_frontier.py`, `runs/swe_datagen_s1/.eval_holdout_sha256`);
+`verified_500` is retired to `manifest.relaxed_rings` and `intersect_verified_500` is now INTENTIONALLY nonzero (the 387
+adjacent ids). Any overlap with the enforced 113 ⇒ **KILL-D1** (do not train). This is the `rl_v2_leak_check` convention
+extended to SWE.
 
 ### 1.3 Data scale target + yield + generation cost (honest)
 

@@ -115,6 +115,25 @@ Calibration ~2–4 GPU-h; quality battery ~6–10 GPU-h (a full pass is ~2–4 G
 | **C6** | **N=25–50 subset, both arms.** Paired run (same instances, both endpoints), temp-0 greedy, native `qwen3_xml` tool format both arms ([[native-function-format-rule]]). Report resolve@1, per-turn s, turns/episode, APC hit-rate at 1024 granularity, and the diffusion-vs-AR resolve delta with paired stats. | harness + endgame framing | the deliverable measurement |
 | **C7** | **Losslessness assertion in-loop.** During C6 diffusion arm, assert the online multi-turn cache-on decode stayed byte-lossless (Stage-A A-G3 / lossless-APC gate-c telemetry) — a resolve number under a lossy cache is not creditable. | lossless-APC §3(c) | gate, not optional |
 
+> **⚠ Leakage caveat — belt-lever ENACTED 2026-07-07 (USER greenlit).** The SFT
+> data-gen pool (`runs/swe_datagen_s1`) now trains on the **387 Verified-adjacent
+> instances** (all 500 SWE-bench_Verified test ids MINUS the 113 still-held eval ids).
+> Tier2=500 is **no longer a training firewall** — only the C2 eval rings **inner5 (5)
+> ∪ Tier0-20 ∪ Tier1-100 = 113 DISTINCT ids** are held out, hash-asserted (KILL-D1).
+> The C-stage eval numbers above (N=5 ⊂ Tier0, N=25–50 ⊂ Tier1) stay on **never-trained**
+> instances, so they remain creditable; but the SFT pool is now **repo/era-adjacent to
+> Verified**, and any FUTURE eval expansion beyond Tier1-100 would collide with trained
+> ids. Full mechanics + trade in `runs/swe_datagen_s1/USER_LEVER_BELT.md`.
+>
+> **Dual-source scoring caveat (fixed 2026-07-07).** Making the pool dual-source
+> surfaced a scoring bug: the first mixed batch (batch_0007) *generated* real patches
+> but scored 0 because `datagen_score.sh` fed the merged predictions file to each
+> single-source swebench harness (which rejects any prediction id outside its dataset,
+> before the `-i` filter) → both aborted. Fixed via per-source filtered prediction
+> files; batch_0007/0008 marked `infra_invalid`. **Standing rule:** any dual-source
+> change must pass a both-sources LIVE gate (≥2 SWE-Gym + ≥2 Verified real episodes,
+> full pull→gen→score). See `USER_LEVER_BELT.md` / REPRODUCE_V3 §3.14.
+
 ### Stage-C gates
 - **C-G1 (smoke):** N=5 loop closes on **both** arms — patches apply, docker eval returns verdicts, zero engine crash. (Resolve count is informational here.)
 - **C-G2 (subset):** N=25–50 completes both arms; **diffusion resolve@1 ≥ AR resolve@1 − (paired-CI margin)** — i.e. parity-or-better, the honest bar (not a speed multiplier).

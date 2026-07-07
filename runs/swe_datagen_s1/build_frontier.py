@@ -32,6 +32,16 @@ orchestrator's resume is driven by attempts.jsonl, NOT by mutating this file.
 Run with the FORK venv so swebench + the spec map are importable:
   runs/stage0_swegym_probe/.venv-swegym/bin/python build_frontier.py
 (falls back to a spec-map-less screen if swebench is absent — MONAI still dropped).
+
+BELT-LEVER NOTE (2026-07-07): this builds the SWE-Gym BASE frontier only. The USER
+belt-relax lever (drop `verified_500_tier2` from the holdout; add the 387
+Verified-adjacent ids to the exploit head) is applied by `expand_frontier.py` as a
+POST-step on top of this file's output (+ `restratify_frontier.py` for best_of_k).
+firewall_assert here already enforces the RELAXED contract via the manifest: once
+`verified_500_tier2` is retired to `manifest.relaxed_rings`, it no longer resolves
+into `heldout_union`, so the HARD assert reduces to
+`train_ids ∩ (inner5 ∪ tier0_20 ∪ tier1_100) == ∅`. The hash-assert on the eval
+holdout lives in `expand_frontier.py`.
 """
 from __future__ import annotations
 import json, os, sys
