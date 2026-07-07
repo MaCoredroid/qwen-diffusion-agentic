@@ -85,10 +85,17 @@ wait_ready() {
 N=$(.venv/bin/python -c 'import json,sys;print(len(json.load(open(sys.argv[1]))["instance_ids"]))' "$BATCHDIR/subset.json")
 echo "==== BATCH GEN START $(date -u +%FT%TZ) n=$N C=$C envelope=$LUMO_PROXY_FORCE_TEMPERATURE/$LUMO_PROXY_FORCE_TOP_P/$LUMO_PROXY_FORCE_TOP_K retries=$SWE_EMPTY_PATCH_RETRIES ====" >&2
 preflight || exit 1
-echo "[gen] booting server scope=$SCOPE port=$PORT" >&2
+# GPU_UTIL vs desktop-VRAM drift: vLLM hard-fails at boot unless free >= util*total
+# (cycles 4-5 burned: free 26.34 GiB < 0.85*31.33 after desktop crept to ~4.6 GiB).
+# Derive util from measured free with 1800 MiB margin (vLLM's torch-visible free runs
+# ~1 GiB under nvidia-smi's), cap at 0.85, hard-floor at the boot-probe-certified 0.74.
+read -r GPU_USED_MIB GPU_TOTAL_MIB < <(nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits | awk -F', *' 'NR==1{print $1, $2}')
+GPU_UTIL=$(python3 -c "print(f'{min(0.85, ($GPU_TOTAL_MIB - $GPU_USED_MIB - 1800) / $GPU_TOTAL_MIB):.2f}')")
+python3 -c "exit(0 if $GPU_UTIL >= 0.74 else 1)" || { echo "[gen] GPU_UTIL=$GPU_UTIL below certified 0.74 floor (desktop holds ${GPU_USED_MIB}MiB) — refusing boot" >&2; exit 1; }
+echo "[gen] booting server scope=$SCOPE port=$PORT gpu_util=$GPU_UTIL (used=${GPU_USED_MIB}MiB total=${GPU_TOTAL_MIB}MiB)" >&2
 ACTIVE_SCOPE="$SCOPE"
 systemd-run --user --scope --unit="$SCOPE" -p MemoryMax=22G -p MemorySwapMax=4G \
-  bash -c "MAX_NUM_SEQS=$C MAX_MODEL_LEN=32768 GPU_UTIL=0.85 PORT=$PORT bash $HERE/runcage_ar_probe.sh" \
+  bash -c "MAX_NUM_SEQS=$C MAX_MODEL_LEN=32768 GPU_UTIL=$GPU_UTIL PORT=$PORT bash $HERE/runcage_ar_probe.sh" \
   > "$BATCHDIR/logs/gen_server.log" 2>&1 &
 wait_ready || { echo "[gen] server not ready" >&2; exit 1; }
 

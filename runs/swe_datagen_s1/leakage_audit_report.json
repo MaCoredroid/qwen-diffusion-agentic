@@ -1,0 +1,5602 @@
+{
+ "audit": "cross_instance_answer_leakage",
+ "summary": {
+  "generated_at": "2026-07-07T06:15:08Z",
+  "elapsed_sec": 0.79,
+  "cpu_only": true,
+  "eval_holdout_n_distinct": 113,
+  "eval_holdout_sha256": "c56f473ad31e52bee0f85151562f4e2122e4815dfa3f1b776b15fe121e8d168e",
+  "eval_holdout_sha256_pinned": "c56f473ad31e52bee0f85151562f4e2122e4815dfa3f1b776b15fe121e8d168e",
+  "eval_holdout_sha_assert": "PASS",
+  "keepers_snapshot_path": "/home/mark/qwen_diffusion/runs/swe_datagen_s1/leakage_audit_keepers_snapshot.jsonl",
+  "keepers_snapshot_sha256": "61e1f89092b34e6f5866fb0fbdc9c1a75cc8a35e70db9d7cf1b78e47ec4a91d3",
+  "n_keepers": 114,
+  "n_keepers_verified_source": 54,
+  "n_keepers_swegym_source": 60,
+  "text_sim_backend": "tfidf_cosine_sklearn",
+  "n_same_repo_pairs": 720,
+  "n_flagged_pairs": 49,
+  "text_sim_p95": 0.16608,
+  "text_sim_p99": 0.365202,
+  "swegym_disjoint_repo_assert": "PASS",
+  "swegym_repo_collisions": [],
+  "counts": {
+   "keepers_with_same_repo_holdout_neighbor": 53,
+   "keepers_with_any_file_overlap": 15,
+   "keepers_with_holdout_GOLD_file_overlap": 15,
+   "keepers_with_function_overlap": 1,
+   "keepers_with_text_sim_ge_p95": 18
+  },
+  "keepers_with_holdout_GOLD_file_overlap_ids": [
+   "django__django-11095",
+   "django__django-11133",
+   "matplotlib__matplotlib-24149",
+   "psf__requests-1142",
+   "psf__requests-1724",
+   "psf__requests-1921",
+   "pydata__xarray-6599",
+   "pytest-dev__pytest-10081",
+   "pytest-dev__pytest-6202",
+   "pytest-dev__pytest-7236",
+   "pytest-dev__pytest-7982",
+   "scikit-learn__scikit-learn-11578",
+   "sympy__sympy-11618",
+   "sympy__sympy-12419",
+   "sympy__sympy-12481"
+  ],
+  "keepers_with_function_overlap_ids": [
+   "sympy__sympy-12481"
+  ]
+ },
+ "flagged_pairs_ranked": [
+  {
+   "keeper_id": "sympy__sympy-12481",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-12489",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [
+    "sympy/combinatorics/permutations.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "sympy/combinatorics/permutations.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {
+    "sympy/combinatorics/permutations.py": [
+     "__new__"
+    ]
+   },
+   "n_func_overlap": 1,
+   "text_sim": 0.166197,
+   "severity": 8.332394,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4687",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [
+    "xarray/core/computation.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "xarray/core/computation.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.391935,
+   "severity": 5.78387,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-10081",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [
+    "src/_pytest/unittest.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "src/_pytest/unittest.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.220793,
+   "severity": 5.441586,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7236",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [
+    "src/_pytest/unittest.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "src/_pytest/unittest.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.152346,
+   "severity": 5.304692,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-11578",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [
+    "sklearn/linear_model/logistic.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "sklearn/linear_model/logistic.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.141905,
+   "severity": 5.28381,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-1142",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-5414",
+   "repo": "psf/requests",
+   "file_overlap_gold": [
+    "requests/models.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "requests/models.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.139025,
+   "severity": 5.27805,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-1724",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-5414",
+   "repo": "psf/requests",
+   "file_overlap_gold": [
+    "requests/models.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "requests/models.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.123444,
+   "severity": 5.246888,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-1921",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-5414",
+   "repo": "psf/requests",
+   "file_overlap_gold": [
+    "requests/models.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "requests/models.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.118348,
+   "severity": 5.236696,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-6202",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [
+    "src/_pytest/python.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "src/_pytest/python.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.112026,
+   "severity": 5.224052,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-13989",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [
+    "lib/matplotlib/axes/_axes.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "lib/matplotlib/axes/_axes.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.104322,
+   "severity": 5.208644,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-17630",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [
+    "sympy/matrices/expressions/matexpr.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "sympy/matrices/expressions/matexpr.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.081409,
+   "severity": 5.162818,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-11618",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-17655",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [
+    "sympy/geometry/point.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "sympy/geometry/point.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.079368,
+   "severity": 5.158736,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-12713",
+   "repo": "django/django",
+   "file_overlap_gold": [
+    "django/contrib/admin/options.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "django/contrib/admin/options.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.077809,
+   "severity": 5.155618,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11133",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13195",
+   "repo": "django/django",
+   "file_overlap_gold": [
+    "django/http/response.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "django/http/response.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.073951,
+   "severity": 5.147902,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7982",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5840",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [
+    "src/_pytest/pathlib.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "src/_pytest/pathlib.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.060428,
+   "severity": 5.120856,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16100",
+   "repo": "django/django",
+   "file_overlap_gold": [
+    "django/contrib/admin/options.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "django/contrib/admin/options.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.032265,
+   "severity": 5.06453,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4687",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.648004,
+   "severity": 1.296008,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4687",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.581169,
+   "severity": 1.162338,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.542414,
+   "severity": 1.084828,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.462946,
+   "severity": 0.925892,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.433273,
+   "severity": 0.866546,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25332",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.376141,
+   "severity": 0.752282,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.37118,
+   "severity": 0.74236,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.339719,
+   "severity": 0.679438,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.329526,
+   "severity": 0.659052,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.307586,
+   "severity": 0.615172,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.282481,
+   "severity": 0.564962,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10844",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.270432,
+   "severity": 0.540864,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.261848,
+   "severity": 0.523696,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25122",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.253113,
+   "severity": 0.506226,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7205",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5631",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.241022,
+   "severity": 0.482044,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13439",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.233766,
+   "severity": 0.467532,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7205",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.230793,
+   "severity": 0.461586,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-26291",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.229249,
+   "severity": 0.458498,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-6903",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-8898",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.224925,
+   "severity": 0.44985,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13328",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.215965,
+   "severity": 0.43193,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-6721",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.215777,
+   "severity": 0.431554,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23412",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25332",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.20417,
+   "severity": 0.40834,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.196239,
+   "severity": 0.392478,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24970",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.19593,
+   "severity": 0.39186,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24970",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.195016,
+   "severity": 0.390032,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-7277",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-6528",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.192852,
+   "severity": 0.385704,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-13989",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.18399,
+   "severity": 0.36798,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-26291",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.178245,
+   "severity": 0.35649,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-13031",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.176589,
+   "severity": 0.353178,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-13372",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-17655",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.175551,
+   "severity": 0.351102,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-6721",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.172221,
+   "severity": 0.344442,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-7277",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-8898",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.172169,
+   "severity": 0.344338,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14710",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.17057,
+   "severity": 0.34114,
+   "text_sim_ge_p95": true
+  }
+ ],
+ "all_pairs_count": 720,
+ "top_pairs_ranked": [
+  {
+   "keeper_id": "sympy__sympy-12481",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-12489",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [
+    "sympy/combinatorics/permutations.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "sympy/combinatorics/permutations.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {
+    "sympy/combinatorics/permutations.py": [
+     "__new__"
+    ]
+   },
+   "n_func_overlap": 1,
+   "text_sim": 0.166197,
+   "severity": 8.332394,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4687",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [
+    "xarray/core/computation.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "xarray/core/computation.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.391935,
+   "severity": 5.78387,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-10081",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [
+    "src/_pytest/unittest.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "src/_pytest/unittest.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.220793,
+   "severity": 5.441586,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7236",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [
+    "src/_pytest/unittest.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "src/_pytest/unittest.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.152346,
+   "severity": 5.304692,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-11578",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [
+    "sklearn/linear_model/logistic.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "sklearn/linear_model/logistic.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.141905,
+   "severity": 5.28381,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-1142",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-5414",
+   "repo": "psf/requests",
+   "file_overlap_gold": [
+    "requests/models.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "requests/models.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.139025,
+   "severity": 5.27805,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-1724",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-5414",
+   "repo": "psf/requests",
+   "file_overlap_gold": [
+    "requests/models.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "requests/models.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.123444,
+   "severity": 5.246888,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-1921",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-5414",
+   "repo": "psf/requests",
+   "file_overlap_gold": [
+    "requests/models.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "requests/models.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.118348,
+   "severity": 5.236696,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-6202",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [
+    "src/_pytest/python.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "src/_pytest/python.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.112026,
+   "severity": 5.224052,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-13989",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [
+    "lib/matplotlib/axes/_axes.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "lib/matplotlib/axes/_axes.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.104322,
+   "severity": 5.208644,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-17630",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [
+    "sympy/matrices/expressions/matexpr.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "sympy/matrices/expressions/matexpr.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.081409,
+   "severity": 5.162818,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-11618",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-17655",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [
+    "sympy/geometry/point.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "sympy/geometry/point.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.079368,
+   "severity": 5.158736,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-12713",
+   "repo": "django/django",
+   "file_overlap_gold": [
+    "django/contrib/admin/options.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "django/contrib/admin/options.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.077809,
+   "severity": 5.155618,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11133",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13195",
+   "repo": "django/django",
+   "file_overlap_gold": [
+    "django/http/response.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "django/http/response.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.073951,
+   "severity": 5.147902,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7982",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5840",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [
+    "src/_pytest/pathlib.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "src/_pytest/pathlib.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.060428,
+   "severity": 5.120856,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16100",
+   "repo": "django/django",
+   "file_overlap_gold": [
+    "django/contrib/admin/options.py"
+   ],
+   "file_overlap_test": [],
+   "file_overlap_any": [
+    "django/contrib/admin/options.py"
+   ],
+   "n_file_overlap_gold": 1,
+   "n_file_overlap_any": 1,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.032265,
+   "severity": 5.06453,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4687",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.648004,
+   "severity": 1.296008,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4687",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.581169,
+   "severity": 1.162338,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.542414,
+   "severity": 1.084828,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.462946,
+   "severity": 0.925892,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.433273,
+   "severity": 0.866546,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25332",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.376141,
+   "severity": 0.752282,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.37118,
+   "severity": 0.74236,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.339719,
+   "severity": 0.679438,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.329526,
+   "severity": 0.659052,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.307586,
+   "severity": 0.615172,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.282481,
+   "severity": 0.564962,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10844",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.270432,
+   "severity": 0.540864,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.261848,
+   "severity": 0.523696,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25122",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.253113,
+   "severity": 0.506226,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7205",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5631",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.241022,
+   "severity": 0.482044,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13439",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.233766,
+   "severity": 0.467532,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7205",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.230793,
+   "severity": 0.461586,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-26291",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.229249,
+   "severity": 0.458498,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-6903",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-8898",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.224925,
+   "severity": 0.44985,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13328",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.215965,
+   "severity": 0.43193,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-6599",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-6721",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.215777,
+   "severity": 0.431554,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23412",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25332",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.20417,
+   "severity": 0.40834,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.196239,
+   "severity": 0.392478,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24970",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.19593,
+   "severity": 0.39186,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24970",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.195016,
+   "severity": 0.390032,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-7277",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-6528",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.192852,
+   "severity": 0.385704,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-13989",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.18399,
+   "severity": 0.36798,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-26291",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.178245,
+   "severity": 0.35649,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-13031",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.176589,
+   "severity": 0.353178,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-13372",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-17655",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.175551,
+   "severity": 0.351102,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-3305",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-6721",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.172221,
+   "severity": 0.344442,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-7277",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-8898",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.172169,
+   "severity": 0.344338,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14710",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.17057,
+   "severity": 0.34114,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-6721",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.166074,
+   "severity": 0.332148,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11133",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15098",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.165328,
+   "severity": 0.330656,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-20859",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.162621,
+   "severity": 0.325242,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25332",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.162478,
+   "severity": 0.324956,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-20859",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.160226,
+   "severity": 0.320452,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "astropy__astropy-7336",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "astropy__astropy-14182",
+   "repo": "astropy/astropy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.159941,
+   "severity": 0.319882,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4687",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.159616,
+   "severity": 0.319232,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13328",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13142",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.159437,
+   "severity": 0.318874,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-22719",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-26291",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.158631,
+   "severity": 0.317262,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23412",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25122",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.157258,
+   "severity": 0.314516,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.156505,
+   "severity": 0.31301,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13779",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-11310",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.156047,
+   "severity": 0.312094,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23412",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24637",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.156027,
+   "severity": 0.312054,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-5262",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5631",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.155658,
+   "severity": 0.311316,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23412",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-20859",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.153907,
+   "severity": 0.307814,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16100",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.153328,
+   "severity": 0.306656,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23412",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-26291",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.152526,
+   "severity": 0.305052,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13439",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13142",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.150849,
+   "severity": 0.301698,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25122",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.149718,
+   "severity": 0.299436,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-5262",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.149666,
+   "severity": 0.299332,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14710",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.145912,
+   "severity": 0.291824,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15104",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.144163,
+   "severity": 0.288326,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-6903",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-6528",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.139769,
+   "severity": 0.279538,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23412",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-13989",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.138802,
+   "severity": 0.277604,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13439",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.138799,
+   "severity": 0.277598,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23412",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24970",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.133618,
+   "severity": 0.267236,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15349",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.132967,
+   "severity": 0.265934,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-12754",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.130461,
+   "severity": 0.260922,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-23262",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.129567,
+   "severity": 0.259134,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-13480",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-13974",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.128654,
+   "severity": 0.257308,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10844",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.128366,
+   "severity": 0.256732,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-13647",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.128238,
+   "severity": 0.256476,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-12973",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-12585",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.127313,
+   "severity": 0.254626,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-13372",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-17630",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.127311,
+   "severity": 0.254622,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-10081",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-7490",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.12519,
+   "severity": 0.25038,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-5262",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-7490",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.124648,
+   "severity": 0.249296,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14710",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-25973",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.123506,
+   "severity": 0.247012,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-10880",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-14351",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.123448,
+   "severity": 0.246896,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15278",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.1233,
+   "severity": 0.2466,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-6202",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5631",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.122948,
+   "severity": 0.245896,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14710",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-12585",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.122867,
+   "severity": 0.245734,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14496",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.12153,
+   "severity": 0.24306,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-11211",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.121293,
+   "severity": 0.242586,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.120869,
+   "severity": 0.241738,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-22719",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24970",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.120709,
+   "severity": 0.241418,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13439",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-25973",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.119443,
+   "severity": 0.238886,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10844",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-25973",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.118951,
+   "severity": 0.237902,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14710",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-11310",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.117802,
+   "severity": 0.235604,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-12973",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13496",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.117454,
+   "severity": 0.234908,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-13372",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15345",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.117428,
+   "severity": 0.234856,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13328",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.115615,
+   "severity": 0.23123,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-22719",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-20859",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.114538,
+   "severity": 0.229076,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12096",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-23262",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.113405,
+   "severity": 0.22681,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25479",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.111566,
+   "severity": 0.223132,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13121",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.111527,
+   "severity": 0.223054,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13496",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.111313,
+   "severity": 0.222626,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3677",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.111006,
+   "severity": 0.222012,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-10081",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5631",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.110985,
+   "severity": 0.22197,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "astropy__astropy-7336",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "astropy__astropy-13033",
+   "repo": "astropy/astropy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.110377,
+   "severity": 0.220754,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7236",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-7490",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.109973,
+   "severity": 0.219946,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.109896,
+   "severity": 0.219792,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-5809",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5631",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.109382,
+   "severity": 0.218764,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-1921",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-6028",
+   "repo": "psf/requests",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.109353,
+   "severity": 0.218706,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3677",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-6721",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.109096,
+   "severity": 0.218192,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-11400",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.108665,
+   "severity": 0.21733,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12096",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15349",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.108572,
+   "severity": 0.217144,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-6721",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.105896,
+   "severity": 0.211792,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-1724",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-6028",
+   "repo": "psf/requests",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.105593,
+   "severity": 0.211186,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-13480",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15349",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.105316,
+   "severity": 0.210632,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3677",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.104891,
+   "severity": 0.209782,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-25973",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.104791,
+   "severity": 0.209582,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-4966",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-6721",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.104692,
+   "severity": 0.209384,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-12273",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.104482,
+   "severity": 0.208964,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.103682,
+   "severity": 0.207364,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-23314",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24637",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.103156,
+   "severity": 0.206312,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13779",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-12585",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.102768,
+   "severity": 0.205536,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3677",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4687",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.102419,
+   "severity": 0.204838,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-11578",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-25973",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.101306,
+   "severity": 0.202612,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-22719",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25479",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.100905,
+   "severity": 0.20181,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13406",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.100769,
+   "severity": 0.201538,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13328",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-12585",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.100063,
+   "severity": 0.200126,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-14089",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.100016,
+   "severity": 0.200032,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-10880",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-14170",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.098634,
+   "severity": 0.197268,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-11578",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.098182,
+   "severity": 0.196364,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14496",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-12585",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.097884,
+   "severity": 0.195768,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-6744",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.097077,
+   "severity": 0.194154,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-3677",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.096573,
+   "severity": 0.193146,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16493",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.096425,
+   "severity": 0.19285,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-12973",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-11310",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.096123,
+   "severity": 0.192246,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10844",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-11310",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.095701,
+   "severity": 0.191402,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11095",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-11400",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.094938,
+   "severity": 0.189876,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14496",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-25973",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.093881,
+   "severity": 0.187762,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13028",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.093651,
+   "severity": 0.187302,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-13372",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-18211",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.093648,
+   "severity": 0.187296,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13328",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-25973",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.093069,
+   "severity": 0.186138,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-12585",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.092945,
+   "severity": 0.18589,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10844",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-12585",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.092731,
+   "severity": 0.185462,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16938",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.092316,
+   "severity": 0.184632,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-12973",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.092202,
+   "severity": 0.184404,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14496",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.091814,
+   "severity": 0.183628,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-4966",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-3151",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.091678,
+   "severity": 0.183356,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-11400",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.091473,
+   "severity": 0.182946,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15695",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.09147,
+   "severity": 0.18294,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15128",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.091079,
+   "severity": 0.182158,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-12973",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.090777,
+   "severity": 0.181554,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-10081",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-10356",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.09032,
+   "severity": 0.18064,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-4356",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.090262,
+   "severity": 0.180524,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-14855",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.089831,
+   "severity": 0.179662,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16595",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.089788,
+   "severity": 0.179576,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13142",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.089753,
+   "severity": 0.179506,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-16597",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.089568,
+   "severity": 0.179136,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7236",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-5631",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.088846,
+   "severity": 0.177692,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12096",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-17655",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.087979,
+   "severity": 0.175958,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-13372",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-23824",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.086703,
+   "severity": 0.173406,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-2317",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-6028",
+   "repo": "psf/requests",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.086605,
+   "severity": 0.17321,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-10880",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15278",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.08609,
+   "severity": 0.17218,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "psf__requests-2317",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "psf__requests-5414",
+   "repo": "psf/requests",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.086068,
+   "severity": 0.172136,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-13372",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15349",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.08604,
+   "severity": 0.17208,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-6202",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-10356",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.085559,
+   "severity": 0.171118,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16454",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.085267,
+   "severity": 0.170534,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10844",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13142",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.084943,
+   "severity": 0.169886,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14710",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13142",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.084762,
+   "severity": 0.169524,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16801",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.084456,
+   "severity": 0.168912,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pydata__xarray-4966",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4094",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.083761,
+   "severity": 0.167522,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13779",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13496",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.083441,
+   "severity": 0.166882,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-12419",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-13974",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.082529,
+   "severity": 0.165058,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-22719",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24637",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.08249,
+   "severity": 0.16498,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-12973",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-25973",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.082436,
+   "severity": 0.164872,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24149",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24637",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.081844,
+   "severity": 0.163688,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-14140",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.081311,
+   "severity": 0.162622,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-14140",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.081194,
+   "severity": 0.162388,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16938",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.080799,
+   "severity": 0.161598,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-5262",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-10356",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.080528,
+   "severity": 0.161056,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-11310",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.079591,
+   "severity": 0.159182,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-7277",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-4970",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.079008,
+   "severity": 0.158016,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-13480",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-13031",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.078351,
+   "severity": 0.156702,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-14496",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13142",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.077787,
+   "severity": 0.155574,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-11578",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-11310",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.077675,
+   "severity": 0.15535,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-10880",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16082",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.077579,
+   "severity": 0.155158,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-22719",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25122",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.076081,
+   "severity": 0.152162,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-10914",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16493",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.075895,
+   "severity": 0.15179,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "astropy__astropy-7336",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "astropy__astropy-14508",
+   "repo": "astropy/astropy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.075388,
+   "severity": 0.150776,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-12754",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.075376,
+   "severity": 0.150752,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15278",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.075373,
+   "severity": 0.150746,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13158",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.075073,
+   "severity": 0.150146,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11066",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13809",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.074489,
+   "severity": 0.148978,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-13328",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-13496",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.074427,
+   "severity": 0.148854,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-22719",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25332",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.073458,
+   "severity": 0.146916,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "django__django-11179",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16595",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.073454,
+   "severity": 0.146908,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-22719",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-13989",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.072991,
+   "severity": 0.145982,
+   "text_sim_ge_p95": false
+  },
+  {
+   "keeper_id": "sympy__sympy-14531",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-16597",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.072658,
+   "severity": 0.145316,
+   "text_sim_ge_p95": false
+  }
+ ],
+ "frontier_prescreen": {
+  "note": "Pre-screen of NOT-YET-collected Verified-adjacent frontier ids (gold-patch files only) vs same-repo holdout gold files. Flags ids whose fix touches a file a held-out task also fixes; if such an id later becomes a keeper it should be re-examined or dropped.",
+  "verified_head_len": 387,
+  "n_scanned_same_repo_remaining": 333,
+  "n_file_overlap_pairs": 221,
+  "flagged_frontier_ids": [
+   "astropy__astropy-14598",
+   "astropy__astropy-8707",
+   "django__django-10554",
+   "django__django-11138",
+   "django__django-11149",
+   "django__django-11265",
+   "django__django-11292",
+   "django__django-11299",
+   "django__django-11433",
+   "django__django-11477",
+   "django__django-11740",
+   "django__django-11790",
+   "django__django-11820",
+   "django__django-11951",
+   "django__django-11999",
+   "django__django-12050",
+   "django__django-12143",
+   "django__django-12209",
+   "django__django-12276",
+   "django__django-12325",
+   "django__django-12406",
+   "django__django-12663",
+   "django__django-12708",
+   "django__django-12741",
+   "django__django-12774",
+   "django__django-12858",
+   "django__django-13012",
+   "django__django-13023",
+   "django__django-13128",
+   "django__django-13343",
+   "django__django-13344",
+   "django__django-13401",
+   "django__django-13417",
+   "django__django-13449",
+   "django__django-13516",
+   "django__django-13590",
+   "django__django-13658",
+   "django__django-13670",
+   "django__django-13786",
+   "django__django-13925",
+   "django__django-13964",
+   "django__django-14017",
+   "django__django-14034",
+   "django__django-14155",
+   "django__django-14238",
+   "django__django-14311",
+   "django__django-14559",
+   "django__django-14672",
+   "django__django-14771",
+   "django__django-14915",
+   "django__django-14999",
+   "django__django-15022",
+   "django__django-15103",
+   "django__django-15161",
+   "django__django-15268",
+   "django__django-15277",
+   "django__django-15280",
+   "django__django-15315",
+   "django__django-15368",
+   "django__django-15380",
+   "django__django-15382",
+   "django__django-15467",
+   "django__django-15499",
+   "django__django-15554",
+   "django__django-15569",
+   "django__django-15629",
+   "django__django-15732",
+   "django__django-15814",
+   "django__django-15916",
+   "django__django-15930",
+   "django__django-15957",
+   "django__django-15973",
+   "django__django-16032",
+   "django__django-16139",
+   "django__django-16145",
+   "django__django-16263",
+   "django__django-16315",
+   "django__django-16333",
+   "django__django-16485",
+   "django__django-16569",
+   "django__django-16642",
+   "django__django-16661",
+   "django__django-16667",
+   "django__django-16819",
+   "django__django-16877",
+   "django__django-16950",
+   "matplotlib__matplotlib-24570",
+   "matplotlib__matplotlib-25311",
+   "matplotlib__matplotlib-26113",
+   "psf__requests-2931",
+   "pydata__xarray-3993",
+   "pydata__xarray-4695",
+   "pydata__xarray-6461",
+   "pydata__xarray-7229",
+   "pylint-dev__pylint-6386",
+   "pylint-dev__pylint-7080",
+   "pytest-dev__pytest-6197",
+   "pytest-dev__pytest-7432",
+   "scikit-learn__scikit-learn-25102",
+   "sphinx-doc__sphinx-10673",
+   "sphinx-doc__sphinx-7454",
+   "sphinx-doc__sphinx-7462",
+   "sphinx-doc__sphinx-7985",
+   "sphinx-doc__sphinx-8475",
+   "sphinx-doc__sphinx-8551",
+   "sphinx-doc__sphinx-8638",
+   "sphinx-doc__sphinx-9258",
+   "sphinx-doc__sphinx-9461",
+   "sphinx-doc__sphinx-9591",
+   "sympy__sympy-13091",
+   "sympy__sympy-18698",
+   "sympy__sympy-20438",
+   "sympy__sympy-22714",
+   "sympy__sympy-24213"
+  ],
+  "top_pairs": [
+   {
+    "frontier_id": "django__django-11138",
+    "holdout_id": "django__django-13121",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/backends/mysql/operations.py",
+     "django/db/backends/sqlite3/operations.py"
+    ],
+    "n_gold_file_overlap": 2,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 10.0
+   },
+   {
+    "frontier_id": "django__django-16032",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/related_lookups.py",
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 2,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 10.0
+   },
+   {
+    "frontier_id": "django__django-11265",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/sql/query.py": [
+      "split_exclude"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-11265",
+    "holdout_id": "django__django-13158",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/sql/query.py": [
+      "split_exclude"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-11790",
+    "holdout_id": "django__django-13741",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/contrib/auth/forms.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/contrib/auth/forms.py": [
+      "__init__"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-13012",
+    "holdout_id": "django__django-13121",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/expressions.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/expressions.py": [
+      "set_source_expressions"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-13128",
+    "holdout_id": "django__django-13121",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/expressions.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/expressions.py": [
+      "set_source_expressions"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-13343",
+    "holdout_id": "django__django-16493",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/files.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/fields/files.py": [
+      "deconstruct"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-14311",
+    "holdout_id": "django__django-13837",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/utils/autoreload.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/utils/autoreload.py": [
+      "get_child_arguments"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-14771",
+    "holdout_id": "django__django-13837",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/utils/autoreload.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/utils/autoreload.py": [
+      "get_child_arguments"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-14999",
+    "holdout_id": "django__django-15695",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/migrations/operations/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/migrations/operations/models.py": [
+      "database_forwards"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-15161",
+    "holdout_id": "django__django-13121",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/expressions.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/expressions.py": [
+      "get_group_by_cols"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-15732",
+    "holdout_id": "django__django-14434",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/backends/base/schema.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/backends/base/schema.py": [
+      "create_unique_name"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-15957",
+    "holdout_id": "django__django-16256",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/related_descriptors.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/fields/related_descriptors.py": [
+      "Child"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-16139",
+    "holdout_id": "django__django-13741",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/contrib/auth/forms.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/contrib/auth/forms.py": [
+      "__init__"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-16145",
+    "holdout_id": "django__django-13809",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/core/management/commands/runserver.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/core/management/commands/runserver.py": [
+      "inner_run"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-16263",
+    "holdout_id": "django__django-13121",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/expressions.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/expressions.py": [
+      "resolve_expression"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-16263",
+    "holdout_id": "django__django-17084",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/db/models/sql/query.py": [
+      "get_aggregation"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "django__django-16485",
+    "holdout_id": "django__django-15863",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/template/defaultfilters.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "django/template/defaultfilters.py": [
+      "floatformat"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "psf__requests-2931",
+    "holdout_id": "psf__requests-5414",
+    "repo": "psf/requests",
+    "gold_file_overlap": [
+     "requests/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "requests/models.py": [
+      "prepare_url"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "pydata__xarray-6461",
+    "holdout_id": "pydata__xarray-4687",
+    "repo": "pydata/xarray",
+    "gold_file_overlap": [
+     "xarray/core/computation.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "xarray/core/computation.py": [
+      "where"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "pydata__xarray-7229",
+    "holdout_id": "pydata__xarray-4687",
+    "repo": "pydata/xarray",
+    "gold_file_overlap": [
+     "xarray/core/computation.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "xarray/core/computation.py": [
+      "where"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "sphinx-doc__sphinx-7462",
+    "holdout_id": "sphinx-doc__sphinx-9602",
+    "repo": "sphinx-doc/sphinx",
+    "gold_file_overlap": [
+     "sphinx/domains/python.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "sphinx/domains/python.py": [
+      "unparse"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "sphinx-doc__sphinx-7985",
+    "holdout_id": "sphinx-doc__sphinx-8269",
+    "repo": "sphinx-doc/sphinx",
+    "gold_file_overlap": [
+     "sphinx/builders/linkcheck.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "sphinx/builders/linkcheck.py": [
+      "check_uri"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "sphinx-doc__sphinx-8475",
+    "holdout_id": "sphinx-doc__sphinx-8269",
+    "repo": "sphinx-doc/sphinx",
+    "gold_file_overlap": [
+     "sphinx/builders/linkcheck.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "sphinx/builders/linkcheck.py": [
+      "check_uri"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "sphinx-doc__sphinx-8551",
+    "holdout_id": "sphinx-doc__sphinx-9230",
+    "repo": "sphinx-doc/sphinx",
+    "gold_file_overlap": [
+     "sphinx/util/docfields.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "sphinx/util/docfields.py": [
+      "transform"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "sympy__sympy-24213",
+    "holdout_id": "sympy__sympy-24066",
+    "repo": "sympy/sympy",
+    "gold_file_overlap": [
+     "sympy/physics/units/unitsystem.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {
+     "sympy/physics/units/unitsystem.py": [
+      "_collect_factor_and_dimension"
+     ]
+    },
+    "n_func_overlap": 1,
+    "severity": 8.0
+   },
+   {
+    "frontier_id": "astropy__astropy-14598",
+    "holdout_id": "astropy__astropy-14508",
+    "repo": "astropy/astropy",
+    "gold_file_overlap": [
+     "astropy/io/fits/card.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "astropy__astropy-8707",
+    "holdout_id": "astropy__astropy-14508",
+    "repo": "astropy/astropy",
+    "gold_file_overlap": [
+     "astropy/io/fits/card.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-10554",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-10554",
+    "holdout_id": "django__django-13028",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-10554",
+    "holdout_id": "django__django-13158",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-10554",
+    "holdout_id": "django__django-15128",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-10554",
+    "holdout_id": "django__django-17084",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11149",
+    "holdout_id": "django__django-12713",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/contrib/admin/options.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11149",
+    "holdout_id": "django__django-16100",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/contrib/admin/options.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11265",
+    "holdout_id": "django__django-13028",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11265",
+    "holdout_id": "django__django-15128",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11265",
+    "holdout_id": "django__django-17084",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11292",
+    "holdout_id": "django__django-16454",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/core/management/base.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11299",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11299",
+    "holdout_id": "django__django-13028",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11299",
+    "holdout_id": "django__django-13158",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11299",
+    "holdout_id": "django__django-15128",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11299",
+    "holdout_id": "django__django-17084",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11433",
+    "holdout_id": "django__django-11163",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11433",
+    "holdout_id": "django__django-13315",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11433",
+    "holdout_id": "django__django-13933",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11433",
+    "holdout_id": "django__django-14725",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11477",
+    "holdout_id": "django__django-11333",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/urls/resolvers.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11740",
+    "holdout_id": "django__django-12754",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/migrations/autodetector.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11740",
+    "holdout_id": "django__django-15104",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/migrations/autodetector.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11820",
+    "holdout_id": "django__django-12273",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/base.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11951",
+    "holdout_id": "django__django-13406",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11999",
+    "holdout_id": "django__django-11211",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11999",
+    "holdout_id": "django__django-11400",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11999",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-11999",
+    "holdout_id": "django__django-15561",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12050",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12050",
+    "holdout_id": "django__django-13028",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12050",
+    "holdout_id": "django__django-13158",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12050",
+    "holdout_id": "django__django-15128",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12050",
+    "holdout_id": "django__django-17084",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12143",
+    "holdout_id": "django__django-12713",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/contrib/admin/options.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12143",
+    "holdout_id": "django__django-16100",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/contrib/admin/options.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12209",
+    "holdout_id": "django__django-12273",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/base.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12276",
+    "holdout_id": "django__django-12193",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/widgets.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12325",
+    "holdout_id": "django__django-12273",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/base.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12406",
+    "holdout_id": "django__django-11163",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12406",
+    "holdout_id": "django__django-13315",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12406",
+    "holdout_id": "django__django-13933",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12406",
+    "holdout_id": "django__django-14725",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/forms/models.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12663",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12663",
+    "holdout_id": "django__django-13028",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12663",
+    "holdout_id": "django__django-13158",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12663",
+    "holdout_id": "django__django-15128",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12663",
+    "holdout_id": "django__django-17084",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12708",
+    "holdout_id": "django__django-14434",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/backends/base/schema.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12708",
+    "holdout_id": "django__django-15561",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/backends/base/schema.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12741",
+    "holdout_id": "django__django-13121",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/backends/base/operations.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12741",
+    "holdout_id": "django__django-14170",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/backends/base/operations.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12774",
+    "holdout_id": "django__django-13406",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-12858",
+    "holdout_id": "django__django-12273",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/base.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13012",
+    "holdout_id": "django__django-16082",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/expressions.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13023",
+    "holdout_id": "django__django-11211",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13023",
+    "holdout_id": "django__django-11400",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13023",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13023",
+    "holdout_id": "django__django-15561",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13128",
+    "holdout_id": "django__django-16082",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/expressions.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13343",
+    "holdout_id": "django__django-16801",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/files.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13344",
+    "holdout_id": "django__django-13195",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/contrib/sessions/middleware.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13401",
+    "holdout_id": "django__django-11211",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13401",
+    "holdout_id": "django__django-11400",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13401",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13401",
+    "holdout_id": "django__django-15561",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/fields/__init__.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13417",
+    "holdout_id": "django__django-13406",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13449",
+    "holdout_id": "django__django-13121",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/expressions.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13449",
+    "holdout_id": "django__django-16082",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/expressions.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13516",
+    "holdout_id": "django__django-16454",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/core/management/base.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   },
+   {
+    "frontier_id": "django__django-13590",
+    "holdout_id": "django__django-11734",
+    "repo": "django/django",
+    "gold_file_overlap": [
+     "django/db/models/sql/query.py"
+    ],
+    "n_gold_file_overlap": 1,
+    "func_overlap": {},
+    "n_func_overlap": 0,
+    "severity": 5.0
+   }
+  ]
+ }
+}

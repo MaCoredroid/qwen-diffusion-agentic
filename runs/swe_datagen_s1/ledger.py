@@ -247,6 +247,44 @@ def cmd_record(batchdir: Path, batch_id: str, attempts: Path,
     return 0
 
 
+def _trailing_infra_batches(attempt_rows: list[dict]) -> tuple[int, list[str]]:
+    """Count how many of the MOST RECENT recorded batches are ENTIRELY infra_invalid.
+
+    Batches are ordered by first appearance in attempts.jsonl (the orchestrator
+    appends one batch's rows contiguously via `record`). A batch counts as
+    infra_invalid when it has rows and EVERY row carries the infra_invalid flag
+    (record --infra-invalid flags the whole batch uniformly). We walk BACKWARDS
+    from the newest batch and stop at the first non-infra batch, so the result is
+    the length of the trailing run of consecutive infra-invalid batches — a single
+    recovered batch (e.g. the gmu hot-fix finally boots a server) resets it to 0.
+    Feeds the HALT_INFRA belt in cmd_state: 'the last 2+ recorded batches are BOTH
+    infra_invalid' == trailing >= 2."""
+    order: list[str] = []
+    rows_by_batch: dict[str, list[dict]] = {}
+    for r in attempt_rows:
+        bid = r.get("batch_id")
+        if not bid:
+            continue
+        if bid not in rows_by_batch:
+            rows_by_batch[bid] = []
+            order.append(bid)
+        rows_by_batch[bid].append(r)
+    trailing = 0
+    trailing_ids: list[str] = []
+    for bid in reversed(order):
+        rows = rows_by_batch[bid]
+        if rows and all(r.get("infra_invalid") for r in rows):
+            trailing += 1
+            trailing_ids.append(bid)
+        else:
+            break
+    return trailing, list(reversed(trailing_ids))
+
+
+# Fire the infra-halt belt when this many most-recent batches are ALL infra_invalid.
+INFRA_HALT_MIN_BATCHES = 2
+
+
 def cmd_state(a: argparse.Namespace) -> int:
     attempt_rows = _read_jsonl(Path(a.attempts))
     keepers = _read_jsonl(Path(a.keepers))
@@ -278,8 +316,26 @@ def cmd_state(a: argparse.Namespace) -> int:
     lifetime_resolved = sum(1 for r in real if r["verdict"] == "resolved")
     lifetime_yield = (lifetime_resolved / n_real) if n_real else None
 
+    # HALT_INFRA belt (task-2): how many of the most-recent batches were ALL
+    # infra_invalid (gen never booted a server)? >=2 means the run is spinning on a
+    # persistent infra fault, not teaching — cycles 4-5 each burned BATCH_SIZE (50)
+    # attempts this way because the verdict stayed CONTINUE through infra_invalid.
+    infra_trailing, infra_trailing_ids = _trailing_infra_batches(attempt_rows)
+    infra_halt = infra_trailing >= INFRA_HALT_MIN_BATCHES
+
+    halt_reason = None
     if n_keepers >= a.target:
         verdict = "DONE_TARGET"
+    elif infra_halt:
+        # The RUNNING orchestrator honors ONLY {DONE_TARGET, DONE_EXHAUSTED,
+        # KILL_YIELD_COLLAPSE} in its `case "$VERDICT"` (datagen_orch.sh ~L96-102);
+        # any novel string (e.g. a bare "HALT_INFRA") falls through and CONTINUEs,
+        # so it would NOT stop the loop. We therefore emit the honored KILL string —
+        # whose arm writes DATAGEN_KILL.txt and `break`s — and carry the TRUE cause
+        # in halt_reason + the infra_* fields + the human status line, so the KILL
+        # flag and STATUS both read HALT_INFRA rather than a teacher-yield collapse.
+        verdict = "KILL_YIELD_COLLAPSE"
+        halt_reason = "HALT_INFRA"
     elif remaining <= 0:
         verdict = "DONE_EXHAUSTED"
     elif len(window) >= a.kill_window and rolling_yield is not None and rolling_yield < a.kill_yield:
@@ -289,6 +345,9 @@ def cmd_state(a: argparse.Namespace) -> int:
 
     state = {
         "verdict": verdict,
+        "halt_reason": halt_reason,
+        "infra_trailing_batches": infra_trailing,
+        "infra_trailing_batch_ids": infra_trailing_ids,
         "keepers": n_keepers,
         "target": a.target,
         "floor": a.floor,
@@ -306,11 +365,14 @@ def cmd_state(a: argparse.Namespace) -> int:
         "kill_window": a.kill_window,
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
-    line = (f"{verdict} keepers={n_keepers}/{a.target} (floor {a.floor}"
+    label = halt_reason or verdict  # human line leads with the TRUE cause when halting
+    line = (f"{label} keepers={n_keepers}/{a.target} (floor {a.floor}"
             f"{'✓' if state['floor_met'] else '·'}) attempts={n_real} "
             f"lifetime_yield={state['lifetime_yield']} "
             f"rolling_yield={state['rolling_yield']}(w={len(window)}) "
-            f"remaining={remaining}{'(bok)' if state['best_of_k'] else ''} {state['ts']}")
+            f"remaining={remaining}{'(bok)' if state['best_of_k'] else ''}"
+            f"{f' INFRA_TRAILING={infra_trailing} via={verdict}' if halt_reason else ''}"
+            f" {state['ts']}")
     Path(a.status_file).write_text(line + "\n")
     print(json.dumps(state))
     return 0
