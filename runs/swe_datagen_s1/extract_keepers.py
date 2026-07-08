@@ -38,7 +38,8 @@ Keeper record schema (one JSON object per line):
   prompt   : {prompt_md, system_len, first_user_len}
   trajectory_meta : {num_turns, tool_by_name, usage, elapsed_s, sampling}
   provenance : {batch_id, shard, gen_dir, dumps_dir, richest_dump,
-                n_dumps_in_window, generator, envelope, extracted_at, fidelity}
+                n_dumps_in_window, generator, teacher, envelope, extracted_at,
+                fidelity}
 
 FIDELITY CAVEAT (recorded per row): the final assistant turn's streamed text is
 NOT in a request dump; every assistant TOOL-CALL turn (the load-bearing grounding
@@ -52,8 +53,17 @@ usage: extract_keepers.py <batchdir> <batch_id> <gen_root> <score_report_json>
                           <keepers_dir> [envelope_json]
 """
 from __future__ import annotations
-import json, sys, time, datetime as dt
+import json, os, sys, time, datetime as dt
 from pathlib import Path
+
+# Teacher provenance stamped into every keeper row. Set by the orchestrator's
+# TEACHER SWAP block (datagen_orch.sh exports TEACHER_LABEL + KEEPER_GENERATOR from
+# the runcage selection) so a teacher swap flips the stamp together with the server
+# launcher. Fallback = the historical stock-9B teacher, so a MANUAL re-extract of an
+# OLD 9B batch with no env set never mislabels it as the 27B.
+_KEEPER_GENERATOR = os.environ.get(
+    "KEEPER_GENERATOR", "stock-Qwen3.5-9B-AR (qwen_code, native qwen3_xml)")
+_TEACHER_LABEL = os.environ.get("TEACHER_LABEL", "stock-qwen3.5-9b-ar")
 
 
 def _iso_to_epoch(s: str) -> float | None:
@@ -273,7 +283,8 @@ def main() -> int:
                 "batch_id": batch_id, "shard": shard,
                 "gen_dir": str(pt), "dumps_dir": str(dumps_dir) if dumps_dir else None,
                 "richest_dump": dump_name, "n_dumps_in_window": n_win,
-                "generator": "stock-Qwen3.5-9B-AR (qwen_code, native qwen3_xml)",
+                "generator": _KEEPER_GENERATOR,
+                "teacher": _TEACHER_LABEL,
                 "envelope": envelope,
                 "extracted_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                 "fidelity": fidelity,

@@ -1,125 +1,20 @@
-KILL_YIELD_COLLAPSE keepers=282/1000 (floor 400·) attempts=1228 lifetime_yield=0.2362 rolling_yield=0.075(w=200) remaining=2019(bok) 2026-07-08T15:20:54Z
+EPOCH 2 START — teacher swapped to Qwen3.6-27B NVFP4 + native MTP  2026-07-08
 
-================================================================================
-MONITOR NOTE — CASE B (honest KILL) + fresh-coverage probe blocked at relaunch
-Written 2026-07-08T15:2x Z by the cycle-9-close watcher subagent. No governance
-surface (kill bar, ledger.py, kill record) was edited or reversed.
-================================================================================
+(This file is auto-overwritten with the live one-line ledger status by
+`ledger.py state` on the orchestrator's first cycle. Durable narrative:
+runs/swe_datagen_s1/TEACHER_SWAP_EPOCH2.md + swe_endgoal_plan.md.)
 
-1. WHAT HAPPENED (honest kill, not tampered)
-   Cycle 9 (batch_0009_20260708T142843Z) was the LAST near-miss retry batch
-   (conan-io 31 / modin 13 / pylint 5 / iterative 1). gen rc=0 @15:10:55Z; scored
-   resolved=2 / unresolved=45 / empty_patch=3 (NO no_prediction, NOT infra_invalid).
-   keepers 280 -> 282. Rolling(200) fell 0.10 -> 0.075 honestly: the last 150 of the
-   pre-cycle-9 window held 13 resolved, cycle 9 added 2 -> 15/200 = 0.075 < 0.10.
-   The orch self-killed at the cycle-10 gate:
-     "[KILL] rolling yield < 0.10 over 200 attempts 2026-07-08T15:20:54Z"
-   DATAGEN_KILL.txt written; orch (pid 55193) EXITED. This is a LEGITIMATE yield
-   collapse on the SPENT near-miss stock (last near-miss batches: 3,3,2 resolved/50).
-   It was NOT tampered with (no rows flipped, no bar change, no reversal).
+PRE-RELAUNCH LEDGER STATE (post epoch-marker):
+  CONTINUE keepers=282/1000 (floor 400·) attempts_epoch=0 lifetime_yield=0.2362
+  rolling_yield=None(w=0) remaining=2019(bok) epoch=qwen3.6-27b-nvfp4-mtp
 
-2. FRESH-COVERAGE FRONTIER SWAP (pre-registered, done, verdict-neutral)
-   The staged fresh-coverage frontier was swapped LIVE atomically at the cycle-9
-   gen-end quiet window (15:10:58Z, ~10 min BEFORE the kill), per the pre-registered
-   plan. frontier.json now == frontier_fresh_STAGED.json (md5 9e07ba1b...).
-   Backups: near-miss frontier preserved in
-     frontier_preswap_freshcov_20260708T151058Z.json  and
-     frontier_prenearmiss_20260708T145534Z.json.
-   The swap is VERDICT-NEUTRAL: the kill is computed from attempts.jsonl rolling
-   yield only (frontier-independent; remaining>0 either way -> no DONE_EXHAUSTED),
-   so the kill fires at 0.075 regardless of which frontier is live. NOTE: because
-   the swap preceded the kill, the kill record's remaining=2019 reflects the FRESH
-   frontier while rolling_yield=0.075 reflects the SPENT near-miss attempts — the
-   kill judged the teacher (yield), not the fresh frontier.
-
-3. PROBE IS READY AND CORRECTLY STRATIFIED (proven, non-mutating)
-   ledger.py nextbatch <live fresh frontier> <live attempts> 50  =>
-     pandas-dev 20 / getmoto 17 / dask 13  = 50/50 (100% probe-head).
-   (The explore pool is data-empty — every family has a resolved row — so the whole
-   batch is the frontier-ordered exploit head; pandas-dev/getmoto/dask are resolvable
-   via their existing resolved rows, so the intact attempts.jsonl is REQUIRED for the
-   draw to land on the probe head.) The pre-registered probe would draw exactly as
-   designed the moment the loop reaches nextbatch.
-
-4. THE BLOCKER — a PLAIN RELAUNCH CANNOT RUN THE PROBE (arithmetic + empirical)
-   The orch checks the kill verdict at the TOP of the loop, BEFORE drawing a batch.
-   A relaunch computes the SAME rolling window from the SAME attempts.jsonl:
-     ledger.py state <live attempts> => verdict=KILL_YIELD_COLLAPSE, rolling=0.075.
-   So a plain relaunch INSTA-KILLS at its cycle-1 gate and runs ZERO fresh batches
-   -> it measures NOTHING and would only overwrite orch.log + rewrite DATAGEN_KILL.txt.
-   The CASE-B instruction ("bar re-kills after ~2 batches") assumed the relaunch runs
-   fresh batches first; that held in the PRIOR relaunch only because a legitimate data
-   correction had lifted the window to 0.415 first. This decay is HONEST — there is
-   nothing to correct — so the premise does not hold. A plain relaunch was therefore
-   NOT performed (it would be harmful and measure nothing).
-
-5. WHY THE CAMPAIGN IS NOT YET DONE (do not treat unmeasured as zero)
-   The 0.075 that killed is the NEAR-MISS block's yield. The FRESH-COVERAGE yield
-   (pandas-dev ~726 / getmoto ~329 / dask ~134 never-attempted ids) is UNMEASURED
-   (0 attempts). The pre-registered rule ("measure >=100 fresh attempts, then decide;
-   >=0.15 CONTINUE / <0.10 ACCEPT POOL / 0.10-0.15 CONTINUE+reassess") is NOT yet
-   satisfiable. Weak prior from ALREADY-attempted head ids (different from the probe):
-   pandas 1/9, getmoto 1/14, dask 1/6 (blended ~0.10) — ambiguous, NOT a substitute.
-   Accepting the pool now on the near-miss 0.075 would repeat the KILL_AUTOPSY mistake
-   (conflating a spent block's collapse with an unmeasured block).
-
-6. MONITOR DECISION REQUIRED (deliberately NOT taken unilaterally)
-   To execute the pre-registered probe, the NEW fresh-coverage measurement phase needs
-   a rolling window that is not the spent near-miss window. That is governance-adjacent
-   on a LEGITIMATE kill (it is the window-manipulation class KILL_AUTOPSY warns about),
-   so it is left as an explicit decision rather than done silently. Bar params (0.10/200)
-   and ledger.py stay UNCHANGED in every option; the near-miss kill record is preserved.
-
-   OPTION A (measure through the orch, clean window; recommended if authorized):
-     - cp attempts.jsonl attempts_prekill_freshcov_<ts>.jsonl   # preserve near-miss record
-     - write a fresh attempts.jsonl seeded ONLY with the 3 already-resolved
-       pandas-dev/getmoto/dask rows (keeps those families resolvable -> correct 50/50
-       draw; window <200 so the bar cannot fire until ~4 fresh batches accumulate).
-     - setsid bash runs/swe_datagen_s1/datagen_orch.sh >>logs/orch.log 2>&1 &  echo $!>orch.pid
-     The bar (unchanged) then judges the FRESH yield after ~200 fresh attempts and
-     re-kills honestly iff fresh-coverage yield <0.10. Caveat: resets lifetime/resume
-     stats to the fresh phase (fresh frontier head is unattempted anyway).
-
-   OPTION B (fully non-invasive; touches NOTHING live): drive datagen_gen.sh +
-     datagen_score.sh directly on the 100 probe-head ids into a separate probe dir,
-     compute fresh yield, apply the rule. Live attempts.jsonl / bar / kill untouched.
-
-   RECOMMENDATION: authorize the fresh-coverage probe measurement (Option A or B) so
-   the fresh block is MEASURED, then apply the pre-registered rule to the MEASURED
-   fresh yield. Do NOT ACCEPT POOL / launch SFT on the near-miss 0.075 alone.
-
-CURRENT STATE (all safe/recoverable): orch DOWN (honest kill). frontier.json = fresh
-coverage (probe-ready, 50/50). attempts.jsonl intact (1228 real). keepers=282.
-DATAGEN_KILL.txt preserved. No relaunch performed pending the decision above.
-
-================================================================================
-MONITOR NOTE — merged qwen-code stack now backs the episode driver (verified)
-Written 2026-07-08 by the merge-verify subagent. No governance surface touched.
-================================================================================
-
-WHAT: The full upstream/origin merge into OUR fork
-(/home/mark/shared/lumoFlyWheel_codex_fork, branch codex/qwen35-9b-feasibility)
-was completed by the concurrent teacher-27b Acquire phase and is COMMITTED at
-b32f08d4 ("Merge remote-tracking branch 'origin/main' into
-codex/qwen35-9b-feasibility"). origin/main (78af0be4) is a full ancestor -> upstream
-completely merged, ZERO conflicts (clean 'ort' 3-way; our branch files and upstream
-files were disjoint). Nothing left to commit (working tree clean).
-
-VERIFIED (CPU-only, NO model server):
-  - Envelope machinery INTACT in src/lumo_flywheel_serving/inference_proxy.py:
-    LUMO_PROXY_FORCE_TEMPERATURE/TOP_P/TOP_K/PRESENCE_PENALTY/MIN_P (7 refs @178-260),
-    LUMO_PROXY_AUTO_CONTINUE present. Upstream only APPENDED FR13 SSE-heartbeat
-    (LUMO_PROXY_SSE_HEARTBEAT_S, default OFF) -> coexists, no clobber.
-    Proxy imports clean; force/sampling/normalize unit tests 18 passed / 0 failed.
-  - Seed control lives in the DRIVER's per-shard best-of-k (per-attempt seeding),
-    not a proxy FORCE_SEED knob (that knob never existed on any side).
-  - Episode DRIVER scripts/run_swe_bench_qwen_code.py: --help import+argparse EXIT=0;
-    headless envelope intact (--bare --approval-mode yolo --output-format json
-    --max-session-turns); cross-repo import
-    `from lumo_flywheel_serving import codex_bench_eval_swe` resolves against the
-    MERGED reference (/home/mark/shared/lumoFlyWheel/src) and imports OK; its own
-    scripts/qwen_code_sglang_proxy.py adapter and docker/chat_templates/
-    qwen3-openai-codex.jinja both present.
-
-DRIVER CONTRACT: UNBROKEN. No fix needed. Episodes now run on the merged qwen-code
-stack. The 27B Certify gate will live-verify against a real server.
+TRANSITION:
+- Teacher: stock-Qwen3.5-9B-AR (epoch 1) -> Qwen3.6-27B-NVFP4+MTP (epoch 2).
+  Three-gate acceptance ALL PASS (gate_27b_20260708T181604Z/gate_verdict.json).
+- Epoch governance: attempts.jsonl carries an epoch marker; the rolling KILL
+  window resets to the 27B epoch (kill bar 0.10/200 UNCHANGED; lifetime/keepers/
+  coverage span all epochs). Epoch-1 kill record -> DATAGEN_KILL_9b_epoch1.txt.
+- Frontier: live fresh-coverage frontier (frontier.json, n=2451, head
+  pandas/getmoto/dask). Concurrency C=2 (27B on-GPU KV budget; not the 9B C=4).
+- Fresh-cov probe batch 2 CANCELLED by monitor (teacher switch moots it); batch-1
+  fresh-9B yield 0.24 preserved as the honest record.

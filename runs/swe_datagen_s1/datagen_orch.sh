@@ -48,13 +48,38 @@ FORK_PY=runs/stage0_swegym_probe/.venv-swegym/bin/python   # has swebench + spec
 TARGET="${TARGET:-1000}"
 FLOOR="${FLOOR:-400}"
 BATCH_SIZE="${BATCH_SIZE:-50}"
-C="${C:-4}"
+# C (concurrency) default is TEACHER-DEPENDENT (27B on-GPU KV budget = 2x32k -> C=2;
+# the 9B fit C=4). Resolved in the TEACHER SWAP block below; still overridable.
 KILL_YIELD="${KILL_YIELD:-0.10}"
 KILL_WINDOW="${KILL_WINDOW:-200}"
 MAX_CYCLES="${MAX_CYCLES:-100}"
 DISK_FLOOR_GB="${DISK_FLOOR_GB:-300}"
 DATAGEN_DRYRUN="${DATAGEN_DRYRUN:-0}"
 ENVELOPE_JSON="${ENVELOPE_JSON:-{\"temperature\":0.6,\"top_p\":0.95,\"top_k\":20,\"seed_base\":1234}}"
+
+# ---- TEACHER SWAP (2026-07-08): resolve the teacher from the runcage selector ---
+# RUNCAGE_SCRIPT is the SINGLE knob. Default = the certified Qwen3.6-27B NVFP4+MTP
+# teacher (gate_27b_20260708T181604Z, ALL THREE GATES PASS). Export it so the child
+# datagen_gen.sh inherits the SAME choice, derive the keeper-provenance teacher
+# strings (extract_keepers.py stamps provenance.teacher/generator from these), and
+# pick the certified concurrency. EPOCH GOVERNANCE: a new teacher == a new epoch;
+# the rolling KILL window is scoped to attempts.jsonl rows AFTER the latest epoch
+# marker (ledger.py), so this swap does NOT inherit the 9B epoch's spent window.
+#   ONE-LINE ROLLBACK to the 9B teacher:
+#     RUNCAGE_SCRIPT=runcage_ar_probe.sh C=4 bash runs/swe_datagen_s1/datagen_orch.sh
+export RUNCAGE_SCRIPT="${RUNCAGE_SCRIPT:-runcage_27b.sh}"
+case "$RUNCAGE_SCRIPT" in
+  runcage_27b.sh)
+    C="${C:-2}"                                                 # 27B: 2x32k on-GPU KV (2.53x pool); do NOT copy the 9B C=4
+    export TEACHER_LABEL="${TEACHER_LABEL:-qwen3.6-27b-nvfp4-mtp}"
+    export KEEPER_GENERATOR="${KEEPER_GENERATOR:-Qwen3.6-27B-NVFP4+MTP (nvidia ckpt, qwen_code, native qwen3_xml)}"
+    ;;
+  *)
+    C="${C:-4}"
+    export TEACHER_LABEL="${TEACHER_LABEL:-stock-qwen3.5-9b-ar}"
+    export KEEPER_GENERATOR="${KEEPER_GENERATOR:-stock-Qwen3.5-9B-AR (qwen_code, native qwen3_xml)}"
+    ;;
+esac
 
 FRONTIER="$ROOT/frontier.json"
 ATTEMPTS="$ROOT/attempts.jsonl"

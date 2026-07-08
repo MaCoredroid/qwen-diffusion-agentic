@@ -17,12 +17,43 @@ export SWE_DOCKER_CMD="${SWE_DOCKER_CMD:-docker}"
 HERE=runs/swe_datagen_s1
 PY=.venv/bin/python
 DRIVER=scripts/run_swe_bench_qwen_code.py
-# Runcage selector — which server launcher to boot for this batch. Default is the
-# stock-AR probe. The MTP speculative-decode gate flips this to runcage_ar_mtp.sh
-# (env override, one line). datagen_gen.sh is invoked fresh per cycle, so a single
-# RUNCAGE_SCRIPT export by the orchestrator takes effect at the next cycle boundary;
-# rollback = unset it (or set it back to runcage_ar_probe.sh).
-RUNCAGE_SCRIPT="${RUNCAGE_SCRIPT:-runcage_ar_probe.sh}"
+# Runcage selector — which server launcher to boot for this batch.
+# TEACHER SWAP 2026-07-08: the DEFAULT is now the Qwen3.6-27B NVFP4 + native-MTP
+# teacher (runcage_27b.sh), certified by the three-gate acceptance run
+# gate_27b_20260708T181604Z (ALL PASS: format schema-equiv 0 mismatches;
+# arg-grounding 63/64=98.4% source-verbatim, 0 malformed; live 4/4 resolved;
+# MTP A/B 1.59x @ 0.93 accept). datagen_gen.sh is invoked fresh per cycle, so this
+# default (or a single RUNCAGE_SCRIPT export by the orchestrator) takes effect at
+# the next cycle boundary.
+#   ONE-LINE ROLLBACK to the stock-AR 9B teacher:
+#     export RUNCAGE_SCRIPT=runcage_ar_probe.sh   # (also relaunch orch with C=4)
+RUNCAGE_SCRIPT="${RUNCAGE_SCRIPT:-runcage_27b.sh}"
+
+# Teacher-coupled knobs, keyed off the runcage selection so the swap flips ALL of
+# them together: the served-model name the driver must REQUEST (must equal the
+# launcher's --served-model-name or vLLM 404s), the keeper-provenance teacher
+# label, and the CERTIFIED server primitives that differ from runcage_27b.sh's bare
+# defaults. The 27B FROZEN/certified config (bootprobe_27b/FROZEN_CONFIG.json,
+# boot_server.sh) is: TRITON_ATTN (decode), MAX_NUM_SEQS=2, NUM_SPEC_TOKENS=1,
+# KV_CACHE_DTYPE=auto (-> fp8_e4m3 from ckpt), KV_OFFLOAD_GB=0. Offload stays OFF:
+# the boot-probe froze it (it drops expandable_segments and SHRINKS the on-GPU fp8
+# KV pool 83012->77550 tok — a net loss when 2x32k already fit; HOST-RAM-safest).
+case "$RUNCAGE_SCRIPT" in
+  runcage_27b.sh)
+    DRIVER_MODEL="${DRIVER_MODEL:-qwen3.6-27b-nvfp4}"            # == runcage_27b SERVED_NAME
+    DRIVER_MODEL_NAME="${DRIVER_MODEL_NAME:-datagen-27b-nvfp4-mtp-env}"
+    ATTENTION_BACKEND="${ATTENTION_BACKEND:-TRITON_ATTN}"       # frozen/certified backend
+    KV_CACHE_DTYPE="${KV_CACHE_DTYPE:-auto}"                    # ckpt -> fp8_e4m3
+    KV_OFFLOAD_GB="${KV_OFFLOAD_GB:-0}"                         # boot-probe froze offload OFF
+    ;;
+  *)  # stock-AR 9B (rollback) / MTP-9B — those launchers hardcode their own KV/attn
+    DRIVER_MODEL="${DRIVER_MODEL:-qwen3.5-9b-ar}"
+    DRIVER_MODEL_NAME="${DRIVER_MODEL_NAME:-datagen-stockAR-env}"
+    ATTENTION_BACKEND="${ATTENTION_BACKEND:-}"
+    KV_CACHE_DTYPE="${KV_CACHE_DTYPE:-}"
+    KV_OFFLOAD_GB="${KV_OFFLOAD_GB:-}"
+    ;;
+esac
 
 BATCHDIR="${1:?batchdir}"; GEN_ROOT="${2:?gen_root}"; C="${3:-4}"
 PORT="${PORT:-9951}"
@@ -100,10 +131,13 @@ preflight || exit 1
 read -r GPU_USED_MIB GPU_TOTAL_MIB < <(nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits | awk -F', *' 'NR==1{print $1, $2}')
 GPU_UTIL=$(python3 -c "print(f'{min(0.85, ($GPU_TOTAL_MIB - $GPU_USED_MIB - 1800) / $GPU_TOTAL_MIB):.2f}')")
 python3 -c "exit(0 if $GPU_UTIL >= 0.74 else 1)" || { echo "[gen] GPU_UTIL=$GPU_UTIL below certified 0.74 floor (desktop holds ${GPU_USED_MIB}MiB) — refusing boot" >&2; exit 1; }
-echo "[gen] booting server scope=$SCOPE port=$PORT gpu_util=$GPU_UTIL runcage=$RUNCAGE_SCRIPT (used=${GPU_USED_MIB}MiB total=${GPU_TOTAL_MIB}MiB)" >&2
+echo "[gen] booting server scope=$SCOPE port=$PORT gpu_util=$GPU_UTIL runcage=$RUNCAGE_SCRIPT seqs=$C spec=${NUM_SPEC_TOKENS:-1} attn=${ATTENTION_BACKEND:-launcher-default} kv=${KV_CACHE_DTYPE:-launcher-default} kv_offload_gb=${KV_OFFLOAD_GB:-launcher-default} model=$DRIVER_MODEL (used=${GPU_USED_MIB}MiB total=${GPU_TOTAL_MIB}MiB)" >&2
 ACTIVE_SCOPE="$SCOPE"
+# Pass the teacher-coupled certified primitives through the cage to the launcher.
+# For the 9B launchers these envs are unused (they hardcode their own KV/attn), so
+# passing empty strings is harmless; for runcage_27b.sh they lock the FROZEN config.
 systemd-run --user --scope --unit="$SCOPE" -p MemoryMax=22G -p MemorySwapMax=4G \
-  bash -c "MAX_NUM_SEQS=$C MAX_MODEL_LEN=32768 GPU_UTIL=$GPU_UTIL PORT=$PORT NUM_SPEC_TOKENS='${NUM_SPEC_TOKENS:-1}' bash $HERE/$RUNCAGE_SCRIPT" \
+  bash -c "MAX_NUM_SEQS=$C MAX_MODEL_LEN=32768 GPU_UTIL=$GPU_UTIL PORT=$PORT NUM_SPEC_TOKENS='${NUM_SPEC_TOKENS:-1}' ATTENTION_BACKEND='$ATTENTION_BACKEND' KV_CACHE_DTYPE='$KV_CACHE_DTYPE' KV_OFFLOAD_GB='$KV_OFFLOAD_GB' bash $HERE/$RUNCAGE_SCRIPT" \
   > "$BATCHDIR/logs/gen_server.log" 2>&1 &
 wait_ready || { echo "[gen] server not ready" >&2; exit 1; }
 
@@ -130,7 +164,7 @@ for ((k=0; k<C; k++)); do
     --out-root "$GEN_ROOT/shard_${k}" \
     --runtime container \
     --endpoint "http://127.0.0.1:${PORT}/v1" \
-    --model qwen3.5-9b-ar --model-name "datagen-stockAR-env" \
+    --model "$DRIVER_MODEL" --model-name "$DRIVER_MODEL_NAME" \
     --repo-cache runs/stage_c_driver/repo_cache \
     --eval-mode skip \
     --skip-existing \

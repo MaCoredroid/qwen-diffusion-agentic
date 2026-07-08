@@ -407,3 +407,67 @@ banked record). C-G2 (parity-or-better) is **FAILED — decisively.**
   mitigation, cheap, but not the cure. (c) **Do not re-litigate serving or re-run the same rlv2 twin** —
   it will reproduce ~2/50; the next model must be SWE-tuned. **Recommended fork for the user: fund (a),
   run (b) in parallel as a cheap hedge.**
+
+---
+
+## 2026-07-08 — DATAGEN TEACHER SWAP: stock-9B-AR → Qwen3.6-27B NVFP4 + native MTP (epoch 2)
+
+**Why.** Fund (a) from the fork above (SWE-trajectory SFT via the certified loop) with a STRONGER
+teacher. User directive: datagen teacher becomes **Qwen3.6-27B NVFP4 with MTP spec-decode**, flywheel APC
+(lossless GDN prefix cache), size-limited DDR5 KV offload. Feasibility banked in `STRONGER_TEACHER_PILOT.md`
+(nvidia/Qwen3.6-27B-NVFP4 has the MTP head; community ckpt does not).
+
+**Certification (one frozen server, one boot, torn down clean).** Three-gate acceptance —
+`runs/swe_datagen_s1/gate_27b_20260708T181604Z/gate_verdict.json` — **ALL THREE GATES PASS**:
+- **Gate 1 FORMAT:** full driver episode `modin-project__modin-6298` (gym) → RESOLVED (30 turns, 1125-byte
+  patch); `extract_keepers.py` clean (kept_new=1); **field-by-field schema equivalence vs a production
+  keeper = 0 mismatches**; qwen3_xml tool-call XML structure identical; fidelity=high(all_toolcall_turns).
+- **Gate 2 ARG-GROUNDING (NVFP4 copy crux):** **source-verbatim byte-exact grounding 63/64 = 98.4%**
+  (clears ≥90%), **0 malformed**. Raw exact_args 3/10 diagnosed as metric artifact (non-verbatim synthetic
+  gold + multi-call planning + JSON whitespace), NOT calibration copy-damage; corroborated by Gate 1's
+  byte-exact resolved patch. The one miss (0015) was byte-exact but wrong-of-three device id — entity
+  selection, digits uncorrupted.
+- **Gate 3 LIVE 2+2:** 4/4 resolved (2 gym-fork + 2 verified-official), 4 dry-run keepers, real patch per
+  source. **MTP A/B: 109.4 vs 68.8 tok/s = 1.59× at 0.93 acceptance / 1.93 mean accept-len.**
+
+**Frozen/certified server config** (`bootprobe_27b/FROZEN_CONFIG.json`, `boot_server.sh`): NVFP4
+(`modelopt_fp4` mixed; fp8 linear-attn projs), spec `qwen3_5_mtp` n=1, **MAX_NUM_SEQS=2**,
+**KV_OFFLOAD_GB=0**, KV_CACHE_DTYPE auto→**fp8_e4m3** (ckpt kv_cache_quant_algo=FP8), **TRITON_ATTN**
+decode (head-256 fp8 prefill auto-routes to FlashInfer), APC = prefix-caching + chunked-prefill +
+mamba-cache-mode **align** + block-size 1024 + ssm-cache fp32, qwen3_xml + qwen3-reasoning + codex chat
+template. On-GPU KV pool 83,012 tok = 2.53× @32k, GPU headroom 4343 MiB, cage RSS 11.5 G, host-avail ~23 G.
+**Offload frozen OFF** because it drops `expandable_segments` and SHRINKS the fp8 KV pool
+(83,012→77,550) — net-negative when two 32k seqs already resident; it remains a validated opt-in capacity
+lever (`KV_OFFLOAD_GB=4|8`, hard-capped ≤8 G per the HOST-RAM directive). **Concurrency is 2, not the 9B's
+4** (never copy the 9B budget) — 2×32k always resident, zero preemption.
+
+**Wiring (the swap).**
+- `datagen_gen.sh`: default `RUNCAGE_SCRIPT=runcage_27b.sh`; a per-teacher `case` derives the driver's
+  requested model (`qwen3.6-27b-nvfp4`, must equal the launcher's `--served-model-name`), the keeper
+  teacher label, and the certified primitives (TRITON_ATTN / KV auto / offload 0), all passed through the
+  RAM cage to the launcher. **One-line rollback:** `export RUNCAGE_SCRIPT=runcage_ar_probe.sh` (+ C=4).
+- `datagen_orch.sh`: `RUNCAGE_SCRIPT` is the single knob — resolves+exports the teacher, sets the
+  certified concurrency (C=2 for the 27B), and exports `TEACHER_LABEL`/`KEEPER_GENERATOR`.
+- `extract_keepers.py`: `provenance.generator` + new `provenance.teacher` stamped from those envs
+  (fallback = historical 9B so a manual re-extract of an OLD batch never mislabels). Keepers now stamp
+  **teacher=qwen3.6-27b-nvfp4-mtp**.
+
+**Epoch governance (amendment, NOT tampering).** A new teacher is a new EPOCH. `ledger.py` gains minimal
+epoch support: a bare `{"epoch_marker":true,"epoch":<label>}` row appended to `attempts.jsonl` scopes the
+rolling KILL window to rows AFTER the latest marker — **the 27B is judged on its OWN yield, never the 9B's
+spent window**. Lifetime yield, keepers, coverage/eligibility and DONE_EXHAUSTED are UNCHANGED (span all
+epochs); the kill bar (0.10/200) is UNCHANGED. The epoch-1 kill record is preserved honestly as
+`DATAGEN_KILL_9b_epoch1.txt`. Verified: pre-marker state = `KILL_YIELD_COLLAPSE rolling 0.075`; after
+appending the `qwen3.6-27b-nvfp4-mtp` marker → `CONTINUE`, window reset to 0, lifetime unchanged 0.2362,
+keepers 282, `nextbatch` still draws the pandas/getmoto/dask fresh-coverage head.
+
+**Fresh-coverage probe — CANCELLED BY MONITOR (batch 2).** The isolated fresh-9B probe
+(`probe_freshcov_20260708T153555Z`) ran BATCH 1 to completion (50 attempts, 12 resolved, pooled fresh yield
+**0.24**, clearing the pre-registered 0.15 continue bar) then was cleanly stopped BETWEEN batches. Batch 2
+is CANCELLED: the teacher switch moots the 9B-continuation question batch 2 existed to settle. Batch-1
+artifacts + 12 isolated keepers preserved (NOT promoted); recorded in the probe dir's
+`CANCELLED_BY_MONITOR.md`. The 0.24 stands as the honest fresh-9B yield of record.
+
+**Relaunch.** Orchestrator relaunched detached on the live fresh-coverage frontier (`frontier.json`,
+n=2451, order head pandas/getmoto/dask) at C=2, epoch 2. See `TEACHER_SWAP_EPOCH2.md` for the operational
+record and first-batch verification.

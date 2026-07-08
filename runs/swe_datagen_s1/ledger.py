@@ -93,6 +93,44 @@ def _attempted_ids(attempts: Path) -> set[str]:
 
 
 # ---------------------------------------------------------------------------
+# EPOCH support (teacher swap). A bare {"epoch_marker": true, "epoch": <label>}
+# row appended to attempts.jsonl opens a NEW epoch. It scopes ONLY the rolling
+# KILL window: a new teacher gets a FRESH window so it is judged on its OWN yield,
+# never the prior teacher's spent window. Lifetime yield, keepers, coverage /
+# eligibility (attempt_count) and DONE_EXHAUSTED are UNCHANGED — they span all
+# epochs. The marker carries no instance_id / verdict / batch_id, so it is already
+# inert to _valid / _attempt_stats / _trailing_infra_batches / _attempted_ids.
+# ---------------------------------------------------------------------------
+def _epoch_start_index(rows: list[dict]) -> int:
+    """Index into `rows` just AFTER the latest epoch marker (0 if none)."""
+    start = 0
+    for i, r in enumerate(rows):
+        if r.get("epoch_marker"):
+            start = i + 1
+    return start
+
+
+def _epoch_label(rows: list[dict]) -> str | None:
+    """Label of the current (latest) epoch, or None before any marker."""
+    label = None
+    for r in rows:
+        if r.get("epoch_marker"):
+            label = r.get("epoch")
+    return label
+
+
+def cmd_epoch(attempts: Path, label: str) -> int:
+    """Append an epoch marker row (opens a new rolling-KILL-window epoch)."""
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    row = {"epoch_marker": True, "epoch": label, "ts": ts}
+    with attempts.open("a") as f:
+        f.write(json.dumps(row) + "\n")
+    print(json.dumps({"epoch_marker_appended": label, "ts": ts,
+                      "attempts": str(attempts)}))
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # best-of-k eligibility (shared by nextbatch + state so DONE_EXHAUSTED and the
 # batch draw can NEVER disagree)
 # ---------------------------------------------------------------------------
@@ -349,7 +387,15 @@ def cmd_state(a: argparse.Namespace) -> int:
     # teacher, not the infra failure.
     real = [r for r in _valid(attempt_rows) if r.get("verdict") in REAL_VERDICTS]
     n_real = len(real)
-    window = real[-a.kill_window:]
+    # EPOCH: the rolling KILL window counts only VALID real attempts in the CURRENT
+    # epoch (rows after the latest epoch marker), so a teacher swap starts the kill
+    # window fresh and the new teacher is judged on its OWN yield. Lifetime yield +
+    # keepers span all epochs (unchanged). No marker => whole history == one epoch.
+    epoch = _epoch_label(attempt_rows)
+    epoch_start = _epoch_start_index(attempt_rows)
+    real_epoch = [r for r in _valid(attempt_rows[epoch_start:])
+                  if r.get("verdict") in REAL_VERDICTS]
+    window = real_epoch[-a.kill_window:]
     win_resolved = sum(1 for r in window if r["verdict"] == "resolved")
     rolling_yield = (win_resolved / len(window)) if window else None
     lifetime_resolved = sum(1 for r in real if r["verdict"] == "resolved")
@@ -397,6 +443,8 @@ def cmd_state(a: argparse.Namespace) -> int:
         "remaining_frontier": remaining,
         "remaining_detail": remaining_detail,
         "best_of_k": bool(cfg and cfg.get("enabled", True)),
+        "epoch": epoch,
+        "attempts_epoch": len(real_epoch),
         "lifetime_yield": round(lifetime_yield, 4) if lifetime_yield is not None else None,
         "rolling_window": len(window),
         "rolling_yield": round(rolling_yield, 4) if rolling_yield is not None else None,
@@ -410,6 +458,7 @@ def cmd_state(a: argparse.Namespace) -> int:
             f"lifetime_yield={state['lifetime_yield']} "
             f"rolling_yield={state['rolling_yield']}(w={len(window)}) "
             f"remaining={remaining}{'(bok)' if state['best_of_k'] else ''}"
+            f"{f' epoch={epoch}(n={len(real_epoch)})' if epoch else ''}"
             f"{f' INFRA_TRAILING={infra_trailing} via={verdict}' if halt_reason else ''}"
             f" {state['ts']}")
     Path(a.status_file).write_text(line + "\n")
@@ -433,6 +482,11 @@ def main() -> int:
     p.add_argument("--kill-yield", type=float, default=0.10)
     p.add_argument("--kill-window", type=int, default=200)
 
+    p = sub.add_parser("epoch",
+                       help="append an epoch marker (opens a fresh rolling-KILL "
+                            "window; lifetime/keepers/coverage unchanged)")
+    p.add_argument("attempts"); p.add_argument("label")
+
     a = ap.parse_args()
     if a.cmd == "nextbatch":
         return cmd_nextbatch(Path(a.frontier), Path(a.attempts), a.batch_size)
@@ -441,6 +495,8 @@ def main() -> int:
                           infra_invalid=a.infra_invalid)
     if a.cmd == "state":
         return cmd_state(a)
+    if a.cmd == "epoch":
+        return cmd_epoch(Path(a.attempts), a.label)
     return 2
 
 
