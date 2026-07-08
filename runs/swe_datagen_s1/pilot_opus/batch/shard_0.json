@@ -1,0 +1,19 @@
+{
+ "dataset_name": "/home/mark/qwen_diffusion/runs/swe_datagen_s1/pilot_opus/batch/dataset.json",
+ "split": "train",
+ "instance_ids": [
+  "conan-io__conan-10213",
+  "conan-io__conan-10408",
+  "modin-project__modin-5507",
+  "pydantic__pydantic-4882",
+  "pydantic__pydantic-4911",
+  "pandas-dev__pandas-47475",
+  "pandas-dev__pandas-47493",
+  "getmoto__moto-4867",
+  "getmoto__moto-4874",
+  "dask__dask-10342"
+ ],
+ "shard_id": 0,
+ "base_seed": 424242,
+ "proxy_port": 30030
+}

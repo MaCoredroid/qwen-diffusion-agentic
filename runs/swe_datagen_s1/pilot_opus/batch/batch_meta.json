@@ -1,0 +1,14 @@
+{
+ "n_requested": 10,
+ "n_present": 10,
+ "n_missing": 0,
+ "missing": [],
+ "n_gym": 10,
+ "n_verified": 0,
+ "concurrency": 1,
+ "base_seed": 424242,
+ "shard_sizes": [
+  10
+ ],
+ "dataset_json": "/home/mark/qwen_diffusion/runs/swe_datagen_s1/pilot_opus/batch/dataset.json"
+}
