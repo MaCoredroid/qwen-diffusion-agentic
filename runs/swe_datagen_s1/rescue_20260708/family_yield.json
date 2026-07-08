@@ -1,0 +1,42 @@
+{
+ "conan-io": {
+  "resolved": 1,
+  "attempted": 4,
+  "unresolved": 2,
+  "empty_patch": 1,
+  "error": 0,
+  "yield": 0.25
+ },
+ "iterative": {
+  "resolved": 5,
+  "attempted": 14,
+  "unresolved": 9,
+  "empty_patch": 0,
+  "error": 0,
+  "yield": 0.357
+ },
+ "modin-project": {
+  "resolved": 3,
+  "attempted": 6,
+  "unresolved": 2,
+  "empty_patch": 1,
+  "error": 0,
+  "yield": 0.5
+ },
+ "pydantic": {
+  "resolved": 2,
+  "attempted": 12,
+  "unresolved": 10,
+  "empty_patch": 0,
+  "error": 0,
+  "yield": 0.167
+ },
+ "python": {
+  "resolved": 3,
+  "attempted": 14,
+  "unresolved": 10,
+  "empty_patch": 1,
+  "error": 0,
+  "yield": 0.214
+ }
+}

@@ -297,3 +297,46 @@ verdict **CONTINUE** (keepers 218, attempts_real 728, rolling_yield 0.415, remai
 §0.2/§2 strategic caveat is **unchanged**: the run now measures the TRUE gym-tail yield with working
 scoring — if it genuinely sits below the 0.10 bar a future kill would be a REAL signal (the
 majority-`no_prediction` guard keeps a scorer outage from ever faking one again).
+
+---
+
+## 7. RESCUE EXECUTED — poisoned gym rows re-scored → real verdicts + keepers (2026-07-08T08:2x Z)
+
+The paid-for gym patches the fork crash discarded are now **re-scored against the FIXED
+`dataset_gym.json`** (env_setup_commit dropped) and their rows FLIPPED from `infra_invalid` to
+their TRUE official-harness verdicts. Pull-free (`rescue_20260708/rescue_score_local.sh`): only
+gym ids whose instance image was already local were scored (retag driver/xingyaoww → fork key,
+never pull), capped 6 workers, docker-only, no GPU, run alongside the live orch without starving it.
+
+**Scored 50 episodes across 3 batches (0001 modin, 0011 + 0012 the diverse tail):**
+resolved **14**, unresolved **33**, empty_patch **3**, error 0.
+
+| family | resolved/attempted | yield |
+|---|--:|--:|
+| modin-project | 3/6 | 0.500 |
+| iterative (dvc) | 5/14 | 0.357 |
+| conan-io | 1/4 | 0.250 |
+| python (mypy) | 3/14 | 0.214 |
+| pydantic | 2/12 | 0.167 |
+| **blended** | **14/50** | **0.280** |
+
+**Blended 0.28 = 2.5× the autopsy's pessimistic 0.111** — the gym tail is genuinely resolvable;
+the "these families are worthless" reading was an infra artifact (§2 honesty note confirmed).
+
+**Race-safe flip** (`rescue_20260708/apply_rescue.py --apply`, backup
+`attempts.jsonl.bak_pre_rescue_flip_*`): re-read immediately before atomic temp+rename during a
+verified orch quiet window (cycle-1 mid-`[score]`, attempts untouched at 1250); touched ONLY the
+50 `fork_harness_no_report_env_setup_commit_none` rows a rescue report scored; **row count
+1250→1250 monotonic, zero orch appends lost**; each flipped row stamped `rescued=true`.
+
+**Keepers** (`extract_keepers.py` over each batch's resolved ids, trajectories from the ORIGINAL
+07-07 gen dirs): **+14 new** (all `kept_new`, 0 `already_had` → the live orch had not re-drawn any),
+**218 → 232**, 232 distinct instance_ids.
+
+**Corrected ledger:** keepers **232**, attempts_real 728→**778**, attempts_infra_invalid
+509→**459**, lifetime_yield **0.2982**, rolling_yield(200) **0.400**, verdict **CONTINUE**.
+
+**Left re-drawable (honest):** batches 0002/0003/0006–0010 (all-modin, 0 local images) and the
+non-local remainder of 0011–0014 stay `infra_invalid` — the live orch with the fixed scorer will
+re-draw and score them natively. 0004/0005 never generated (no patches on disk). Full detail:
+`rescue_20260708/RESCUE_LEDGER_NOTE.md`, `rescue_20260708/family_yield.json`.

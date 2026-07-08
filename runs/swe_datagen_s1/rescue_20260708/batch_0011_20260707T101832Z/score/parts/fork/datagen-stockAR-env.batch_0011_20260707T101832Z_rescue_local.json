@@ -1,0 +1,61 @@
+{
+    "total_instances": 9,
+    "submitted_instances": 9,
+    "completed_instances": 9,
+    "resolved_instances": 1,
+    "unresolved_instances": 8,
+    "empty_patch_instances": 0,
+    "error_instances": 0,
+    "unstopped_instances": 0,
+    "completed_ids": [
+        "conan-io__conan-8355",
+        "conan-io__conan-9099",
+        "iterative__dvc-3665",
+        "iterative__dvc-3677",
+        "pydantic__pydantic-9066",
+        "pydantic__pydantic-9082",
+        "python__mypy-11457",
+        "python__mypy-11483",
+        "python__mypy-11489"
+    ],
+    "incomplete_ids": [],
+    "empty_patch_ids": [],
+    "submitted_ids": [
+        "conan-io__conan-8355",
+        "conan-io__conan-9099",
+        "iterative__dvc-3665",
+        "iterative__dvc-3677",
+        "pydantic__pydantic-9066",
+        "pydantic__pydantic-9082",
+        "python__mypy-11457",
+        "python__mypy-11483",
+        "python__mypy-11489"
+    ],
+    "resolved_ids": [
+        "pydantic__pydantic-9066"
+    ],
+    "unresolved_ids": [
+        "conan-io__conan-8355",
+        "conan-io__conan-9099",
+        "iterative__dvc-3665",
+        "iterative__dvc-3677",
+        "pydantic__pydantic-9082",
+        "python__mypy-11457",
+        "python__mypy-11483",
+        "python__mypy-11489"
+    ],
+    "error_ids": [],
+    "unstopped_containers": [],
+    "unremoved_images": [
+        "sweb.eval.x86_64.conan-io__conan-8355:latest",
+        "sweb.eval.x86_64.conan-io__conan-9099:latest",
+        "sweb.eval.x86_64.iterative__dvc-3665:latest",
+        "sweb.eval.x86_64.iterative__dvc-3677:latest",
+        "sweb.eval.x86_64.pydantic__pydantic-9066:latest",
+        "sweb.eval.x86_64.pydantic__pydantic-9082:latest",
+        "sweb.eval.x86_64.python__mypy-11457:latest",
+        "sweb.eval.x86_64.python__mypy-11483:latest",
+        "sweb.eval.x86_64.python__mypy-11489:latest"
+    ],
+    "schema_version": 2
+}
