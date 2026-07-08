@@ -1,20 +1,17 @@
-EPOCH 2 START — teacher swapped to Qwen3.6-27B NVFP4 + native MTP  2026-07-08
+CONTINUE keepers=282/1000 (floor 400·) attempts=1228 lifetime_yield=0.2362 rolling_yield=None(w=0) remaining=2019(bok) epoch=qwen3.6-27b-nvfp4-mtp(n=0) 2026-07-08T19:12:15Z
 
-(This file is auto-overwritten with the live one-line ledger status by
-`ledger.py state` on the orchestrator's first cycle. Durable narrative:
-runs/swe_datagen_s1/TEACHER_SWAP_EPOCH2.md + swe_endgoal_plan.md.)
-
-PRE-RELAUNCH LEDGER STATE (post epoch-marker):
-  CONTINUE keepers=282/1000 (floor 400·) attempts_epoch=0 lifetime_yield=0.2362
-  rolling_yield=None(w=0) remaining=2019(bok) epoch=qwen3.6-27b-nvfp4-mtp
-
-TRANSITION:
-- Teacher: stock-Qwen3.5-9B-AR (epoch 1) -> Qwen3.6-27B-NVFP4+MTP (epoch 2).
-  Three-gate acceptance ALL PASS (gate_27b_20260708T181604Z/gate_verdict.json).
-- Epoch governance: attempts.jsonl carries an epoch marker; the rolling KILL
-  window resets to the 27B epoch (kill bar 0.10/200 UNCHANGED; lifetime/keepers/
-  coverage span all epochs). Epoch-1 kill record -> DATAGEN_KILL_9b_epoch1.txt.
-- Frontier: live fresh-coverage frontier (frontier.json, n=2451, head
-  pandas/getmoto/dask). Concurrency C=2 (27B on-GPU KV budget; not the 9B C=4).
-- Fresh-cov probe batch 2 CANCELLED by monitor (teacher switch moots it); batch-1
-  fresh-9B yield 0.24 preserved as the honest record.
+--- AGENT STACK PROVENANCE (2026-07-08) ---
+qwen-code: 0.19.2 -> 0.19.4 (flywheel-resolved: qwen-code-runner.Dockerfile pin /
+  prepare_qwen_agent_bundle.sh / run_swe_bench_q36_a.py ::qwen-code-0.19.4::). Pinned
+  EXACTLY in package.json ("@qwen-code/qwen-code": "0.19.4"); node_modules/.bin/qwen --version = 0.19.4.
+provenance tag (DEFAULT_MODEL_NAME_TAG): qwen3.5-9b-ar::qwen-code-0.19.2::stage-c
+  -> qwen3.5-9b-ar::qwen-code-0.19.4::stage-c.
+invocation profile: `qwen --yolo --output-format json --max-session-turns 100000 -p <prompt>`
+  (auth/endpoint/model via ENV, not CLI flags); full 61-tool native profile (26 native/harness
+  incl. edit/write_file/grep_search/glob/read_file/run_shell_command + 35 inert computer_use__*).
+PROVE (commit after bf7c0cf): headless boot OK (--version/--help/config parse, all our flags present);
+  driver-level dry-run drove the new stack to first server-connection (init event -> model call ->
+  [API Error: Connection error] against dead upstream), 61 tools advertised.
+LIVE 900s episode: DEFERRED-TO-RECERT — GPU not free (frozen 27B vLLM on :9952 holds ~30/32 GB,
+  not launched by this task; a 2nd server would OOM; do-not-boot discipline). Run one bounded
+  trainable-instance episode + keeper-format extraction at next recert when the GPU is free.
