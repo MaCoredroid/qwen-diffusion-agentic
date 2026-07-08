@@ -104,16 +104,69 @@ ATTENTION_BACKEND=${ATTENTION_BACKEND:-FLASH_ATTN}
 NO_FI_AUTOTUNE=${NO_FI_AUTOTUNE:-1}              # sm_120-proven on the 9B
 
 # ---- HARD-CAP the DDR5 KV offload at 8 GiB (HOST-RAM directive; in-code, not just default)
-KV_OFFLOAD_GB=${KV_OFFLOAD_GB:-8}
-KV_OFFLOAD_GB=$(python3 -c "v=float('${KV_OFFLOAD_GB}'); print(min(v, 8.0) if v>0 else 0)")
+# DEFAULT 0 (offload OFF) — boot-probe (bootprobe_27b) FROZE this: KV offload forces
+# dropping PYTORCH_CUDA_ALLOC_CONF=expandable_segments (VMM/pinned-buffer conflict),
+# which SHRINKS the on-GPU fp8 KV pool 83,012->77,550 tok (2.53x->2.37x @32k) AND
+# pushes cage RSS toward the 22G cap — a net LOSS when 2 full 32k seqs already fit
+# on-GPU. Offload remains a VALIDATED opt-in capacity lever (set KV_OFFLOAD_GB=4|8);
+# it boots cleanly with the OffloadingConnector. USER-APPROVED, HARD-CAPPED <=8 GiB.
+KV_OFFLOAD_GB=${KV_OFFLOAD_GB:-0}
+# Hard-cap at 8 GiB and emit an INTEGER string: --kv-offloading-size uses vLLM's
+# human_readable_int parser (int() based), which REJECTS a decimal like "8.0".
+KV_OFFLOAD_GB=$(python3 -c "v=min(float('${KV_OFFLOAD_GB}'), 8.0); v=v if v>0 else 0.0; print(int(v) if v==int(v) else v)")
 KV_OFFLOAD_BACKEND=${KV_OFFLOAD_BACKEND:-native}
 
 export CUDA_HOME=${CUDA_HOME:-/home/mark/qwen_diffusion/.venv-vllm/lib/python3.12/site-packages/nvidia/cu13}
 export HF_HUB_OFFLINE=${HF_HUB_OFFLINE:-1}
 export VLLM_USE_FLASHINFER_SAMPLER=${VLLM_USE_FLASHINFER_SAMPLER:-0}
+# sm_120 (RTX 5090) + FlashInfer 0.6.12 JIT is BROKEN on this box: the bundled
+# nvcc is 13.2 while FlashInfer's vendored cccl/cutlass headers reject it
+# ("CUDA compiler and CUDA toolkit headers are incompatible"), so the FlashInfer
+# NVFP4/FP8 *linear* GEMMs, which JIT-compile at boot, FAIL and abort the engine.
+# Disable those FlashInfer linear kernels so vLLM's kernel selector falls through
+# to COMPILED (no-nvcc) kernels: NVFP4 -> CutlassNvFp4/MarlinNvFp4 (MarlinNvFp4
+# supports cap>=7.5, verified), FP8 linear_attn projs -> CutlassFP8/PerTensorTorch.
+# Boot-probe verified (bootprobe_27b): this is REQUIRED for the 27B to boot here.
+export VLLM_DISABLED_KERNELS="${VLLM_DISABLED_KERNELS:-FlashInferFP8ScaledMMLinearKernel,FlashInferCutlassNvFp4LinearKernel,FlashInferTrtllmNvFp4LinearKernel,FlashInferCudnnNvFp4LinearKernel}"
+# ROOT-CAUSE of the FlashInfer JIT failure: the bundled nvidia/cu13 pip package is
+# INTERNALLY INCONSISTENT — nvcc is release 13.2 but its headers declare
+# CUDA_VERSION=13000 (13.0). FlashInfer's vendored cccl asserts nvcc==toolkit
+# (cuda_toolkit.h: !_CCCL_CUDACC_EQUAL) and hard-errors on the 13.2-vs-13.0 skew.
+# The full-attention layers (head_dim 256, Qwen3.5 gated attn) + fp8 KV can ONLY be
+# served by FlashInfer's batch-prefill kernel, which JIT-compiles on the first
+# forward -> without this the engine dies with a 500 mid-request. cccl provides the
+# documented escape hatch CCCL_DISABLE_CTK_COMPATIBILITY_CHECK; nvcc honors
+# NVCC_APPEND_FLAGS, so we inject the define into every JIT nvcc call. A 13.2 nvcc
+# compiling 13.0 headers is a benign minor skew for these kernels. Compiled modules
+# are cached under ~/.cache/flashinfer, so only the first forward pays the JIT cost.
+export NVCC_APPEND_FLAGS="${NVCC_APPEND_FLAGS:+$NVCC_APPEND_FLAGS }-DCCCL_DISABLE_CTK_COMPATIBILITY_CHECK"
+# The FlashInfer JIT LINK step then fails "cannot find -lcudart": the nvidia/cu13
+# pip wheels ship only versioned libs (libcudart.so.13) with NO unversioned dev
+# symlink, and their lib dir is not on the default linker path. Provide both:
+# a dir of unversioned *.so dev-symlinks (generated once into cuda_dev_links/) plus
+# the cu13 lib dir on LIBRARY_PATH (link time) and LD_LIBRARY_PATH (load time).
+CU13_LIB="${CUDA_HOME}/lib"
+CUDA_DEVLINKS="${CUDA_DEVLINKS:-/home/mark/qwen_diffusion/runs/swe_datagen_s1/cuda_dev_links}"
+# Self-heal: generate the unversioned *.so dev-symlinks if missing (this dir is a
+# gitignored run output, so a fresh checkout has none). Idempotent.
+if [[ ! -e "${CUDA_DEVLINKS}/libcudart.so" ]]; then
+  mkdir -p "$CUDA_DEVLINKS"
+  for _f in "$CU13_LIB"/*.so.13; do [[ -e "$_f" ]] || continue; _b=$(basename "$_f"); ln -sf "$_f" "${CUDA_DEVLINKS}/${_b%.so.13}.so"; done
+fi
+export LIBRARY_PATH="${CUDA_DEVLINKS}:${CU13_LIB}${LIBRARY_PATH:+:$LIBRARY_PATH}"
+export LD_LIBRARY_PATH="${CU13_LIB}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export VLLM_NO_USAGE_STATS=${VLLM_NO_USAGE_STATS:-1}
 export TOKENIZERS_PARALLELISM=${TOKENIZERS_PARALLELISM:-false}
-export PYTORCH_CUDA_ALLOC_CONF=${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}
+# KV offloading (OffloadingConnector) is INCOMPATIBLE with expandable_segments:True
+# (PyTorch's CUDA VMM can remap KV virtual addresses, invalidating the pinned host
+# offload buffer) unless the cumem allocator is enabled. Boot-probe verified: with
+# KV_OFFLOAD_GB>0 the engine fails VllmConfig validation under expandable_segments.
+# So drop it only when offload is on; keep it (fragmentation safety) when offload=0.
+if python3 -c "exit(0 if float('$KV_OFFLOAD_GB')>0 else 1)"; then
+  export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF_OFFLOAD:-}"
+else
+  export PYTORCH_CUDA_ALLOC_CONF=${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}
+fi
 
 SPEC_CONFIG=${SPEC_CONFIG:-"{\"method\":\"qwen3_5_mtp\",\"num_speculative_tokens\":${NUM_SPEC_TOKENS}}"}
 
