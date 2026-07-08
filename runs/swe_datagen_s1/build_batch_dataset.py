@@ -47,8 +47,16 @@ os.environ.setdefault("HF_HUB_OFFLINE", "1")
 os.environ.setdefault("HF_DATASETS_OFFLINE", "1")
 
 # The exact record fields the fork/official harness + driver read. Verified rows
-# carry `environment_setup_commit`; SWE-Gym rows usually don't (harness tolerates
-# absence). Include it via .get so the combined schema is a superset.
+# carry `environment_setup_commit`; SWE-Gym rows usually don't. We build the record
+# via .get so the combined schema is a superset, but `environment_setup_commit` is
+# SPECIAL: the fork harness keys off KEY PRESENCE, not truthiness (get_environment_yml:
+# `instance["environment_setup_commit"] if "environment_setup_commit" in instance else
+# instance["base_commit"]`). `.get(k)` turns a SWE-Gym row's true ABSENCE into a
+# present `None`, which defeats that fallback -> os.path.join(url, repo, None, path)
+# raises TypeError and aborts the ENTIRE fork run before any container (every gym id
+# then records no_prediction). So below we DROP `environment_setup_commit` when it is
+# None, restoring true absence -> the harness base_commit fallback fires. Verified rows
+# keep it (populated, non-None); the official harness is unaffected.
 FIELDS = ["instance_id", "repo", "base_commit", "version", "problem_statement",
           "patch", "test_patch", "FAIL_TO_PASS", "PASS_TO_PASS", "hints_text",
           "created_at", "environment_setup_commit"]
@@ -92,7 +100,13 @@ def main() -> int:
             ex, src = ver_rec[iid], VERIFIED
         else:
             missing.append(iid); continue
-        records.append({k: ex.get(k) for k in FIELDS})
+        rec = {k: ex.get(k) for k in FIELDS}
+        # A present-`None` environment_setup_commit crashes the fork harness (it
+        # tests key PRESENCE, not value); drop it so true absence -> base_commit
+        # fallback. Verified rows carry a real value and are untouched.
+        if rec.get("environment_setup_commit") is None:
+            rec.pop("environment_setup_commit", None)
+        records.append(rec)
         present.append(iid)
         sources[iid] = src
 

@@ -200,6 +200,21 @@ def _load_report(batchdir: Path) -> dict:
     return {}
 
 
+def _classify(iid: str, resolved: set, empty: set, error: set,
+              unresolved: set, pull_failed: set) -> str:
+    if iid in pull_failed:
+        return "env_unavailable"
+    if iid in resolved:
+        return "resolved"
+    if iid in empty:
+        return "empty_patch"
+    if iid in error:
+        return "error"
+    if iid in unresolved:
+        return "unresolved"
+    return "no_prediction"
+
+
 def cmd_record(batchdir: Path, batch_id: str, attempts: Path,
                infra_invalid: str | None = None) -> int:
     ids = json.loads((batchdir / "subset.json").read_text())["instance_ids"]
@@ -213,6 +228,26 @@ def cmd_record(batchdir: Path, batch_id: str, attempts: Path,
     # batches (best-of-k), but a given batch's row is written at most once.
     have = {(r.get("instance_id"), r.get("batch_id")) for r in _read_jsonl(attempts)}
 
+    # Classify the WHOLE batch up front (independent of `have`) so the batch-level
+    # infra decision below sees every id, not just the not-yet-written subset.
+    verdicts = {iid: _classify(iid, resolved, empty, error, unresolved, pull_failed)
+                for iid in ids}
+
+    # HARDEN (task-3): a missing prediction is ALWAYS a pipeline gap, NEVER teacher
+    # signal — the agent at worst submits an empty patch, so an id with no scoreable
+    # prediction means the prediction/scoring path broke (e.g. a whole-harness crash
+    # produced no sub-report -> every id fell through to no_prediction). If this
+    # batch's REAL rows are MAJORITY no_prediction, auto-mark the WHOLE batch
+    # infra_invalid so it is invisible to yield / the kill window / coverage and its
+    # ids stay re-drawable. This backstops false KILL_YIELD_COLLAPSE even when gen
+    # rc=0 (the orchestrator never passes --infra-invalid for a scoring-side break).
+    real_vs = [v for v in verdicts.values() if v in REAL_VERDICTS]
+    n_nopred = sum(1 for v in real_vs if v == "no_prediction")
+    auto_infra = None
+    if real_vs and n_nopred * 2 > len(real_vs):
+        auto_infra = f"auto_majority_no_prediction={n_nopred}/{len(real_vs)}"
+    infra_reason = infra_invalid or auto_infra
+
     ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     added = {"resolved": 0, "unresolved": 0, "empty_patch": 0, "error": 0,
              "no_prediction": 0, "env_unavailable": 0}
@@ -220,29 +255,21 @@ def cmd_record(batchdir: Path, batch_id: str, attempts: Path,
         for iid in ids:
             if (iid, batch_id) in have:
                 continue
-            if iid in pull_failed:
-                v = "env_unavailable"
-            elif iid in resolved:
-                v = "resolved"
-            elif iid in empty:
-                v = "empty_patch"
-            elif iid in error:
-                v = "error"
-            elif iid in unresolved:
-                v = "unresolved"
-            else:
-                v = "no_prediction"
+            v = verdicts[iid]
             row = {"instance_id": iid, "batch_id": batch_id, "verdict": v, "ts": ts}
-            # INFRA-INVALID: the batch never got a real shot at the teacher (gen
-            # failed -> server never booted). Flag every row so ledger yield / the
-            # kill window / coverage all ignore it and the id stays re-drawable.
-            if infra_invalid:
+            # INFRA-INVALID (explicit: gen never booted a server; OR auto: the batch
+            # is majority no_prediction == a scoring/prediction-path break). Flag
+            # EVERY row uniformly so ledger yield / the kill window / coverage all
+            # ignore it, the id stays re-drawable, and _trailing_infra_batches (which
+            # requires all rows flagged) recognizes the batch.
+            if infra_reason:
                 row["infra_invalid"] = True
-                row["infra_reason"] = infra_invalid
+                row["infra_reason"] = infra_reason
             f.write(json.dumps(row) + "\n")
             added[v] += 1
     print(json.dumps({"batch_id": batch_id, "recorded": sum(added.values()),
-                      "infra_invalid": bool(infra_invalid),
+                      "infra_invalid": bool(infra_reason),
+                      "auto_infra": bool(auto_infra),
                       "by_verdict": added}))
     return 0
 

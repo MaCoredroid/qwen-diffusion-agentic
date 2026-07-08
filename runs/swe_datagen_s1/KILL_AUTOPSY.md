@@ -199,3 +199,52 @@ resolving at ~0.42 on scored work up to the moment the bar fired on unscored cra
 recovery is **L1 (VA near-miss best-of-k, +69, zero infra)**; the durable path to the floor is
 **L2 (fix the fork scorer)**; the 1000 target requires **L4 (new imaged sources)** or a decision to
 **L5 (accept 218 and SFT)**.
+
+---
+
+## 6. RESOLUTION — 2026-07-08 (amends §4A/§4B; false kill reversed)
+
+Root cause in **§4B confirmed independently** and now **actually fixed** — plus the durable
+kill-honesty guard from §4A, implemented one layer deeper.
+
+- **§4B correction of record:** §4B states the scorer fix was *"already coded at
+  `build_batch_dataset.py:104-108`."* It was **not** — the file at kill time still had the bug
+  (`records.append({k: ex.get(k) for k in FIELDS})`, no `pop`), which is why **every** dual-source
+  `dataset_gym.json` (all 14 relaunch batches) carried `environment_setup_commit` present-`None`
+  (verified: present-None=n_gym_rows, missing=0, populated=0 in every one). The fix is now **truly
+  implemented**: `build_batch_dataset.py` drops `environment_setup_commit` when `None`, restoring
+  true absence → fork `get_environment_yml` falls back to `base_commit`. **Verified end-to-end** by
+  re-materializing the collapse batches through the real (offline) build path: rebuilt gym datasets
+  → **50/50 key MISSING, 0 `os.path.join` TypeErrors** (was 50/50 crashes); rebuilt verified
+  datasets → **44/44 key populated** (official harness untouched).
+
+- **§4A guard, implemented at the LEDGER layer (more robust than log-parsing):** rather than parse
+  `datagen_score.sh`'s fork-abort WARN, `ledger.py cmd_record` now **auto-stamps a batch
+  `infra_invalid` when its REAL rows are MAJORITY `no_prediction`** — because a missing prediction
+  is ALWAYS a pipeline gap (the agent at worst submits an empty patch), never teacher signal. This
+  catches ANY score-side break (fork crash, official crash, merge gap) regardless of `gen_rc`, and
+  is independent of log text. Unit-tested: healthy 9/10-scored batch → not flagged; empty-report
+  10/10 no_pred → whole batch flagged; explicit `--infra-invalid` still wins; 6/50 leak-shape →
+  correctly NOT flagged (sub-majority); idempotent re-record.
+
+- **Ledger correction applied** (backup
+  `attempts.jsonl.bak_pre_gym_scoring_correction_20260708T065904Z`): **209** poisoned rows re-marked
+  `infra_invalid` (`reason=fork_harness_no_report_env_setup_commit_none`) — every `swe_gym`
+  `no_prediction` row in a dual-source batch whose fork sub-report is absent (evidence-derived, not
+  hardcoded). Kept real: resolved/unresolved/empty_patch/error, verified rows (official harness
+  unaffected), and env_unavailable (genuine pull failures, confirmed in `pull.jsonl`). Untouched:
+  relaunch batches 0004/0005 (already `infra_invalid` — gen never booted). Poisoned ids are now
+  re-drawable under best-of-k.
+
+- **Corrected ledger** (target=1000 floor=400 kill-yield=0.10 kill-window=200): verdict
+  **KILL_YIELD_COLLAPSE → CONTINUE**; keepers **218** (unchanged); attempts_real **937→728**;
+  attempts_infra **300→509**; rolling_yield **0.09→0.415**; lifetime_yield **0.2327→0.2995**. This
+  matches §1d's "honest (scored-only)" column exactly — the kill was **false**. `DATAGEN_KILL.txt`
+  removed; `DATAGEN_STATUS.txt` documents the reversal.
+
+- **Unchanged strategic caveat (§0.2, §2):** reversing the false kill does **not** manufacture a
+  path to 1000. The VA (officially-scorable) head is still exhausted and the remaining gym frontier
+  is still low-yield (§2c). The **fix** now lets those gym ids actually score (unlocking L2); the
+  levers L1–L5 remain the forward decision for the next phase. **Next phase must run an acceptance
+  gate that exercises the FORK SCORING path over a fresh `dataset_gym.json`** (the 02:09Z acceptance
+  was gen-only) before relaunching the orchestrator.

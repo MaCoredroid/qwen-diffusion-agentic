@@ -592,12 +592,12 @@
 {"instance_id": "psf__requests-1921", "batch_id": "batch_0001_20260707T024659Z", "verdict": "resolved", "ts": "2026-07-07T03:43:01Z"}
 {"instance_id": "django__django-10973", "batch_id": "batch_0001_20260707T024659Z", "verdict": "resolved", "ts": "2026-07-07T03:43:01Z"}
 {"instance_id": "sympy__sympy-13091", "batch_id": "batch_0001_20260707T024659Z", "verdict": "unresolved", "ts": "2026-07-07T03:43:01Z"}
-{"instance_id": "modin-project__modin-6292", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6298", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6324", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6333", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6344", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6369", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-6292", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z"}
+{"instance_id": "modin-project__modin-6298", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z"}
+{"instance_id": "modin-project__modin-6324", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z"}
+{"instance_id": "modin-project__modin-6333", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z"}
+{"instance_id": "modin-project__modin-6344", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z"}
+{"instance_id": "modin-project__modin-6369", "batch_id": "batch_0001_20260707T024659Z", "verdict": "no_prediction", "ts": "2026-07-07T03:43:01Z"}
 {"instance_id": "sphinx-doc__sphinx-10614", "batch_id": "batch_0002_20260707T034313Z", "verdict": "unresolved", "ts": "2026-07-07T04:35:43Z"}
 {"instance_id": "matplotlib__matplotlib-21568", "batch_id": "batch_0002_20260707T034313Z", "verdict": "unresolved", "ts": "2026-07-07T04:35:43Z"}
 {"instance_id": "scikit-learn__scikit-learn-12682", "batch_id": "batch_0002_20260707T034313Z", "verdict": "unresolved", "ts": "2026-07-07T04:35:43Z"}
@@ -642,12 +642,12 @@
 {"instance_id": "pydata__xarray-4966", "batch_id": "batch_0002_20260707T034313Z", "verdict": "resolved", "ts": "2026-07-07T04:35:43Z"}
 {"instance_id": "pytest-dev__pytest-7236", "batch_id": "batch_0002_20260707T034313Z", "verdict": "resolved", "ts": "2026-07-07T04:35:43Z"}
 {"instance_id": "django__django-11099", "batch_id": "batch_0002_20260707T034313Z", "verdict": "resolved", "ts": "2026-07-07T04:35:43Z"}
-{"instance_id": "modin-project__modin-6370", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6371", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6381", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6400", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6403", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6404", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-6370", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z"}
+{"instance_id": "modin-project__modin-6371", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z"}
+{"instance_id": "modin-project__modin-6381", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z"}
+{"instance_id": "modin-project__modin-6400", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z"}
+{"instance_id": "modin-project__modin-6403", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z"}
+{"instance_id": "modin-project__modin-6404", "batch_id": "batch_0002_20260707T034313Z", "verdict": "no_prediction", "ts": "2026-07-07T04:35:43Z"}
 {"instance_id": "sympy__sympy-13798", "batch_id": "batch_0003_20260707T043604Z", "verdict": "unresolved", "ts": "2026-07-07T05:32:47Z"}
 {"instance_id": "sphinx-doc__sphinx-7590", "batch_id": "batch_0003_20260707T043604Z", "verdict": "unresolved", "ts": "2026-07-07T05:32:47Z"}
 {"instance_id": "matplotlib__matplotlib-23314", "batch_id": "batch_0003_20260707T043604Z", "verdict": "resolved", "ts": "2026-07-07T05:32:47Z"}
@@ -692,12 +692,12 @@
 {"instance_id": "sphinx-doc__sphinx-8035", "batch_id": "batch_0003_20260707T043604Z", "verdict": "unresolved", "ts": "2026-07-07T05:32:47Z"}
 {"instance_id": "matplotlib__matplotlib-24177", "batch_id": "batch_0003_20260707T043604Z", "verdict": "unresolved", "ts": "2026-07-07T05:32:47Z"}
 {"instance_id": "scikit-learn__scikit-learn-14710", "batch_id": "batch_0003_20260707T043604Z", "verdict": "resolved", "ts": "2026-07-07T05:32:47Z"}
-{"instance_id": "modin-project__modin-6426", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6481", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6486", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6488", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6545", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6547", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-6426", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z"}
+{"instance_id": "modin-project__modin-6481", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z"}
+{"instance_id": "modin-project__modin-6486", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z"}
+{"instance_id": "modin-project__modin-6488", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z"}
+{"instance_id": "modin-project__modin-6545", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z"}
+{"instance_id": "modin-project__modin-6547", "batch_id": "batch_0003_20260707T043604Z", "verdict": "no_prediction", "ts": "2026-07-07T05:32:47Z"}
 {"instance_id": "astropy__astropy-7606", "batch_id": "batch_0004_20260707T053307Z", "verdict": "no_prediction", "ts": "2026-07-07T05:49:58Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
 {"instance_id": "pydata__xarray-7229", "batch_id": "batch_0004_20260707T053307Z", "verdict": "no_prediction", "ts": "2026-07-07T05:49:58Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
 {"instance_id": "django__django-11206", "batch_id": "batch_0004_20260707T053307Z", "verdict": "no_prediction", "ts": "2026-07-07T05:49:58Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
@@ -842,12 +842,12 @@
 {"instance_id": "scikit-learn__scikit-learn-25931", "batch_id": "batch_0006_20260707T060607Z", "verdict": "resolved", "ts": "2026-07-07T07:00:13Z"}
 {"instance_id": "django__django-11451", "batch_id": "batch_0006_20260707T060607Z", "verdict": "unresolved", "ts": "2026-07-07T07:00:13Z"}
 {"instance_id": "sympy__sympy-16450", "batch_id": "batch_0006_20260707T060607Z", "verdict": "resolved", "ts": "2026-07-07T07:00:13Z"}
-{"instance_id": "modin-project__modin-6554", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6560", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6575", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6608", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6612", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6613", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-6554", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z"}
+{"instance_id": "modin-project__modin-6560", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z"}
+{"instance_id": "modin-project__modin-6575", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z"}
+{"instance_id": "modin-project__modin-6608", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z"}
+{"instance_id": "modin-project__modin-6612", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z"}
+{"instance_id": "modin-project__modin-6613", "batch_id": "batch_0006_20260707T060607Z", "verdict": "no_prediction", "ts": "2026-07-07T07:00:13Z"}
 {"instance_id": "sphinx-doc__sphinx-8621", "batch_id": "batch_0007_20260707T070026Z", "verdict": "unresolved", "ts": "2026-07-07T07:53:49Z"}
 {"instance_id": "matplotlib__matplotlib-26113", "batch_id": "batch_0007_20260707T070026Z", "verdict": "resolved", "ts": "2026-07-07T07:53:49Z"}
 {"instance_id": "scikit-learn__scikit-learn-26194", "batch_id": "batch_0007_20260707T070026Z", "verdict": "unresolved", "ts": "2026-07-07T07:53:49Z"}
@@ -892,12 +892,12 @@
 {"instance_id": "sympy__sympy-19637", "batch_id": "batch_0007_20260707T070026Z", "verdict": "resolved", "ts": "2026-07-07T07:53:49Z"}
 {"instance_id": "django__django-11880", "batch_id": "batch_0007_20260707T070026Z", "verdict": "resolved", "ts": "2026-07-07T07:53:49Z"}
 {"instance_id": "sympy__sympy-19783", "batch_id": "batch_0007_20260707T070026Z", "verdict": "unresolved", "ts": "2026-07-07T07:53:49Z"}
-{"instance_id": "modin-project__modin-6618", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6625", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6631", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6633", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6638", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6648", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-6618", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z"}
+{"instance_id": "modin-project__modin-6625", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z"}
+{"instance_id": "modin-project__modin-6631", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z"}
+{"instance_id": "modin-project__modin-6633", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z"}
+{"instance_id": "modin-project__modin-6638", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z"}
+{"instance_id": "modin-project__modin-6648", "batch_id": "batch_0007_20260707T070026Z", "verdict": "no_prediction", "ts": "2026-07-07T07:53:49Z"}
 {"instance_id": "django__django-11885", "batch_id": "batch_0008_20260707T075402Z", "verdict": "unresolved", "ts": "2026-07-07T08:44:59Z"}
 {"instance_id": "sympy__sympy-19954", "batch_id": "batch_0008_20260707T075402Z", "verdict": "resolved", "ts": "2026-07-07T08:44:59Z"}
 {"instance_id": "django__django-11951", "batch_id": "batch_0008_20260707T075402Z", "verdict": "unresolved", "ts": "2026-07-07T08:44:59Z"}
@@ -943,11 +943,11 @@
 {"instance_id": "django__django-12858", "batch_id": "batch_0008_20260707T075402Z", "verdict": "unresolved", "ts": "2026-07-07T08:44:59Z"}
 {"instance_id": "sympy__sympy-24661", "batch_id": "batch_0008_20260707T075402Z", "verdict": "resolved", "ts": "2026-07-07T08:44:59Z"}
 {"instance_id": "modin-project__modin-6649", "batch_id": "batch_0008_20260707T075402Z", "verdict": "env_unavailable", "ts": "2026-07-07T08:44:59Z"}
-{"instance_id": "modin-project__modin-6656", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6673", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6685", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6737", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6751", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-6656", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z"}
+{"instance_id": "modin-project__modin-6673", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z"}
+{"instance_id": "modin-project__modin-6685", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z"}
+{"instance_id": "modin-project__modin-6737", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z"}
+{"instance_id": "modin-project__modin-6751", "batch_id": "batch_0008_20260707T075402Z", "verdict": "no_prediction", "ts": "2026-07-07T08:44:59Z"}
 {"instance_id": "django__django-12965", "batch_id": "batch_0009_20260707T084508Z", "verdict": "empty_patch", "ts": "2026-07-07T09:34:33Z"}
 {"instance_id": "django__django-13012", "batch_id": "batch_0009_20260707T084508Z", "verdict": "resolved", "ts": "2026-07-07T09:34:33Z"}
 {"instance_id": "django__django-13023", "batch_id": "batch_0009_20260707T084508Z", "verdict": "unresolved", "ts": "2026-07-07T09:34:33Z"}
@@ -992,12 +992,12 @@
 {"instance_id": "django__django-14155", "batch_id": "batch_0009_20260707T084508Z", "verdict": "unresolved", "ts": "2026-07-07T09:34:33Z"}
 {"instance_id": "django__django-14238", "batch_id": "batch_0009_20260707T084508Z", "verdict": "resolved", "ts": "2026-07-07T09:34:33Z"}
 {"instance_id": "django__django-14311", "batch_id": "batch_0009_20260707T084508Z", "verdict": "unresolved", "ts": "2026-07-07T09:34:33Z"}
-{"instance_id": "modin-project__modin-6757", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6758", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6759", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6760", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6763", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6764", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-6757", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z"}
+{"instance_id": "modin-project__modin-6758", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z"}
+{"instance_id": "modin-project__modin-6759", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z"}
+{"instance_id": "modin-project__modin-6760", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z"}
+{"instance_id": "modin-project__modin-6763", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z"}
+{"instance_id": "modin-project__modin-6764", "batch_id": "batch_0009_20260707T084508Z", "verdict": "no_prediction", "ts": "2026-07-07T09:34:33Z"}
 {"instance_id": "django__django-14315", "batch_id": "batch_0010_20260707T093444Z", "verdict": "unresolved", "ts": "2026-07-07T10:18:20Z"}
 {"instance_id": "django__django-14349", "batch_id": "batch_0010_20260707T093444Z", "verdict": "resolved", "ts": "2026-07-07T10:18:20Z"}
 {"instance_id": "django__django-14376", "batch_id": "batch_0010_20260707T093444Z", "verdict": "unresolved", "ts": "2026-07-07T10:18:20Z"}
@@ -1042,12 +1042,12 @@
 {"instance_id": "django__django-15732", "batch_id": "batch_0010_20260707T093444Z", "verdict": "unresolved", "ts": "2026-07-07T10:18:20Z"}
 {"instance_id": "django__django-15741", "batch_id": "batch_0010_20260707T093444Z", "verdict": "resolved", "ts": "2026-07-07T10:18:20Z"}
 {"instance_id": "django__django-15814", "batch_id": "batch_0010_20260707T093444Z", "verdict": "resolved", "ts": "2026-07-07T10:18:20Z"}
-{"instance_id": "modin-project__modin-6769", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6772", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6775", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6780", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6785", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6787", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-6769", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z"}
+{"instance_id": "modin-project__modin-6772", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z"}
+{"instance_id": "modin-project__modin-6775", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z"}
+{"instance_id": "modin-project__modin-6780", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z"}
+{"instance_id": "modin-project__modin-6785", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z"}
+{"instance_id": "modin-project__modin-6787", "batch_id": "batch_0010_20260707T093444Z", "verdict": "no_prediction", "ts": "2026-07-07T10:18:20Z"}
 {"instance_id": "django__django-15851", "batch_id": "batch_0011_20260707T101832Z", "verdict": "resolved", "ts": "2026-07-07T11:02:26Z"}
 {"instance_id": "django__django-15916", "batch_id": "batch_0011_20260707T101832Z", "verdict": "unresolved", "ts": "2026-07-07T11:02:26Z"}
 {"instance_id": "django__django-15930", "batch_id": "batch_0011_20260707T101832Z", "verdict": "unresolved", "ts": "2026-07-07T11:02:26Z"}
@@ -1083,168 +1083,168 @@
 {"instance_id": "django__django-17087", "batch_id": "batch_0011_20260707T101832Z", "verdict": "resolved", "ts": "2026-07-07T11:02:26Z"}
 {"instance_id": "django__django-7530", "batch_id": "batch_0011_20260707T101832Z", "verdict": "resolved", "ts": "2026-07-07T11:02:26Z"}
 {"instance_id": "django__django-9296", "batch_id": "batch_0011_20260707T101832Z", "verdict": "resolved", "ts": "2026-07-07T11:02:26Z"}
-{"instance_id": "python__mypy-11457", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9066", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "conan-io__conan-8355", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3665", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11483", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9082", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "conan-io__conan-9099", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3677", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11489", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6788", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6790", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6798", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6802", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6811", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6821", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9111", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "conan-io__conan-9431", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3715", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11521", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9134", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "conan-io__conan-9758", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3725", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11533", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9135", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3726", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11567", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9137", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3727", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11585", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9170", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3760", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11630", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9193", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3784", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11632", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9214", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3794", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11680", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9287", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3797", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11681", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9303", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3806", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11707", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "pydantic__pydantic-9450", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3836", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11713", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3876", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11717", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3891", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11725", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3895", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11787", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3914", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11810", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3929", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11814", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3940", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11822", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6823", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6825", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6844", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6854", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6873", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6884", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3992", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11824", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-3998", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11828", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4001", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11857", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4005", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11867", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4011", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11870", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4026", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11912", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4034", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11918", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4049", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11945", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4059", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11962", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4066", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11966", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4075", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11972", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4086", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-11984", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4114", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12023", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4124", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12048", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4125", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12064", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4137", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12199", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4149", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12222", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4166", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12250", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4185", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12254", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "python__mypy-11457", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "pydantic__pydantic-9066", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "conan-io__conan-8355", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "iterative__dvc-3665", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "python__mypy-11483", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "pydantic__pydantic-9082", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "conan-io__conan-9099", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "iterative__dvc-3677", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "python__mypy-11489", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "modin-project__modin-6788", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "modin-project__modin-6790", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "modin-project__modin-6798", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "modin-project__modin-6802", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "modin-project__modin-6811", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "modin-project__modin-6821", "batch_id": "batch_0011_20260707T101832Z", "verdict": "no_prediction", "ts": "2026-07-07T11:02:26Z"}
+{"instance_id": "pydantic__pydantic-9111", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "conan-io__conan-9431", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3715", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11521", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9134", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "conan-io__conan-9758", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3725", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11533", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9135", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3726", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11567", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9137", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3727", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11585", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9170", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3760", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11630", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9193", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3784", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11632", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9214", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3794", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11680", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9287", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3797", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11681", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9303", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3806", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11707", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "pydantic__pydantic-9450", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3836", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11713", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3876", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11717", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3891", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11725", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3895", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11787", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3914", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11810", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3929", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11814", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3940", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "python__mypy-11822", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "modin-project__modin-6823", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "modin-project__modin-6825", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "modin-project__modin-6844", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "modin-project__modin-6854", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "modin-project__modin-6873", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "modin-project__modin-6884", "batch_id": "batch_0012_20260707T110240Z", "verdict": "no_prediction", "ts": "2026-07-07T11:49:55Z"}
+{"instance_id": "iterative__dvc-3992", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11824", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-3998", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11828", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4001", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11857", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4005", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11867", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4011", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11870", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4026", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11912", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4034", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11918", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4049", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11945", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4059", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11962", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4066", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11966", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4075", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11972", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4086", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-11984", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4114", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12023", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4124", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12048", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4125", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12064", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4137", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12199", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4149", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12222", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4166", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12250", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4185", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12254", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
 {"instance_id": "iterative__dvc-4190", "batch_id": "batch_0013_20260707T115018Z", "verdict": "env_unavailable", "ts": "2026-07-07T12:40:20Z"}
-{"instance_id": "python__mypy-12267", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4246", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12417", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4309", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12548", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6905", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6937", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6941", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6951", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6957", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6969", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4323", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12741", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4334", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12762", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4379", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12767", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4480", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12943", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4488", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-12951", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4517", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13015", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4538", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13284", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4543", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13489", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4566", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13514", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4568", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13526", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4613", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13576", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4622", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13602", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4623", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13648", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4670", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13678", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4706", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13728", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4719", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13731", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4767", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13808", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4778", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-13963", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4785", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-14007", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4817", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-14021", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "iterative__dvc-4848", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "python__mypy-14038", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "python__mypy-12267", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4246", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12417", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4309", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "python__mypy-12548", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "modin-project__modin-6905", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "modin-project__modin-6937", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "modin-project__modin-6941", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "modin-project__modin-6951", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "modin-project__modin-6957", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "modin-project__modin-6969", "batch_id": "batch_0013_20260707T115018Z", "verdict": "no_prediction", "ts": "2026-07-07T12:40:20Z"}
+{"instance_id": "iterative__dvc-4323", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-12741", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4334", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-12762", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4379", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-12767", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4480", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-12943", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4488", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-12951", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4517", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13015", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4538", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13284", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4543", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13489", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4566", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13514", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4568", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13526", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4613", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13576", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4622", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13602", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4623", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13648", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4670", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13678", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4706", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13728", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4719", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13731", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4767", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13808", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4778", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-13963", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4785", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-14007", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4817", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-14021", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "iterative__dvc-4848", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "python__mypy-14038", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
 {"instance_id": "iterative__dvc-4872", "batch_id": "batch_0014_20260707T124034Z", "verdict": "env_unavailable", "ts": "2026-07-07T13:30:46Z"}
-{"instance_id": "python__mypy-14064", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6980", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6986", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-6992", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
-{"instance_id": "modin-project__modin-7018", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "python__mypy-14064", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "modin-project__modin-6980", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "modin-project__modin-6986", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "modin-project__modin-6992", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
+{"instance_id": "modin-project__modin-7018", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
 {"instance_id": "modin-project__modin-7042", "batch_id": "batch_0014_20260707T124034Z", "verdict": "env_unavailable", "ts": "2026-07-07T13:30:46Z"}
-{"instance_id": "modin-project__modin-7048", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z", "infra_invalid": true, "infra_reason": "fork_harness_no_report_env_setup_commit_none"}
+{"instance_id": "modin-project__modin-7048", "batch_id": "batch_0014_20260707T124034Z", "verdict": "no_prediction", "ts": "2026-07-07T13:30:46Z"}
