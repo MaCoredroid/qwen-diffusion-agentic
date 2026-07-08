@@ -158,6 +158,11 @@ GPU_UTIL=$(python3 -c "print(f'{min(0.85, ($GPU_TOTAL_MIB - $GPU_USED_MIB - 1800
 python3 -c "exit(0 if $GPU_UTIL >= 0.74 else 1)" || { echo "[gen] GPU_UTIL=$GPU_UTIL below certified 0.74 floor (desktop holds ${GPU_USED_MIB}MiB) — refusing boot" >&2; exit 1; }
 echo "[gen] booting server scope=$SCOPE port=$PORT gpu_util=$GPU_UTIL runcage=$RUNCAGE_SCRIPT seqs=$C spec=${NUM_SPEC_TOKENS:-1} attn=${ATTENTION_BACKEND:-launcher-default} kv=${KV_CACHE_DTYPE:-launcher-default} kv_offload_gb=${KV_OFFLOAD_GB:-launcher-default} model=$DRIVER_MODEL (used=${GPU_USED_MIB}MiB total=${GPU_TOTAL_MIB}MiB)" >&2
 ACTIVE_SCOPE="$SCOPE"
+# A previous gen killed mid-flight leaves the transient scope in systemd's FAILED
+# registry; systemd-run then refuses "Unit ... already loaded or has a fragment
+# file" and the batch dies instantly (burned batch_0002_20260708T210930Z ->
+# HALT_INFRA). reset-failed is idempotent and clears only the stale registration.
+systemctl --user reset-failed "${SCOPE}.scope" 2>/dev/null || true
 # Pass the teacher-coupled certified primitives through the cage to the launcher.
 # For the 9B launchers these envs are unused (they hardcode their own KV/attn), so
 # passing empty strings is harmless; for runcage_27b.sh they lock the FROZEN config.

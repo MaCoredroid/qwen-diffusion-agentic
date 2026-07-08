@@ -339,6 +339,16 @@ def _trailing_infra_batches(attempt_rows: list[dict]) -> tuple[int, list[str]]:
     order: list[str] = []
     rows_by_batch: dict[str, list[dict]] = {}
     for r in attempt_rows:
+        # A repair marker is an audited boundary: the monitor fixed the fault the
+        # trailing infra batches shared (the row carries cause + fix). Batches
+        # BEFORE it stay infra_invalid for yield purposes but must not re-trip
+        # HALT_INFRA at the next startup — without this boundary, any repair after
+        # 2 infra batches dead-locks (cmd_state halts BEFORE the first new batch
+        # can record and reset the trailing count).
+        if r.get("infra_repair_marker"):
+            order.clear()
+            rows_by_batch.clear()
+            continue
         bid = r.get("batch_id")
         if not bid:
             continue
