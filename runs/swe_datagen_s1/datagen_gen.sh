@@ -17,6 +17,12 @@ export SWE_DOCKER_CMD="${SWE_DOCKER_CMD:-docker}"
 HERE=runs/swe_datagen_s1
 PY=.venv/bin/python
 DRIVER=scripts/run_swe_bench_qwen_code.py
+# Runcage selector — which server launcher to boot for this batch. Default is the
+# stock-AR probe. The MTP speculative-decode gate flips this to runcage_ar_mtp.sh
+# (env override, one line). datagen_gen.sh is invoked fresh per cycle, so a single
+# RUNCAGE_SCRIPT export by the orchestrator takes effect at the next cycle boundary;
+# rollback = unset it (or set it back to runcage_ar_probe.sh).
+RUNCAGE_SCRIPT="${RUNCAGE_SCRIPT:-runcage_ar_probe.sh}"
 
 BATCHDIR="${1:?batchdir}"; GEN_ROOT="${2:?gen_root}"; C="${3:-4}"
 PORT="${PORT:-9951}"
@@ -94,10 +100,10 @@ preflight || exit 1
 read -r GPU_USED_MIB GPU_TOTAL_MIB < <(nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits | awk -F', *' 'NR==1{print $1, $2}')
 GPU_UTIL=$(python3 -c "print(f'{min(0.85, ($GPU_TOTAL_MIB - $GPU_USED_MIB - 1800) / $GPU_TOTAL_MIB):.2f}')")
 python3 -c "exit(0 if $GPU_UTIL >= 0.74 else 1)" || { echo "[gen] GPU_UTIL=$GPU_UTIL below certified 0.74 floor (desktop holds ${GPU_USED_MIB}MiB) — refusing boot" >&2; exit 1; }
-echo "[gen] booting server scope=$SCOPE port=$PORT gpu_util=$GPU_UTIL (used=${GPU_USED_MIB}MiB total=${GPU_TOTAL_MIB}MiB)" >&2
+echo "[gen] booting server scope=$SCOPE port=$PORT gpu_util=$GPU_UTIL runcage=$RUNCAGE_SCRIPT (used=${GPU_USED_MIB}MiB total=${GPU_TOTAL_MIB}MiB)" >&2
 ACTIVE_SCOPE="$SCOPE"
 systemd-run --user --scope --unit="$SCOPE" -p MemoryMax=22G -p MemorySwapMax=4G \
-  bash -c "MAX_NUM_SEQS=$C MAX_MODEL_LEN=32768 GPU_UTIL=$GPU_UTIL PORT=$PORT bash $HERE/runcage_ar_probe.sh" \
+  bash -c "MAX_NUM_SEQS=$C MAX_MODEL_LEN=32768 GPU_UTIL=$GPU_UTIL PORT=$PORT NUM_SPEC_TOKENS='${NUM_SPEC_TOKENS:-1}' bash $HERE/$RUNCAGE_SCRIPT" \
   > "$BATCHDIR/logs/gen_server.log" 2>&1 &
 wait_ready || { echo "[gen] server not ready" >&2; exit 1; }
 
