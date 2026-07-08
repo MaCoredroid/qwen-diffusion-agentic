@@ -20,7 +20,7 @@ Per-instance protocol (unchanged from the flywheel, §11 of the bounded-time spe
   6. Aggregate predictions.jsonl + campaign_summary.json (flywheel `_aggregate`).
 
 DIVERGENCES from the Codex driver (documented; user directive "adapt minimally"):
-  A. AGENT: local `node_modules/.bin/qwen` (Qwen Code @0.19.2) via the
+  A. AGENT: local `node_modules/.bin/qwen` (Qwen Code @0.19.4) via the
      qwen_code_sglang_proxy.py adapter -> vLLM Chat Completions, NOT `codex exec
      --json` in a docker container over the Responses API. Qwen Code speaks Chat
      Completions natively so no Responses proxy is needed (plan §C1). This reuses
@@ -69,15 +69,30 @@ DEFAULT_PROXY_SCRIPT = REPO_ROOT / "scripts" / "qwen_code_sglang_proxy.py"
 # Endpoint defaults follow the Stage-A certified serving ports.
 DEFAULT_ENDPOINT = "http://127.0.0.1:9951/v1"          # stock-AR arm
 DEFAULT_MODEL = "qwen3.5-9b-ar"                         # AR served-model-name
-DEFAULT_MODEL_NAME_TAG = "qwen3.5-9b-ar::qwen-code-0.19.2::stage-c"
+# qwen-code version bumped 0.19.2 -> 0.19.4 to match the flywheel's RESOLVED agent
+# (run_swe_bench_q36_a.py DEFAULT_MODEL_NAME_TAG / qwen-code-runner.Dockerfile pin
+# / prepare_qwen_agent_bundle.sh @0.19.4). Keep the ::qwen-code-<ver>:: segment in
+# sync with node_modules/@qwen-code/qwen-code so predictions.jsonl records the agent.
+DEFAULT_MODEL_NAME_TAG = "qwen3.5-9b-ar::qwen-code-0.19.4::stage-c"
 
 # Per-attempt agent wall (subprocess timeout). 0 => rely on the qwen CLI's own
 # --max-wall-time / --max-session-turns budgets (like the flywheel's codex idle
 # timeout backstop). Set >0 for a hard harness wall.
 DEFAULT_AGENT_WALL_S = 0
-DEFAULT_MAX_SESSION_TURNS = 80    # flywheel QWEN_CODE_TEMPLATE default
-DEFAULT_QWEN_MAX_WALL = "1800s"   # qwen CLI run-level budget (exit 55 on overrun)
+# Flywheel qwen-code profile (run_swe_bench_q36_a.py, user 2026-07-07): NO turn cap —
+# `--max-session-turns 100000` is effectively unlimited so a task runs to its natural
+# submit/give-up. Backstop = QWEN_STREAM_IDLE_TIMEOUT_MS (+ optional harness/qwen wall).
+DEFAULT_MAX_SESSION_TURNS = 100000
+# Flywheel default: NO `--max-wall-time` (empty => flag omitted; rely on the stream-idle
+# timeout below). Set --qwen-max-wall "1800s" for a hard qwen run-level budget (exit 55).
+DEFAULT_QWEN_MAX_WALL = ""
 DEFAULT_QWEN_MAX_OUTPUT_TOKENS = 32768   # flywheel R1 context-budget fix
+# Flywheel FR13 §59/§79 belt: raise qwen-code's stream-idle abort (built-in default
+# 120000ms) so a transient mid-stream upstream flake or a pre-first-byte queue wait is
+# not converted into a fatal patch-less give-up. qwen-code 0.19.4 reads
+# QWEN_STREAM_IDLE_TIMEOUT_MS (precedence: config field > env > default). 240000 is the
+# flywheel QWEN_CODE_TEMPLATE value; their in-image path uses 600000 for B>=4 queueing.
+DEFAULT_QWEN_STREAM_IDLE_TIMEOUT_MS = 240000
 DEFAULT_EVAL_TIMEOUT_S = 30 * 60
 
 # Proxy adapter (Stage-A): inject enable_thinking=false, clamp max_tokens, pass
@@ -595,32 +610,50 @@ def _run_qwen_code(
 
     extra_path: dir prepended to PATH (the container runtime passes the `bash`
     shell-shim dir here so run_shell_command routes into `docker exec`)."""
+    # Clean, writable, per-episode HOME (flywheel HOME=/tmp convention). REQUIRED now
+    # that we drop --bare: qwen-code auto-discovers ~/.qwen config/state from HOME, so we
+    # isolate it from the host user's global config AND guarantee a writable ~/.qwen for
+    # the CLI session. AGENTS.md task-context is still auto-discovered from CWD (workspace).
+    home_dir = trace_path.parent / "qwen_home"
+    home_dir.mkdir(parents=True, exist_ok=True)
     env = os.environ.copy()
+    # Flywheel qwen-code env profile (QWEN_CODE_TEMPLATE / instance_image path): auth +
+    # endpoint + model are supplied via ENV (NOT CLI flags), plus the context-budget and
+    # stream-idle timeouts. OPENAI_API_KEY is the flywheel's non-empty "EMPTY" placeholder
+    # (the proxy ignores auth). An existing QWEN_STREAM_IDLE_TIMEOUT_MS env wins so gate
+    # scripts can bump it (e.g. 600000 for batched B>=4) without editing the driver.
     env.update({
-        "QWEN_CODE_MAX_OUTPUT_TOKENS": str(args.qwen_max_output_tokens),
-        "QWEN_CODE_SUPPRESS_YOLO_WARNING": "1",
-        "OPENAI_API_KEY": "dummy",
+        "OPENAI_API_KEY": "EMPTY",
         "OPENAI_BASE_URL": proxy_base_url,
         "OPENAI_MODEL": model,
         "QWEN_MODEL": model,
+        "QWEN_CODE_MAX_OUTPUT_TOKENS": str(args.qwen_max_output_tokens),
+        "QWEN_STREAM_IDLE_TIMEOUT_MS": os.environ.get(
+            "QWEN_STREAM_IDLE_TIMEOUT_MS", str(args.qwen_stream_idle_timeout_ms)),
+        "QWEN_CODE_SUPPRESS_YOLO_WARNING": "1",
+        "HOME": str(home_dir),
     })
     if extra_path is not None:
         env["PATH"] = str(extra_path) + os.pathsep + env.get("PATH", "")
+    # Flywheel qwen-code invocation profile (run_swe_bench_q36_a.py QWEN_CODE_TEMPLATE /
+    # _INSTANCE_WRAPPER, qwen-code 0.19.4): `qwen --yolo --output-format json
+    # --max-session-turns 100000 -p <prompt>`. Auth/endpoint/model flow via ENV (above),
+    # NOT CLI flags. Full built-in tool set (NO --exclude-tools) and NO --bare, so the
+    # AGENTS.md task-context is auto-discovered from CWD exactly as the flywheel intends.
     cmd = [
         str(args.qwen_bin),
-        "--bare",
-        "--auth-type", "openai",
-        "--openai-api-key", "dummy",
-        "--openai-base-url", proxy_base_url,
-        "--model", model,
-        "--approval-mode", "yolo",
-        "--max-session-turns", str(args.max_session_turns),
-        "--max-wall-time", args.qwen_max_wall,
+        "--yolo",
         "--output-format", "json",
-        "--exclude-tools", "agent",
-        "--exclude-tools", "web_fetch",
-        "--exclude-tools", "notebook_edit",
+        "--max-session-turns", str(args.max_session_turns),
     ]
+    # Optional hard qwen run-level wall (flywheel default: none -> rely on the stream-idle
+    # timeout). Opt-in via --qwen-max-wall "1800s" (exit 55 on overrun).
+    if args.qwen_max_wall:
+        cmd += ["--max-wall-time", args.qwen_max_wall]
+    # Optional tool exclusions (flywheel default: none -> full built-in tool set). Opt-in
+    # via repeated --exclude-tools <name>.
+    for tool in (getattr(args, "exclude_tools", None) or []):
+        cmd += ["--exclude-tools", tool]
     if args.system_prompt:
         cmd += ["--system-prompt", args.system_prompt]
     cmd += ["-p", prompt]
@@ -1211,9 +1244,20 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--agent-wall-s", type=int,
                    default=int(os.environ.get("SWE_AGENT_WALL_S", str(DEFAULT_AGENT_WALL_S))),
                    help="hard harness wall per attempt (0 = rely on qwen --max-wall-time)")
-    p.add_argument("--max-session-turns", type=int, default=DEFAULT_MAX_SESSION_TURNS)
-    p.add_argument("--qwen-max-wall", default=DEFAULT_QWEN_MAX_WALL)
+    p.add_argument("--max-session-turns", type=int, default=DEFAULT_MAX_SESSION_TURNS,
+                   help="flywheel default 100000 = no turn cap (natural submit/give-up)")
+    p.add_argument("--qwen-max-wall", default=DEFAULT_QWEN_MAX_WALL,
+                   help="hard qwen run-level wall (e.g. '1800s'); '' (flywheel default) "
+                        "omits --max-wall-time and relies on the stream-idle timeout")
     p.add_argument("--qwen-max-output-tokens", type=int, default=DEFAULT_QWEN_MAX_OUTPUT_TOKENS)
+    p.add_argument("--qwen-stream-idle-timeout-ms", type=int,
+                   default=int(os.environ.get("QWEN_STREAM_IDLE_TIMEOUT_MS",
+                                              str(DEFAULT_QWEN_STREAM_IDLE_TIMEOUT_MS))),
+                   help="QWEN_STREAM_IDLE_TIMEOUT_MS for the qwen episode (flywheel FR13 "
+                        "belt; default 240000, in-image batched path uses 600000)")
+    p.add_argument("--exclude-tools", action="append", default=None,
+                   help="tools to exclude from qwen-code (flywheel default: none). "
+                        "Repeat for multiple, e.g. --exclude-tools web_fetch")
     p.add_argument("--system-prompt", default="")
     p.add_argument("--eval-mode", choices=("mock", "offload", "local", "skip"), default="mock")
     p.add_argument("--eval-host", default=None, help="SSH host for --eval-mode offload (x86)")
