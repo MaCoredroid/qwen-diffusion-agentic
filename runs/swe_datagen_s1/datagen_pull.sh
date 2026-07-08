@@ -7,7 +7,8 @@
 #   usage: datagen_pull.sh <batchdir>
 set -uo pipefail
 cd /home/mark/qwen_diffusion
-export SUDO_ASKPASS="${SUDO_ASKPASS:?export SUDO_ASKPASS}"
+export SUDO_ASKPASS="${SUDO_ASKPASS:-}"
+export SWE_DOCKER_CMD="${SWE_DOCKER_CMD:-docker}"   # docker-group host: plain docker
 HERE=runs/swe_datagen_s1
 BATCHDIR="${1:?batchdir}"
 OUT="$BATCHDIR/pull.jsonl"

@@ -10,8 +10,10 @@
 #   usage: datagen_gen.sh <batchdir> <gen_root> <concurrency>
 set -uo pipefail
 cd /home/mark/qwen_diffusion
-export SUDO_ASKPASS="${SUDO_ASKPASS:?export SUDO_ASKPASS}"
-export SWE_DOCKER_CMD="sudo -A docker"
+export SUDO_ASKPASS="${SUDO_ASKPASS:-}"
+# docker-group host -> plain docker (no sudo available non-interactively). Override
+# to 'sudo -A docker' + SUDO_ASKPASS only where the user lacks the docker group.
+export SWE_DOCKER_CMD="${SWE_DOCKER_CMD:-docker}"
 HERE=runs/swe_datagen_s1
 PY=.venv/bin/python
 DRIVER=scripts/run_swe_bench_qwen_code.py
@@ -51,7 +53,7 @@ cleanup() {
     echo "[cleanup] stopping $ACTIVE_SCOPE" >&2
     systemctl --user stop "${ACTIVE_SCOPE}.scope" 2>/dev/null || true; sleep 3
   fi
-  sudo -A docker ps -q --filter "name=swe_ep_" 2>/dev/null | xargs -r sudo -A docker rm -f >/dev/null 2>&1 || true
+  $SWE_DOCKER_CMD ps -q --filter "name=swe_ep_" 2>/dev/null | xargs -r $SWE_DOCKER_CMD rm -f >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 

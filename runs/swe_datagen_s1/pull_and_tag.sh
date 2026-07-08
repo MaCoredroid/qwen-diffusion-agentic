@@ -18,8 +18,8 @@ set -uo pipefail
 IID="${1:?instance_id}"
 OUT="${2:?out jsonl}"
 SOURCE="${3:-swe_gym}"
-export SUDO_ASKPASS="${SUDO_ASKPASS:?export SUDO_ASKPASS}"
-D="sudo -A docker"
+export SUDO_ASKPASS="${SUDO_ASKPASS:-}"
+D="${SWE_DOCKER_CMD:-docker}"   # docker-group host: plain docker (override to 'sudo -A docker' where absent)
 
 slug_s="${IID/__/_s_}"
 slug_1776="${IID/__/_1776_}"

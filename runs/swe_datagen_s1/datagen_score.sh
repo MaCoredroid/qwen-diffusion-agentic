@@ -19,7 +19,13 @@
 #   usage: datagen_score.sh <batchdir> <gen_root> [max_workers]
 set -uo pipefail
 cd /home/mark/qwen_diffusion
-export SUDO_ASKPASS="${SUDO_ASKPASS:?export SUDO_ASKPASS}"
+export SUDO_ASKPASS="${SUDO_ASKPASS:-}"
+export SWE_DOCKER_CMD="${SWE_DOCKER_CMD:-docker}"
+# Privilege wrapper for the harness (reaches docker via the docker group -> NO sudo).
+# The swebench harness talks to /var/run/docker.sock directly; a docker-group user
+# runs it fine and its report json is written by THIS process (my user) -> readable.
+# Override to 'sudo -A' only on a host lacking the group. Empty default = run as me.
+PRIV="${DATAGEN_PRIV:-}"
 V1=runs/stage0_swegym_probe
 FORK_PY="$V1/.venv-swegym/bin/python"                        # SWE-Bench-Fork (SWE-Gym)
 OFFICIAL_PY=runs/stage_c_n5/local_eval/.venv-harness/bin/python  # swebench 4.1.0 (Verified)
@@ -113,7 +119,7 @@ t0=$(date +%s)
 # 3) SWE-Gym ids -> fork harness (dataset_gym.json), report to parts/fork ---------
 if [[ "$NGYM" -gt 0 ]]; then
   echo "[score:gym] fork harness over $NGYM ids $(date -u +%FT%TZ)" >&2
-  ( cd "$SCORE/parts/fork" && timeout 21600 sudo -A env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
+  ( cd "$SCORE/parts/fork" && timeout 21600 $PRIV env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
       "/home/mark/qwen_diffusion/$FORK_PY" -m swebench.harness.run_evaluation \
       --dataset_name "/home/mark/qwen_diffusion/$DS_GYM" --split train \
       --predictions_path "/home/mark/qwen_diffusion/$PRED_GYM" \
@@ -125,7 +131,7 @@ fi
 # 4) Verified ids -> OFFICIAL harness (dataset_verified.json), report to parts/official
 if [[ "$NVER" -gt 0 && -s "$DS_VER" ]]; then
   echo "[score:verified] official harness over $NVER ids $(date -u +%FT%TZ)" >&2
-  ( cd "$SCORE/parts/official" && timeout 21600 sudo -A env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
+  ( cd "$SCORE/parts/official" && timeout 21600 $PRIV env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
       "/home/mark/qwen_diffusion/$OFFICIAL_PY" -m swebench.harness.run_evaluation \
       -d "/home/mark/qwen_diffusion/$DS_VER" -s test \
       -p "/home/mark/qwen_diffusion/$PRED_VER" -id "${RUN_ID}_ver" \
@@ -134,7 +140,7 @@ if [[ "$NVER" -gt 0 && -s "$DS_VER" ]]; then
       --report_dir "/home/mark/qwen_diffusion/$SCORE/parts/official" ) 2>&1 | tail -15
 fi
 t1=$(date +%s)
-sudo -A chown -R "$(id -u):$(id -g)" "$SCORE" 2>/dev/null || true
+$PRIV chown -R "$(id -u):$(id -g)" "$SCORE" 2>/dev/null || true
 
 # 5) MERGE the two sub-reports into the canonical report the ledger reads --------
 FORK_REP=$(ls "$SCORE"/parts/fork/*."${RUN_ID}_gym".json 2>/dev/null | grep -v timing | head -1)

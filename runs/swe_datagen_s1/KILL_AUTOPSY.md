@@ -248,3 +248,52 @@ kill-honesty guard from §4A, implemented one layer deeper.
   levers L1–L5 remain the forward decision for the next phase. **Next phase must run an acceptance
   gate that exercises the FORK SCORING path over a fresh `dataset_gym.json`** (the 02:09Z acceptance
   was gen-only) before relaunching the orchestrator.
+
+---
+
+## 4. CONFIRMATION — live both-sources FORK-SCORING gate PASSED + relaunch (2026-07-08T07:3x Z)
+
+The §3 next-step ("run an acceptance gate that exercises the FORK SCORING path over a fresh
+`dataset_gym.json` before relaunching") is now **DONE and GREEN**. Evidence dir:
+`runs/swe_datagen_s1/gate_live_20260708T071600Z/` (datasets, both sub-reports, merged report,
+logs, throwaway ledger-record + keeper dry-check).
+
+**Gate = 6 fresh episodes through the FULL pipeline (gen→score→report→keeper), 3 SWE-Gym + 3 Verified:**
+
+| id | source | harness | patch B | verdict |
+|---|---|---|--:|---|
+| modin-project__modin-6298 | swe_gym | SWE-Bench-Fork | 1125 | **resolved** |
+| pydantic__pydantic-9134 | swe_gym | SWE-Bench-Fork | 10509 | **resolved** |
+| modin-project__modin-6344 | swe_gym | SWE-Bench-Fork | 825 | unresolved |
+| django__django-10914 | swe_verified | official swebench | 625 | **resolved** |
+| sympy__sympy-13480 | swe_verified | official swebench | 590 | **resolved** |
+| astropy__astropy-12907 | swe_verified | official swebench | 809 | unresolved |
+
+- **The fork path that crashed now runs end-to-end.** The 3 gym ids reached the SWE-Bench-Fork
+  harness over a fresh `dataset_gym.json`, real containers ran the tests, and a fork sub-report was
+  written (`score/parts/fork/*_gym.json`) — resolved=2 unresolved=1, **0 no_prediction, 0 error**.
+  modin (`environment.yml` repo) exercised the exact `get_environment_yml` fetch that raised the
+  `TypeError`; the `base_commit` fallback now fires (env_script built from github raw, network OK).
+  A pre-gen `make_test_spec` dry-build over the gym rows was 3/3 clean.
+- **Merged report lists BOTH sub-reports** (`_merged_from`=2: fork + official); resolved=4
+  unresolved=2 empty=0 error=0.
+- **Ledger would treat this as HEALTHY:** throwaway `ledger.py record` → `infra_invalid=false`,
+  `auto_infra=false`, `no_prediction=0`. Keeper dry-check extracted **4 keepers from BOTH sources**
+  (2 gym, 2 verified) with full multi-turn messages.
+
+### 4a. NEW infra finding this session — `sudo -A docker` was unusable (askpass gone)
+Independent of the scorer bug: this session had **no working `sudo`** (no NOPASSWD, no askpass file
+— the `SUDO_ASKPASS` path baked into the scripts no longer exists), so every hardcoded
+`sudo -A docker` in pull/gen/score/rmi/pull_and_tag would have **silently failed the relaunched
+orchestrator at pull/gen/score** → infra_invalid forever. The user IS in the `docker` group, so the
+fix is to default the docker command to **plain `docker`** (overridable to `sudo -A docker` +
+`SUDO_ASKPASS` for a group-less host). This also explains why batches 0012–0014 images were never
+`rmi`'d (their `sudo -A docker rmi` had already started failing). Gen always worked in 0011–0014
+(50/50/49/48 real predictions) — confirming the collapse was **purely score-side**, exactly as §1.
+
+### 4b. Relaunch
+Orchestrator relaunched **detached** (setsid + caged scope + true `orch.pid` + cleanup traps) with
+verdict **CONTINUE** (keepers 218, attempts_real 728, rolling_yield 0.415, remaining 2207). The
+§0.2/§2 strategic caveat is **unchanged**: the run now measures the TRUE gym-tail yield with working
+scoring — if it genuinely sits below the 0.10 bar a future kill would be a REAL signal (the
+majority-`no_prediction` guard keeps a scorer outage from ever faking one again).

@@ -7,8 +7,8 @@
 #   usage: datagen_rmi.sh <batchdir>
 set -uo pipefail
 cd /home/mark/qwen_diffusion
-export SUDO_ASKPASS="${SUDO_ASKPASS:?export SUDO_ASKPASS}"
-D="sudo -A docker"
+export SUDO_ASKPASS="${SUDO_ASKPASS:-}"
+D="${SWE_DOCKER_CMD:-docker}"   # docker-group host: plain docker (override to 'sudo -A docker' where absent)
 BATCHDIR="${1:?batchdir}"
 
 df_avail_gb() { df -B1 --output=avail /home/mark | tail -1 | awk '{printf "%.0f", $1/1e9}'; }

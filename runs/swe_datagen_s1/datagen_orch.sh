@@ -32,7 +32,13 @@
 # ============================================================================
 set -uo pipefail
 cd /home/mark/qwen_diffusion
-export SUDO_ASKPASS="${SUDO_ASKPASS:-/tmp/claude-1000/-home-mark/8f712353-03d0-4607-ac3a-cba8072f9d36/scratchpad/askpass.sh}"
+export SUDO_ASKPASS="${SUDO_ASKPASS:-}"
+# Docker access: this host puts the user in the `docker` group, so plain `docker`
+# reaches the daemon with NO sudo. sudo here is NOT available non-interactively
+# (no NOPASSWD, no askpass) and hardcoding `sudo -A docker` silently fails EVERY
+# batch at pull/gen/score -> infra_invalid forever. Default to plain docker;
+# override to `sudo -A docker` (+ SUDO_ASKPASS) only on a host lacking the group.
+export SWE_DOCKER_CMD="${SWE_DOCKER_CMD:-docker}"
 
 ROOT=runs/swe_datagen_s1
 PY=.venv/bin/python
@@ -67,7 +73,7 @@ df_avail_gb(){ df -B1 --output=avail /home/mark | tail -1 | awk '{printf "%.0f",
 # ---- cleanup trap: never leave a server scope or episode container behind ----
 cleanup(){
   systemctl --user stop datagen_ar.scope 2>/dev/null || true
-  sudo -A docker ps -q --filter "name=swe_ep_" 2>/dev/null | xargs -r sudo -A docker rm -f >/dev/null 2>&1 || true
+  $SWE_DOCKER_CMD ps -q --filter "name=swe_ep_" 2>/dev/null | xargs -r $SWE_DOCKER_CMD rm -f >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
