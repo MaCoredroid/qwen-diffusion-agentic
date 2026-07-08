@@ -45,6 +45,29 @@ original greedy-yield ledger is retained there as the superseded record.)*
 
 ---
 
+## STATUS (2026-07-08) — datagen LIVE: false-kill reversed, L1 near-miss-first re-strat applied
+
+The `runs/swe_datagen_s1` data-gen orchestrator is **running** (dual-source SWE-Gym + Verified-adjacent,
+official/fork docker scoring, best-of-k). Trajectory to the **400-keeper floor**, corrected:
+
+- **Keepers 236 / 1000** (floor 400, not yet met); attempts_real 828; lifetime_yield 0.295;
+  rolling_yield(200) 0.35 — **CONTINUE** (kill bar 0.10/200). The 2026-07-07 false kill (a
+  score-side fork-harness crash miscounted as a yield collapse) is reversed; 209 poisoned gym rows
+  → `infra_invalid`, 50 re-scored → +14 keepers (218→232→**236**). See `runs/swe_datagen_s1/KILL_AUTOPSY.md`.
+- **L1 lever applied live (2026-07-08):** the officially-scorable VA head is exhausted; the recoverable
+  value is **best-of-k re-draws of the 479 near-misses** (non-empty failing patches) at their measured
+  family yields. Frontier re-stratified to a **near-miss exploit head** (family-yield-ranked, sphinx-doc
+  0.0 last) + unattempted coverage tail (near-zero getmoto/facebookresearch last, not dropped), with
+  `best_of_k.exploit_priority="frontier"` and a gated ledger change so the frontier order draws
+  authoritatively. KILL-D1 hash-asserted (sha==pin `c56f473…`, frontier ∩ 113-id eval-holdout == 0).
+  Details: `runs/swe_datagen_s1/L1_RESTRAT_NOTE.md`, `restratify_frontier_l1.py`.
+- **Corrected trajectory:** 479 near-misses × best-of-3 at measured yields ⇒ **E[+100–200] keepers**
+  ⇒ 236 + ~100–150 **clears the 400 floor** off L1 alone; mid-yield unattempted coverage
+  (python/iterative/modin/dask ~0.18) is the cushion; the 0.10/200 kill bar governs the low-yield tail
+  honestly. The 1000 target still needs new imaged sources (L4) or an accept-and-SFT decision (L5).
+
+---
+
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
 
 > **SUPERSEDED (greedy-era rationale — kept for the record; see STATUS block above).** The ladder and the

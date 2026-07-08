@@ -19466,5 +19466,7 @@
   "tier0_20",
   "tier1_100"
  ],
- "belt_lever_expanded_at": "2026-07-07T00:42:37Z"
+ "belt_lever_expanded_at": "2026-07-07T00:42:37Z",
+ "l1_restratify_reasserted_at": "2026-07-08T08:48:53Z",
+ "l1_restratify_note": "frontier ORDER restratified to near-miss-first (L1 lever) 2026-07-08; train-instance SET unchanged (permutation of frontier order only), KILL-D1 firewall RE-ASSERTED sha==pin, intersect==0. See runs/swe_datagen_s1/restratify_frontier_l1.py + L1_RESTRAT_NOTE.md."
 }

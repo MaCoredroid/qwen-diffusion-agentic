@@ -148,7 +148,19 @@ def eligible_pools(order: list[str], attempt_rows: list[dict], cfg: dict):
         else:
             if real[iid] < k_def:
                 explore.append((real[iid], idx, iid))
-    exploit.sort()
+    # exploit ordering. DEFAULT = COVERAGE-first ((attempt_count, idx, iid) — every
+    # fresh instance is tried once before any 2nd attempt). When the frontier's
+    # best_of_k sets exploit_priority == "frontier", the FRONTIER ORDER is
+    # authoritative instead ((idx, attempt_count, iid)): a deliberately near-miss-
+    # first `order` then re-draws NEAR-MISSES (attempt_count>=1, a real non-empty
+    # failing patch) AHEAD of fresh coverage — the L1 lever. This ONLY reorders the
+    # returned lists; the returned SET (eligibility) is byte-identical either way, so
+    # cmd_state's `remaining` COUNT and DONE_EXHAUSTED are unchanged. Absent key =>
+    # coverage-first (fully backward compatible with any pre-restrat frontier).
+    if str(cfg.get("exploit_priority", "coverage")) == "frontier":
+        exploit.sort(key=lambda t: (t[1], t[0], t[2]))
+    else:
+        exploit.sort()
     explore.sort()
     return [x[2] for x in exploit], [x[2] for x in explore]
 
