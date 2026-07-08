@@ -101,7 +101,10 @@ DEFAULT_EVAL_TIMEOUT_S = 30 * 60
 # terminate with a free-text turn (R4).
 DEFAULT_PROXY_HOST = "127.0.0.1"
 DEFAULT_PROXY_PORT = 30021
-DEFAULT_PROXY_MAX_TOKENS = 2048   # SWE edits need more than the toy-smoke 512
+DEFAULT_PROXY_MAX_TOKENS = 8192   # thinking-teacher headroom (CONFIG_DELTAS.md D7);
+#   the 27B Regime-T <think> trace + patch needs >2048/turn (gate-2 ran 8192 direct,
+#   0.9844 verbatim). Non-thinking 9B rarely emits >2048/turn, so this is a safe cap
+#   for both teachers. Was 2048 (inherited 9B toy-smoke bump over the 512 default).
 
 # ---------------------------------------------------------------------------
 # Operator prompts (ported from the flywheel; wording generalized codex ->

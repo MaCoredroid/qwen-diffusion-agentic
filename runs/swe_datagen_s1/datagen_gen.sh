@@ -45,6 +45,17 @@ case "$RUNCAGE_SCRIPT" in
     ATTENTION_BACKEND="${ATTENTION_BACKEND:-TRITON_ATTN}"       # frozen/certified backend
     KV_CACHE_DTYPE="${KV_CACHE_DTYPE:-auto}"                    # ckpt -> fp8_e4m3
     KV_OFFLOAD_GB="${KV_OFFLOAD_GB:-0}"                         # boot-probe froze offload OFF
+    # ---- ON-SPEC ENVELOPE: Regime T (thinking ON) — Qwen3.6 official agentic path
+    # (== ckpt generation_config.json defaults; gate-2 config audit CONFIG_DELTAS.md
+    # D2/D6/D7). Replaces the inherited 9B chimera (0.6 + thinking-OFF). Thinking is
+    # env-gated in the proxy (LUMO_ENABLE_THINKING) so <think> traces are emitted;
+    # proxy --max-tokens already raised to 8192 for thinking headroom (driver default).
+    LUMO_PROXY_FORCE_TEMPERATURE="${LUMO_PROXY_FORCE_TEMPERATURE:-1.0}"
+    LUMO_PROXY_FORCE_TOP_P="${LUMO_PROXY_FORCE_TOP_P:-0.95}"
+    LUMO_PROXY_FORCE_TOP_K="${LUMO_PROXY_FORCE_TOP_K:-20}"
+    LUMO_PROXY_FORCE_MIN_P="${LUMO_PROXY_FORCE_MIN_P:-0.0}"
+    LUMO_PROXY_FORCE_PRESENCE_PENALTY="${LUMO_PROXY_FORCE_PRESENCE_PENALTY:-0.0}"
+    LUMO_ENABLE_THINKING="${LUMO_ENABLE_THINKING:-true}"
     ;;
   *)  # stock-AR 9B (rollback) / MTP-9B — those launchers hardcode their own KV/attn
     DRIVER_MODEL="${DRIVER_MODEL:-qwen3.5-9b-ar}"
@@ -52,6 +63,14 @@ case "$RUNCAGE_SCRIPT" in
     ATTENTION_BACKEND="${ATTENTION_BACKEND:-}"
     KV_CACHE_DTYPE="${KV_CACHE_DTYPE:-}"
     KV_OFFLOAD_GB="${KV_OFFLOAD_GB:-}"
+    # 9B is a NON-thinking model: keep the historical flywheel reference envelope
+    # (0.6/0.95/20, thinking OFF) so the one-line rollback stays byte-faithful.
+    LUMO_PROXY_FORCE_TEMPERATURE="${LUMO_PROXY_FORCE_TEMPERATURE:-0.6}"
+    LUMO_PROXY_FORCE_TOP_P="${LUMO_PROXY_FORCE_TOP_P:-0.95}"
+    LUMO_PROXY_FORCE_TOP_K="${LUMO_PROXY_FORCE_TOP_K:-20}"
+    LUMO_PROXY_FORCE_MIN_P="${LUMO_PROXY_FORCE_MIN_P:-}"
+    LUMO_PROXY_FORCE_PRESENCE_PENALTY="${LUMO_PROXY_FORCE_PRESENCE_PENALTY:-}"
+    LUMO_ENABLE_THINKING="${LUMO_ENABLE_THINKING:-false}"
     ;;
 esac
 
@@ -76,9 +95,15 @@ PREFLIGHT_MAX_MIB="${PREFLIGHT_MAX_MIB:-8000}"
 mkdir -p "$GEN_ROOT" "$BATCHDIR/logs"
 
 # --- reference envelope, FORCED per-request via each shard driver's proxy ------
-export LUMO_PROXY_FORCE_TEMPERATURE="${LUMO_PROXY_FORCE_TEMPERATURE:-0.6}"
-export LUMO_PROXY_FORCE_TOP_P="${LUMO_PROXY_FORCE_TOP_P:-0.95}"
-export LUMO_PROXY_FORCE_TOP_K="${LUMO_PROXY_FORCE_TOP_K:-20}"
+# Values are TEACHER-COUPLED in the case block above (27B=Regime T thinking-ON
+# 1.0/0.95/20/min_p0/pp0; 9B=0.6/0.95/20 thinking-OFF). Export here so the shard
+# drivers + their proxies inherit them. Empty min_p/pp pins are ignored by the proxy.
+export LUMO_PROXY_FORCE_TEMPERATURE
+export LUMO_PROXY_FORCE_TOP_P
+export LUMO_PROXY_FORCE_TOP_K
+export LUMO_PROXY_FORCE_MIN_P
+export LUMO_PROXY_FORCE_PRESENCE_PENALTY
+export LUMO_ENABLE_THINKING
 export LUMO_PROXY_FORCE_SEED="${LUMO_PROXY_FORCE_SEED:-1234}"
 export SWE_EMPTY_PATCH_RETRIES="${SWE_EMPTY_PATCH_RETRIES:-1}"
 

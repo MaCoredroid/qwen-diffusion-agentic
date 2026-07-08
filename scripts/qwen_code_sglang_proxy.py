@@ -97,9 +97,16 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
         if self.path.rstrip("/") == "/v1/chat/completions":
             type(self).chat_count += 1
+            # THINKING MODE (env-gated; CONFIG_DELTAS.md D6). Default-OFF preserves
+            # the historical byte-identical behavior for the non-thinking 9B teacher
+            # (LUMO_ENABLE_THINKING unset -> False). The Qwen3.6-27B thinking teacher
+            # sets LUMO_ENABLE_THINKING=true (Regime T) so <think> traces are emitted.
+            _enable_thinking = (
+                os.environ.get("LUMO_ENABLE_THINKING", "false").strip().lower() == "true"
+            )
             payload["chat_template_kwargs"] = {
                 **(payload.get("chat_template_kwargs") or {}),
-                "enable_thinking": False,
+                "enable_thinking": _enable_thinking,
             }
             if self.max_tokens and int(payload.get("max_tokens") or 0) > self.max_tokens:
                 payload["max_tokens"] = self.max_tokens

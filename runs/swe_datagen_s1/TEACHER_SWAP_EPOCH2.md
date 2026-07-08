@@ -57,3 +57,61 @@ New teacher == new epoch. `ledger.py`:
 yield 0.24 > 0.15 bar); BATCH 2 CANCELLED (teacher switch moots the 9B-continuation question).
 Batch-1 artifacts + 12 isolated keepers preserved, NOT promoted. See the probe dir's
 `CANCELLED_BY_MONITOR.md`.
+
+## ON-SPEC CONVERGENCE + single relaunch (2026-07-08T~20:10Z) — teacher-stack-converge workflow
+
+The standup's early epoch-2 relaunch was intentionally superseded (GPU-contention stop during
+the re-cert); this workflow owns the **single on-spec relaunch on the final stack**. Coordination
+guardrail honored: both sibling workflows had already landed (standup: teacher swap 69b39c3 +
+ledger epoch support + `DATAGEN_KILL_9b_epoch1.txt` archive + C=2; flywheel: qwen-code 0.19.4
+bf7c0cf/1a104c1). GPU free, no orch running, orch.pid stale — clean launch, no boundary swap needed.
+
+### RE-CERT (banked): parser + template
+- **Parser = `qwen3_xml` FINALIZED.** RAW template-native completions for 5 tool-call cases
+  round-tripped through vLLM `qwen3_xml` AND `qwen3_coder`: both byte-faithful AND byte-identical
+  extractions (incl. a 318-byte multiline write and a 99-byte diff). Tie broken to `qwen3_xml` =
+  what the live server, production datagen, and all 282 keepers already run (zero-risk, consistent).
+- **Template = codex RETAINED.** Adjudicated: the codex and ckpt-native templates instruct the
+  *identical* `<tool_call><function=NAME><parameter=key>…` XML (signature (True,True,True) both) and
+  the same `enable_thinking` gating — the task premise that native emits a different XML needing a
+  parser switch is FALSE. Codex = format-equivalence-by-construction with the 9B keepers.
+
+### The actual on-spec gap that remained: the ENVELOPE + THINKING mode (not the parser/template)
+The gate-2 config audit (`gate_27b_20260708T181604Z/CONFIG_DELTAS.md`) found the serving flags
+already correct; the defect was the sampling/thinking chimera inherited from the non-thinking 9B AR
+teacher (thinking forced OFF by the proxy + a thinking-mode coding sampler 0.6/0.95/20). Fixed to
+**Regime T** (Qwen3.6 official thinking-general agentic path == ckpt `generation_config` defaults):
+
+| delta | change | where |
+|---|---|---|
+| D2 envelope | 0.6 → **1.0 / 0.95 / 20 / min_p 0 / pp 0** (thinking ON) | `datagen_gen.sh` case block (teacher-coupled) + `datagen_orch.sh` `ENVELOPE_JSON` keeper stamp |
+| D6 thinking | proxy `enable_thinking` unconditional-False → **env-gated `LUMO_ENABLE_THINKING`** (default-OFF ⇒ 9B rollback stays byte-identical; 27B sets true) | `scripts/qwen_code_sglang_proxy.py` |
+| D7 max-tokens | `DEFAULT_PROXY_MAX_TOKENS` 2048 → **8192** (thinking trace + patch headroom; gate-2 ran 8192) | `scripts/run_swe_bench_qwen_code.py` |
+| parser | `qwen3_xml` (unchanged, recert-finalized) | `runcage_27b.sh` |
+| C | **2** (server `max_num_seqs=2`); orch resolves it, gen passes `$C`; gen's standalone default 4 is never reached via the orch | `datagen_orch.sh` (already), `datagen_gen.sh:MAX_NUM_SEQS=$C` |
+
+All teacher-coupled so the one-line 9B rollback (`RUNCAGE_SCRIPT=runcage_ar_probe.sh C=4`) stays
+byte-faithful (0.6/0.95/20, thinking OFF). `bash -n` + `py_compile` clean.
+
+### FIRST-BATCH VERIFICATION — PASS (batch_0001_20260708T200704Z, orch.pid 2830633, detached)
+- **Boot on-spec:** `served=qwen3.6-27b-nvfp4 seqs=2 quant=modelopt_fp4 spec=qwen3_5_mtp/1 kv=auto
+  kv_offload=0 attn=TRITON_ATTN`, codex template + `qwen3_xml` + reasoning `qwen3`; KV pool **83,012 tok
+  (2.53x @32k)**; engine init 10.0 s; `[ready] :9951`.
+- **Envelope forwarded (proxy dump `chat_0001.json`):** `temperature 1.0, top_p 0.95, top_k 20,
+  min_p 0.0, presence_penalty 0.0, seed 1001234, max_tokens 8192`, `chat_template_kwargs
+  {enable_thinking: true}`, 15 tools.
+- **Frontier-head draw:** pandas-dev__pandas-47446 / getmoto__moto-4867 / dask__dask-10149.
+- **Live thinking-mode rollout:** `Running: 2 reqs`, gen ~50 tok/s, prefix-cache hit ~50%, turns
+  advancing (chat_0010), `finish_reason` tool_calls+stop, `completion_tokens` 182–333 (thinking +
+  tool call). Pull was ~80 s (49/50 images cached); GPU 29.7–29.9 GB / 97–98 %.
+
+### #98 (promote the 12 isolated 9B probe keepers) — DEFERRED, not left-undone
+`extract_keepers.py` **dedups by instance_id and skips** any instance already in `keepers.jsonl`.
+The 12 probe keepers are **9B**-generated for pandas/getmoto/dask — the exact frontier HEAD the 27B
+is re-covering right now. Promoting them would make the 27B's higher-quality keepers **silently
+skipped** for those 11 fresh instances (dask-10212 is the 12th; already in prod attempts). That
+would lock in inferior data and defeat the teacher swap. Decision: let the 27B cover them first; the
+12 keepers stay preserved in `probe_freshcov_20260708T153555Z/keepers/`. **Fallback recipe** (only
+for instances the 27B ultimately fails to resolve): `awk`-filter those iids from the probe keepers,
+append to prod `keepers/keepers.jsonl` (dedup), stamp `provenance.teacher=stock-qwen3.5-9b-ar`; do
+NOT add post-epoch-marker attempts rows (would misattribute 9B resolves to the 27B rolling window).

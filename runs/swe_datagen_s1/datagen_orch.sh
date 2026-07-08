@@ -55,7 +55,10 @@ KILL_WINDOW="${KILL_WINDOW:-200}"
 MAX_CYCLES="${MAX_CYCLES:-100}"
 DISK_FLOOR_GB="${DISK_FLOOR_GB:-300}"
 DATAGEN_DRYRUN="${DATAGEN_DRYRUN:-0}"
-ENVELOPE_JSON="${ENVELOPE_JSON:-{\"temperature\":0.6,\"top_p\":0.95,\"top_k\":20,\"seed_base\":1234}}"
+# ENVELOPE_JSON is the truthful sampling stamp recorded on every keeper row
+# (extract_keepers.py). Left empty here; the teacher-coupled default is set in the
+# TEACHER SWAP case block below so it matches datagen_gen.sh's actual envelope.
+ENVELOPE_JSON="${ENVELOPE_JSON:-}"
 
 # ---- TEACHER SWAP (2026-07-08): resolve the teacher from the runcage selector ---
 # RUNCAGE_SCRIPT is the SINGLE knob. Default = the certified Qwen3.6-27B NVFP4+MTP
@@ -73,11 +76,14 @@ case "$RUNCAGE_SCRIPT" in
     C="${C:-2}"                                                 # 27B: 2x32k on-GPU KV (2.53x pool); do NOT copy the 9B C=4
     export TEACHER_LABEL="${TEACHER_LABEL:-qwen3.6-27b-nvfp4-mtp}"
     export KEEPER_GENERATOR="${KEEPER_GENERATOR:-Qwen3.6-27B-NVFP4+MTP (nvidia ckpt, qwen_code, native qwen3_xml)}"
+    # On-spec Regime T stamp (thinking ON, Qwen3.6 official agentic sampling).
+    ENVELOPE_JSON="${ENVELOPE_JSON:-{\"temperature\":1.0,\"top_p\":0.95,\"top_k\":20,\"min_p\":0.0,\"presence_penalty\":0.0,\"enable_thinking\":true,\"seed_base\":1234}}"
     ;;
   *)
     C="${C:-4}"
     export TEACHER_LABEL="${TEACHER_LABEL:-stock-qwen3.5-9b-ar}"
     export KEEPER_GENERATOR="${KEEPER_GENERATOR:-stock-Qwen3.5-9B-AR (qwen_code, native qwen3_xml)}"
+    ENVELOPE_JSON="${ENVELOPE_JSON:-{\"temperature\":0.6,\"top_p\":0.95,\"top_k\":20,\"enable_thinking\":false,\"seed_base\":1234}}"
     ;;
 esac
 

@@ -1,17 +1,26 @@
-CONTINUE keepers=282/1000 (floor 400·) attempts=1228 lifetime_yield=0.2362 rolling_yield=None(w=0) remaining=2019(bok) epoch=qwen3.6-27b-nvfp4-mtp(n=0) 2026-07-08T19:12:15Z
+CONTINUE keepers=282/1000 (floor 400·) attempts=1228 lifetime_yield=0.2362 rolling_yield=None(w=0) remaining=2019(bok) epoch=qwen3.6-27b-nvfp4-mtp(n=0) 2026-07-08T20:07:04Z
 
---- AGENT STACK PROVENANCE (2026-07-08) ---
-qwen-code: 0.19.2 -> 0.19.4 (flywheel-resolved: qwen-code-runner.Dockerfile pin /
-  prepare_qwen_agent_bundle.sh / run_swe_bench_q36_a.py ::qwen-code-0.19.4::). Pinned
-  EXACTLY in package.json ("@qwen-code/qwen-code": "0.19.4"); node_modules/.bin/qwen --version = 0.19.4.
-provenance tag (DEFAULT_MODEL_NAME_TAG): qwen3.5-9b-ar::qwen-code-0.19.2::stage-c
-  -> qwen3.5-9b-ar::qwen-code-0.19.4::stage-c.
-invocation profile: `qwen --yolo --output-format json --max-session-turns 100000 -p <prompt>`
-  (auth/endpoint/model via ENV, not CLI flags); full 61-tool native profile (26 native/harness
-  incl. edit/write_file/grep_search/glob/read_file/run_shell_command + 35 inert computer_use__*).
-PROVE (commit after bf7c0cf): headless boot OK (--version/--help/config parse, all our flags present);
-  driver-level dry-run drove the new stack to first server-connection (init event -> model call ->
-  [API Error: Connection error] against dead upstream), 61 tools advertised.
-LIVE 900s episode: DEFERRED-TO-RECERT — GPU not free (frozen 27B vLLM on :9952 holds ~30/32 GB,
-  not launched by this task; a 2nd server would OOM; do-not-boot discipline). Run one bounded
-  trainable-instance episode + keeper-format extraction at next recert when the GPU is free.
+--- ON-SPEC TEACHER-STACK CONVERGENCE (2026-07-08T~20:10Z) ---
+(This narrative is auto-overwritten by ledger.py state each cycle; durable copy in
+TEACHER_SWAP_EPOCH2.md + ../../swe_endgoal_plan.md.)
+The single on-spec relaunch is LIVE and detached (orch.pid=2830633, own session).
+Final stack = Qwen3.6-27B-NVFP4 + MTP, codex template, qwen3_xml parser, Regime T
+(thinking ON, envelope 1.0/0.95/20/min_p0/pp0), C=2. FIRST-BATCH VERIFICATION PASS:
+  - boot on-spec: served=qwen3.6-27b-nvfp4 seqs=2 quant=modelopt_fp4 spec=qwen3_5_mtp/1
+    kv=auto(fp8) kv_offload=0 attn=TRITON_ATTN; KV pool 83,012 tok (2.53x @32k); [ready] :9951.
+  - envelope forwarded (proxy dump chat_0001): temperature 1.0, top_p 0.95, top_k 20,
+    min_p 0.0, presence_penalty 0.0, seed 1001234, max_tokens 8192, chat_template_kwargs
+    {enable_thinking: true}. 15 tools advertised.
+  - frontier-head draw: pandas-dev__pandas-47446 / getmoto__moto-4867 / dask__dask-10149.
+  - live thinking-mode rollout: Running 2 reqs, gen ~50 tok/s, prefix-cache hit ~50%,
+    turns advancing (chat_0010), finish_reason tool_calls+stop, completion_tokens 182-333.
+Config deltas applied this convergence (gate-2 audit CONFIG_DELTAS.md): D2 envelope
+0.6->1.0 Regime T (teacher-coupled, datagen_gen.sh + orch ENVELOPE_JSON stamp); D6 proxy
+enable_thinking env-gated (LUMO_ENABLE_THINKING, default-OFF preserves 9B rollback byte
+identity); D7 DEFAULT_PROXY_MAX_TOKENS 2048->8192 (thinking headroom). Parser qwen3_xml
+FINALIZED (recert: byte-identical to qwen3_coder on 5 tool-call cases; production-consistent).
+Template codex RETAINED (recert: codex and native emit identical tool-call XML).
+#98 (promote 12 isolated 9B probe keepers) DEFERRED, not undone: extract_keepers dedups by
+instance_id and would SKIP the higher-quality 27B keepers for those 11 fresh-head instances
+the 27B is now re-covering. 12 keepers preserved as fallback; promote only for any instance
+the 27B ultimately fails to resolve. Recipe in TEACHER_SWAP_EPOCH2.md.

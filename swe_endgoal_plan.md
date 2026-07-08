@@ -471,3 +471,26 @@ artifacts + 12 isolated keepers preserved (NOT promoted); recorded in the probe 
 **Relaunch.** Orchestrator relaunched detached on the live fresh-coverage frontier (`frontier.json`,
 n=2451, order head pandas/getmoto/dask) at C=2, epoch 2. See `TEACHER_SWAP_EPOCH2.md` for the operational
 record and first-batch verification.
+
+**ON-SPEC CONVERGENCE — the single final-stack relaunch (2026-07-08).** The teacher-stack-converge
+workflow owns the one on-spec relaunch (the standup's early relaunch was intentionally superseded during
+the re-cert GPU stop). Final stack = **Qwen3.6-27B-NVFP4 + MTP**, **codex** chat template, **`qwen3_xml`**
+tool parser, **Regime T** (thinking ON, official Qwen3.6 agentic sampling **1.0/0.95/20/min_p0/pp0** ==
+ckpt `generation_config`), **C=2**. Re-cert banked the two decisions the task framed as open: the parser
+is `qwen3_xml` (byte-identical to `qwen3_coder` on 5 tool-call cases incl. a 318-byte write + 99-byte
+diff; tie broken to the production-consistent one), and codex vs native templates are **byte-for-byte the
+same tool-call XML** — so the parser/template were never the real gap. The real gap was the sampling/
+thinking **chimera** inherited from the non-thinking 9B AR teacher, fixed per the gate-2 audit
+(`CONFIG_DELTAS.md`): **D2** envelope 0.6→1.0 Regime T (teacher-coupled in `datagen_gen.sh` + the
+`ENVELOPE_JSON` keeper stamp); **D6** proxy `enable_thinking` made env-gated (`LUMO_ENABLE_THINKING`,
+default-OFF so the 9B rollback stays byte-identical); **D7** `DEFAULT_PROXY_MAX_TOKENS` 2048→8192 for
+thinking headroom. **First-batch verification PASS** (batch_0001_20260708T200704Z, orch.pid 2830633,
+detached): boots on-spec (KV pool 83,012 tok / 2.53x; `[ready] :9951`), the proxy dump forwards
+`temperature 1.0 / top_p 0.95 / top_k 20 / min_p 0 / pp 0 / max_tokens 8192 / enable_thinking:true`,
+draws the pandas/getmoto/dask head, and streams a live thinking-mode agentic rollout (2 running reqs,
+~50 tok/s, turns advancing with `tool_calls` finishes, completion 182–333 tok/turn). Gates already
+passed under the frozen serving config (format 0-mismatch, verbatim 63/64=0.9844, live 4/4 resolved,
+MTP 1.59× @ 0.93 accept). **#98** (promote the 12 isolated **9B** probe keepers) is **deferred, not
+undone**: `extract_keepers.py` dedups by instance_id, so promoting the 9B versions now would make the
+27B's higher-quality keepers for those same 11 fresh-head instances silently skipped — the 27B is
+re-covering them this epoch. The 12 keepers stay preserved as a fallback for any instance the 27B fails.
