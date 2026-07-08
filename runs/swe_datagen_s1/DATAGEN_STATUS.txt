@@ -1,26 +1,17 @@
-CONTINUE keepers=282/1000 (floor 400·) attempts=1228 lifetime_yield=0.2362 rolling_yield=None(w=0) remaining=2019(bok) epoch=qwen3.6-27b-nvfp4-mtp(n=0) 2026-07-08T20:07:04Z
+CONTINUE keepers=294/1000 (floor 400·) attempts=1276 lifetime_yield=0.2367 rolling_yield=None(w=0) remaining=2005(bok) epoch=qwen3.6-27b-nvfp4-mtp(n=0) 2026-07-08T20:20:57Z
 
---- ON-SPEC TEACHER-STACK CONVERGENCE (2026-07-08T~20:10Z) ---
-(This narrative is auto-overwritten by ledger.py state each cycle; durable copy in
-TEACHER_SWAP_EPOCH2.md + ../../swe_endgoal_plan.md.)
-The single on-spec relaunch is LIVE and detached (orch.pid=2830633, own session).
-Final stack = Qwen3.6-27B-NVFP4 + MTP, codex template, qwen3_xml parser, Regime T
-(thinking ON, envelope 1.0/0.95/20/min_p0/pp0), C=2. FIRST-BATCH VERIFICATION PASS:
-  - boot on-spec: served=qwen3.6-27b-nvfp4 seqs=2 quant=modelopt_fp4 spec=qwen3_5_mtp/1
-    kv=auto(fp8) kv_offload=0 attn=TRITON_ATTN; KV pool 83,012 tok (2.53x @32k); [ready] :9951.
-  - envelope forwarded (proxy dump chat_0001): temperature 1.0, top_p 0.95, top_k 20,
-    min_p 0.0, presence_penalty 0.0, seed 1001234, max_tokens 8192, chat_template_kwargs
-    {enable_thinking: true}. 15 tools advertised.
-  - frontier-head draw: pandas-dev__pandas-47446 / getmoto__moto-4867 / dask__dask-10149.
-  - live thinking-mode rollout: Running 2 reqs, gen ~50 tok/s, prefix-cache hit ~50%,
-    turns advancing (chat_0010), finish_reason tool_calls+stop, completion_tokens 182-333.
-Config deltas applied this convergence (gate-2 audit CONFIG_DELTAS.md): D2 envelope
-0.6->1.0 Regime T (teacher-coupled, datagen_gen.sh + orch ENVELOPE_JSON stamp); D6 proxy
-enable_thinking env-gated (LUMO_ENABLE_THINKING, default-OFF preserves 9B rollback byte
-identity); D7 DEFAULT_PROXY_MAX_TOKENS 2048->8192 (thinking headroom). Parser qwen3_xml
-FINALIZED (recert: byte-identical to qwen3_coder on 5 tool-call cases; production-consistent).
-Template codex RETAINED (recert: codex and native emit identical tool-call XML).
-#98 (promote 12 isolated 9B probe keepers) DEFERRED, not undone: extract_keepers dedups by
-instance_id and would SKIP the higher-quality 27B keepers for those 11 fresh-head instances
-the 27B is now re-covering. 12 keepers preserved as fallback; promote only for any instance
-the 27B ultimately fails to resolve. Recipe in TEACHER_SWAP_EPOCH2.md.
+--- TASK #98 PROMOTE: probe_freshcov batch-1 -> production (2026-07-08T20:20Z) ---
+Promoted the CANCELLED 9B fresh-coverage probe's clean, holdout-safe, fixed-scorer
+batch-1 results into production. 50 attempt rows (probe_batch_01_20260708T153935Z)
+INSERTED BEFORE the epoch marker (attempts.jsonl L1750 = qwen3.6-27b-nvfp4-mtp) so
+they attribute to EPOCH-1 (teacher=stock-9b-ar) and never touch the 27B rolling
+kill-window. 12 isolated keepers appended (dask 10212/10395/10441/10506; getmoto
+4886/4918/4950; pandas 47504/47508/47547/47586/47619) with instance_id dedup vs the
+live 282 -> 0 collisions (the epoch-2 27B has not yet re-solved any of the 12), each
+stamped provenance.promotion{task:98, teacher:stock-9b-ar, source:"probe_freshcov
+batch-1"} + top-level teacher=stock-9b-ar. Ledger verify BEFORE->AFTER: keepers
+282->294 (+12); attempts_total 1701->1751 (+50); lifetime_resolved 290->302 (+12);
+attempts_real 1228->1276 (+48, 2 env_unavailable excluded per REAL_VERDICTS);
+attempts_epoch 0->0 (epoch-2 window untouched); marker still last. Atomic apply under
+race-guard (md5 re-check) during a confirmed mid-gen quiet window; backups
+*.bak_pre_task98_promote_20260708T202040Z.
