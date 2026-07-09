@@ -88,17 +88,18 @@ isolated in `pilot_opus/keepers`); (iii) caching enabled before bulk scale → *
 
 ## 0. The gap we are pricing
 
-| Milestone | Keepers | Delta from current (282) |
+| Milestone | Keepers | Delta from current (311) |
 |---|---|---|
-| **Current** (production `keepers/keepers.jsonl`) | 282 | — |
-| **Floor** (400) | 400 | **~120 more** |
-| **Target** (600–1000) | 600–1000 | **~320–720 more** |
+| **Current** (production `keepers/keepers.jsonl`, 2026-07-09T13:09Z) | 311 | — |
+| **Floor** (400) | 400 | **89 more** ← the gap this doc prices |
+| **Target** (600–1000) | 600–1000 | **~289–689 more** |
 
 The campaign **self-killed** on 2026-07-08 15:20Z (`KILL_YIELD_COLLAPSE`, rolling yield 0.075 < 0.10
 over the last 200 attempts) — an **honest** yield collapse on the *spent* near-miss retry stock, not a
-tamper. The fresh-coverage frontier (pandas/getmoto/dask never-attempted ids) was swapped in live but its
-yield is **unmeasured** (probe pending, task #94/#95). So "close the gap with more 9B" is not a
-free continuation — it depends on a fresh yield we do not yet have.
+tamper. It has since resumed on the 27B-NVFP4-MTP epoch (rolling yield ~0.128, w=149) and crept 282→311,
+but the fresh-coverage 9B yield remains volatile and the floor is not guaranteed reachable on the owned
+GPU in bounded time. The Opus arm below is now MEASURED (§0.5) and prices the **89-keeper floor gap** as a
+parallel API/CPU track that takes no GPU from production.
 
 ---
 
@@ -121,7 +122,13 @@ floor is not reachable with 9B alone in bounded time). This is the pivot that mo
 
 ---
 
-## 2. Opus 4.8 teacher — PILOT IN FLIGHT (projected cost, labeled)
+## 2. Opus 4.8 teacher — projection [SUPERSEDED by §0.5; retained verbatim as the pre-registered prior]
+
+> **Note (2026-07-09):** the pilot is DONE and MEASURED in §0.5. Everything below is the pre-measurement
+> snapshot kept unedited so the projection-vs-measurement delta stays honest. Measured yield **0.40**
+> landed dead-center of the 0.30–0.60 prior; measured cached $/keeper **$4.78** vs projected $1.93 (the
+> projection under-counted tokens — real Opus episodes ran ~1.7M input tok, ~3× the 9B token prior used
+> below). Read the projection for the reasoning, §0.5 for the truth.
 
 **Teacher:** `claude-opus-4-8` via `scripts/opus_openai_adapter.py` (anthropic backend). The adapter is a
 drop-in OpenAI `/v1` endpoint; qwen-code → proxy (dumps) → adapter → Opus. Keeper format is **identical
