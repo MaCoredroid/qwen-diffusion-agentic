@@ -11,6 +11,129 @@ Re-runnable verbatim at pool freeze: `runs/swe_datagen_s1/leakage_audit.py`.
 
 ---
 
+## POOL-FREEZE RE-AUDIT — 2026-07-09 (Task #87, gates the initial SFT set)
+
+Re-ran `leakage_audit.py` **verbatim** (baseline commit `db8d269`) on the current
+**311-keeper** pool at snapshot time. This is the pre-registered pool-freeze gate,
+triggered early because SFT begins tonight on the current pool (chunked-resume
+training extends the set later — each extension re-triggers this audit).
+
+**Integrity pins (all PASS):** holdout = **113** sha-asserted ids
+(`inner5 ∪ tier0_20 ∪ tier1_100`), sha256 `c56f473a…168e` pin-assert **PASS**;
+keepers snapshot sha256 `2aeecce1…`; SWE-Gym disjoint-repo assert **PASS**.
+
+**Pool shape at snapshot:** 311 keepers = **193 SWE-bench_Verified + 118 SWE-Gym**
+by dataset source; by **teacher/generator**: **294 stock-Qwen3.5-9B-AR + 17
+Qwen3.6-27B-NVFP4+MTP**. The **Opus-4.8 pilot keepers are NOT yet in the file**
+(4 pending promotion) — they enter at a later chunk and will **re-trigger this
+audit verbatim before joining**. So this stamp gates a **two-teacher** initial set.
+
+**Topline (measured):** same-repo keeper×holdout pairs **5816**; flagged **368**;
+keepers with a GOLD-file overlap **65**; keepers with function-level overlap **12**
+(up from 1 at the n=114 baseline); issue-text sim ≥ p95 **116**.
+
+### Adjudication of NEW flagged pairs since the n=114 baseline
+
+All 12 function-level-overlap pairs were read by hand (keeper final_patch + own gold
+patch + full trajectory/PS vs holdout gold+test), plus a **systematic verbatim
+leak-line scan** over all 110 gold-file-overlap pairs: for each pair, every
+substantive `+` line of the holdout's gold patch (restricted to shared files) was
+searched in the keeper's full training text, then **split by field** (final_patch /
+problem-statement / assistant text / whole trajectory) and by chronological
+**direction** (keeper-is-follow-up `K>H` vs keeper-is-predecessor `K<H`).
+
+**Key discriminator (direction × surface):** a keeper that is a *chronological
+follow-up* to a same-file holdout has the holdout's fix **already merged into its
+base repo**, so those lines appear as *ambient file content the model read* — benign
+(this is exactly why the baseline kept `xarray-6599→4687`, which surfaces only a
+generic 1-line call). A leak requires the holdout's **distinctive** added lines to
+be **surfaced in the trained-to-produce final_patch or framed in the problem
+statement** — not merely read mid-trajectory.
+
+Only **3 of 110** pairs put any holdout-added line in the keeper's `final_patch`:
+
+| keeper → holdout | dir | in final_patch | verdict |
+|---|---|--:|---|
+| `pydata__xarray-6461` → `pydata__xarray-4687` | follow-up | 5–10 distinctive | **ANSWER_LEAK** |
+| `django__django-13128` → `django__django-13121` | follow-up | 7 (idioms) | SUBSYSTEM_ADJACENT (tight) |
+| `scikit-learn-11578` → `scikit-learn-14087` | predecessor | 1 (generic) | BENIGN |
+
+- **`xarray-6461 → 4687` = ANSWER_LEAK.** 6461 is a direct follow-up *bug report on
+  the very `where(keep_attrs=…)` feature 4687 introduced*. Its problem-statement
+  traceback quotes 4687's added lines verbatim, and its `final_patch` edits `where()`
+  itself, carrying **`def where(cond, x, y, keep_attrs=None):`**, the explanatory
+  comment `# keep the attributes of x, the second parameter…`,
+  **`keep_attrs = lambda attrs, context: attrs[1]`**, **`keep_attrs = _get_keep_attrs(default=False)`**,
+  and **`keep_attrs=keep_attrs,`** as context. A model trained on 6461 has seen
+  essentially all of held-out 4687's gold implementation. (Materially different from
+  the baseline-cleared `6599→4687`, which edits `_ensure_numeric` and never surfaces
+  the `where()` body — confirmed: 6599 shows only 1 generic call line, mid-trajectory.)
+- **`django-13128 → 13121` = SUBSYSTEM_ADJACENT (tightest non-leak).** The 7 matched
+  lines are django duration-type-detection **idioms** (`…output_field.get_internal_type()`,
+  `fields.DurationField()`, `datetime_fields = {…}`) re-used inside a *new*
+  `_resolve_output_field` method. It does **not** reproduce 13121's distinctive
+  SQL-generation fix (`DurationExpression.as_sql` / `format_for_duration_arithmetic`
+  / `DurationValue` removal) that 13121's FAIL_TO_PASS actually tests. Flagged for
+  monitor visibility; **not** on the drop-list.
+- The remaining 13 verbatim-match pairs (incl. `sympy-24213→24066`, `django-13012/13449→13121`,
+  `django-15467→12713`) match **only in mid-trajectory ambient file reads** or on
+  generic idioms — the benign merged-neighbor pattern the baseline already accepts.
+- All ~98 gold-file-only pairs (no function overlap) are same-file / different-function
+  in django/matplotlib/sympy **hub files** (`query.py`, `expressions.py`,
+  `fields/__init__.py`, `base.py`, `admin/options.py`, `_axes.py`) — SUBSYSTEM_ADJACENT.
+  Spot-checked top-5 by text-sim (`django-15380→15104` autodetector, `sympy-22714→17655`
+  point.py, `matplotlib-26113→13989` _axes.py, `matplotlib-25311→20859` legend.py,
+  `django-13670→14373` dateformat.py): all disjoint-fix. Note `django-13670→14373` is
+  the **safe direction** — the keeper is the *predecessor* (`y()` 2-digit fix), which
+  appears as unchanged **context** in 14373's patch; 14373's actual added line
+  `return '%04d' % self.data.year` (`Y()` method) is **not** in the keeper → benign.
+
+### The 2 sev-10 django frontier flags from the baseline — RESOLVED CLEAN
+
+Baseline forward-guard flagged `django-11138 → 13121` and `django-16032 → 11734` as
+sev-10 *frontier* ids to re-examine **if** they became keepers. **Neither became a
+keeper** (0 rows in `keepers.jsonl` / snapshot as an `instance_id`; the 7 incidental
+`16032` string hits are trajectory-text substrings, and `11734` appears only as a
+held-out id). Forward-guard prediction holds.
+
+### DROP-LIST (measure-and-report — LISTED, not executed)
+
+> **`["pydata__xarray-6461"]`** — one keeper adjudicated `ANSWER_LEAK`.
+> **Do NOT delete** — surfaced for the monitor's drop decision.
+
+Remedy options for the monitor (either fully restores slice cleanliness): **(a)**
+drop keeper `pydata__xarray-6461` from the training set (recommended; 1 of 311), or
+**(b)** excise held-out `pydata__xarray-4687` from the 113-id eval ring. Because both
+training arms consume the same pool, the exposure inflates **both** arms' score on
+4687 **equally** — it is a shared confound that does **not** bias the arm-vs-arm delta
+(the promotion currency); it touches only the absolute 113-ring number, which the
+standing rule already treats as train-adjacent, not a promotion signal. The leaked
+keeper is a **stock-9B-AR** Verified instance (unrelated to any teacher swap).
+
+### Opus-teacher firewall (for the pending Opus-4.8 pilot keepers)
+
+Opus-teacher keepers, when promoted, get the **identical instance-level firewall**:
+`expand_frontier.py` hash-asserts that **no eval-ring id ever enters training**, and
+this cross-instance audit re-runs verbatim over them before they join. State plainly:
+**Opus may have memorized public GitHub repos, but that affects TEACHER STRENGTH
+(how good the demonstrations are), not EVAL LEAKAGE — because the evaluated 113
+instances never train, on any teacher.** Teacher pretraining-memorization is a
+capability-attribution caveat for the datagen arm, not a contamination of the held-out
+slice.
+
+### GATE VERDICT: **CONDITIONAL PASS** for tonight's SFT launch
+
+310 of 311 keepers are clean; the single `ANSWER_LEAK` (`pydata__xarray-6461`) is
+surgically removable and does not corrupt the arm-vs-arm currency. Training launch on
+the 311-pool is **authorized to proceed**, with the standing condition that the
+monitor applies one of the two remedies above (drop `xarray-6461` from train, or
+`xarray-4687` from eval) at or before the next chunked-resume extension, and that the
+pending Opus-4.8 pilot keepers re-trigger this audit verbatim before promotion.
+
+_Re-audit generated `2026-07-09T17:15:18Z` · CPU-only · 2.08 s · sha pins PASS._
+
+---
+
 ## Standing rule (read this before quoting any number here)
 
 - **The absolute numbers against the 113-ring are `train-adjacent`, not a
@@ -172,6 +295,10 @@ record and `leakage_audit_report.json`.)*
 ---
 
 ## DROP-LIST (measure-and-report — LISTED, not executed)
+
+> _(This is the **n=114 baseline** drop-list. Superseded at pool freeze — see the
+> **POOL-FREEZE RE-AUDIT** section above, whose current drop-list is
+> `["pydata__xarray-6461"]`.)_
 
 > **`[]` — empty. No keeper was adjudicated `ANSWER_LEAK`.**
 
