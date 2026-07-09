@@ -211,11 +211,32 @@ def openai_to_anthropic(payload, default_model, max_tokens_floor):
     # NOTE: sampling params (temperature/top_p/top_k) are intentionally NOT
     # forwarded — Opus 4.8/4.7 (and Sonnet 5 / Fable 5) reject them with a 400.
     # qwen-code sends temperature by default; forwarding it would 400 every turn.
+    #
+    # PROMPT CACHING (the ~4x cost lever; env OPUS_ADAPTER_CACHE, default on):
+    # place an ephemeral breakpoint on the last content block of the last message.
+    # qwen-code resends the FULL growing conversation each turn, so this caches the
+    # entire prior prefix incrementally — turn N+1 reads turn N's prefix at ~0.1x and
+    # writes only the new delta at ~1.25x ([[prompt-caching]] multi-turn pattern). The
+    # tools+system prefix is cached separately by the system-block breakpoint in
+    # call_anthropic (render order tools -> system -> messages). Both breakpoints are
+    # internal to the adapter->Anthropic hop and never appear in the proxy dumps, so
+    # the emitted keeper format stays qwen3_xml-native.
+    if os.environ.get("OPUS_ADAPTER_CACHE", "1") == "1" and a_msgs:
+        last_content = a_msgs[-1].get("content")
+        if isinstance(last_content, list) and last_content:
+            last_content[-1] = {**last_content[-1], "cache_control": {"type": "ephemeral"}}
     return req
 
 
 def anthropic_to_openai(resp):
-    """Map an Anthropic Messages API response -> (text, tool_calls, usage, finish)."""
+    """Map an Anthropic Messages API response -> (text, tool_calls, usage, finish).
+
+    Prompt-caching accounting: Anthropic's `input_tokens` is the UNCACHED remainder;
+    total prompt = input_tokens + cache_creation_input_tokens + cache_read_input_tokens
+    (see [[prompt-caching]]). We report `prompt_tokens` as the FULL prompt (so token
+    counts stay apples-to-apples with the uncached 9B baseline) and additionally carry
+    the cache breakdown so the caller can price it: cache reads bill ~0.1x input, cache
+    writes ~1.25x (5-min TTL)."""
     text_parts, tool_calls = [], []
     for block in resp.get("content", []) or []:
         bt = block.get("type")
@@ -231,7 +252,18 @@ def anthropic_to_openai(resp):
     u = resp.get("usage", {}) or {}
     inp = u.get("input_tokens", 0) or 0
     out = u.get("output_tokens", 0) or 0
-    usage = {"prompt_tokens": inp, "completion_tokens": out, "total_tokens": inp + out}
+    cache_read = u.get("cache_read_input_tokens", 0) or 0
+    cache_write = u.get("cache_creation_input_tokens", 0) or 0
+    total_prompt = inp + cache_read + cache_write
+    usage = {
+        "prompt_tokens": total_prompt,
+        "completion_tokens": out,
+        "total_tokens": total_prompt + out,
+        # cache breakdown (extra fields; harmless to OpenAI clients that ignore them)
+        "uncached_input_tokens": inp,
+        "cache_read_input_tokens": cache_read,
+        "cache_creation_input_tokens": cache_write,
+    }
     sr = resp.get("stop_reason")
     raw = "length" if sr == "max_tokens" else None
     return "".join(text_parts), tool_calls, usage, raw
@@ -260,6 +292,11 @@ def call_anthropic(payload, cfg):
         if _sys:
             _blocks.append({"type": "text",
                             "text": _sys if isinstance(_sys, str) else json.dumps(_sys)})
+        # Cache the tools+system prefix (stable across every turn of an episode). The
+        # breakpoint on the last system block also caches `tools` (render order is
+        # tools -> system -> messages), which is the single biggest stable prefix.
+        if os.environ.get("OPUS_ADAPTER_CACHE", "1") == "1":
+            _blocks[-1] = {**_blocks[-1], "cache_control": {"type": "ephemeral"}}
         req_body["system"] = _blocks
     else:
         raise RuntimeError("anthropic backend needs ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN")
@@ -474,10 +511,14 @@ class Handler(BaseHTTPRequestHandler):
         if _ulog:
             try:
                 with open(_ulog, "a", encoding="utf-8") as _uf:
+                    _u = usage or {}
                     _uf.write(json.dumps({
                         "ts": round(time.time(), 3),
-                        "prompt_tokens": (usage or {}).get("prompt_tokens", 0),
-                        "completion_tokens": (usage or {}).get("completion_tokens", 0),
+                        "prompt_tokens": _u.get("prompt_tokens", 0),
+                        "completion_tokens": _u.get("completion_tokens", 0),
+                        "uncached_input_tokens": _u.get("uncached_input_tokens", 0),
+                        "cache_read_input_tokens": _u.get("cache_read_input_tokens", 0),
+                        "cache_creation_input_tokens": _u.get("cache_creation_input_tokens", 0),
                     }) + "\n")
             except Exception:  # noqa: BLE001
                 pass

@@ -1,11 +1,88 @@
 # STRONGER_TEACHER_PILOT — priced three-way comparison for closing the keeper gap
 
-**Status:** decision doc. Written 2026-07-08. The Opus arm is a **live pilot still in flight**
-(docker image-pull phase, pull 4/10 at time of writing; 0/10 episodes executed, 0 pilot keepers).
-Every Opus yield/cost number below the pilot line is therefore a **prior-based projection**, not a
-measurement — clearly labeled as such. The 9B and token-cost numbers are **measured** from the 282
-production keepers. No production artifact was touched to produce this doc; pilot output lands in
-`pilot_opus/`, never `keepers/keepers.jsonl`.
+**Status:** decision doc. Written 2026-07-08; **Opus arm now MEASURED 2026-07-09** (§0.5 below).
+The original projection sections (§2) are retained verbatim as the **pre-registered prior** so the
+projection-vs-measurement delta is visible and honest. The 9B numbers are measured from production
+keepers. No production artifact was touched; pilot output lands in `pilot_opus/`, never
+`keepers/keepers.jsonl`.
+
+---
+
+## 0.5 PILOT RESULT — MEASURED (2026-07-09, N=10, Opus 4.8 via Claude Code OAuth)
+
+Full pipeline ran end-to-end: 10 stratified holdout-clean episodes (sha256-asserted, §5) → hardened
+fork harness (no fetch-crash; the 5d87b4c hardening held) → 4 keepers extracted into `pilot_opus/keepers`.
+
+**Headline (all Opus numbers are now MEASURED; API pricing is prior knowledge, labeled):**
+
+| Metric | Measured value |
+|---|---|
+| **Yield** | **0.40** (4 resolved / 10) — dead-center of the 0.30–0.60 prior band |
+| Yield by stratum | near-miss dregs **1/5 = 0.20**; fresh-coverage tail **3/5 = 0.60** |
+| **Cache-read fraction** | **0.931** of all input tokens (16.12M read / 17.33M total) — OAuth path caches |
+| Cost reduction from caching | **4.72×** (measured cached vs uncached-counterfactual, same tokens) |
+| **$/episode** (cached) | **$1.91**  (uncached counterfactual $9.02) |
+| **$/keeper** (cached) | **$4.78**  (uncached counterfactual $22.54) |
+| Tokens (10 eps) | input 17.33M (cache-read 16.12M / cache-write 1.20M / uncached 688), output 141.7k |
+| Median turns / resolved episode | ~20 (Opus is turn-efficient; range 14–45) |
+| Format-equivalence gate (§4) | **PASS** — schema identical by construction; Opus keeper adds one benign additive `provenance.teacher` field; tool-entry keys (`function`/`type`) match; native qwen3_xml, `fidelity=high(all_toolcall_turns)` |
+
+**Per-episode table** (id, stratum, resolved, patch bytes, turns, input tok, output tok, cache-read
+fraction, $ cached, $ uncached-counterfactual):
+
+| instance_id | stratum | resolved | patch B | turns | in tok | out tok | cr-frac | $ cached | $ uncab |
+|---|---|---|---|---|---|---|---|---|---|
+| conan-io__conan-10213 | near-miss | ✅ | 1066 | 25 | 1,344,299 | 11,186 | 0.923 | 1.55 | 7.00 |
+| conan-io__conan-10408 | near-miss | ❌ empty | 0 | – | 2,841,662 | 26,360 | 0.921 | 3.36 | 14.87 |
+| modin-project__modin-5507 | near-miss | ❌ | 2274 | 45 | 2,580,172 | 16,732 | 0.940 | 2.60 | 13.32 |
+| pydantic__pydantic-4882 | near-miss | ❌ | 3000 | – | 2,022,719 | 16,720 | 0.945 | 2.07 | 10.53 |
+| pydantic__pydantic-4911 | near-miss | ❌ empty | 2853 | 20 | 1,019,340 | 7,949 | 0.940 | 1.06 | 5.30 |
+| pandas-dev__pandas-47475 | fresh-cov | ❌ | 2334 | – | 2,652,556 | 24,367 | 0.947 | 2.75 | 13.87 |
+| pandas-dev__pandas-47493 | fresh-cov | ✅ | 2370 | 25 | 1,254,251 | 9,908 | 0.924 | 1.42 | 6.52 |
+| getmoto__moto-4867 | fresh-cov | ✅ | 3593 | 14 | 545,276 | 3,512 | 0.920 | 0.61 | 2.81 |
+| getmoto__moto-4874 | fresh-cov | ❌ | 7411 | 39 | 2,331,298 | 19,089 | 0.908 | 2.87 | 12.13 |
+| dask__dask-10342 | fresh-cov | ✅ | 2020 | 17 | 734,787 | 5,845 | 0.926 | 0.83 | 3.82 |
+
+*(turns "–" = qwen `num_turns` unrecorded on the two empty-patch and two wall-terminated unresolved
+episodes.)* Raw JSON: `pilot_opus/pilot_analysis.json`; keepers: `pilot_opus/keepers/keepers.jsonl`.
+
+### 0.5a CACHING — measured, the 4× lever is REAL on the OAuth path
+The adapter was extended to (a) inject two `cache_control: ephemeral` breakpoints — one on the last
+system block (caches the stable tools+system prefix; render order tools→system→messages) and one on
+the last message block (incremental multi-turn prefix) — and (b) log `cache_read_input_tokens` /
+`cache_creation_input_tokens` from the Anthropic usage. A direct 2-turn probe confirmed the Claude
+Code OAuth path honors caching (turn-2 read 9,533/9,553 = 99.8% from cache). Across the 10 real
+agentic episodes, **93.1% of all input tokens were cache-reads** (billed ~0.1×), only 688 tokens were
+truly uncached, and 1.20M were cache-writes (~1.25×). Net: **4.72× cheaper than the uncached
+counterfactual, MEASURED** — the projected 4× lever is confirmed, not assumed. Caching is therefore
+**no longer a prerequisite-to-be-built; it is DONE and ON by default** (`OPUS_ADAPTER_CACHE=1`).
+
+### 0.5b SCALE RECOMMENDATION — close the floor as a PARALLEL API/CPU track
+Gap to floor: **89 keepers** (400 − 311 production). At measured yield 0.40 and $/keeper $4.78 cached:
+
+| Target | keepers | Opus episodes (÷0.40) | Cost cached ($1.91/ep) | Cost uncached ($9.02/ep) |
+|---|---|---|---|---|
+| **Floor (400)** | 89 | **~223** | **~$425** | ~$2,010 |
+| Target low (600) | 289 | ~723 | ~$1,380 | ~$6,520 |
+| Target high (1000) | 689 | ~1,723 | ~$3,290 | ~$15,530 |
+
+**Run it as a parallel track alongside the 27B GPU campaign** — Opus is API+CPU-bound (no GPU
+contention). Measured episode wall was 150–481 s (mean ~330 s). Serial ≈ 20 h for the floor; at a
+bounded 3–4 concurrent episodes through one adapter (respect the ≤4-container cap so the orch's
+cycle-close scoring is never starved, and the account rate limit — the only thing that killed the
+first pilot, now mitigated by the adapter's retry+backoff) that compresses to **~5–7 h of wall for
+the 89-keeper floor**. Caching holds under concurrency (per-episode distinct prefixes → distinct
+cache entries).
+
+**Where Opus earns its $ (stratum split):** fresh-coverage tail **0.60** (3/5) vs spent near-miss
+dregs **0.20** (1/5). Read: route the **fresh-coverage residual** to Opus first (best yield, lowest
+$/keeper), and reserve it for the near-miss dregs only where each keeper is otherwise unattainable
+(9B failed them outright — the 1/5 it does crack there is pure incremental coverage). Every keeper the
+9B cannot produce, Opus produces at ~$4.78 cached.
+
+**Blocking gates for promotion (unchanged) — status:** (i) format-equivalence cert → **PASS** (§0.5
+above / §4); (ii) leakage posture → **UNCHANGED** (10 ids sha256-asserted holdout-clean, keepers
+isolated in `pilot_opus/keepers`); (iii) caching enabled before bulk scale → **DONE + MEASURED**.
 
 ---
 
@@ -175,7 +252,7 @@ keeper row (§4); (ii) leakage posture unchanged (§5); (iii) for Opus, caching 
 1. Gap: 282 keepers → floor 400 (~120) → target 600–1000 (~320–720); campaign self-killed on an honest 0.075 rolling-yield collapse of the spent near-miss stock.
 2. 9B (measured): lifetime yield 0.171, rolling 0.075; ~$0/token but cheap stock exhausted and fresh-frontier yield still UNMEASURED.
 3. Token profile (measured, 282 keepers): median 610k input / 4.7k output / 33 turns per resolved episode.
-4. Opus 4.8 pilot: IN FLIGHT (docker pull 4/10; 0/10 episodes; yield NOT yet measured) — adapter+OAuth+scoring plumbing proven, self-completing into pilot_opus/.
+4. Opus 4.8 pilot: **MEASURED 2026-07-09** (§0.5) — 10/10 episodes, **yield 0.40** (4 keepers), **$4.78/keeper cached**, **93.1% cache-read** (4.72× cheaper), format-cert PASS, holdout-clean. Floor (89 keepers) ≈ 223 episodes ≈ **$425 cached**, runnable as a parallel API/CPU track.
 5. Opus pricing (prior, labeled): $5/$25 per 1M in/out; cache read ~$0.50/1M, write ~$6.25/1M.
 6. Opus cost (projected, 9B token prior): $3.17/episode uncached → $0.77 cached; $/keeper $6–11 uncached / $1.5–2.6 cached at yield 0.3–0.6.
 7. Opus totals @ yield 0.4: floor ~$950 uncached / ~$230 cached; full target ~$2.5–5.7k uncached / ~$0.6–1.4k cached — CACHING is the ~4× lever and the adapter must add it before scale.
