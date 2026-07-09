@@ -1,0 +1,361 @@
+diff --git a/swebench/harness/run_evaluation.py b/swebench/harness/run_evaluation.py
+index 0546371..b0a9ea1 100644
+--- a/swebench/harness/run_evaluation.py
++++ b/swebench/harness/run_evaluation.py
+@@ -34,7 +34,7 @@ from swebench.harness.docker_build import (
+     setup_logger,
+ )
+ from swebench.harness.grading import get_eval_report
+-from swebench.harness.test_spec import make_test_spec, TestSpec
++from swebench.harness.test_spec import make_test_spec, safe_make_test_specs, TestSpec
+ from swebench.harness.utils import load_swebench_dataset, str2bool
+ 
+ 
+@@ -242,7 +242,8 @@ def run_instances(
+         timeout (int): Timeout for running tests
+     """
+     client = docker.from_env()
+-    test_specs = list(map(make_test_spec, instances))
++    # Skip (do not abort on) any instance whose env/requirements fetch failed after retries.
++    test_specs = safe_make_test_specs(instances)
+ 
+     # print number of existing instance images
+     instance_image_ids = {x.instance_image_key for x in test_specs}
+@@ -415,7 +416,9 @@ def make_run_report(
+ 
+     # get remaining images and containers
+     images = list_images(client)
+-    test_specs = list(map(make_test_spec, full_dataset))
++    # Skip (do not abort on) any instance whose env/requirements fetch failed after retries;
++    # such ids simply won't appear in unremoved_images and fall through to error_ids below.
++    test_specs = safe_make_test_specs(full_dataset)
+     for spec in test_specs:
+         image_name = spec.instance_image_key
+         if image_name in images:
+diff --git a/swebench/harness/test_spec.py b/swebench/harness/test_spec.py
+index 0861afb..cd2f0a0 100644
+--- a/swebench/harness/test_spec.py
++++ b/swebench/harness/test_spec.py
+@@ -26,6 +26,7 @@ from swebench.harness.utils import (
+     get_requirements,
+     get_environment_yml,
+     get_test_directives,
++    EnvFetchError,
+ )
+ 
+ DIFF_MODIFIED_FILE_REGEX = r"--- a/(.*)"
+@@ -108,13 +109,36 @@ class TestSpec:
+             raise ValueError(f"Invalid architecture: {self.arch}")
+ 
+ 
++def safe_make_test_specs(instances: list[SWEbenchInstance]) -> list[TestSpec]:
++    """Map make_test_spec over instances, skipping (not aborting) instances whose env or
++    requirements file could not be fetched from raw.githubusercontent.com after retries.
++
++    make_test_spec eagerly fetches each instance's env/requirements over the network. A
++    single transient fetch fault used to propagate out and KILL the whole run (zeroing a
++    50-instance report). Here we isolate that fault to the one instance: it is logged and
++    dropped, so its image is never built and it later surfaces as an unevaluated/error id
++    in the report, while every other instance proceeds. EnvFetchError only -- real bugs
++    (KeyError, missing version specs, ...) still raise so they stay visible.
++    """
++    specs: list[TestSpec] = []
++    for instance in instances:
++        try:
++            specs.append(make_test_spec(instance))
++        except EnvFetchError as e:
++            iid = instance.get(KEY_INSTANCE_ID, "?") if isinstance(instance, dict) \
++                else getattr(instance, "instance_id", "?")
++            print(f"[swebench] SKIP {iid}: env/requirements fetch failed after retries "
++                  f"-> instance dropped from this run (not fatal): {e}")
++    return specs
++
++
+ def get_test_specs_from_dataset(dataset: Union[list[SWEbenchInstance], list[TestSpec]]) -> list[TestSpec]:
+     """
+     Idempotent function that converts a list of SWEbenchInstance objects to a list of TestSpec objects.
+     """
+     if isinstance(dataset[0], TestSpec):
+         return cast(list[TestSpec], dataset)
+-    return list(map(make_test_spec, cast(list[SWEbenchInstance], dataset)))
++    return safe_make_test_specs(cast(list[SWEbenchInstance], dataset))
+ 
+ 
+ def make_repo_script_list(specs, repo, repo_directory, base_commit, env_name):
+diff --git a/swebench/harness/utils.py b/swebench/harness/utils.py
+index 4d84919..6467223 100644
+--- a/swebench/harness/utils.py
++++ b/swebench/harness/utils.py
+@@ -1,9 +1,13 @@
++import hashlib
+ import json
+ import os
+ from pathlib import Path
+ import re
++import time
+ import requests
+ 
++from collections import namedtuple
++
+ from argparse import ArgumentTypeError
+ from datasets import Dataset, load_dataset
+ from dotenv import load_dotenv
+@@ -174,11 +178,89 @@ def has_attribute_or_import_error(log_before):
+     return False
+ 
+ 
++### MARK - infra hardening (2026-07-09): bounded, cached, retrying raw-file fetch.
++# The env/requirements paths below fetch immutable files from raw.githubusercontent.com.
++# Upstream used a bare requests.get() with NO timeout: a single flaky read could hang
++# unbounded and, when it finally raised ReadTimeout, propagate out of make_test_spec and
++# KILL an entire scoring run (zeroing a whole 50-instance report). We wrap the fetch with
++# an explicit (connect, read) timeout, a few backoff retries, and an on-disk cache (files
++# AT a commit never change, so caching is exact and cuts future net exposure to ~zero).
++# On network failure that survives all retries we raise EnvFetchError, which callers catch
++# per-instance to skip just that instance instead of aborting the whole run.
++RAW_FETCH_TIMEOUT = float(os.environ.get("SWE_RAW_FETCH_TIMEOUT", "30"))  # (connect, read) s
++RAW_FETCH_RETRIES = int(os.environ.get("SWE_RAW_FETCH_RETRIES", "3"))     # attempts AFTER the first
++RAW_FETCH_CACHE_DIR = Path(
++    os.environ.get(
++        "SWE_RAW_FETCH_CACHE",
++        # default: <fork-root>/.raw_fetch_cache  (utils.py is .../swebench/harness/)
++        str(Path(__file__).resolve().parents[2] / ".raw_fetch_cache"),
++    )
++)
++
++RawFetchResult = namedtuple("RawFetchResult", ["status_code", "text"])
++
++
++class EnvFetchError(Exception):
++    """A raw env/requirements file could not be fetched after retries (network fault).
++
++    Raised in place of a bare requests exception so callers can skip the affected
++    instance gracefully rather than aborting the whole evaluation run.
++    """
++
++
++def _raw_cache_path(url: str) -> Path:
++    # Key on the full raw URL (== repo + commit + path); immutable at a commit.
++    digest = hashlib.sha256(url.encode("utf-8")).hexdigest()
++    return RAW_FETCH_CACHE_DIR / digest
++
++
++def fetch_raw_file(url: str) -> RawFetchResult:
++    """Fetch a raw.githubusercontent.com file with timeout, retries, and on-disk cache.
++
++    Returns RawFetchResult(status_code, text). A non-200 (e.g. 404) is returned as-is so
++    the caller's path-probing loop keeps its original semantics (try the next path). Only
++    a *network* failure that survives all retries raises EnvFetchError.
++    """
++    cache_path = _raw_cache_path(url)
++    if cache_path.is_file():
++        try:
++            return RawFetchResult(200, cache_path.read_text())
++        except OSError:
++            pass  # unreadable cache entry -> fall through and refetch
++
++    last_exc = None
++    for attempt in range(RAW_FETCH_RETRIES + 1):
++        try:
++            resp = requests.get(url, timeout=(RAW_FETCH_TIMEOUT, RAW_FETCH_TIMEOUT))
++        except requests.RequestException as e:
++            # Only transient network faults (timeouts, connection resets) land here; a
++            # 404 is a normal completed response and is NOT retried below.
++            last_exc = e
++            if attempt < RAW_FETCH_RETRIES:
++                time.sleep(min(2 ** attempt, 8))  # backoff: 1s, 2s, 4s, ...
++                continue
++            raise EnvFetchError(
++                f"network failure fetching {url} after {RAW_FETCH_RETRIES + 1} attempt(s): {e}"
++            ) from e
++        if resp.status_code == 200:
++            # Cache the immutable body atomically (best-effort; cache is a pure optimization).
++            try:
++                RAW_FETCH_CACHE_DIR.mkdir(parents=True, exist_ok=True)
++                tmp = cache_path.with_name(cache_path.name + f".tmp.{os.getpid()}")
++                tmp.write_text(resp.text)
++                os.replace(tmp, cache_path)  # atomic on same filesystem
++            except OSError:
++                pass
++        return RawFetchResult(resp.status_code, resp.text)
++    # Unreachable (loop either returns or raises), but keeps the type checker honest.
++    raise EnvFetchError(f"network failure fetching {url}: {last_exc}")
++
++
+ @cache
+ def get_environment_yml_by_commit(repo: str, commit: str, env_name: str) -> str:
+     for req_path in MAP_REPO_TO_ENV_YML_PATHS[repo]:
+         reqs_url = os.path.join(SWE_BENCH_URL_RAW, repo, commit, req_path)
+-        reqs = requests.get(reqs_url)
++        reqs = fetch_raw_file(reqs_url)
+         if reqs.status_code == 200:
+             break
+     else:
+@@ -223,7 +305,7 @@ def get_environment_yml(instance: SWEbenchInstance, env_name: str) -> str:
+ def get_requirements_by_commit(repo: str, commit: str) -> str:
+     for req_path in MAP_REPO_TO_REQS_PATHS[repo]:
+         reqs_url = os.path.join(SWE_BENCH_URL_RAW, repo, commit, req_path)
+-        reqs = requests.get(reqs_url)
++        reqs = fetch_raw_file(reqs_url)
+         if reqs.status_code == 200:
+             break
+     else:
+@@ -250,7 +332,7 @@ def get_requirements_by_commit(repo: str, commit: str) -> str:
+                 req_dir,
+                 file_name,
+             )
+-            reqs = requests.get(reqs_url)
++            reqs = fetch_raw_file(reqs_url)
+             if reqs.status_code == 200:
+                 for line_extra in reqs.text.split("\n"):
+                     if not exclude_line(line_extra):
+diff --git a/tests/test_raw_fetch_hardening.py b/tests/test_raw_fetch_hardening.py
+new file mode 100644
+index 0000000..48cb824
+--- /dev/null
++++ b/tests/test_raw_fetch_hardening.py
+@@ -0,0 +1,144 @@
++"""Unit-smoke for the hardened raw-file fetch wrapper (localhost only, no external net).
++
++Exercises the exact defect class (unbounded read -> whole-run kill) and every branch of
++the fix: on-disk cache, 404 path-probe passthrough, bounded read-timeout -> retries ->
++EnvFetchError, connection-refused -> EnvFetchError, and per-instance graceful skip.
++Run with the fork venv:  .venv-swegym/bin/python smoke_fetch_raw.py
++"""
++import sys, socket, time, threading, tempfile, shutil
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
++from pathlib import Path
++
++import swebench.harness.utils as u
++import swebench.harness.test_spec as ts
++
++HITS = {"ok": 0, "missing": 0, "slow": 0}
++
++
++class H(BaseHTTPRequestHandler):
++    def log_message(self, *a):  # silence access log
++        pass
++
++    def do_GET(self):
++        if self.path.startswith("/ok"):
++            HITS["ok"] += 1
++            body = b"OK-BODY\n"
++            self.send_response(200); self.send_header("Content-Length", str(len(body)))
++            self.end_headers(); self.wfile.write(body)
++        elif self.path.startswith("/missing"):
++            HITS["missing"] += 1
++            self.send_response(404); self.end_headers(); self.wfile.write(b"nope")
++        elif self.path.startswith("/slow"):
++            HITS["slow"] += 1
++            time.sleep(3)  # longer than the 1s read timeout -> client bails first
++            try:
++                self.send_response(200); self.end_headers(); self.wfile.write(b"late")
++            except (BrokenPipeError, ConnectionError):
++                pass  # client already closed after read timeout (expected)
++        else:
++            self.send_response(500); self.end_headers()
++
++
++def free_port():
++    s = socket.socket(); s.bind(("127.0.0.1", 0)); p = s.getsockname()[1]; s.close()
++    return p  # momentarily closed -> connect() gets ECONNREFUSED
++
++
++def main():
++    fails = []
++
++    def check(name, cond, extra=""):
++        print(("PASS " if cond else "FAIL ") + name + ((" :: " + extra) if extra else ""))
++        if not cond:
++            fails.append(name)
++
++    srv = ThreadingHTTPServer(("127.0.0.1", 0), H)  # threaded so a slow handler can't block retries
++    port = srv.server_address[1]
++    threading.Thread(target=srv.serve_forever, daemon=True).start()
++    base = f"http://127.0.0.1:{port}"
++
++    cache = Path(tempfile.mkdtemp(prefix="rawcache_"))
++    u.RAW_FETCH_CACHE_DIR = cache
++    u.RAW_FETCH_RETRIES = 1          # keep the smoke fast (2 attempts total)
++    u.RAW_FETCH_TIMEOUT = 1.0        # 1s read timeout (backoff between attempts is real but short)
++
++    # 1) 200 -> body + on-disk cache written, exactly one network hit
++    r = u.fetch_raw_file(base + "/ok/a")
++    check("200-body", r.status_code == 200 and r.text == "OK-BODY\n", r.text.strip())
++    check("cache-written", len(list(cache.iterdir())) == 1)
++    check("net-hit-once", HITS["ok"] == 1, f"hits={HITS['ok']}")
++
++    # 2) cache HIT bypasses the network entirely: make requests.get explode, yet the
++    #    already-cached URL still resolves from disk (future net exposure ~0).
++    orig_get = u.requests.get
++    u.requests.get = lambda *a, **k: (_ for _ in ()).throw(AssertionError("network called on cache hit"))
++    try:
++        r2 = u.fetch_raw_file(base + "/ok/a")
++        check("cache-hit-no-network", r2.status_code == 200 and r2.text == "OK-BODY\n")
++    except AssertionError as e:
++        check("cache-hit-no-network", False, str(e))
++    finally:
++        u.requests.get = orig_get
++    check("no-extra-net-hit", HITS["ok"] == 1, f"hits={HITS['ok']}")
++
++    # 3) 404 -> returned as-is, NOT retried, NOT an exception (path-probe semantics intact)
++    HITS["missing"] = 0
++    r3 = u.fetch_raw_file(base + "/missing/x")
++    check("404-passthrough", r3.status_code == 404)
++    check("404-not-retried", HITS["missing"] == 1, f"hits={HITS['missing']}")
++
++    # 4) bounded READ TIMEOUT (the exact bug class) -> retries -> EnvFetchError, no hang
++    HITS["slow"] = 0
++    t0 = time.time()
++    raised = None
++    try:
++        u.fetch_raw_file(base + "/slow/y")
++    except u.EnvFetchError as e:
++        raised = e
++    dt = time.time() - t0
++    check("readtimeout-raises-EnvFetchError", isinstance(raised, u.EnvFetchError), str(raised))
++    check("readtimeout-retried", HITS["slow"] == u.RAW_FETCH_RETRIES + 1, f"attempts={HITS['slow']}")
++    check("readtimeout-bounded", dt < 10, f"{dt:.1f}s")  # ~2x1s, nowhere near unbounded
++
++    # 5) connection refused (closed port) -> EnvFetchError after retries
++    dead = f"http://127.0.0.1:{free_port()}/ok/never"
++    try:
++        u.fetch_raw_file(dead); connfail = False
++    except u.EnvFetchError:
++        connfail = True
++    check("connrefused-raises-EnvFetchError", connfail)
++
++    srv.shutdown(); srv.server_close()
++
++    # 6) safe_make_test_specs: one instance's fetch fails -> it is skipped, others survive,
++    #    and NO exception escapes (one flaky fetch never zeros the batch).
++    orig_mts = ts.make_test_spec
++    def fake_mts(inst):
++        if inst["instance_id"] == "bad__1":
++            raise u.EnvFetchError("simulated network fault")
++        return f"spec::{inst['instance_id']}"
++    ts.make_test_spec = fake_mts
++    try:
++        specs = ts.safe_make_test_specs([
++            {"instance_id": "good__1"}, {"instance_id": "bad__1"}, {"instance_id": "good__2"}])
++        check("skip-keeps-good", specs == ["spec::good__1", "spec::good__2"], str(specs))
++        check("skip-drops-bad", "spec::bad__1" not in specs)
++    finally:
++        ts.make_test_spec = orig_mts
++
++    shutil.rmtree(cache, ignore_errors=True)
++    if fails:
++        print("\nFAILURES:", fails)
++    else:
++        print("\nALL SMOKE CHECKS PASSED")
++    return fails
++
++
++def test_raw_fetch_hardening():
++    """pytest entrypoint: no external network, no docker (localhost stub server only)."""
++    fails = main()
++    assert not fails, f"raw-fetch hardening smoke failures: {fails}"
++
++
++if __name__ == "__main__":
++    sys.exit(1 if main() else 0)

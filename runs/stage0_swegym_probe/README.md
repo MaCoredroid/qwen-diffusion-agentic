@@ -22,6 +22,16 @@ resolve-filter. See `report.json` / `report_table.txt` for the measured numbers.
   one-line patch (`artifacts/fork_reuse_prebuilt.patch`) so `build_instance_image` reuses the
   pre-pulled instance image instead of requiring a from-scratch env-image build. Keeps only
   `resolved=true` on the ground-truth FAIL_TO_PASS + PASS_TO_PASS gate.
+  - **Net-fetch hardening** (`artifacts/fork_netfetch_hardening.patch`, 2026-07-09): the fork
+    eagerly fetches each instance's `environment.yml`/`requirements.txt` from
+    raw.githubusercontent.com with a bare, **unbounded** `requests.get()`. A single read
+    timeout there once propagated out of `make_test_spec` and **killed a whole 50-instance
+    scoring run** (batch_0002 -> 0 sub-reports, 49 no_prediction). The patch wraps those
+    fetches (`swebench/harness/utils.py::fetch_raw_file`) with an explicit 30s timeout, 3
+    backoff retries, and an immutable on-disk cache (`<fork>/.raw_fetch_cache`), and on final
+    failure raises `EnvFetchError` which `safe_make_test_specs` catches **per-instance** —
+    skipping just that instance (it lands as an error/unevaluated id) instead of aborting the
+    run. Smoke: `tests/test_raw_fetch_hardening.py` (localhost only, no net/docker).
 - **Orchestrator** — `probe_orch.sh`: serial A(pull) → B(gen, server up) → C(score) →
   D(report); each stage self-bounded; docker-heavy pull/score never overlap the GPU server.
 

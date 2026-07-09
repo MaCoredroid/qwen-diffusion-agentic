@@ -2,8 +2,11 @@
 # BATCH SCORE — DUAL-SOURCE verifiable reward for one batch (docker-only; NO GPU up).
 # Merge the C shard predictions into one predictions.jsonl, then score each id with
 # the harness that MATCHES its image provenance (belt-lever 2026-07-07):
-#   * swe_gym ids     -> SWE-Bench-Fork 2.0.13 (@242429c + fork_reuse_prebuilt.patch),
-#                        --cache_level instance, over dataset_gym.json. (unchanged)
+#   * swe_gym ids     -> SWE-Bench-Fork 2.0.13 (@242429c + fork_reuse_prebuilt.patch
+#                        + fork_netfetch_hardening.patch: bounded/cached/retrying raw
+#                        env+reqs fetch that skips a flaky instance instead of killing the
+#                        whole run -- see artifacts/fork_netfetch_hardening.patch, 2026-07-09),
+#                        --cache_level instance, over dataset_gym.json.
 #   * swe_verified ids -> OFFICIAL swebench 4.1.0 (the W2-proven path; namespace
 #                        `swebench` == the pulled swebench/sweb.eval.x86_64.<slug_1776>
 #                        images), --cache_level env, over dataset_verified.json.
@@ -117,8 +120,15 @@ PY
 t0=$(date +%s)
 
 # 3) SWE-Gym ids -> fork harness (dataset_gym.json), report to parts/fork ---------
-if [[ "$NGYM" -gt 0 ]]; then
-  echo "[score:gym] fork harness over $NGYM ids $(date -u +%FT%TZ)" >&2
+# The fork harness eagerly fetches each instance's env/requirements from
+# raw.githubusercontent.com while preparing specs. The harness itself is now hardened
+# (bounded timeout + retries + on-disk cache + per-instance skip; see the fork's
+# swebench/harness/utils.py::fetch_raw_file, 2026-07-09) so one flaky fetch no longer
+# zeros the whole report. We ALSO keep a cheap belt here: if the WHOLE invocation still
+# exits nonzero (docker hiccup / transient fault), retry it ONCE. Re-invoking with the
+# same run_id is idempotent for already-scored ids (get_dataset_from_preds skips any id
+# that already has a report.json), so the retry only re-does the unfinished remainder.
+run_fork_harness() {
   ( cd "$SCORE/parts/fork" && timeout 21600 $PRIV env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
       "/home/mark/qwen_diffusion/$FORK_PY" -m swebench.harness.run_evaluation \
       --dataset_name "/home/mark/qwen_diffusion/$DS_GYM" --split train \
@@ -126,6 +136,16 @@ if [[ "$NGYM" -gt 0 ]]; then
       --instance_ids $GYM_IDS \
       --run_id "${RUN_ID}_gym" \
       --cache_level instance --clean False --max_workers "$MAXW" --timeout 1800 ) 2>&1 | tail -15
+  return "${PIPESTATUS[0]}"   # rc of the harness subshell, not of tail
+}
+if [[ "$NGYM" -gt 0 ]]; then
+  echo "[score:gym] fork harness over $NGYM ids $(date -u +%FT%TZ)" >&2
+  run_fork_harness; frc=$?
+  if [[ "$frc" -ne 0 ]]; then
+    echo "[score:gym] fork harness rc=$frc -> RETRY ONCE (cheap belt) $(date -u +%FT%TZ)" >&2
+    run_fork_harness; frc=$?
+    echo "[score:gym] fork harness retry rc=$frc $(date -u +%FT%TZ)" >&2
+  fi
 fi
 
 # 4) Verified ids -> OFFICIAL harness (dataset_verified.json), report to parts/official
