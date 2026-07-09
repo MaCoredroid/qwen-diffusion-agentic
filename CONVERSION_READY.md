@@ -106,3 +106,67 @@ NEXT step, not run here.
 **Ready for the gate:** twin@K1 = base `models/qwen3.5-9b-fastdllm-mswe-S-merged` + adapter
 `runs/kraise_reconvert/mswe_S_twinK1_run1recipe_step400_seed81101` (diffusion, `--no-merge-adapter`, block 32, K=1);
 served/AR-guided via `models/qwen3.5-9b-fastdllm-mswe-S-twinK1-vllm-bf16`. NO K>1 work done (separate decision on the gate).
+
+---
+
+## STATUS(2026-07-09, night) — STEP 4 CERT EXECUTED (serving byte/quality + anchor preservation) — BOTH PASS
+
+Monitor-dispatched. Ran step-4 of the #29 convert-after-RL protocol on the M_swe_S twin@K1: the A6-style
+online==offline engine cert + the anchor-preservation check. **Both PASS; no kill fired.** Step 5 (Tier1-C46
+twin@K1 entry gate ≥12/46) is the NEXT step, NOT run here. NO K>1 work.
+
+### Part A — A6-style ENGINE byte/quality spot-cert (online == offline), twin export
+
+Served the twin export `models/qwen3.5-9b-fastdllm-mswe-S-twinK1-vllm-bf16` on the FLARE vLLM pin
+(`.venv-vllm-p2-main` + `/home/mark/shared/lumoFlyWheel_codex_fork/scripts/qwen35_9b_flare_hybrid_serve.sh`,
+`policy=hybrid_clean decode=hybrid_clean flare=1 canvas=32 bidir=1 mask=248077 temp=0.0`). **Launcher-gap note:** the
+twin export's `conversion_manifest.json` carries `mask_token_id` at top-level (not under `base_model`), so the
+launcher's parser resolved mask=None — passed `MASK_TOKEN_ID=248077` explicitly (offline mirror reads it from
+`matched20_ref.json`). Offline in-process engine + online AsyncLLM server captured on the same A6 (10 matched-20
+turns, fresh APC) + A7 (10 turns, warm APC) turnset; `compare` joins them.
+
+| set | n | token-ident online==offline | byte-ident online==offline | quality-ident (exact+valid) | zero-value-projection | divergent turns |
+|---|---:|---:|---:|---:|---|---|
+| A6 (single-turn, fresh APC) | 10 | **10/10** | **10/10** | **10/10** | True | none |
+| A7 (multi-turn, warm APC) | 10 | **10/10** | **10/10** | **10/10** | True | none |
+
+**PASS** — the served twin is byte-identical to the offline engine on every certified turn (offline booted
+mask=248077, boot 14.5 s). The `off_reproduces_battery_*` cross-check (twin-offline vs the RL-v2 gates2 battery — a
+*different* model, so NOT the twin cert) reads A6 8/10 byte · 9/10 exact, A7 9/10 byte · 10/10 exact, i.e. the twin
+tracks RL-v2 on most tool-call turns and legitimately diverges on the rest. Cert JSON:
+`runs/kraise_reconvert/stage_a_cert_mswe_S/cert.json` (+ scripts `capture_offline_twin.py`/`online_client_twin.py`/
+`compare_twin.py`, adapted from the certified `runs/stage_a_cert/` A6 harness).
+
+### Part B — ANCHOR preservation: twin diffusion hybrid-clean matched-20 vs the AR arm 49/63 (#29 bar)
+
+`eval_flare_northstar_hybrid_clean.py` (`.venv-fastdllm`, base `models/qwen3.5-9b-fastdllm-mswe-S-merged` + adapter
+`runs/kraise_reconvert/mswe_S_twinK1_run1recipe_step400_seed81101`, `--no-merge-adapter`, block 32, temp 0.0,
+top-p 0.95, grammar-topk 256, K=1 FSM values). Paired McNemar vs the banked AR-arm anchor (`runs/swe_sft_arm1/
+anchor_gate/mswe_S_matched20/ar-vllm-guided/turns.jsonl`, 49/63), `gold_sha256` mismatch **0/63**.
+
+| metric | twin@K1 diffusion | AR arm anchor | bar | verdict |
+|---|---:|---:|---|---|
+| exact_args | **50/63** | 49/63 | raw ≥ anchor−3 = 46 | **PASS** (+1) |
+| valid_tool_call | 63/63 | 63/63 | — | held |
+| episode_exact | 14/20 | 13/20 | — | +1 |
+| McNemar b (AR-right, twin-wrong) | **0** | — | — | zero erosion |
+| McNemar c (twin-right, AR-wrong) | **1** (`heldout_seed_run1clean_0031#t1`) | — | — | a gain |
+| net-loss b−c / p (two-sided exact) | **−1** / **1.0** | — | not significant (p≥0.05) | **PASS** |
+
+**VERDICT PASS** — the SWE-SFT+conversion twin, decoded in the served diffusion lane, is a strict **superset** of the
+AR arm on the certified tool-call anchor: `b=0` (lost nothing the AR arm had) and gained one turn. Also ≥ the #29
+diffusion anchor (47/63, +3). **KILL-3 value-projection audit CLEAN** on the twin turns.jsonl:
+`verification_mode=no_projection_events`; every hard counter 0 (`projected_token_record_count`,
+`parallel_commit_forced_tokens_counter`, `wave1/wave2_*`, `zero_forward_rows`,
+`exact_rows_dependent_on_projected_values` all 0) — the 50/63 is uncontaminated (no phantom-win).
+
+### Compute discipline
+Every heavy step caged `systemd-run --user --scope -p MemoryMax=22G -p MemorySwapMax=4G`; one GPU tenant (offline
+capture → boot server → online client → **server killed before** the CPU compare). GPU wall ≈ hybrid m20 ~7 min +
+offline capture ~3 min + server boot ~1.5 min + online client ~40 s. Artifacts under gitignored
+`runs/kraise_reconvert/{step4_cert_mswe_S,stage_a_cert_mswe_S}/` (`step4_cert_summary.json`,
+`anchor_mcnemar_twin_vs_ar49.json`, `cert.json`, `.../projection_value_audit.json`, twin turns.jsonl).
+
+**Gate readiness:** twin@K1 anchor+serving certified. Step 5 = 46-episode Tier1-C46 twin@K1 through qwen-code on the
+FLARE engine (official swebench images + docker scoring, frozen envelope, entry bar ≥12/46) is the next, separate
+step. NO K>1 work (K-curriculum is a separate decision on the gate result).
