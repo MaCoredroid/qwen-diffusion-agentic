@@ -165,6 +165,28 @@ metrics `runs/swe_sft_arm1/metrics.jsonl`). Anchor gate (§2.5 / KILL-T1) runs a
 into the bf16/dequantised base at §3.1 re-conversion — the standard QLoRA merge; the
 preservation battery + matched-20 anchor certify no erosion; retrain-freely applies).
 
+**LIVE CONFIRMATION (2026-07-09T20:06Z — launch verified healthy).** The detached caged
+run is stable and will outlive the launching session: **pid 185042, PPID 1**, systemd
+scope `run-p185042-i4368305.scope` **MemoryMax=22 GiB verified**, env `FASTDLLM_GDN_KERNEL=fla`
++ `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`. **GPU 100 % sm-util sustained**
+(`nvidia-smi dmon` 18 × 10 s = 3 min, **min = mean = 100 %**), 27.3 / 32 GB resident,
+per-step **peak 26.67 GiB** (~4.7 GiB live margin, matches the 12288 probe). Steady
+state **7.40 s/step** (step 5→45, 5-step cadence). Loss **finite, no NaN/inf**; the
+minimum-loss steps trend down (0.270 → 0.204 → 0.182 → 0.171) with per-step variance
+tracking `n_valid` (assistant-target token count per row: 1196–4302), **not** divergence;
+grad_norm 0.23–0.56; LR warming toward the 1e-5 cosine peak (warmup 12). **ETA ≈ 49 min**
+wall for 400 steps; the 100-step erosion-sweep checkpoints {100,200,300,400} land at
+≈ **12 / 25 / 37 / 49 min** from launch (checkpoint-100 not yet written at this note).
+Resume verified `--resume auto` (latest-checkpoint restore of adapter + optimizer +
+scheduler + torch/cuda/python/numpy RNG + step) — a kill/resume reproduces the fixed
+cosine horizon bit-faithfully. **Datagen handover clean:** orch pid 2888673 gone,
+`datagen_ar.scope` inactive (not failed), 0 `swe_ep` containers, trainer is the sole GPU
+tenant (`batch_0005` sacrificed, ids re-drawable — `runs/swe_datagen_s1/DATAGEN_STATUS.txt`).
+**Monitor's next gate = the ANCHOR GATE at each 100-step checkpoint** (§2.5 / KILL-T1;
+matched-20 exact_args McNemar vs arm-S pre-SFT anchor ≈ 47/63 hybrid · 44/63 careful,
+PASS = net-loss not significant AND raw ≥ anchor − 3; secondary GSM8K N=20 ≥ anchor − 1,
+value-projection audit all-0).
+
 ---
 
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
