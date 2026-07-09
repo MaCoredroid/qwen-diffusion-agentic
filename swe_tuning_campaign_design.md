@@ -246,6 +246,80 @@ gate = the same AR-guided matched-20 anchor on arm-T's checkpoint-400 vs the sto
 
 ---
 
+## STATUS (2026-07-09, night) — ARM-2 COMPLETE + ANCHOR GATE **PASS** (zero erosion); **D1 recorded** — both arms conversion-ready
+
+**Arm-2 (M_swe_T, stock base) finished clean and PASSED the KILL-T1 anchor gate with the same
+turn-for-turn signature as arm-1 (McNemar b=c=0).** Both SWE-SFT arms now hold the certified
+tool-call anchor; the campaign advances to K-carrying re-conversion (`k_raise_campaign_design.md`).
+
+**Arm-2 final training summary** (`runs/swe_sft_arm2/Aswe_T_step400_seed71101`, `metrics.jsonl`,
+80 pts): **DONE step=400, wall 2966.4 s (7.42 s/step)**, no crash, **0 NaN/Inf**; loss first
+0.263 → last 0.150 (min 0.049). The only grad_norm>10 event is step 365 (grad 450.6, **n_valid=1**
+single-target-token tail row at LR 1.99e-7 ⇒ negligible), identical failure-mode to arm-1's step
+365. Per-step peak 26.67 GiB. **Final adapter:
+`runs/swe_sft_arm2/Aswe_T_step400_seed71101/checkpoint-400/adapter_model.safetensors`** (r16/α32,
+same 11 targets incl. MLP gate_up/down; `lora_merge_count=184` on export, no dropped targets).
+Training dynamics are **near-identical to arm-1** (0.270→0.151/min 0.051), as designed (only the
+base differs).
+
+**Anchor gate (§2.5 / KILL-T1), AR-mode, matched-20 exact_args — PASS.** Same protocol as arm-1;
+**comparability-first the stock base was re-measured through the identical pipeline** (no
+same-pipeline stock reference existed — arm-1 measured the *rlv2* base). Both arm-2 legs used the
+identical export→vLLM→`eval_flare_northstar_matched.py --backend ar-vllm-guided` path (greedy,
+vLLM 0.23, gmu 0.66 / max-len 4096 / enforce-eager / mamba-align-1024 / gdn-triton), same
+20-episode/63-turn native set, gold_sha256 mismatch **0/63**. **Pre-SFT reference = the stock
+`fastdllm-init` base exported vllm-bf16 with NO adapter** (`scripts/export_fastdllm_vllm_noadapter.py`;
+byte-identical export path minus the LoRA merge), so pre vs post differ **only by the SWE adapter**
+— exactly mirroring arm-1 (pre = init+RLv2-adapter, post = init+SWE-adapter):
+
+| metric | pre-SFT stock base (init, no adapter) | post-SFT (M_swe_T) | verdict |
+|---|---:|---:|:--|
+| tool-call matched-20 **exact_args** | **51/63** | **51/63** | raw 51 ≥ 48 (anchor−3) **PASS** |
+| valid_tool_call | 63/63 | **63/63** | no format erosion **PASS** |
+| episode_exact | 14/20 | 14/20 | equal |
+| **paired McNemar** (`b` pre-right/post-wrong, `c` post-right/pre-wrong) | — | **b=0, c=0, net-loss 0, p=1.0** | net-loss not sig **PASS** |
+
+**Not a no-op:** the SFT model is active — **7/63 turns diverge** in greedy generated text — yet
+**zero correctness flips** (same "active but zero-erosion" signature as arm-1's 5/63). The
+measured same-pipeline stock anchor **51/63** matches the design's "~50/63 careful stock" (§2.4).
+Value-projection audit N/A (AR mode). Artifacts:
+`runs/swe_sft_arm2/anchor_gate/{stock_base_matched20,mswe_T_matched20}/ar-vllm-guided/turns.jsonl`,
+`anchor_mcnemar_result.json`, `export_{mswe_T,stockinit}.log`; served exports
+`models/qwen3.5-9b-fastdllm-{mswe-T,stockinit}-vllm-bf16`; scorer `scripts/swe_sft_arm1_anchor_mcnemar.py`;
+gate driver `scripts/swe_sft_arm2_gate_driver.sh`. Secondary GSM8K N=20 deferred (not blocking, as
+for arm-1).
+
+### D1 DECISION — recorded (the pivotal go/no-go for the K-carrying re-conversion spend)
+
+**Decision inputs (both arms):**
+
+| input | arm-1 **M_swe_S** (init+RL-v2 + SWE-SFT) | arm-2 **M_swe_T** (stock init + SWE-SFT) |
+|---|---|---|
+| final / min loss (400 steps) | 0.151 / **0.051** | 0.150 / **0.049** |
+| wall (s/step) | 2963.1 s (7.41) | 2966.4 s (7.42) |
+| NaN/Inf; grad spikes | 0; one n_valid=1 tail row | 0; one n_valid=1 tail row |
+| pre-SFT anchor (same-pipeline) | 49/63 (rlv2 base) | 51/63 (stock base) |
+| post-SFT M_swe anchor | **49/63** | **51/63** |
+| McNemar b / c / p | 0 / 0 / 1.0 | 0 / 0 / 1.0 |
+| KILL-T1 verdict | **PASS** (zero erosion) | **PASS** (zero erosion) |
+| SFT active (text-divergent turns) | 5/63 | 7/63 |
+
+**Decision:** **KILL-T1 fires for NEITHER arm.** Both hold the certified tool-call anchor turn-for-turn
+(b=c=0). Per design §2.4 default + the campaign directive, **arm-1 / M_swe_S = PRIMARY** advances to
+K-carrying re-conversion (it *preserves the certified tool-call gain* — the whole #29 apparatus —
+and is single-stage ⇒ fastest to the re-conversion decision); **arm-2 / M_swe_T = CONTROL TWIN**
+(stock is the strictly-better SWE substrate but discards the tool-call RL gain ⇒ two-stage, needs a
+later tool-call RL redo). **Both are conversion-ready** and both re-convert (the twin@K1 entry gate
+≥12/46 on Tier1-C46 is evaluated per-arm at conversion). **Caveat:** arm-2's raw anchor is +2 (51 vs
+49) but is measured against a *different* (stock) pre-SFT base that never carried the certified
+tool-call gain — it is **not** a capability delta over arm-1. The true D2 tiebreak (design §2.4:
+**max SWE resolve@1 AR subject to anchor-held**) requires the **N=5 AR SWE resolve** measurement
+(design step 2b) which is **NOT yet run** — that is the one remaining D1/D2 input; if **T ≫ S on SWE
+at an acceptable anchor**, flip primary to T and schedule the tool-call RL redo. Readiness inputs for
+the K-carrying conversion are captured in **`CONVERSION_READY.md`** (do-not-execute; monitor-dispatched).
+
+---
+
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
 
 > **SUPERSEDED (greedy-era rationale — kept for the record; see STATUS block above).** The ladder and the
