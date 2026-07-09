@@ -1,4 +1,33 @@
-# SWE-SFT arm-1 (M_swe_S) — LAUNCH STATUS: ARMED, BLOCKED ON GPU HANDOVER
+# SWE-SFT arm-1 (M_swe_S) — LAUNCH STATUS: **LAUNCHED** (handover executed)
+
+> **UPDATE 2026-07-09 (later) — BOTH BLOCKERS RESOLVED; run is LIVE.**
+> - **Blocker 1 (GPU handover):** DONE. datagen orch stopped, `batch_0005` sacrificed
+>   (ids re-drawable), GPU settled 387 MiB/0%. Preflight passes.
+> - **Blocker 2 (block_size):** RESOLVED by amendment + measurement. The two-stream FLARE
+>   path is **replaced** by an **AR single-stream causal QLoRA** trainer
+>   (`scripts/swe_sft_arm1_qlora_train.py`), evidence = #29 (`convert_after_rl_result.md`,
+>   b019b86: plain-train+reconvert preserves gains, McNemar 0, 2 seeds; parity enforced at
+>   CONVERSION not SFT). SDPA-attn (in-process) + `FASTDLLM_GDN_KERNEL=fla` + chunked-CE +
+>   4-bit QLoRA lift the feasible block to **12288** (measured; 16384 thin-margin 1.9 GiB
+>   rejected; 24576/32768 OOM). Dataset rebuilt 323→**334** keepers. Truncation @12288:
+>   328/334 truncated, 0 zero-label, **69.88 %** assistant-label retention.
+> - **Config unchanged** (r16/α32; targets q,k,v,o+GDN+MLP gate_up/down; LR1e-5 cosine
+>   warmup0.03; HORIZON400; seed71101; SAVE_STEPS100). **Objective changed**: single-stream
+>   AR CE (shift-by-one, = FLARE `L_AR`), NOT two-stream.
+> - **LAUNCHED detached+caged** (`bash scripts/swe_sft_arm1_driver.sh`):
+>   out `runs/swe_sft_arm1/Aswe_S_step400_seed71101/`, pidfile `runs/swe_sft_arm1/train.pid`,
+>   metrics `runs/swe_sft_arm1/metrics.jsonl`. To stop for a faithful resume:
+>   `kill -TERM -$(cat runs/swe_sft_arm1/train.pid)` (trainer checkpoints then exits; also
+>   resumable from the latest 100-step checkpoint). The full amendment + probe table +
+>   #29 evidence chain live in `swe_tuning_campaign_design.md` STATUS (2026-07-09, later).
+>
+> _Everything below is the pre-handover ARMED record (retained for provenance; the
+> two-stream feasibility table and the "objective = two-stream FLARE" line are SUPERSEDED
+> by the amendment above)._
+
+---
+
+# (ARCHIVE) SWE-SFT arm-1 (M_swe_S) — LAUNCH STATUS: ARMED, BLOCKED ON GPU HANDOVER
 
 **As of 2026-07-09T19:12Z.** Owner: task #110 / campaign `swe_tuning_campaign_design.md` §2.
 Base = merged-RL-v2 `models/qwen3.5-9b-fastdllm-mtplus1-merged` (the HF-stack realization of

@@ -97,6 +97,76 @@ objective = two-stream FLARE via the S2 pretok passthrough (serve-exact ids, nat
 
 ---
 
+## STATUS (2026-07-09, later) — HANDOVER EXECUTED: trainer AMENDED to AR single-stream QLoRA; block **12288** measured; LAUNCHED
+
+The GPU→training handover fired (monitor decision; datagen orch stopped, `batch_0005`
+sacrificed, GPU settled 387 MiB/0%). Resolutions (2)+(3) executed. **Two amendments to
+the §2 plan, both by measurement, recorded here per the "amend-in-the-status-block-
+with-evidence" discipline:**
+
+**AMENDMENT A — training mode: two-stream FLARE → AR-style SINGLE-STREAM CAUSAL QLoRA.**
+The §2.3/STATUS(2026-07-09) two-stream FLARE path materialises `[2L, vocab 248320]`
+logits and OOM'd above block 8192. It is REPLACED by a plain autoregressive
+single-stream causal QLoRA on the same merged-RL-v2 base
+(`models/qwen3.5-9b-fastdllm-mtplus1-merged`), `scripts/swe_sft_arm1_qlora_train.py`.
+- **Objective:** AR next-token CE, shift-by-one (identical to the FLARE clean-stream
+  `L_AR`, `modeling.py:2149`), loss on assistant-label spans only, mean over valid
+  targets. This IS the "AR-side SFT" the design calls for — now without the diffusion
+  co-stream (which §3.1's fresh conversion re-supplies anyway, on a SWE-excluded mix).
+- **EVIDENCE the amendment is sound (the #29 chain):** convert-after-RL preservation
+  audit (**#29**, `convert_after_rl_result.md`, commit **b019b86**) certified that
+  **plain training + fresh re-conversion PRESERVES fresh gains** (McNemar **zero net
+  loss**, two seeds, 126 paired turns × 2). train==serve parity is enforced at the
+  **CONVERSION stage** (`k_raise_campaign_design.md`), **not** required bit-for-bit
+  during SFT. So the SFT stage is free to use a memory-lean AR objective + a numerically-
+  (not bitwise-) equivalent attention/GDN kernel; the served twin is re-certified at
+  conversion by the #29 protocol (§3.1) + the matched-20 anchor gate (§2.5).
+- **How it fits long sequences (the two-stream OOM root-cause was NOT the logits alone):**
+  (1) SDPA causal attention monkeypatched onto the 8 `full_attention` layers **in the
+  trainer process only** (the shipped forward is EAGER — `attn_weights [1,16,L,L]`
+  ~34 GB/layer@32k — the true wall; served `modeling.py` is untouched); (2)
+  `FASTDLLM_GDN_KERNEL=fla` fused GDN (O(L)) replacing the memory-heavy torch fallback;
+  (3) chunked/gradient-checkpointed `lm_head`+CE so `[L, vocab]` (16 GB@32k) is never
+  materialised; (4) 4-bit NF4 QLoRA base + per-layer gradient checkpointing.
+
+**AMENDMENT B — block_size: measured, `12288` (not 32768/24576/16384).** Dry 2-step
+caged fwd/bwd probes on the worst-case (longest-8 truncated to the block), RTX 5090
+31.3 GiB usable, GDN=fla + expandable_segments:
+
+| block | peak (GiB) | margin | verdict |
+|---:|---:|---:|:--|
+| **32768** (design) | OOM | — | infeasible (fla-kernel `chunk_fwd_o`) |
+| **24576** | OOM | — | infeasible |
+| **16384** | 29.4 | ~1.9 | fits worst-case probe but **thin margin** — rejected for an unattended run on a live-desktop GPU |
+| **12288** ✅ | **24.8** | **~6.5** | **CHOSEN — robustly stable** |
+| 8192 | 21.4 | ~9.9 | (floor; the two-stream ceiling) |
+
+The monitor's candidate set {16384, 24576, 32768} is measured INFEASIBLE-or-thin;
+the ladder was extended downward (as the driver anticipated) to the largest robustly-
+stable block. Single-stream+fla lifts the feasible block **1.5×** over the two-stream
+~8192 ceiling. Reducing the CE chunk did not move 16384's peak (the binding term is
+the transformer backward, not CE).
+
+**Truncation stats @ 12288 (front-truncation keeps the final edit-and-verify turns —
+the taught capability):** 334 rows, **328 left-truncated**, **0 zero-label after trunc**
+(every episode retains assistant targets), assistant-label retention **69.88 %**
+(911,531 / 1,304,354 target tokens). Dataset rebuilt from the **334-keeper** pool
+(323→334, +11 all 27B-teacher/SWE-Gym; firewall re-asserted: holdout 113 sha==pin,
+keeper∩holdout=0, quarantine excluded).
+
+**Config (frozen, per §2.3/2.4 except the measured block):** r16/α32/drop0.05; targets
+q,k,v,o + GDN in_proj_{qkv,z,b,a}+out_proj + MLP gate_up/down; LR 1e-5 cosine warmup
+0.03; HORIZON 400 (≤600); seed 71101; per-device bsz1 grad-accum1; SAVE_STEPS 100 →
+{100,200,300,400}; caged MemoryMax=22G; faithful chunked-resume (adapter+optim+sched+
+rng+step + resume manifest). **LAUNCHED detached** via `bash scripts/swe_sft_arm1_driver.sh`
+(`runs/swe_sft_arm1/Aswe_S_step400_seed71101/`, pidfile `runs/swe_sft_arm1/train.pid`,
+metrics `runs/swe_sft_arm1/metrics.jsonl`). Anchor gate (§2.5 / KILL-T1) runs at each
+100-step checkpoint. **QLoRA-merge caveat** (adapter trained on the 4-bit base merges
+into the bf16/dequantised base at §3.1 re-conversion — the standard QLoRA merge; the
+preservation battery + matched-20 anchor certify no erosion; retrain-freely applies).
+
+---
+
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
 
 > **SUPERSEDED (greedy-era rationale — kept for the record; see STATUS block above).** The ladder and the
