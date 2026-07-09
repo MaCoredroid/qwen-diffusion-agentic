@@ -1749,3 +1749,204 @@
 {"instance_id": "pandas-dev__pandas-47672", "batch_id": "probe_batch_01_20260708T153935Z", "verdict": "env_unavailable", "ts": "2026-07-08T17:04:56Z"}
 {"instance_id": "dask__dask-10506", "batch_id": "probe_batch_01_20260708T153935Z", "verdict": "resolved", "ts": "2026-07-08T17:04:56Z"}
 {"epoch_marker": true, "epoch": "qwen3.6-27b-nvfp4-mtp", "ts": "2026-07-08T19:07:16Z"}
+{"instance_id": "pandas-dev__pandas-47446", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4867", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10149", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47451", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4874", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10159", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47475", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4875", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47493", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10211", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4881", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47504", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4886", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47508", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10212", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4890", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47528", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10294", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4895", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47547", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47550", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4896", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10342", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47557", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4908", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10380", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47581", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4915", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47585", "batch_id": "batch_0001_20260708T200704Z", "verdict": "env_unavailable", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10395", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4918", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47586", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4934", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47605", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10404", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4950", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47619", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10422", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4951", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47623", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47630", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4956", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10441", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47633", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4969", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10454", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47643", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "getmoto__moto-4972", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47672", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "dask__dask-10506", "batch_id": "batch_0001_20260708T200704Z", "verdict": "no_prediction", "ts": "2026-07-08T21:09:01Z", "infra_invalid": true, "infra_reason": "gen_rc=143"}
+{"instance_id": "pandas-dev__pandas-47446", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4867", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10149", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47451", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4874", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10159", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47475", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4875", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47493", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10211", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4881", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4890", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47528", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10294", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4895", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47550", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4896", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10342", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47557", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4908", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10380", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47581", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4915", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4934", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47605", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10404", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10422", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4951", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47623", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47630", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4956", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47633", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4969", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10454", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47643", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4972", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4975", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47714", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4977", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47716", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10509", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4985", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47731", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10521", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4986", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47747", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47749", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "getmoto__moto-4990", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "dask__dask-10556", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"instance_id": "pandas-dev__pandas-47754", "batch_id": "batch_0002_20260708T210930Z", "verdict": "no_prediction", "ts": "2026-07-08T21:29:22Z", "infra_invalid": true, "infra_reason": "gen_rc=1"}
+{"infra_repair_marker": true, "ts": "2026-07-08T21:44:40Z", "repaired_batches": ["batch_0001_20260708T200704Z", "batch_0002_20260708T210930Z"], "causes": {"batch_0001": "ctx-overflow 400 class (fixed: proxy max_tokens clamp, commit a040319); batch cut over by monitor", "batch_0002": "stale datagen_ar.scope in systemd failed registry after the mid-gen kill -> systemd-run refused unit; fixed: reset-failed + idempotent reset-failed added to datagen_gen.sh pre-boot"}, "by": "monitor"}
+{"instance_id": "pandas-dev__pandas-47446", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4867", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10149", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47451", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4874", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10159", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47475", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4875", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47493", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10211", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4881", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4890", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47528", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10294", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4895", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47550", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4896", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10342", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47557", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4908", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10380", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47581", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4915", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4934", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47605", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10404", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10422", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4951", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47623", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47630", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4956", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47633", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4969", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10454", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47643", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4972", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4975", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47714", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4977", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47716", "batch_id": "batch_0001_20260708T214530Z", "verdict": "empty_patch", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10509", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4985", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47731", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10521", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4986", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47747", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47749", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "getmoto__moto-4990", "batch_id": "batch_0001_20260708T214530Z", "verdict": "resolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "dask__dask-10556", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47754", "batch_id": "batch_0001_20260708T214530Z", "verdict": "unresolved", "ts": "2026-07-09T02:18:06Z"}
+{"instance_id": "pandas-dev__pandas-47446", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4867", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10149", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47451", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4874", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10159", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47475", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4875", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47493", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10211", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4881", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4890", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47528", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10294", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4895", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47550", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4896", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10342", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47557", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4908", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10380", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47581", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4934", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47605", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10404", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10422", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47630", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4956", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47633", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10454", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47643", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4975", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4977", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47716", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10509", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-4985", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47747", "batch_id": "batch_0002_20260709T021828Z", "verdict": "resolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47749", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10556", "batch_id": "batch_0002_20260709T021828Z", "verdict": "resolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47754", "batch_id": "batch_0002_20260709T021828Z", "verdict": "resolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-5009", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10616", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47757", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-5011", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47761", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "dask__dask-10695", "batch_id": "batch_0002_20260709T021828Z", "verdict": "resolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-5012", "batch_id": "batch_0002_20260709T021828Z", "verdict": "unresolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47763", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "getmoto__moto-5020", "batch_id": "batch_0002_20260709T021828Z", "verdict": "resolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47771", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
