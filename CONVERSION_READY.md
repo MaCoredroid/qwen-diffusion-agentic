@@ -69,3 +69,40 @@ HF-stack CPU-exact merge (bit-identical, gate reads maxabs 0.0):
 ## 7. Open item before single-arm commit
 
 - **N=5 AR SWE resolve@1 (both arms), design step 2b** — the D2 tiebreak (max SWE resolve × anchor-held). Not yet measured. Until then, D1 default = **S primary / T control twin**; both re-convert.
+
+---
+
+## STATUS(2026-07-09, eve) — PRIMARY arm M_swe_S re-conversion steps 1-3 EXECUTED (merge → convert → export)
+
+Monitor-dispatched. Ran the certified #29 protocol (merge → two-stream conversion → clean-stream export)
+VERBATIM on the SWE-SFT primary. Only the base, output paths, and seed differ from the #29 A_new run.
+Gate steps 4-5 (engine byte/quality cert · anchor matched-20 · Tier1-C46 twin@K1 entry ≥12/46) are the
+NEXT step, not run here.
+
+- **STEP 1 — merge (PASS, KILL-1 not triggered):** `scripts/merge_adapter_into_fastdllm_candidate.py --device cpu`
+  folded SWE-SFT arm-1 (`runs/swe_sft_arm1/Aswe_S_step400_seed71101/checkpoint-400`, 11-target QLoRA, W += 2.0·B@A)
+  into `models/qwen3.5-9b-fastdllm-mtplus1-merged` → **`models/qwen3.5-9b-fastdllm-mswe-S-merged`** (diffusion-loadable;
+  mask 248077 / bd_size 32 / has_weights preserved). Merge sanity gate: `merged == init+2.0·B@A` maxabs **0.0**
+  (layer0 GDN in_proj_qkv, layer3 attn o_proj), scaling 2.0. 23s CPU wall, caged 22G. Gate JSON:
+  `runs/kraise_reconvert/step1_merge_mswe_S/merge_sanity_gate.json`. (Merged-base manifest lineage label corrected
+  to M_swe_S/SWE-SFT for honest provenance.)
+- **STEP 2 — convert (COMPLETE, twin@K1):** `scripts/kraise_reconvert_mswe_S_driver.sh` (detached, caged, single
+  continuous 400-step cosine — the reference the #29 4-chunk resume reproduced). Recipe = Run-1 two-stream FLARE,
+  9-target conversion LoRA (q/k/v/o + in_proj_{qkv,z,a,b} + out_proj), BLOCK_SIZE 512 / TRAIN_BD_SIZE 32 (its own
+  feasible block, **NOT** the SFT 12288), value_span_weight 2.0, LR 1e-5 cosine, seed **81101**. Mix =
+  `data/flare_redesign_run1_copy_retention_mix` (excludes RL-v2 AND SWE-SFT pools; leakage firewall — SWE capability
+  lives in the merged base). **Wall 2016 s (33:36) @5.04 s/it**, ≈ #29's 2034 s. Loss curve sane: 80 pts, min/max/mean
+  **1.602 / 5.686 / 3.602**, no NaN/Inf, seg-means 3.86→3.68→3.68→3.19; LR peak 1.0e-5 → final **1.639e-10** (bit-matches
+  #29's cosine-400 horizon). Adapter 304 tensors = 152 pairs, all lora_B nonzero, 0 nonfinite.
+  Output: **`runs/kraise_reconvert/mswe_S_twinK1_run1recipe_step400_seed81101/`** (`adapter_model.safetensors` +
+  `trainer_state.json` + checkpoint-{100..400}).
+- **STEP 3 — export (DONE) + smoke (PASS):** export script sha `6d507ec9…` (matches design §6 pin) → **`models/qwen3.5-9b-fastdllm-mswe-S-twinK1-vllm-bf16`**
+  (official Qwen3.5 conditional layout, mask stripped; dual-loadable stock-AR-vLLM + FLARE engine). Profile:
+  mapped_text_tensors **427** / replacement_count **427** / lora_merge_count **152** / lora_scale 2.0 — matches the RL-v2
+  export profile. Loads in the FLARE vLLM pin (`.venv-vllm-p2-main`, `VLLM_USE_FLASHINFER_SAMPLER=0`); 3-prompt smoke
+  (frozen envelope 0.6/0.95/20) coherent + grammar-valid: reasoning + Python `fib` correct; tool prompt emits exact
+  native `<tool_call><function=get_weather><parameter=location>Paris…` grammar.
+
+**Ready for the gate:** twin@K1 = base `models/qwen3.5-9b-fastdllm-mswe-S-merged` + adapter
+`runs/kraise_reconvert/mswe_S_twinK1_run1recipe_step400_seed81101` (diffusion, `--no-merge-adapter`, block 32, K=1);
+served/AR-guided via `models/qwen3.5-9b-fastdllm-mswe-S-twinK1-vllm-bf16`. NO K>1 work done (separate decision on the gate).
