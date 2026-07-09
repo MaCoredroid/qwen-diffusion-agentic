@@ -68,6 +68,35 @@ official/fork docker scoring, best-of-k). Trajectory to the **400-keeper floor**
 
 ---
 
+## STATUS (2026-07-09) — ARM-1 SWE-SFT **ARMED, blocked on GPU handover**; design block_size 32768 measured **INFEASIBLE**
+
+Dataset built + validated + committed (`6a8a0c7`): **323 clean keepers**, firewall/quarantine asserted.
+Arm-1 = merged-RL-v2 `models/qwen3.5-9b-fastdllm-mtplus1-merged` (HF-stack realization of arm S).
+Full launch machinery is built + preflight-verified but **NOT launched** — two hard blockers
+(detail: `runs/swe_sft_arm1/ARM1_LAUNCH_STATUS.md`):
+
+1. **GPU held by live datagen.** `datagen_orch.sh` is generating `batch_0005` (auto-advanced past
+   the batch_0004 the brief expected to be last); the 27B teacher holds ~30 GB @ 98 % util. Handover
+   (27B GPU teacher stops; Opus API track continues on CPU) has not happened. The launcher's preflight
+   **refuses to fight the datagen** (aborts exit 9 while GPU busy) — verified.
+2. **block_size 32768 (§2.3) is infeasible on the 32 GB 5090.** The certified two-stream FLARE trainer
+   concatenates clean+noisy to length **2L**, so LM-head logits are `[2L, vocab 248320]` ≈ 16 GB at
+   L=16384 plus an O((2L)²) mask ⇒ **measured OOM at block 16384**. Two-stream tops out ≈ **8192**
+   (48.9 % assistant-label retention; 12288 → 69.6 % to be probed at handover; 24–32 k far-OOM). The
+   §2.3/§5 "block up to 32768 / 6–12 GPU-h" line did not price the vocab-248k × 2L logits term. Resolved
+   by measurement: **train at the largest block that fits** (launcher auto-selects via a 2-step probe
+   ladder). If retention proves inadequate, retention-recovery is chunked/fused-CE or a single-stream
+   path (retrain-freely follow-ups).
+
+**To launch at handover:** `bash scripts/swe_sft_arm1_driver.sh` (preflight → feasibility ladder → full
+323-row dataset build → 2-step verify-smoke → detached caged resumable run, pidfile + metrics + 100-step
+erosion-sweep checkpoints). Config frozen per §2.3/§2.4 (r16/α32/drop0.05; targets q,k,v,o + GDN
+in_proj_{qkv,z,b,a}+out_proj + **MLP gate_up/down**; LR 1e-5 cosine warmup 0.03; HORIZON 400; seed 71101),
+objective = two-stream FLARE via the S2 pretok passthrough (serve-exact ids, native qwen3_xml; L_AR is the
+"AR-side SFT" signal). Anchor gate (§2.5 / KILL-T1) runs at each 100-step checkpoint.
+
+---
+
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
 
 > **SUPERSEDED (greedy-era rationale — kept for the record; see STATUS block above).** The ladder and the
