@@ -1950,3 +1950,85 @@
 {"instance_id": "pandas-dev__pandas-47763", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
 {"instance_id": "getmoto__moto-5020", "batch_id": "batch_0002_20260709T021828Z", "verdict": "resolved", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
 {"instance_id": "pandas-dev__pandas-47771", "batch_id": "batch_0002_20260709T021828Z", "verdict": "empty_patch", "ts": "2026-07-09T07:33:46Z", "infra_reason": "auto_majority_no_prediction=49/49", "rescored": "fork-fetch-harden rescue 2026-07-09"}
+{"instance_id": "pandas-dev__pandas-47446", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4867", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10149", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47451", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4874", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10159", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47475", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4875", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47493", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10211", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4881", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4890", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47528", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10294", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4895", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47550", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4896", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10342", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47557", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4908", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10380", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47581", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4934", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47605", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10404", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10422", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47630", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4956", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47633", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10454", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47643", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4975", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4977", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47716", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10509", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-4985", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47747", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47749", "batch_id": "batch_0003_20260709T073401Z", "verdict": "resolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10556", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47754", "batch_id": "batch_0003_20260709T073401Z", "verdict": "resolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-5009", "batch_id": "batch_0003_20260709T073401Z", "verdict": "resolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10616", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47757", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-5011", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47761", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10695", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-5012", "batch_id": "batch_0003_20260709T073401Z", "verdict": "unresolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47763", "batch_id": "batch_0003_20260709T073401Z", "verdict": "env_unavailable", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "getmoto__moto-5020", "batch_id": "batch_0003_20260709T073401Z", "verdict": "resolved", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "pandas-dev__pandas-47771", "batch_id": "batch_0003_20260709T073401Z", "verdict": "empty_patch", "ts": "2026-07-09T13:09:05Z"}
+{"instance_id": "dask__dask-10149", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10159", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10211", "batch_id": "opus_tranche1", "verdict": "empty_patch", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10294", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10380", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10404", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10422", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10454", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10509", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10616", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4875", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4881", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4890", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4895", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4896", "batch_id": "opus_tranche1", "verdict": "empty_patch", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4908", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4934", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4956", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4975", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4977", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4985", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-5011", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-5012", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "pandas-dev__pandas-47446", "batch_id": "opus_tranche1", "verdict": "empty_patch", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "pandas-dev__pandas-47451", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "pandas-dev__pandas-47528", "batch_id": "opus_tranche1", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "pandas-dev__pandas-47550", "batch_id": "opus_tranche1", "verdict": "empty_patch", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "pandas-dev__pandas-47557", "batch_id": "opus_tranche1", "verdict": "unresolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "conan-io__conan-10213", "batch_id": "pilot_opus", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "dask__dask-10342", "batch_id": "pilot_opus", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "getmoto__moto-4867", "batch_id": "pilot_opus", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}
+{"instance_id": "pandas-dev__pandas-47493", "batch_id": "pilot_opus", "verdict": "resolved", "ts": "2026-07-09T17:59:57Z", "opus_track": true, "teacher": "opus-4.8"}

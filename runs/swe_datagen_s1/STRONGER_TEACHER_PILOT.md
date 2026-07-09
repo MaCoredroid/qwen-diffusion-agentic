@@ -86,6 +86,57 @@ isolated in `pilot_opus/keepers`); (iii) caching enabled before bulk scale → *
 
 ---
 
+## 0.6 TRANCHE-1 RESULT — MEASURED + PROMOTED (2026-07-09, N=28, fresh-FAILURE stratum)
+
+First parallel-track production tranche. Targets = instances the 27B attempted **fresh** in epoch-2
+batches 1–3 and recorded **unresolved/empty_patch** (the *fresh-failure* stratum — strictly harder
+than the pilot's fresh-coverage tail), sha256 holdout-clean, disjoint from the 10 pilot ids. 37
+targets built; **28 episodes ran** in bounded foreground chunks before the chunk budget closed (9
+pandas ids never generated → deferred to tranche-2, **not** promoted); all 28 scored through the
+hardened fork harness (docker-only, ≤2 workers so the 27B orch's cycle-close scoring is never starved).
+
+| Metric | Measured value |
+|---|---|
+| Episodes scored | **28** (9 resolved / 15 unresolved / 4 empty_patch / 0 error) |
+| **Tranche yield** | **0.321** (9/28) |
+| Keepers extracted | **9** (fidelity=high(all_toolcall_turns), teacher=opus-4.8, native qwen3_xml, non-empty patches) |
+| Cache-read fraction | **0.940** (29.39M read / 31.26M total input) — caching healthy, >85% gate PASS |
+| $/episode (cached) | **$1.13** (uncached-counterfactual $5.77) |
+| **$/keeper (cached)** | **$3.52** (uncached-cf $17.96) — **5.10× cache saving** |
+| Tokens (28 eps) | input 31.26M (cache-read 29.39M / cache-write 1.86M / uncached 1.8k), output 212k, 642 turns |
+
+**Resolved keeper ids (9):** dask-10159, dask-10380, dask-10422, dask-10616, getmoto-4895,
+getmoto-4975, getmoto-5011, pandas-47451, pandas-47528.
+
+**Yield read (honest):** the §0.5 pilot fresh-coverage stratum point-estimate was **0.60** (3/5, n=5)
+and the §0.5 MEASURED-BASIS carried 0.60 as the fresh-failure prior. At tranche scale (n=28) on the
+genuinely harder fresh-FAILURE stratum, Opus measures **0.321** — roughly **half** the 0.60 prior, but
+still ~2–4× the 9B fresh baseline (0.075–0.17) and above the 27B epoch rolling (0.1275). **0.321 is the
+number to size tranche-2 on, not 0.60.** Cheaper per episode than the pilot ($1.13 vs $1.91, these
+episodes ran fewer tokens), so net $/keeper **$3.52** lands *below* the pilot's $4.78 despite the lower yield.
+
+**PROMOTION (this task):** +9 tranche keepers + the 4 pilot keepers = **+13 → keepers 310 → 323**. 32
+`opus_track:true` attempt rows appended to `attempts.jsonl` (28 tranche true-verdicts + 4 pilot resolved
+that back the promoted pilot keepers; the pilot's 6 non-keeper exploratory episodes stay in §0.5 and are
+**not** re-imported to production coverage). A minimal one-line `ledger.py` change excludes `opus_track`
+rows from the **rolling KILL window ONLY** — keepers/lifetime/coverage still count them (the kill bar
+governs the 27B teacher, so Opus resolves must not prop it up). **Verified after apply:** keepers
+310→323; 27B rolling **UNCHANGED** 0.1275 (w=149, n=149); lifetime 0.2253→0.2292; verdict CONTINUE.
+
+**Leakage re-audit (pool-freeze #87 standing note honored):** re-ran `leakage_audit.py` on the grown
+323-keeper pool — holdout sha256 assert **PASS** (113 ids), swegym disjoint-repo assert **PASS**, and
+**0/13 opus keepers flagged or holdout-gold-file-overlapping** (opus keepers are dask/getmoto/pandas/conan;
+the 113-id holdout is django/matplotlib/sympy/pytest-heavy → different repos). Format-equivalence + leakage
+posture **UNCHANGED**.
+
+**Tranche-2 sizing:** at measured **0.321** yield and **$3.52/keeper** cached, the **77-keeper floor gap
+(400−323)** needs **~240 Opus episodes ≈ $270 cached** (~$1.4k uncached). Recommend sizing tranche-2 at
+**~120 episodes** (~one bounded day of the parallel API/CPU track) for ~**38 keepers → ~361**, and
+**re-measure pooled yield at n≈150** before committing the remainder — start with the 9 ungenerated
+pandas ids + the next fresh-failure slice. Isolated evidence: `opus_tranche1/` (gitignored local).
+
+---
+
 ## 0. The gap we are pricing
 
 | Milestone | Keepers | Delta from current (311) |

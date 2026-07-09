@@ -403,8 +403,14 @@ def cmd_state(a: argparse.Namespace) -> int:
     # keepers span all epochs (unchanged). No marker => whole history == one epoch.
     epoch = _epoch_label(attempt_rows)
     epoch_start = _epoch_start_index(attempt_rows)
+    # PARALLEL-TRACK (opus_tranche, 2026-07-09): Opus-4.8 teacher attempts on the
+    # fresh-failure stratum are appended to attempts.jsonl (so keepers + lifetime +
+    # coverage all count them), but they must be INVISIBLE to the rolling KILL window
+    # — that window governs the 27B teacher's yield, and Opus resolves would falsely
+    # prop it up. Rows carry opus_track=True; exclude them from the rolling window
+    # ONLY (lifetime `real` above is unchanged, so lifetime yield still counts them).
     real_epoch = [r for r in _valid(attempt_rows[epoch_start:])
-                  if r.get("verdict") in REAL_VERDICTS]
+                  if r.get("verdict") in REAL_VERDICTS and not r.get("opus_track")]
     window = real_epoch[-a.kill_window:]
     win_resolved = sum(1 for r in window if r["verdict"] == "resolved")
     rolling_yield = (win_resolved / len(window)) if window else None

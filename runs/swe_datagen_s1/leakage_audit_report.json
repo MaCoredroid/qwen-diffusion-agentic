@@ -1,30 +1,30 @@
 {
  "audit": "cross_instance_answer_leakage",
  "summary": {
-  "generated_at": "2026-07-09T17:15:18Z",
-  "elapsed_sec": 2.08,
+  "generated_at": "2026-07-09T18:02:45Z",
+  "elapsed_sec": 2.06,
   "cpu_only": true,
   "eval_holdout_n_distinct": 113,
   "eval_holdout_sha256": "c56f473ad31e52bee0f85151562f4e2122e4815dfa3f1b776b15fe121e8d168e",
   "eval_holdout_sha256_pinned": "c56f473ad31e52bee0f85151562f4e2122e4815dfa3f1b776b15fe121e8d168e",
   "eval_holdout_sha_assert": "PASS",
   "keepers_snapshot_path": "/home/mark/qwen_diffusion/runs/swe_datagen_s1/leakage_audit_keepers_snapshot.jsonl",
-  "keepers_snapshot_sha256": "2aeecce15b7a9b85deeb8ca9e716403121b8234ca0801a64205c6d626ff2c6ea",
-  "n_keepers": 311,
-  "n_keepers_verified_source": 193,
-  "n_keepers_swegym_source": 118,
+  "keepers_snapshot_sha256": "434f598ce35f40152f38c7fc5fa68cd386e70e2e90dd248ce897c401d01c81b8",
+  "n_keepers": 323,
+  "n_keepers_verified_source": 192,
+  "n_keepers_swegym_source": 131,
   "text_sim_backend": "tfidf_cosine_sklearn",
-  "n_same_repo_pairs": 5816,
-  "n_flagged_pairs": 368,
-  "text_sim_p95": 0.119632,
-  "text_sim_p99": 0.206387,
+  "n_same_repo_pairs": 5811,
+  "n_flagged_pairs": 367,
+  "text_sim_p95": 0.119325,
+  "text_sim_p99": 0.206518,
   "swegym_disjoint_repo_assert": "PASS",
   "swegym_repo_collisions": [],
   "counts": {
-   "keepers_with_same_repo_holdout_neighbor": 192,
-   "keepers_with_any_file_overlap": 65,
-   "keepers_with_holdout_GOLD_file_overlap": 65,
-   "keepers_with_function_overlap": 12,
+   "keepers_with_same_repo_holdout_neighbor": 191,
+   "keepers_with_any_file_overlap": 64,
+   "keepers_with_holdout_GOLD_file_overlap": 64,
+   "keepers_with_function_overlap": 11,
    "keepers_with_text_sim_ge_p95": 116
   },
   "keepers_with_holdout_GOLD_file_overlap_ids": [
@@ -78,7 +78,6 @@
    "psf__requests-1142",
    "psf__requests-1724",
    "psf__requests-1921",
-   "pydata__xarray-6461",
    "pydata__xarray-6599",
    "pytest-dev__pytest-10081",
    "pytest-dev__pytest-6202",
@@ -104,7 +103,6 @@
    "django__django-16139",
    "django__django-16145",
    "django__django-16485",
-   "pydata__xarray-6461",
    "sympy__sympy-12481",
    "sympy__sympy-24213"
   ]
@@ -130,8 +128,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.443308,
-   "severity": 8.886616,
+   "text_sim": 0.443003,
+   "severity": 8.886006,
    "text_sim_ge_p95": true
   },
   {
@@ -154,8 +152,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.422357,
-   "severity": 8.844714,
+   "text_sim": 0.423054,
+   "severity": 8.846108,
    "text_sim_ge_p95": true
   },
   {
@@ -178,32 +176,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.249132,
-   "severity": 8.498264,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "pydata__xarray-6461",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "pydata__xarray-4687",
-   "repo": "pydata/xarray",
-   "file_overlap_gold": [
-    "xarray/core/computation.py"
-   ],
-   "file_overlap_test": [],
-   "file_overlap_any": [
-    "xarray/core/computation.py"
-   ],
-   "n_file_overlap_gold": 1,
-   "n_file_overlap_any": 1,
-   "func_overlap": {
-    "xarray/core/computation.py": [
-     "where"
-    ]
-   },
-   "n_func_overlap": 1,
-   "text_sim": 0.227859,
-   "severity": 8.455718,
+   "text_sim": 0.249049,
+   "severity": 8.498098,
    "text_sim_ge_p95": true
   },
   {
@@ -226,8 +200,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.215677,
-   "severity": 8.431354,
+   "text_sim": 0.215598,
+   "severity": 8.431196,
    "text_sim_ge_p95": true
   },
   {
@@ -250,8 +224,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.205008,
-   "severity": 8.410016,
+   "text_sim": 0.20659,
+   "severity": 8.41318,
    "text_sim_ge_p95": true
   },
   {
@@ -274,8 +248,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.167403,
-   "severity": 8.334806,
+   "text_sim": 0.167337,
+   "severity": 8.334674,
    "text_sim_ge_p95": true
   },
   {
@@ -298,8 +272,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.115225,
-   "severity": 8.23045,
+   "text_sim": 0.115127,
+   "severity": 8.230254,
    "text_sim_ge_p95": false
   },
   {
@@ -322,8 +296,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.096094,
-   "severity": 8.192188,
+   "text_sim": 0.095971,
+   "severity": 8.191942,
    "text_sim_ge_p95": false
   },
   {
@@ -346,8 +320,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.086526,
-   "severity": 8.173052,
+   "text_sim": 0.086427,
+   "severity": 8.172854,
    "text_sim_ge_p95": false
   },
   {
@@ -370,8 +344,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.057553,
-   "severity": 8.115106,
+   "text_sim": 0.057533,
+   "severity": 8.115066,
    "text_sim_ge_p95": false
   },
   {
@@ -394,8 +368,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.014069,
-   "severity": 8.028138,
+   "text_sim": 0.014055,
+   "severity": 8.02811,
    "text_sim_ge_p95": false
   },
   {
@@ -414,8 +388,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.46368,
-   "severity": 5.92736,
+   "text_sim": 0.463664,
+   "severity": 5.927328,
    "text_sim_ge_p95": true
   },
   {
@@ -434,8 +408,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.40567,
-   "severity": 5.81134,
+   "text_sim": 0.406708,
+   "severity": 5.813416,
    "text_sim_ge_p95": true
   },
   {
@@ -454,8 +428,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.323073,
-   "severity": 5.646146,
+   "text_sim": 0.322989,
+   "severity": 5.645978,
    "text_sim_ge_p95": true
   },
   {
@@ -474,8 +448,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.315241,
-   "severity": 5.630482,
+   "text_sim": 0.315101,
+   "severity": 5.630202,
    "text_sim_ge_p95": true
   },
   {
@@ -494,8 +468,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.277101,
-   "severity": 5.554202,
+   "text_sim": 0.276795,
+   "severity": 5.55359,
    "text_sim_ge_p95": true
   },
   {
@@ -514,8 +488,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.259894,
-   "severity": 5.519788,
+   "text_sim": 0.259641,
+   "severity": 5.519282,
    "text_sim_ge_p95": true
   },
   {
@@ -534,8 +508,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.220017,
-   "severity": 5.440034,
+   "text_sim": 0.220259,
+   "severity": 5.440518,
    "text_sim_ge_p95": true
   },
   {
@@ -554,8 +528,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.210005,
-   "severity": 5.42001,
+   "text_sim": 0.209796,
+   "severity": 5.419592,
    "text_sim_ge_p95": true
   },
   {
@@ -574,8 +548,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.200301,
-   "severity": 5.400602,
+   "text_sim": 0.200192,
+   "severity": 5.400384,
    "text_sim_ge_p95": true
   },
   {
@@ -594,8 +568,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.196359,
-   "severity": 5.392718,
+   "text_sim": 0.19641,
+   "severity": 5.39282,
    "text_sim_ge_p95": true
   },
   {
@@ -614,8 +588,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.1893,
-   "severity": 5.3786,
+   "text_sim": 0.189288,
+   "severity": 5.378576,
    "text_sim_ge_p95": true
   },
   {
@@ -634,8 +608,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.183999,
-   "severity": 5.367998,
+   "text_sim": 0.183877,
+   "severity": 5.367754,
    "text_sim_ge_p95": true
   },
   {
@@ -654,8 +628,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.1703,
-   "severity": 5.3406,
+   "text_sim": 0.170181,
+   "severity": 5.340362,
    "text_sim_ge_p95": true
   },
   {
@@ -674,8 +648,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.160406,
-   "severity": 5.320812,
+   "text_sim": 0.160428,
+   "severity": 5.320856,
    "text_sim_ge_p95": true
   },
   {
@@ -694,8 +668,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.15456,
-   "severity": 5.30912,
+   "text_sim": 0.154648,
+   "severity": 5.309296,
    "text_sim_ge_p95": true
   },
   {
@@ -714,8 +688,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.153004,
-   "severity": 5.306008,
+   "text_sim": 0.153242,
+   "severity": 5.306484,
    "text_sim_ge_p95": true
   },
   {
@@ -734,8 +708,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.146506,
-   "severity": 5.293012,
+   "text_sim": 0.146346,
+   "severity": 5.292692,
    "text_sim_ge_p95": true
   },
   {
@@ -754,8 +728,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.14467,
-   "severity": 5.28934,
+   "text_sim": 0.144483,
+   "severity": 5.288966,
    "text_sim_ge_p95": true
   },
   {
@@ -774,8 +748,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.141922,
-   "severity": 5.283844,
+   "text_sim": 0.141957,
+   "severity": 5.283914,
    "text_sim_ge_p95": true
   },
   {
@@ -794,8 +768,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.139413,
-   "severity": 5.278826,
+   "text_sim": 0.139438,
+   "severity": 5.278876,
    "text_sim_ge_p95": true
   },
   {
@@ -814,8 +788,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.131672,
-   "severity": 5.263344,
+   "text_sim": 0.13154,
+   "severity": 5.26308,
    "text_sim_ge_p95": true
   },
   {
@@ -834,8 +808,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.128641,
-   "severity": 5.257282,
+   "text_sim": 0.12845,
+   "severity": 5.2569,
    "text_sim_ge_p95": true
   },
   {
@@ -854,8 +828,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.126225,
-   "severity": 5.25245,
+   "text_sim": 0.126231,
+   "severity": 5.252462,
    "text_sim_ge_p95": true
   },
   {
@@ -874,8 +848,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.12559,
-   "severity": 5.25118,
+   "text_sim": 0.125546,
+   "severity": 5.251092,
    "text_sim_ge_p95": true
   },
   {
@@ -894,8 +868,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.125234,
-   "severity": 5.250468,
+   "text_sim": 0.125185,
+   "severity": 5.25037,
    "text_sim_ge_p95": true
   },
   {
@@ -914,8 +888,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.119696,
-   "severity": 5.239392,
+   "text_sim": 0.119595,
+   "severity": 5.23919,
    "text_sim_ge_p95": true
   },
   {
@@ -934,9 +908,9 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.119611,
-   "severity": 5.239222,
-   "text_sim_ge_p95": false
+   "text_sim": 0.11941,
+   "severity": 5.23882,
+   "text_sim_ge_p95": true
   },
   {
    "keeper_id": "pytest-dev__pytest-6202",
@@ -954,8 +928,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.114607,
-   "severity": 5.229214,
+   "text_sim": 0.114629,
+   "severity": 5.229258,
    "text_sim_ge_p95": false
   },
   {
@@ -974,8 +948,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.113393,
-   "severity": 5.226786,
+   "text_sim": 0.113268,
+   "severity": 5.226536,
    "text_sim_ge_p95": false
   },
   {
@@ -994,8 +968,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.111228,
-   "severity": 5.222456,
+   "text_sim": 0.111181,
+   "severity": 5.222362,
    "text_sim_ge_p95": false
   },
   {
@@ -1014,8 +988,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.106624,
-   "severity": 5.213248,
+   "text_sim": 0.106453,
+   "severity": 5.212906,
    "text_sim_ge_p95": false
   },
   {
@@ -1034,8 +1008,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.105905,
-   "severity": 5.21181,
+   "text_sim": 0.105882,
+   "severity": 5.211764,
    "text_sim_ge_p95": false
   },
   {
@@ -1054,8 +1028,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.102598,
-   "severity": 5.205196,
+   "text_sim": 0.102486,
+   "severity": 5.204972,
    "text_sim_ge_p95": false
   },
   {
@@ -1074,8 +1048,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.101188,
-   "severity": 5.202376,
+   "text_sim": 0.10097,
+   "severity": 5.20194,
    "text_sim_ge_p95": false
   },
   {
@@ -1094,8 +1068,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.100753,
-   "severity": 5.201506,
+   "text_sim": 0.100723,
+   "severity": 5.201446,
    "text_sim_ge_p95": false
   },
   {
@@ -1114,8 +1088,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.09982,
-   "severity": 5.19964,
+   "text_sim": 0.09972,
+   "severity": 5.19944,
    "text_sim_ge_p95": false
   },
   {
@@ -1134,8 +1108,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.099583,
-   "severity": 5.199166,
+   "text_sim": 0.099533,
+   "severity": 5.199066,
    "text_sim_ge_p95": false
   },
   {
@@ -1154,8 +1128,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.09635,
-   "severity": 5.1927,
+   "text_sim": 0.0963,
+   "severity": 5.1926,
    "text_sim_ge_p95": false
   },
   {
@@ -1174,8 +1148,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.094716,
-   "severity": 5.189432,
+   "text_sim": 0.094698,
+   "severity": 5.189396,
    "text_sim_ge_p95": false
   },
   {
@@ -1194,8 +1168,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.094015,
-   "severity": 5.18803,
+   "text_sim": 0.093947,
+   "severity": 5.187894,
    "text_sim_ge_p95": false
   },
   {
@@ -1214,8 +1188,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.091297,
-   "severity": 5.182594,
+   "text_sim": 0.091239,
+   "severity": 5.182478,
    "text_sim_ge_p95": false
   },
   {
@@ -1234,8 +1208,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.085354,
-   "severity": 5.170708,
+   "text_sim": 0.085461,
+   "severity": 5.170922,
    "text_sim_ge_p95": false
   },
   {
@@ -1254,8 +1228,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.082953,
-   "severity": 5.165906,
+   "text_sim": 0.082819,
+   "severity": 5.165638,
    "text_sim_ge_p95": false
   },
   {
@@ -1274,8 +1248,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.080135,
-   "severity": 5.16027,
+   "text_sim": 0.080048,
+   "severity": 5.160096,
    "text_sim_ge_p95": false
   },
   {
@@ -1294,8 +1268,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.079498,
-   "severity": 5.158996,
+   "text_sim": 0.079512,
+   "severity": 5.159024,
    "text_sim_ge_p95": false
   },
   {
@@ -1314,8 +1288,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.078444,
-   "severity": 5.156888,
+   "text_sim": 0.07834,
+   "severity": 5.15668,
    "text_sim_ge_p95": false
   },
   {
@@ -1334,8 +1308,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.076185,
-   "severity": 5.15237,
+   "text_sim": 0.076067,
+   "severity": 5.152134,
    "text_sim_ge_p95": false
   },
   {
@@ -1354,8 +1328,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.075137,
-   "severity": 5.150274,
+   "text_sim": 0.075099,
+   "severity": 5.150198,
    "text_sim_ge_p95": false
   },
   {
@@ -1374,8 +1348,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.073698,
-   "severity": 5.147396,
+   "text_sim": 0.073664,
+   "severity": 5.147328,
    "text_sim_ge_p95": false
   },
   {
@@ -1394,8 +1368,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.073573,
-   "severity": 5.147146,
+   "text_sim": 0.073549,
+   "severity": 5.147098,
    "text_sim_ge_p95": false
   },
   {
@@ -1414,8 +1388,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.073033,
-   "severity": 5.146066,
+   "text_sim": 0.072946,
+   "severity": 5.145892,
    "text_sim_ge_p95": false
   },
   {
@@ -1434,8 +1408,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.07054,
-   "severity": 5.14108,
+   "text_sim": 0.070503,
+   "severity": 5.141006,
    "text_sim_ge_p95": false
   },
   {
@@ -1454,8 +1428,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.069341,
-   "severity": 5.138682,
+   "text_sim": 0.069291,
+   "severity": 5.138582,
    "text_sim_ge_p95": false
   },
   {
@@ -1474,8 +1448,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.068804,
-   "severity": 5.137608,
+   "text_sim": 0.068828,
+   "severity": 5.137656,
    "text_sim_ge_p95": false
   },
   {
@@ -1494,8 +1468,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.065954,
-   "severity": 5.131908,
+   "text_sim": 0.065928,
+   "severity": 5.131856,
    "text_sim_ge_p95": false
   },
   {
@@ -1514,8 +1488,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.065529,
-   "severity": 5.131058,
+   "text_sim": 0.065485,
+   "severity": 5.13097,
    "text_sim_ge_p95": false
   },
   {
@@ -1534,8 +1508,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.062923,
-   "severity": 5.125846,
+   "text_sim": 0.062895,
+   "severity": 5.12579,
    "text_sim_ge_p95": false
   },
   {
@@ -1554,8 +1528,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.062654,
-   "severity": 5.125308,
+   "text_sim": 0.062666,
+   "severity": 5.125332,
    "text_sim_ge_p95": false
   },
   {
@@ -1574,8 +1548,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.061837,
-   "severity": 5.123674,
+   "text_sim": 0.061767,
+   "severity": 5.123534,
    "text_sim_ge_p95": false
   },
   {
@@ -1594,8 +1568,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.061302,
-   "severity": 5.122604,
+   "text_sim": 0.061258,
+   "severity": 5.122516,
    "text_sim_ge_p95": false
   },
   {
@@ -1614,8 +1588,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.060623,
-   "severity": 5.121246,
+   "text_sim": 0.060399,
+   "severity": 5.120798,
    "text_sim_ge_p95": false
   },
   {
@@ -1634,8 +1608,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.059802,
-   "severity": 5.119604,
+   "text_sim": 0.059744,
+   "severity": 5.119488,
    "text_sim_ge_p95": false
   },
   {
@@ -1654,8 +1628,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.05641,
-   "severity": 5.11282,
+   "text_sim": 0.056308,
+   "severity": 5.112616,
    "text_sim_ge_p95": false
   },
   {
@@ -1674,8 +1648,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.055307,
-   "severity": 5.110614,
+   "text_sim": 0.055424,
+   "severity": 5.110848,
    "text_sim_ge_p95": false
   },
   {
@@ -1694,8 +1668,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.053093,
-   "severity": 5.106186,
+   "text_sim": 0.05306,
+   "severity": 5.10612,
    "text_sim_ge_p95": false
   },
   {
@@ -1714,8 +1688,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.052557,
-   "severity": 5.105114,
+   "text_sim": 0.052505,
+   "severity": 5.10501,
    "text_sim_ge_p95": false
   },
   {
@@ -1734,8 +1708,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.05243,
-   "severity": 5.10486,
+   "text_sim": 0.052393,
+   "severity": 5.104786,
    "text_sim_ge_p95": false
   },
   {
@@ -1754,8 +1728,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.052009,
-   "severity": 5.104018,
+   "text_sim": 0.051929,
+   "severity": 5.103858,
    "text_sim_ge_p95": false
   },
   {
@@ -1774,8 +1748,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.049233,
-   "severity": 5.098466,
+   "text_sim": 0.049153,
+   "severity": 5.098306,
    "text_sim_ge_p95": false
   },
   {
@@ -1794,8 +1768,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.047009,
-   "severity": 5.094018,
+   "text_sim": 0.047008,
+   "severity": 5.094016,
    "text_sim_ge_p95": false
   },
   {
@@ -1814,8 +1788,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.046377,
-   "severity": 5.092754,
+   "text_sim": 0.046339,
+   "severity": 5.092678,
    "text_sim_ge_p95": false
   },
   {
@@ -1834,8 +1808,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.046193,
-   "severity": 5.092386,
+   "text_sim": 0.046176,
+   "severity": 5.092352,
    "text_sim_ge_p95": false
   },
   {
@@ -1854,8 +1828,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.044763,
-   "severity": 5.089526,
+   "text_sim": 0.044724,
+   "severity": 5.089448,
    "text_sim_ge_p95": false
   },
   {
@@ -1874,8 +1848,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.043514,
-   "severity": 5.087028,
+   "text_sim": 0.043469,
+   "severity": 5.086938,
    "text_sim_ge_p95": false
   },
   {
@@ -1894,8 +1868,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.042934,
-   "severity": 5.085868,
+   "text_sim": 0.04286,
+   "severity": 5.08572,
    "text_sim_ge_p95": false
   },
   {
@@ -1914,8 +1888,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.042219,
-   "severity": 5.084438,
+   "text_sim": 0.042197,
+   "severity": 5.084394,
    "text_sim_ge_p95": false
   },
   {
@@ -1934,8 +1908,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.03711,
-   "severity": 5.07422,
+   "text_sim": 0.037045,
+   "severity": 5.07409,
    "text_sim_ge_p95": false
   },
   {
@@ -1954,8 +1928,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.036105,
-   "severity": 5.07221,
+   "text_sim": 0.035973,
+   "severity": 5.071946,
    "text_sim_ge_p95": false
   },
   {
@@ -1974,8 +1948,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.035291,
-   "severity": 5.070582,
+   "text_sim": 0.035236,
+   "severity": 5.070472,
    "text_sim_ge_p95": false
   },
   {
@@ -1994,8 +1968,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.034757,
-   "severity": 5.069514,
+   "text_sim": 0.034699,
+   "severity": 5.069398,
    "text_sim_ge_p95": false
   },
   {
@@ -2014,8 +1988,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.034231,
-   "severity": 5.068462,
+   "text_sim": 0.034412,
+   "severity": 5.068824,
    "text_sim_ge_p95": false
   },
   {
@@ -2034,8 +2008,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.030437,
-   "severity": 5.060874,
+   "text_sim": 0.030401,
+   "severity": 5.060802,
    "text_sim_ge_p95": false
   },
   {
@@ -2054,8 +2028,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.030197,
-   "severity": 5.060394,
+   "text_sim": 0.030176,
+   "severity": 5.060352,
    "text_sim_ge_p95": false
   },
   {
@@ -2074,8 +2048,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.029174,
-   "severity": 5.058348,
+   "text_sim": 0.029152,
+   "severity": 5.058304,
    "text_sim_ge_p95": false
   },
   {
@@ -2094,8 +2068,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.029006,
-   "severity": 5.058012,
+   "text_sim": 0.02898,
+   "severity": 5.05796,
    "text_sim_ge_p95": false
   },
   {
@@ -2114,8 +2088,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.02803,
-   "severity": 5.05606,
+   "text_sim": 0.028005,
+   "severity": 5.05601,
    "text_sim_ge_p95": false
   },
   {
@@ -2134,8 +2108,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.02721,
-   "severity": 5.05442,
+   "text_sim": 0.027252,
+   "severity": 5.054504,
    "text_sim_ge_p95": false
   },
   {
@@ -2154,8 +2128,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.025671,
-   "severity": 5.051342,
+   "text_sim": 0.025648,
+   "severity": 5.051296,
    "text_sim_ge_p95": false
   },
   {
@@ -2174,8 +2148,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.024217,
-   "severity": 5.048434,
+   "text_sim": 0.024194,
+   "severity": 5.048388,
    "text_sim_ge_p95": false
   },
   {
@@ -2194,8 +2168,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.023756,
-   "severity": 5.047512,
+   "text_sim": 0.023725,
+   "severity": 5.04745,
    "text_sim_ge_p95": false
   },
   {
@@ -2214,8 +2188,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.021432,
-   "severity": 5.042864,
+   "text_sim": 0.021403,
+   "severity": 5.042806,
    "text_sim_ge_p95": false
   },
   {
@@ -2234,8 +2208,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.01838,
-   "severity": 5.03676,
+   "text_sim": 0.018305,
+   "severity": 5.03661,
    "text_sim_ge_p95": false
   },
   {
@@ -2254,8 +2228,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.016223,
-   "severity": 5.032446,
+   "text_sim": 0.016222,
+   "severity": 5.032444,
    "text_sim_ge_p95": false
   },
   {
@@ -2274,8 +2248,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.012997,
-   "severity": 5.025994,
+   "text_sim": 0.012974,
+   "severity": 5.025948,
    "text_sim_ge_p95": false
   },
   {
@@ -2294,8 +2268,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.010675,
-   "severity": 5.02135,
+   "text_sim": 0.010661,
+   "severity": 5.021322,
    "text_sim_ge_p95": false
   },
   {
@@ -2314,8 +2288,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.003713,
-   "severity": 5.007426,
+   "text_sim": 0.003696,
+   "severity": 5.007392,
    "text_sim_ge_p95": false
   },
   {
@@ -2334,8 +2308,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.001896,
-   "severity": 5.003792,
+   "text_sim": 0.00189,
+   "severity": 5.00378,
    "text_sim_ge_p95": false
   },
   {
@@ -2354,8 +2328,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.001222,
-   "severity": 5.002444,
+   "text_sim": 0.001219,
+   "severity": 5.002438,
    "text_sim_ge_p95": false
   },
   {
@@ -2370,8 +2344,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.677634,
-   "severity": 1.355268,
+   "text_sim": 0.678128,
+   "severity": 1.356256,
    "text_sim_ge_p95": true
   },
   {
@@ -2386,8 +2360,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.657719,
-   "severity": 1.315438,
+   "text_sim": 0.657894,
+   "severity": 1.315788,
    "text_sim_ge_p95": true
   },
   {
@@ -2402,8 +2376,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.59369,
-   "severity": 1.18738,
+   "text_sim": 0.593865,
+   "severity": 1.18773,
    "text_sim_ge_p95": true
   },
   {
@@ -2418,8 +2392,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.548102,
-   "severity": 1.096204,
+   "text_sim": 0.547958,
+   "severity": 1.095916,
    "text_sim_ge_p95": true
   },
   {
@@ -2434,8 +2408,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.472546,
-   "severity": 0.945092,
+   "text_sim": 0.471431,
+   "severity": 0.942862,
    "text_sim_ge_p95": true
   },
   {
@@ -2450,8 +2424,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.441777,
-   "severity": 0.883554,
+   "text_sim": 0.441078,
+   "severity": 0.882156,
    "text_sim_ge_p95": true
   },
   {
@@ -2466,24 +2440,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.381313,
-   "severity": 0.762626,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "pydata__xarray-4629",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "pydata__xarray-4075",
-   "repo": "pydata/xarray",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.380348,
-   "severity": 0.760696,
+   "text_sim": 0.38122,
+   "severity": 0.76244,
    "text_sim_ge_p95": true
   },
   {
@@ -2498,8 +2456,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.380096,
-   "severity": 0.760192,
+   "text_sim": 0.381166,
+   "severity": 0.762332,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.380744,
+   "severity": 0.761488,
    "text_sim_ge_p95": true
   },
   {
@@ -2514,8 +2488,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.361552,
-   "severity": 0.723104,
+   "text_sim": 0.360999,
+   "severity": 0.721998,
    "text_sim_ge_p95": true
   },
   {
@@ -2530,8 +2504,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.357561,
-   "severity": 0.715122,
+   "text_sim": 0.35764,
+   "severity": 0.71528,
    "text_sim_ge_p95": true
   },
   {
@@ -2546,8 +2520,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.348148,
-   "severity": 0.696296,
+   "text_sim": 0.34807,
+   "severity": 0.69614,
    "text_sim_ge_p95": true
   },
   {
@@ -2562,8 +2536,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.339103,
-   "severity": 0.678206,
+   "text_sim": 0.340635,
+   "severity": 0.68127,
    "text_sim_ge_p95": true
   },
   {
@@ -2578,8 +2552,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.3357,
-   "severity": 0.6714,
+   "text_sim": 0.336877,
+   "severity": 0.673754,
    "text_sim_ge_p95": true
   },
   {
@@ -2594,8 +2568,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.316226,
-   "severity": 0.632452,
+   "text_sim": 0.317386,
+   "severity": 0.634772,
    "text_sim_ge_p95": true
   },
   {
@@ -2610,8 +2584,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.295454,
-   "severity": 0.590908,
+   "text_sim": 0.295621,
+   "severity": 0.591242,
    "text_sim_ge_p95": true
   },
   {
@@ -2626,8 +2600,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.288508,
-   "severity": 0.577016,
+   "text_sim": 0.289196,
+   "severity": 0.578392,
    "text_sim_ge_p95": true
   },
   {
@@ -2642,8 +2616,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.275959,
-   "severity": 0.551918,
+   "text_sim": 0.276031,
+   "severity": 0.552062,
    "text_sim_ge_p95": true
   },
   {
@@ -2658,8 +2632,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.27299,
-   "severity": 0.54598,
+   "text_sim": 0.273569,
+   "severity": 0.547138,
    "text_sim_ge_p95": true
   },
   {
@@ -2674,8 +2648,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.27056,
-   "severity": 0.54112,
+   "text_sim": 0.270355,
+   "severity": 0.54071,
    "text_sim_ge_p95": true
   },
   {
@@ -2690,24 +2664,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.264083,
-   "severity": 0.528166,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-15814",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-15104",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.254342,
-   "severity": 0.508684,
+   "text_sim": 0.263982,
+   "severity": 0.527964,
    "text_sim_ge_p95": true
   },
   {
@@ -2722,8 +2680,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.25425,
-   "severity": 0.5085,
+   "text_sim": 0.254432,
+   "severity": 0.508864,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-15814",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15104",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.254208,
+   "severity": 0.508416,
    "text_sim_ge_p95": true
   },
   {
@@ -2738,8 +2712,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.253471,
-   "severity": 0.506942,
+   "text_sim": 0.253356,
+   "severity": 0.506712,
    "text_sim_ge_p95": true
   },
   {
@@ -2754,8 +2728,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.2517,
-   "severity": 0.5034,
+   "text_sim": 0.251347,
+   "severity": 0.502694,
    "text_sim_ge_p95": true
   },
   {
@@ -2770,8 +2744,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.251216,
-   "severity": 0.502432,
+   "text_sim": 0.251044,
+   "severity": 0.502088,
    "text_sim_ge_p95": true
   },
   {
@@ -2786,8 +2760,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.250364,
-   "severity": 0.500728,
+   "text_sim": 0.250395,
+   "severity": 0.50079,
    "text_sim_ge_p95": true
   },
   {
@@ -2802,8 +2776,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.250197,
-   "severity": 0.500394,
+   "text_sim": 0.249995,
+   "severity": 0.49999,
    "text_sim_ge_p95": true
   },
   {
@@ -2818,8 +2792,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.247497,
-   "severity": 0.494994,
+   "text_sim": 0.24916,
+   "severity": 0.49832,
    "text_sim_ge_p95": true
   },
   {
@@ -2834,8 +2808,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.240737,
-   "severity": 0.481474,
+   "text_sim": 0.242264,
+   "severity": 0.484528,
    "text_sim_ge_p95": true
   },
   {
@@ -2850,8 +2824,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.236604,
-   "severity": 0.473208,
+   "text_sim": 0.236916,
+   "severity": 0.473832,
    "text_sim_ge_p95": true
   },
   {
@@ -2866,40 +2840,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.232041,
-   "severity": 0.464082,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "sympy__sympy-14976",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "sympy__sympy-23262",
-   "repo": "sympy/sympy",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.230448,
-   "severity": 0.460896,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "scikit-learn__scikit-learn-9288",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "scikit-learn__scikit-learn-14053",
-   "repo": "scikit-learn/scikit-learn",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.23039,
-   "severity": 0.46078,
+   "text_sim": 0.23198,
+   "severity": 0.46396,
    "text_sim_ge_p95": true
   },
   {
@@ -2914,8 +2856,40 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.230129,
-   "severity": 0.460258,
+   "text_sim": 0.230817,
+   "severity": 0.461634,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-14976",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-23262",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.230397,
+   "severity": 0.460794,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-9288",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.230377,
+   "severity": 0.460754,
    "text_sim_ge_p95": true
   },
   {
@@ -2930,8 +2904,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.229255,
-   "severity": 0.45851,
+   "text_sim": 0.22899,
+   "severity": 0.45798,
    "text_sim_ge_p95": true
   },
   {
@@ -2946,8 +2920,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.225439,
-   "severity": 0.450878,
+   "text_sim": 0.225372,
+   "severity": 0.450744,
    "text_sim_ge_p95": true
   },
   {
@@ -2962,8 +2936,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.224242,
-   "severity": 0.448484,
+   "text_sim": 0.224353,
+   "severity": 0.448706,
    "text_sim_ge_p95": true
   },
   {
@@ -2978,24 +2952,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.223734,
-   "severity": 0.447468,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "pytest-dev__pytest-7205",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "pytest-dev__pytest-8399",
-   "repo": "pytest-dev/pytest",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.223187,
-   "severity": 0.446374,
+   "text_sim": 0.22349,
+   "severity": 0.44698,
    "text_sim_ge_p95": true
   },
   {
@@ -3010,8 +2968,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.222175,
-   "severity": 0.44435,
+   "text_sim": 0.223143,
+   "severity": 0.446286,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7205",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.222977,
+   "severity": 0.445954,
    "text_sim_ge_p95": true
   },
   {
@@ -3026,8 +3000,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.219211,
-   "severity": 0.438422,
+   "text_sim": 0.219196,
+   "severity": 0.438392,
    "text_sim_ge_p95": true
   },
   {
@@ -3042,8 +3016,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.219012,
-   "severity": 0.438024,
+   "text_sim": 0.219038,
+   "severity": 0.438076,
    "text_sim_ge_p95": true
   },
   {
@@ -3058,8 +3032,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.216746,
-   "severity": 0.433492,
+   "text_sim": 0.216673,
+   "severity": 0.433346,
    "text_sim_ge_p95": true
   },
   {
@@ -3074,8 +3048,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.213927,
-   "severity": 0.427854,
+   "text_sim": 0.213622,
+   "severity": 0.427244,
    "text_sim_ge_p95": true
   },
   {
@@ -3090,8 +3064,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.20663,
-   "severity": 0.41326,
+   "text_sim": 0.207524,
+   "severity": 0.415048,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24570",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25332",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.205866,
+   "severity": 0.411732,
    "text_sim_ge_p95": true
   },
   {
@@ -3106,40 +3096,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.204901,
-   "severity": 0.409802,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "matplotlib__matplotlib-24570",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "matplotlib__matplotlib-25332",
-   "repo": "matplotlib/matplotlib",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.204612,
-   "severity": 0.409224,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-15375",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-17084",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.203871,
-   "severity": 0.407742,
+   "text_sim": 0.204836,
+   "severity": 0.409672,
    "text_sim_ge_p95": true
   },
   {
@@ -3154,8 +3112,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.203659,
-   "severity": 0.407318,
+   "text_sim": 0.203982,
+   "severity": 0.407964,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-15375",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-17084",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.203839,
+   "severity": 0.407678,
    "text_sim_ge_p95": true
   },
   {
@@ -3170,56 +3144,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.203172,
-   "severity": 0.406344,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "sympy__sympy-15809",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "sympy__sympy-15345",
-   "repo": "sympy/sympy",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.200637,
-   "severity": 0.401274,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "pylint-dev__pylint-7277",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "pylint-dev__pylint-6528",
-   "repo": "pylint-dev/pylint",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.199504,
-   "severity": 0.399008,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-14672",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-15104",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.199018,
-   "severity": 0.398036,
+   "text_sim": 0.202985,
+   "severity": 0.40597,
    "text_sim_ge_p95": true
   },
   {
@@ -3234,8 +3160,56 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.198639,
-   "severity": 0.397278,
+   "text_sim": 0.200496,
+   "severity": 0.400992,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-7277",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-6528",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.200463,
+   "severity": 0.400926,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-15809",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15345",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.200239,
+   "severity": 0.400478,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-14672",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15104",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.198923,
+   "severity": 0.397846,
    "text_sim_ge_p95": true
   },
   {
@@ -3250,8 +3224,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.196508,
-   "severity": 0.393016,
+   "text_sim": 0.19685,
+   "severity": 0.3937,
    "text_sim_ge_p95": true
   },
   {
@@ -3266,40 +3240,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.194259,
-   "severity": 0.388518,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "scikit-learn__scikit-learn-10297",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "scikit-learn__scikit-learn-14087",
-   "repo": "scikit-learn/scikit-learn",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.193092,
-   "severity": 0.386184,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-16255",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-13028",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.192499,
-   "severity": 0.384998,
+   "text_sim": 0.194295,
+   "severity": 0.38859,
    "text_sim_ge_p95": true
   },
   {
@@ -3314,8 +3256,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.192366,
-   "severity": 0.384732,
+   "text_sim": 0.193117,
+   "severity": 0.386234,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.192977,
+   "severity": 0.385954,
    "text_sim_ge_p95": true
   },
   {
@@ -3330,8 +3288,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.191117,
-   "severity": 0.382234,
+   "text_sim": 0.192628,
+   "severity": 0.385256,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-16255",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13028",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.192333,
+   "severity": 0.384666,
    "text_sim_ge_p95": true
   },
   {
@@ -3346,8 +3320,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.190919,
-   "severity": 0.381838,
+   "text_sim": 0.19137,
+   "severity": 0.38274,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-13109",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13158",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.190488,
+   "severity": 0.380976,
    "text_sim_ge_p95": true
   },
   {
@@ -3362,24 +3352,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.19051,
-   "severity": 0.38102,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-13109",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-13158",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.190496,
-   "severity": 0.380992,
+   "text_sim": 0.190487,
+   "severity": 0.380974,
    "text_sim_ge_p95": true
   },
   {
@@ -3394,8 +3368,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.190243,
-   "severity": 0.380486,
+   "text_sim": 0.190149,
+   "severity": 0.380298,
    "text_sim_ge_p95": true
   },
   {
@@ -3410,8 +3384,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.18971,
-   "severity": 0.37942,
+   "text_sim": 0.189607,
+   "severity": 0.379214,
    "text_sim_ge_p95": true
   },
   {
@@ -3426,8 +3400,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.189058,
-   "severity": 0.378116,
+   "text_sim": 0.18889,
+   "severity": 0.37778,
    "text_sim_ge_p95": true
   },
   {
@@ -3442,8 +3416,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.188614,
-   "severity": 0.377228,
+   "text_sim": 0.188788,
+   "severity": 0.377576,
    "text_sim_ge_p95": true
   },
   {
@@ -3458,8 +3432,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.186946,
-   "severity": 0.373892,
+   "text_sim": 0.186751,
+   "severity": 0.373502,
    "text_sim_ge_p95": true
   },
   {
@@ -3474,24 +3448,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.186374,
-   "severity": 0.372748,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "matplotlib__matplotlib-14623",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "matplotlib__matplotlib-13989",
-   "repo": "matplotlib/matplotlib",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.186226,
-   "severity": 0.372452,
+   "text_sim": 0.186109,
+   "severity": 0.372218,
    "text_sim_ge_p95": true
   },
   {
@@ -3506,8 +3464,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.18591,
-   "severity": 0.37182,
+   "text_sim": 0.18604,
+   "severity": 0.37208,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-14623",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-13989",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.185748,
+   "severity": 0.371496,
    "text_sim_ge_p95": true
   },
   {
@@ -3522,8 +3496,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.185349,
-   "severity": 0.370698,
+   "text_sim": 0.185268,
+   "severity": 0.370536,
    "text_sim_ge_p95": true
   },
   {
@@ -3538,8 +3512,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.182353,
-   "severity": 0.364706,
+   "text_sim": 0.182263,
+   "severity": 0.364526,
    "text_sim_ge_p95": true
   },
   {
@@ -3554,8 +3528,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.181803,
-   "severity": 0.363606,
+   "text_sim": 0.181767,
+   "severity": 0.363534,
    "text_sim_ge_p95": true
   },
   {
@@ -3570,8 +3544,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.18111,
-   "severity": 0.36222,
+   "text_sim": 0.180841,
+   "severity": 0.361682,
    "text_sim_ge_p95": true
   },
   {
@@ -3586,8 +3560,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.180782,
-   "severity": 0.361564,
+   "text_sim": 0.180664,
+   "severity": 0.361328,
    "text_sim_ge_p95": true
   },
   {
@@ -3602,8 +3576,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.179935,
-   "severity": 0.35987,
+   "text_sim": 0.179967,
+   "severity": 0.359934,
    "text_sim_ge_p95": true
   },
   {
@@ -3618,8 +3592,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.179713,
-   "severity": 0.359426,
+   "text_sim": 0.179669,
+   "severity": 0.359338,
    "text_sim_ge_p95": true
   },
   {
@@ -3634,8 +3608,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.179318,
-   "severity": 0.358636,
+   "text_sim": 0.179332,
+   "severity": 0.358664,
    "text_sim_ge_p95": true
   },
   {
@@ -3650,40 +3624,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.177764,
-   "severity": 0.355528,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "matplotlib__matplotlib-14623",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "matplotlib__matplotlib-24637",
-   "repo": "matplotlib/matplotlib",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.177716,
-   "severity": 0.355432,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "sympy__sympy-17139",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "sympy__sympy-15349",
-   "repo": "sympy/sympy",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.177705,
-   "severity": 0.35541,
+   "text_sim": 0.178075,
+   "severity": 0.35615,
    "text_sim_ge_p95": true
   },
   {
@@ -3698,8 +3640,40 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.177512,
-   "severity": 0.355024,
+   "text_sim": 0.17759,
+   "severity": 0.35518,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-17139",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15349",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.177483,
+   "severity": 0.354966,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-14623",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24637",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.177389,
+   "severity": 0.354778,
    "text_sim_ge_p95": true
   },
   {
@@ -3714,8 +3688,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.17734,
-   "severity": 0.35468,
+   "text_sim": 0.177266,
+   "severity": 0.354532,
    "text_sim_ge_p95": true
   },
   {
@@ -3730,8 +3704,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.176537,
-   "severity": 0.353074,
+   "text_sim": 0.176462,
+   "severity": 0.352924,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-15525",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16595",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.176004,
+   "severity": 0.352008,
    "text_sim_ge_p95": true
   },
   {
@@ -3746,24 +3736,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.175975,
-   "severity": 0.35195,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-15525",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-16595",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.175938,
-   "severity": 0.351876,
+   "text_sim": 0.175915,
+   "severity": 0.35183,
    "text_sim_ge_p95": true
   },
   {
@@ -3778,8 +3752,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.175297,
-   "severity": 0.350594,
+   "text_sim": 0.175166,
+   "severity": 0.350332,
    "text_sim_ge_p95": true
   },
   {
@@ -3794,12 +3768,28 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.17517,
-   "severity": 0.35034,
+   "text_sim": 0.175124,
+   "severity": 0.350248,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-15380",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16454",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.173689,
+   "severity": 0.347378,
    "text_sim_ge_p95": true
   }
  ],
- "all_pairs_count": 5816,
+ "all_pairs_count": 5811,
  "top_pairs_ranked": [
   {
    "keeper_id": "django__django-16485",
@@ -3821,8 +3811,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.443308,
-   "severity": 8.886616,
+   "text_sim": 0.443003,
+   "severity": 8.886006,
    "text_sim_ge_p95": true
   },
   {
@@ -3845,8 +3835,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.422357,
-   "severity": 8.844714,
+   "text_sim": 0.423054,
+   "severity": 8.846108,
    "text_sim_ge_p95": true
   },
   {
@@ -3869,32 +3859,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.249132,
-   "severity": 8.498264,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "pydata__xarray-6461",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "pydata__xarray-4687",
-   "repo": "pydata/xarray",
-   "file_overlap_gold": [
-    "xarray/core/computation.py"
-   ],
-   "file_overlap_test": [],
-   "file_overlap_any": [
-    "xarray/core/computation.py"
-   ],
-   "n_file_overlap_gold": 1,
-   "n_file_overlap_any": 1,
-   "func_overlap": {
-    "xarray/core/computation.py": [
-     "where"
-    ]
-   },
-   "n_func_overlap": 1,
-   "text_sim": 0.227859,
-   "severity": 8.455718,
+   "text_sim": 0.249049,
+   "severity": 8.498098,
    "text_sim_ge_p95": true
   },
   {
@@ -3917,8 +3883,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.215677,
-   "severity": 8.431354,
+   "text_sim": 0.215598,
+   "severity": 8.431196,
    "text_sim_ge_p95": true
   },
   {
@@ -3941,8 +3907,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.205008,
-   "severity": 8.410016,
+   "text_sim": 0.20659,
+   "severity": 8.41318,
    "text_sim_ge_p95": true
   },
   {
@@ -3965,8 +3931,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.167403,
-   "severity": 8.334806,
+   "text_sim": 0.167337,
+   "severity": 8.334674,
    "text_sim_ge_p95": true
   },
   {
@@ -3989,8 +3955,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.115225,
-   "severity": 8.23045,
+   "text_sim": 0.115127,
+   "severity": 8.230254,
    "text_sim_ge_p95": false
   },
   {
@@ -4013,8 +3979,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.096094,
-   "severity": 8.192188,
+   "text_sim": 0.095971,
+   "severity": 8.191942,
    "text_sim_ge_p95": false
   },
   {
@@ -4037,8 +4003,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.086526,
-   "severity": 8.173052,
+   "text_sim": 0.086427,
+   "severity": 8.172854,
    "text_sim_ge_p95": false
   },
   {
@@ -4061,8 +4027,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.057553,
-   "severity": 8.115106,
+   "text_sim": 0.057533,
+   "severity": 8.115066,
    "text_sim_ge_p95": false
   },
   {
@@ -4085,8 +4051,8 @@
     ]
    },
    "n_func_overlap": 1,
-   "text_sim": 0.014069,
-   "severity": 8.028138,
+   "text_sim": 0.014055,
+   "severity": 8.02811,
    "text_sim_ge_p95": false
   },
   {
@@ -4105,8 +4071,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.46368,
-   "severity": 5.92736,
+   "text_sim": 0.463664,
+   "severity": 5.927328,
    "text_sim_ge_p95": true
   },
   {
@@ -4125,8 +4091,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.40567,
-   "severity": 5.81134,
+   "text_sim": 0.406708,
+   "severity": 5.813416,
    "text_sim_ge_p95": true
   },
   {
@@ -4145,8 +4111,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.323073,
-   "severity": 5.646146,
+   "text_sim": 0.322989,
+   "severity": 5.645978,
    "text_sim_ge_p95": true
   },
   {
@@ -4165,8 +4131,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.315241,
-   "severity": 5.630482,
+   "text_sim": 0.315101,
+   "severity": 5.630202,
    "text_sim_ge_p95": true
   },
   {
@@ -4185,8 +4151,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.277101,
-   "severity": 5.554202,
+   "text_sim": 0.276795,
+   "severity": 5.55359,
    "text_sim_ge_p95": true
   },
   {
@@ -4205,8 +4171,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.259894,
-   "severity": 5.519788,
+   "text_sim": 0.259641,
+   "severity": 5.519282,
    "text_sim_ge_p95": true
   },
   {
@@ -4225,8 +4191,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.220017,
-   "severity": 5.440034,
+   "text_sim": 0.220259,
+   "severity": 5.440518,
    "text_sim_ge_p95": true
   },
   {
@@ -4245,8 +4211,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.210005,
-   "severity": 5.42001,
+   "text_sim": 0.209796,
+   "severity": 5.419592,
    "text_sim_ge_p95": true
   },
   {
@@ -4265,8 +4231,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.200301,
-   "severity": 5.400602,
+   "text_sim": 0.200192,
+   "severity": 5.400384,
    "text_sim_ge_p95": true
   },
   {
@@ -4285,8 +4251,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.196359,
-   "severity": 5.392718,
+   "text_sim": 0.19641,
+   "severity": 5.39282,
    "text_sim_ge_p95": true
   },
   {
@@ -4305,8 +4271,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.1893,
-   "severity": 5.3786,
+   "text_sim": 0.189288,
+   "severity": 5.378576,
    "text_sim_ge_p95": true
   },
   {
@@ -4325,8 +4291,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.183999,
-   "severity": 5.367998,
+   "text_sim": 0.183877,
+   "severity": 5.367754,
    "text_sim_ge_p95": true
   },
   {
@@ -4345,8 +4311,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.1703,
-   "severity": 5.3406,
+   "text_sim": 0.170181,
+   "severity": 5.340362,
    "text_sim_ge_p95": true
   },
   {
@@ -4365,8 +4331,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.160406,
-   "severity": 5.320812,
+   "text_sim": 0.160428,
+   "severity": 5.320856,
    "text_sim_ge_p95": true
   },
   {
@@ -4385,8 +4351,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.15456,
-   "severity": 5.30912,
+   "text_sim": 0.154648,
+   "severity": 5.309296,
    "text_sim_ge_p95": true
   },
   {
@@ -4405,8 +4371,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.153004,
-   "severity": 5.306008,
+   "text_sim": 0.153242,
+   "severity": 5.306484,
    "text_sim_ge_p95": true
   },
   {
@@ -4425,8 +4391,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.146506,
-   "severity": 5.293012,
+   "text_sim": 0.146346,
+   "severity": 5.292692,
    "text_sim_ge_p95": true
   },
   {
@@ -4445,8 +4411,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.14467,
-   "severity": 5.28934,
+   "text_sim": 0.144483,
+   "severity": 5.288966,
    "text_sim_ge_p95": true
   },
   {
@@ -4465,8 +4431,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.141922,
-   "severity": 5.283844,
+   "text_sim": 0.141957,
+   "severity": 5.283914,
    "text_sim_ge_p95": true
   },
   {
@@ -4485,8 +4451,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.139413,
-   "severity": 5.278826,
+   "text_sim": 0.139438,
+   "severity": 5.278876,
    "text_sim_ge_p95": true
   },
   {
@@ -4505,8 +4471,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.131672,
-   "severity": 5.263344,
+   "text_sim": 0.13154,
+   "severity": 5.26308,
    "text_sim_ge_p95": true
   },
   {
@@ -4525,8 +4491,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.128641,
-   "severity": 5.257282,
+   "text_sim": 0.12845,
+   "severity": 5.2569,
    "text_sim_ge_p95": true
   },
   {
@@ -4545,8 +4511,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.126225,
-   "severity": 5.25245,
+   "text_sim": 0.126231,
+   "severity": 5.252462,
    "text_sim_ge_p95": true
   },
   {
@@ -4565,8 +4531,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.12559,
-   "severity": 5.25118,
+   "text_sim": 0.125546,
+   "severity": 5.251092,
    "text_sim_ge_p95": true
   },
   {
@@ -4585,8 +4551,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.125234,
-   "severity": 5.250468,
+   "text_sim": 0.125185,
+   "severity": 5.25037,
    "text_sim_ge_p95": true
   },
   {
@@ -4605,8 +4571,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.119696,
-   "severity": 5.239392,
+   "text_sim": 0.119595,
+   "severity": 5.23919,
    "text_sim_ge_p95": true
   },
   {
@@ -4625,9 +4591,9 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.119611,
-   "severity": 5.239222,
-   "text_sim_ge_p95": false
+   "text_sim": 0.11941,
+   "severity": 5.23882,
+   "text_sim_ge_p95": true
   },
   {
    "keeper_id": "pytest-dev__pytest-6202",
@@ -4645,8 +4611,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.114607,
-   "severity": 5.229214,
+   "text_sim": 0.114629,
+   "severity": 5.229258,
    "text_sim_ge_p95": false
   },
   {
@@ -4665,8 +4631,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.113393,
-   "severity": 5.226786,
+   "text_sim": 0.113268,
+   "severity": 5.226536,
    "text_sim_ge_p95": false
   },
   {
@@ -4685,8 +4651,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.111228,
-   "severity": 5.222456,
+   "text_sim": 0.111181,
+   "severity": 5.222362,
    "text_sim_ge_p95": false
   },
   {
@@ -4705,8 +4671,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.106624,
-   "severity": 5.213248,
+   "text_sim": 0.106453,
+   "severity": 5.212906,
    "text_sim_ge_p95": false
   },
   {
@@ -4725,8 +4691,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.105905,
-   "severity": 5.21181,
+   "text_sim": 0.105882,
+   "severity": 5.211764,
    "text_sim_ge_p95": false
   },
   {
@@ -4745,8 +4711,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.102598,
-   "severity": 5.205196,
+   "text_sim": 0.102486,
+   "severity": 5.204972,
    "text_sim_ge_p95": false
   },
   {
@@ -4765,8 +4731,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.101188,
-   "severity": 5.202376,
+   "text_sim": 0.10097,
+   "severity": 5.20194,
    "text_sim_ge_p95": false
   },
   {
@@ -4785,8 +4751,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.100753,
-   "severity": 5.201506,
+   "text_sim": 0.100723,
+   "severity": 5.201446,
    "text_sim_ge_p95": false
   },
   {
@@ -4805,8 +4771,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.09982,
-   "severity": 5.19964,
+   "text_sim": 0.09972,
+   "severity": 5.19944,
    "text_sim_ge_p95": false
   },
   {
@@ -4825,8 +4791,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.099583,
-   "severity": 5.199166,
+   "text_sim": 0.099533,
+   "severity": 5.199066,
    "text_sim_ge_p95": false
   },
   {
@@ -4845,8 +4811,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.09635,
-   "severity": 5.1927,
+   "text_sim": 0.0963,
+   "severity": 5.1926,
    "text_sim_ge_p95": false
   },
   {
@@ -4865,8 +4831,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.094716,
-   "severity": 5.189432,
+   "text_sim": 0.094698,
+   "severity": 5.189396,
    "text_sim_ge_p95": false
   },
   {
@@ -4885,8 +4851,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.094015,
-   "severity": 5.18803,
+   "text_sim": 0.093947,
+   "severity": 5.187894,
    "text_sim_ge_p95": false
   },
   {
@@ -4905,8 +4871,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.091297,
-   "severity": 5.182594,
+   "text_sim": 0.091239,
+   "severity": 5.182478,
    "text_sim_ge_p95": false
   },
   {
@@ -4925,8 +4891,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.085354,
-   "severity": 5.170708,
+   "text_sim": 0.085461,
+   "severity": 5.170922,
    "text_sim_ge_p95": false
   },
   {
@@ -4945,8 +4911,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.082953,
-   "severity": 5.165906,
+   "text_sim": 0.082819,
+   "severity": 5.165638,
    "text_sim_ge_p95": false
   },
   {
@@ -4965,8 +4931,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.080135,
-   "severity": 5.16027,
+   "text_sim": 0.080048,
+   "severity": 5.160096,
    "text_sim_ge_p95": false
   },
   {
@@ -4985,8 +4951,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.079498,
-   "severity": 5.158996,
+   "text_sim": 0.079512,
+   "severity": 5.159024,
    "text_sim_ge_p95": false
   },
   {
@@ -5005,8 +4971,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.078444,
-   "severity": 5.156888,
+   "text_sim": 0.07834,
+   "severity": 5.15668,
    "text_sim_ge_p95": false
   },
   {
@@ -5025,8 +4991,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.076185,
-   "severity": 5.15237,
+   "text_sim": 0.076067,
+   "severity": 5.152134,
    "text_sim_ge_p95": false
   },
   {
@@ -5045,8 +5011,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.075137,
-   "severity": 5.150274,
+   "text_sim": 0.075099,
+   "severity": 5.150198,
    "text_sim_ge_p95": false
   },
   {
@@ -5065,8 +5031,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.073698,
-   "severity": 5.147396,
+   "text_sim": 0.073664,
+   "severity": 5.147328,
    "text_sim_ge_p95": false
   },
   {
@@ -5085,8 +5051,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.073573,
-   "severity": 5.147146,
+   "text_sim": 0.073549,
+   "severity": 5.147098,
    "text_sim_ge_p95": false
   },
   {
@@ -5105,8 +5071,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.073033,
-   "severity": 5.146066,
+   "text_sim": 0.072946,
+   "severity": 5.145892,
    "text_sim_ge_p95": false
   },
   {
@@ -5125,8 +5091,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.07054,
-   "severity": 5.14108,
+   "text_sim": 0.070503,
+   "severity": 5.141006,
    "text_sim_ge_p95": false
   },
   {
@@ -5145,8 +5111,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.069341,
-   "severity": 5.138682,
+   "text_sim": 0.069291,
+   "severity": 5.138582,
    "text_sim_ge_p95": false
   },
   {
@@ -5165,8 +5131,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.068804,
-   "severity": 5.137608,
+   "text_sim": 0.068828,
+   "severity": 5.137656,
    "text_sim_ge_p95": false
   },
   {
@@ -5185,8 +5151,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.065954,
-   "severity": 5.131908,
+   "text_sim": 0.065928,
+   "severity": 5.131856,
    "text_sim_ge_p95": false
   },
   {
@@ -5205,8 +5171,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.065529,
-   "severity": 5.131058,
+   "text_sim": 0.065485,
+   "severity": 5.13097,
    "text_sim_ge_p95": false
   },
   {
@@ -5225,8 +5191,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.062923,
-   "severity": 5.125846,
+   "text_sim": 0.062895,
+   "severity": 5.12579,
    "text_sim_ge_p95": false
   },
   {
@@ -5245,8 +5211,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.062654,
-   "severity": 5.125308,
+   "text_sim": 0.062666,
+   "severity": 5.125332,
    "text_sim_ge_p95": false
   },
   {
@@ -5265,8 +5231,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.061837,
-   "severity": 5.123674,
+   "text_sim": 0.061767,
+   "severity": 5.123534,
    "text_sim_ge_p95": false
   },
   {
@@ -5285,8 +5251,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.061302,
-   "severity": 5.122604,
+   "text_sim": 0.061258,
+   "severity": 5.122516,
    "text_sim_ge_p95": false
   },
   {
@@ -5305,8 +5271,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.060623,
-   "severity": 5.121246,
+   "text_sim": 0.060399,
+   "severity": 5.120798,
    "text_sim_ge_p95": false
   },
   {
@@ -5325,8 +5291,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.059802,
-   "severity": 5.119604,
+   "text_sim": 0.059744,
+   "severity": 5.119488,
    "text_sim_ge_p95": false
   },
   {
@@ -5345,8 +5311,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.05641,
-   "severity": 5.11282,
+   "text_sim": 0.056308,
+   "severity": 5.112616,
    "text_sim_ge_p95": false
   },
   {
@@ -5365,8 +5331,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.055307,
-   "severity": 5.110614,
+   "text_sim": 0.055424,
+   "severity": 5.110848,
    "text_sim_ge_p95": false
   },
   {
@@ -5385,8 +5351,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.053093,
-   "severity": 5.106186,
+   "text_sim": 0.05306,
+   "severity": 5.10612,
    "text_sim_ge_p95": false
   },
   {
@@ -5405,8 +5371,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.052557,
-   "severity": 5.105114,
+   "text_sim": 0.052505,
+   "severity": 5.10501,
    "text_sim_ge_p95": false
   },
   {
@@ -5425,8 +5391,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.05243,
-   "severity": 5.10486,
+   "text_sim": 0.052393,
+   "severity": 5.104786,
    "text_sim_ge_p95": false
   },
   {
@@ -5445,8 +5411,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.052009,
-   "severity": 5.104018,
+   "text_sim": 0.051929,
+   "severity": 5.103858,
    "text_sim_ge_p95": false
   },
   {
@@ -5465,8 +5431,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.049233,
-   "severity": 5.098466,
+   "text_sim": 0.049153,
+   "severity": 5.098306,
    "text_sim_ge_p95": false
   },
   {
@@ -5485,8 +5451,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.047009,
-   "severity": 5.094018,
+   "text_sim": 0.047008,
+   "severity": 5.094016,
    "text_sim_ge_p95": false
   },
   {
@@ -5505,8 +5471,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.046377,
-   "severity": 5.092754,
+   "text_sim": 0.046339,
+   "severity": 5.092678,
    "text_sim_ge_p95": false
   },
   {
@@ -5525,8 +5491,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.046193,
-   "severity": 5.092386,
+   "text_sim": 0.046176,
+   "severity": 5.092352,
    "text_sim_ge_p95": false
   },
   {
@@ -5545,8 +5511,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.044763,
-   "severity": 5.089526,
+   "text_sim": 0.044724,
+   "severity": 5.089448,
    "text_sim_ge_p95": false
   },
   {
@@ -5565,8 +5531,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.043514,
-   "severity": 5.087028,
+   "text_sim": 0.043469,
+   "severity": 5.086938,
    "text_sim_ge_p95": false
   },
   {
@@ -5585,8 +5551,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.042934,
-   "severity": 5.085868,
+   "text_sim": 0.04286,
+   "severity": 5.08572,
    "text_sim_ge_p95": false
   },
   {
@@ -5605,8 +5571,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.042219,
-   "severity": 5.084438,
+   "text_sim": 0.042197,
+   "severity": 5.084394,
    "text_sim_ge_p95": false
   },
   {
@@ -5625,8 +5591,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.03711,
-   "severity": 5.07422,
+   "text_sim": 0.037045,
+   "severity": 5.07409,
    "text_sim_ge_p95": false
   },
   {
@@ -5645,8 +5611,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.036105,
-   "severity": 5.07221,
+   "text_sim": 0.035973,
+   "severity": 5.071946,
    "text_sim_ge_p95": false
   },
   {
@@ -5665,8 +5631,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.035291,
-   "severity": 5.070582,
+   "text_sim": 0.035236,
+   "severity": 5.070472,
    "text_sim_ge_p95": false
   },
   {
@@ -5685,8 +5651,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.034757,
-   "severity": 5.069514,
+   "text_sim": 0.034699,
+   "severity": 5.069398,
    "text_sim_ge_p95": false
   },
   {
@@ -5705,8 +5671,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.034231,
-   "severity": 5.068462,
+   "text_sim": 0.034412,
+   "severity": 5.068824,
    "text_sim_ge_p95": false
   },
   {
@@ -5725,8 +5691,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.030437,
-   "severity": 5.060874,
+   "text_sim": 0.030401,
+   "severity": 5.060802,
    "text_sim_ge_p95": false
   },
   {
@@ -5745,8 +5711,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.030197,
-   "severity": 5.060394,
+   "text_sim": 0.030176,
+   "severity": 5.060352,
    "text_sim_ge_p95": false
   },
   {
@@ -5765,8 +5731,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.029174,
-   "severity": 5.058348,
+   "text_sim": 0.029152,
+   "severity": 5.058304,
    "text_sim_ge_p95": false
   },
   {
@@ -5785,8 +5751,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.029006,
-   "severity": 5.058012,
+   "text_sim": 0.02898,
+   "severity": 5.05796,
    "text_sim_ge_p95": false
   },
   {
@@ -5805,8 +5771,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.02803,
-   "severity": 5.05606,
+   "text_sim": 0.028005,
+   "severity": 5.05601,
    "text_sim_ge_p95": false
   },
   {
@@ -5825,8 +5791,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.02721,
-   "severity": 5.05442,
+   "text_sim": 0.027252,
+   "severity": 5.054504,
    "text_sim_ge_p95": false
   },
   {
@@ -5845,8 +5811,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.025671,
-   "severity": 5.051342,
+   "text_sim": 0.025648,
+   "severity": 5.051296,
    "text_sim_ge_p95": false
   },
   {
@@ -5865,8 +5831,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.024217,
-   "severity": 5.048434,
+   "text_sim": 0.024194,
+   "severity": 5.048388,
    "text_sim_ge_p95": false
   },
   {
@@ -5885,8 +5851,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.023756,
-   "severity": 5.047512,
+   "text_sim": 0.023725,
+   "severity": 5.04745,
    "text_sim_ge_p95": false
   },
   {
@@ -5905,8 +5871,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.021432,
-   "severity": 5.042864,
+   "text_sim": 0.021403,
+   "severity": 5.042806,
    "text_sim_ge_p95": false
   },
   {
@@ -5925,8 +5891,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.01838,
-   "severity": 5.03676,
+   "text_sim": 0.018305,
+   "severity": 5.03661,
    "text_sim_ge_p95": false
   },
   {
@@ -5945,8 +5911,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.016223,
-   "severity": 5.032446,
+   "text_sim": 0.016222,
+   "severity": 5.032444,
    "text_sim_ge_p95": false
   },
   {
@@ -5965,8 +5931,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.012997,
-   "severity": 5.025994,
+   "text_sim": 0.012974,
+   "severity": 5.025948,
    "text_sim_ge_p95": false
   },
   {
@@ -5985,8 +5951,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.010675,
-   "severity": 5.02135,
+   "text_sim": 0.010661,
+   "severity": 5.021322,
    "text_sim_ge_p95": false
   },
   {
@@ -6005,8 +5971,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.003713,
-   "severity": 5.007426,
+   "text_sim": 0.003696,
+   "severity": 5.007392,
    "text_sim_ge_p95": false
   },
   {
@@ -6025,8 +5991,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.001896,
-   "severity": 5.003792,
+   "text_sim": 0.00189,
+   "severity": 5.00378,
    "text_sim_ge_p95": false
   },
   {
@@ -6045,8 +6011,8 @@
    "n_file_overlap_any": 1,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.001222,
-   "severity": 5.002444,
+   "text_sim": 0.001219,
+   "severity": 5.002438,
    "text_sim_ge_p95": false
   },
   {
@@ -6061,8 +6027,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.677634,
-   "severity": 1.355268,
+   "text_sim": 0.678128,
+   "severity": 1.356256,
    "text_sim_ge_p95": true
   },
   {
@@ -6077,8 +6043,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.657719,
-   "severity": 1.315438,
+   "text_sim": 0.657894,
+   "severity": 1.315788,
    "text_sim_ge_p95": true
   },
   {
@@ -6093,8 +6059,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.59369,
-   "severity": 1.18738,
+   "text_sim": 0.593865,
+   "severity": 1.18773,
    "text_sim_ge_p95": true
   },
   {
@@ -6109,8 +6075,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.548102,
-   "severity": 1.096204,
+   "text_sim": 0.547958,
+   "severity": 1.095916,
    "text_sim_ge_p95": true
   },
   {
@@ -6125,8 +6091,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.472546,
-   "severity": 0.945092,
+   "text_sim": 0.471431,
+   "severity": 0.942862,
    "text_sim_ge_p95": true
   },
   {
@@ -6141,8 +6107,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.441777,
-   "severity": 0.883554,
+   "text_sim": 0.441078,
+   "severity": 0.882156,
    "text_sim_ge_p95": true
   },
   {
@@ -6157,24 +6123,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.381313,
-   "severity": 0.762626,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "pydata__xarray-4629",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "pydata__xarray-4075",
-   "repo": "pydata/xarray",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.380348,
-   "severity": 0.760696,
+   "text_sim": 0.38122,
+   "severity": 0.76244,
    "text_sim_ge_p95": true
   },
   {
@@ -6189,8 +6139,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.380096,
-   "severity": 0.760192,
+   "text_sim": 0.381166,
+   "severity": 0.762332,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pydata__xarray-4629",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pydata__xarray-4075",
+   "repo": "pydata/xarray",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.380744,
+   "severity": 0.761488,
    "text_sim_ge_p95": true
   },
   {
@@ -6205,8 +6171,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.361552,
-   "severity": 0.723104,
+   "text_sim": 0.360999,
+   "severity": 0.721998,
    "text_sim_ge_p95": true
   },
   {
@@ -6221,8 +6187,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.357561,
-   "severity": 0.715122,
+   "text_sim": 0.35764,
+   "severity": 0.71528,
    "text_sim_ge_p95": true
   },
   {
@@ -6237,8 +6203,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.348148,
-   "severity": 0.696296,
+   "text_sim": 0.34807,
+   "severity": 0.69614,
    "text_sim_ge_p95": true
   },
   {
@@ -6253,8 +6219,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.339103,
-   "severity": 0.678206,
+   "text_sim": 0.340635,
+   "severity": 0.68127,
    "text_sim_ge_p95": true
   },
   {
@@ -6269,8 +6235,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.3357,
-   "severity": 0.6714,
+   "text_sim": 0.336877,
+   "severity": 0.673754,
    "text_sim_ge_p95": true
   },
   {
@@ -6285,8 +6251,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.316226,
-   "severity": 0.632452,
+   "text_sim": 0.317386,
+   "severity": 0.634772,
    "text_sim_ge_p95": true
   },
   {
@@ -6301,8 +6267,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.295454,
-   "severity": 0.590908,
+   "text_sim": 0.295621,
+   "severity": 0.591242,
    "text_sim_ge_p95": true
   },
   {
@@ -6317,8 +6283,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.288508,
-   "severity": 0.577016,
+   "text_sim": 0.289196,
+   "severity": 0.578392,
    "text_sim_ge_p95": true
   },
   {
@@ -6333,8 +6299,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.275959,
-   "severity": 0.551918,
+   "text_sim": 0.276031,
+   "severity": 0.552062,
    "text_sim_ge_p95": true
   },
   {
@@ -6349,8 +6315,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.27299,
-   "severity": 0.54598,
+   "text_sim": 0.273569,
+   "severity": 0.547138,
    "text_sim_ge_p95": true
   },
   {
@@ -6365,8 +6331,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.27056,
-   "severity": 0.54112,
+   "text_sim": 0.270355,
+   "severity": 0.54071,
    "text_sim_ge_p95": true
   },
   {
@@ -6381,24 +6347,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.264083,
-   "severity": 0.528166,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-15814",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-15104",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.254342,
-   "severity": 0.508684,
+   "text_sim": 0.263982,
+   "severity": 0.527964,
    "text_sim_ge_p95": true
   },
   {
@@ -6413,8 +6363,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.25425,
-   "severity": 0.5085,
+   "text_sim": 0.254432,
+   "severity": 0.508864,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-15814",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15104",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.254208,
+   "severity": 0.508416,
    "text_sim_ge_p95": true
   },
   {
@@ -6429,8 +6395,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.253471,
-   "severity": 0.506942,
+   "text_sim": 0.253356,
+   "severity": 0.506712,
    "text_sim_ge_p95": true
   },
   {
@@ -6445,8 +6411,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.2517,
-   "severity": 0.5034,
+   "text_sim": 0.251347,
+   "severity": 0.502694,
    "text_sim_ge_p95": true
   },
   {
@@ -6461,8 +6427,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.251216,
-   "severity": 0.502432,
+   "text_sim": 0.251044,
+   "severity": 0.502088,
    "text_sim_ge_p95": true
   },
   {
@@ -6477,8 +6443,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.250364,
-   "severity": 0.500728,
+   "text_sim": 0.250395,
+   "severity": 0.50079,
    "text_sim_ge_p95": true
   },
   {
@@ -6493,8 +6459,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.250197,
-   "severity": 0.500394,
+   "text_sim": 0.249995,
+   "severity": 0.49999,
    "text_sim_ge_p95": true
   },
   {
@@ -6509,8 +6475,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.247497,
-   "severity": 0.494994,
+   "text_sim": 0.24916,
+   "severity": 0.49832,
    "text_sim_ge_p95": true
   },
   {
@@ -6525,8 +6491,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.240737,
-   "severity": 0.481474,
+   "text_sim": 0.242264,
+   "severity": 0.484528,
    "text_sim_ge_p95": true
   },
   {
@@ -6541,8 +6507,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.236604,
-   "severity": 0.473208,
+   "text_sim": 0.236916,
+   "severity": 0.473832,
    "text_sim_ge_p95": true
   },
   {
@@ -6557,40 +6523,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.232041,
-   "severity": 0.464082,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "sympy__sympy-14976",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "sympy__sympy-23262",
-   "repo": "sympy/sympy",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.230448,
-   "severity": 0.460896,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "scikit-learn__scikit-learn-9288",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "scikit-learn__scikit-learn-14053",
-   "repo": "scikit-learn/scikit-learn",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.23039,
-   "severity": 0.46078,
+   "text_sim": 0.23198,
+   "severity": 0.46396,
    "text_sim_ge_p95": true
   },
   {
@@ -6605,8 +6539,40 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.230129,
-   "severity": 0.460258,
+   "text_sim": 0.230817,
+   "severity": 0.461634,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-14976",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-23262",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.230397,
+   "severity": 0.460794,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-9288",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14053",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.230377,
+   "severity": 0.460754,
    "text_sim_ge_p95": true
   },
   {
@@ -6621,8 +6587,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.229255,
-   "severity": 0.45851,
+   "text_sim": 0.22899,
+   "severity": 0.45798,
    "text_sim_ge_p95": true
   },
   {
@@ -6637,8 +6603,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.225439,
-   "severity": 0.450878,
+   "text_sim": 0.225372,
+   "severity": 0.450744,
    "text_sim_ge_p95": true
   },
   {
@@ -6653,8 +6619,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.224242,
-   "severity": 0.448484,
+   "text_sim": 0.224353,
+   "severity": 0.448706,
    "text_sim_ge_p95": true
   },
   {
@@ -6669,24 +6635,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.223734,
-   "severity": 0.447468,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "pytest-dev__pytest-7205",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "pytest-dev__pytest-8399",
-   "repo": "pytest-dev/pytest",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.223187,
-   "severity": 0.446374,
+   "text_sim": 0.22349,
+   "severity": 0.44698,
    "text_sim_ge_p95": true
   },
   {
@@ -6701,8 +6651,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.222175,
-   "severity": 0.44435,
+   "text_sim": 0.223143,
+   "severity": 0.446286,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pytest-dev__pytest-7205",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pytest-dev__pytest-8399",
+   "repo": "pytest-dev/pytest",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.222977,
+   "severity": 0.445954,
    "text_sim_ge_p95": true
   },
   {
@@ -6717,8 +6683,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.219211,
-   "severity": 0.438422,
+   "text_sim": 0.219196,
+   "severity": 0.438392,
    "text_sim_ge_p95": true
   },
   {
@@ -6733,8 +6699,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.219012,
-   "severity": 0.438024,
+   "text_sim": 0.219038,
+   "severity": 0.438076,
    "text_sim_ge_p95": true
   },
   {
@@ -6749,8 +6715,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.216746,
-   "severity": 0.433492,
+   "text_sim": 0.216673,
+   "severity": 0.433346,
    "text_sim_ge_p95": true
   },
   {
@@ -6765,8 +6731,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.213927,
-   "severity": 0.427854,
+   "text_sim": 0.213622,
+   "severity": 0.427244,
    "text_sim_ge_p95": true
   },
   {
@@ -6781,8 +6747,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.20663,
-   "severity": 0.41326,
+   "text_sim": 0.207524,
+   "severity": 0.415048,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-24570",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-25332",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.205866,
+   "severity": 0.411732,
    "text_sim_ge_p95": true
   },
   {
@@ -6797,40 +6779,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.204901,
-   "severity": 0.409802,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "matplotlib__matplotlib-24570",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "matplotlib__matplotlib-25332",
-   "repo": "matplotlib/matplotlib",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.204612,
-   "severity": 0.409224,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-15375",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-17084",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.203871,
-   "severity": 0.407742,
+   "text_sim": 0.204836,
+   "severity": 0.409672,
    "text_sim_ge_p95": true
   },
   {
@@ -6845,8 +6795,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.203659,
-   "severity": 0.407318,
+   "text_sim": 0.203982,
+   "severity": 0.407964,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-15375",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-17084",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.203839,
+   "severity": 0.407678,
    "text_sim_ge_p95": true
   },
   {
@@ -6861,56 +6827,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.203172,
-   "severity": 0.406344,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "sympy__sympy-15809",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "sympy__sympy-15345",
-   "repo": "sympy/sympy",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.200637,
-   "severity": 0.401274,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "pylint-dev__pylint-7277",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "pylint-dev__pylint-6528",
-   "repo": "pylint-dev/pylint",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.199504,
-   "severity": 0.399008,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-14672",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-15104",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.199018,
-   "severity": 0.398036,
+   "text_sim": 0.202985,
+   "severity": 0.40597,
    "text_sim_ge_p95": true
   },
   {
@@ -6925,8 +6843,56 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.198639,
-   "severity": 0.397278,
+   "text_sim": 0.200496,
+   "severity": 0.400992,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "pylint-dev__pylint-7277",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "pylint-dev__pylint-6528",
+   "repo": "pylint-dev/pylint",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.200463,
+   "severity": 0.400926,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-15809",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15345",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.200239,
+   "severity": 0.400478,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-14672",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-15104",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.198923,
+   "severity": 0.397846,
    "text_sim_ge_p95": true
   },
   {
@@ -6941,8 +6907,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.196508,
-   "severity": 0.393016,
+   "text_sim": 0.19685,
+   "severity": 0.3937,
    "text_sim_ge_p95": true
   },
   {
@@ -6957,40 +6923,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.194259,
-   "severity": 0.388518,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "scikit-learn__scikit-learn-10297",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "scikit-learn__scikit-learn-14087",
-   "repo": "scikit-learn/scikit-learn",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.193092,
-   "severity": 0.386184,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-16255",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-13028",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.192499,
-   "severity": 0.384998,
+   "text_sim": 0.194295,
+   "severity": 0.38859,
    "text_sim_ge_p95": true
   },
   {
@@ -7005,8 +6939,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.192366,
-   "severity": 0.384732,
+   "text_sim": 0.193117,
+   "severity": 0.386234,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "scikit-learn__scikit-learn-10297",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "scikit-learn__scikit-learn-14087",
+   "repo": "scikit-learn/scikit-learn",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.192977,
+   "severity": 0.385954,
    "text_sim_ge_p95": true
   },
   {
@@ -7021,8 +6971,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.191117,
-   "severity": 0.382234,
+   "text_sim": 0.192628,
+   "severity": 0.385256,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-16255",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13028",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.192333,
+   "severity": 0.384666,
    "text_sim_ge_p95": true
   },
   {
@@ -7037,8 +7003,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.190919,
-   "severity": 0.381838,
+   "text_sim": 0.19137,
+   "severity": 0.38274,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-13109",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-13158",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.190488,
+   "severity": 0.380976,
    "text_sim_ge_p95": true
   },
   {
@@ -7053,24 +7035,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.19051,
-   "severity": 0.38102,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-13109",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-13158",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.190496,
-   "severity": 0.380992,
+   "text_sim": 0.190487,
+   "severity": 0.380974,
    "text_sim_ge_p95": true
   },
   {
@@ -7085,8 +7051,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.190243,
-   "severity": 0.380486,
+   "text_sim": 0.190149,
+   "severity": 0.380298,
    "text_sim_ge_p95": true
   },
   {
@@ -7101,8 +7067,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.18971,
-   "severity": 0.37942,
+   "text_sim": 0.189607,
+   "severity": 0.379214,
    "text_sim_ge_p95": true
   },
   {
@@ -7117,8 +7083,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.189058,
-   "severity": 0.378116,
+   "text_sim": 0.18889,
+   "severity": 0.37778,
    "text_sim_ge_p95": true
   },
   {
@@ -7133,8 +7099,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.188614,
-   "severity": 0.377228,
+   "text_sim": 0.188788,
+   "severity": 0.377576,
    "text_sim_ge_p95": true
   },
   {
@@ -7149,8 +7115,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.186946,
-   "severity": 0.373892,
+   "text_sim": 0.186751,
+   "severity": 0.373502,
    "text_sim_ge_p95": true
   },
   {
@@ -7165,24 +7131,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.186374,
-   "severity": 0.372748,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "matplotlib__matplotlib-14623",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "matplotlib__matplotlib-13989",
-   "repo": "matplotlib/matplotlib",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.186226,
-   "severity": 0.372452,
+   "text_sim": 0.186109,
+   "severity": 0.372218,
    "text_sim_ge_p95": true
   },
   {
@@ -7197,8 +7147,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.18591,
-   "severity": 0.37182,
+   "text_sim": 0.18604,
+   "severity": 0.37208,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-14623",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-13989",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.185748,
+   "severity": 0.371496,
    "text_sim_ge_p95": true
   },
   {
@@ -7213,8 +7179,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.185349,
-   "severity": 0.370698,
+   "text_sim": 0.185268,
+   "severity": 0.370536,
    "text_sim_ge_p95": true
   },
   {
@@ -7229,8 +7195,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.182353,
-   "severity": 0.364706,
+   "text_sim": 0.182263,
+   "severity": 0.364526,
    "text_sim_ge_p95": true
   },
   {
@@ -7245,8 +7211,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.181803,
-   "severity": 0.363606,
+   "text_sim": 0.181767,
+   "severity": 0.363534,
    "text_sim_ge_p95": true
   },
   {
@@ -7261,8 +7227,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.18111,
-   "severity": 0.36222,
+   "text_sim": 0.180841,
+   "severity": 0.361682,
    "text_sim_ge_p95": true
   },
   {
@@ -7277,8 +7243,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.180782,
-   "severity": 0.361564,
+   "text_sim": 0.180664,
+   "severity": 0.361328,
    "text_sim_ge_p95": true
   },
   {
@@ -7293,8 +7259,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.179935,
-   "severity": 0.35987,
+   "text_sim": 0.179967,
+   "severity": 0.359934,
    "text_sim_ge_p95": true
   },
   {
@@ -7309,8 +7275,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.179713,
-   "severity": 0.359426,
+   "text_sim": 0.179669,
+   "severity": 0.359338,
    "text_sim_ge_p95": true
   },
   {
@@ -7325,8 +7291,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.179318,
-   "severity": 0.358636,
+   "text_sim": 0.179332,
+   "severity": 0.358664,
    "text_sim_ge_p95": true
   },
   {
@@ -7341,40 +7307,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.177764,
-   "severity": 0.355528,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "matplotlib__matplotlib-14623",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "matplotlib__matplotlib-24637",
-   "repo": "matplotlib/matplotlib",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.177716,
-   "severity": 0.355432,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "sympy__sympy-17139",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "sympy__sympy-15349",
-   "repo": "sympy/sympy",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.177705,
-   "severity": 0.35541,
+   "text_sim": 0.178075,
+   "severity": 0.35615,
    "text_sim_ge_p95": true
   },
   {
@@ -7389,8 +7323,40 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.177512,
-   "severity": 0.355024,
+   "text_sim": 0.17759,
+   "severity": 0.35518,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "sympy__sympy-17139",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "sympy__sympy-15349",
+   "repo": "sympy/sympy",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.177483,
+   "severity": 0.354966,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "matplotlib__matplotlib-14623",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "matplotlib__matplotlib-24637",
+   "repo": "matplotlib/matplotlib",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.177389,
+   "severity": 0.354778,
    "text_sim_ge_p95": true
   },
   {
@@ -7405,8 +7371,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.17734,
-   "severity": 0.35468,
+   "text_sim": 0.177266,
+   "severity": 0.354532,
    "text_sim_ge_p95": true
   },
   {
@@ -7421,8 +7387,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.176537,
-   "severity": 0.353074,
+   "text_sim": 0.176462,
+   "severity": 0.352924,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-15525",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16595",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.176004,
+   "severity": 0.352008,
    "text_sim_ge_p95": true
   },
   {
@@ -7437,24 +7419,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.175975,
-   "severity": 0.35195,
-   "text_sim_ge_p95": true
-  },
-  {
-   "keeper_id": "django__django-15525",
-   "keeper_source": "SWE-bench_Verified",
-   "holdout_id": "django__django-16595",
-   "repo": "django/django",
-   "file_overlap_gold": [],
-   "file_overlap_test": [],
-   "file_overlap_any": [],
-   "n_file_overlap_gold": 0,
-   "n_file_overlap_any": 0,
-   "func_overlap": {},
-   "n_func_overlap": 0,
-   "text_sim": 0.175938,
-   "severity": 0.351876,
+   "text_sim": 0.175915,
+   "severity": 0.35183,
    "text_sim_ge_p95": true
   },
   {
@@ -7469,8 +7435,8 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.175297,
-   "severity": 0.350594,
+   "text_sim": 0.175166,
+   "severity": 0.350332,
    "text_sim_ge_p95": true
   },
   {
@@ -7485,8 +7451,24 @@
    "n_file_overlap_any": 0,
    "func_overlap": {},
    "n_func_overlap": 0,
-   "text_sim": 0.17517,
-   "severity": 0.35034,
+   "text_sim": 0.175124,
+   "severity": 0.350248,
+   "text_sim_ge_p95": true
+  },
+  {
+   "keeper_id": "django__django-15380",
+   "keeper_source": "SWE-bench_Verified",
+   "holdout_id": "django__django-16454",
+   "repo": "django/django",
+   "file_overlap_gold": [],
+   "file_overlap_test": [],
+   "file_overlap_any": [],
+   "n_file_overlap_gold": 0,
+   "n_file_overlap_any": 0,
+   "func_overlap": {},
+   "n_func_overlap": 0,
+   "text_sim": 0.173689,
+   "severity": 0.347378,
    "text_sim_ge_p95": true
   }
  ],
