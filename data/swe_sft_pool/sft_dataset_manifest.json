@@ -1,11 +1,11 @@
 {
   "artifact": "swe_sft_dataset",
   "purpose": "SWE-SFT (RFT/rejection-sampling) training set for the two-arm SWE-tuning campaign (arm-1 merged-RL-v2 / arm-2 stock); design swe_tuning_campaign_design.md.",
-  "built_at": "2026-07-09T18:45:33Z",
+  "built_at": "2026-07-09T19:32:01Z",
   "built_by": "runs/swe_datagen_s1/build_swe_sft_dataset.py",
   "source_pool": {
     "keepers_jsonl": "runs/swe_datagen_s1/keepers/keepers.jsonl",
-    "keepers_count": 323,
+    "keepers_count": 334,
     "pool_manifest_firewall": "data/swe_sft_pool/pool_manifest.json"
   },
   "render": {
@@ -21,8 +21,8 @@
     "trainer_preset": "fast_dllm_v2_native",
     "verdict": "DO NOT train the structured JSON with `fast_dllm_v2_native` as-is.",
     "detail": "The LMFlow preset renders an EXTRA newline around <tool_call>/<tool_response> relative to the 9B serving template, so assistant TARGET turns are not byte-identical to serve.",
-    "assistant_turns_total": 10038,
-    "assistant_turns_diverging_vs_preset": 7023,
+    "assistant_turns_total": 10153,
+    "assistant_turns_diverging_vs_preset": 7127,
     "rows_fully_identical_vs_preset": 2,
     "resolution": "Train from `train_swe_sft.tokenized.jsonl` (serve-EXACT input_ids + assistant_spans) OR point the trainer at the serving chat_template.jinja (generation-tagged) so tokens match serve byte-for-byte."
   },
@@ -40,21 +40,21 @@
   },
   "split": {
     "policy": "single 'train' split. Design specifies no keeper-level dev/validation; retention monitored by external probes (GSM8K N=5 every 50 steps + matched-20 tool-call anchor spot-gate), not a held-in dev slice.",
-    "train": 323,
+    "train": 334,
     "dev": 0
   },
   "teacher_mix": {
     "stock-9b-ar": 293,
-    "qwen3.6-27b-nvfp4-mtp": 17,
+    "qwen3.6-27b-nvfp4-mtp": 28,
     "opus-4.8": 13
   },
   "source_mix": {
     "SWE-bench_Verified": 192,
-    "SWE-Gym": 131
+    "SWE-Gym": 142
   },
   "teacher_by_source": {
     "opus-4.8|SWE-Gym": 13,
-    "qwen3.6-27b-nvfp4-mtp|SWE-Gym": 17,
+    "qwen3.6-27b-nvfp4-mtp|SWE-Gym": 28,
     "stock-9b-ar|SWE-Gym": 101,
     "stock-9b-ar|SWE-bench_Verified": 192
   },
@@ -63,18 +63,18 @@
     "sympy/sympy": 33,
     "conan-io/conan": 26,
     "python/mypy": 22,
+    "pandas-dev/pandas": 20,
     "iterative/dvc": 18,
+    "getmoto/moto": 18,
     "scikit-learn/scikit-learn": 18,
     "pydantic/pydantic": 16,
-    "getmoto/moto": 16,
-    "pandas-dev/pandas": 15,
-    "dask/dask": 13,
+    "dask/dask": 14,
     "matplotlib/matplotlib": 12,
     "pydata/xarray": 10,
     "pytest-dev/pytest": 10,
+    "modin-project/modin": 6,
     "psf/requests": 5,
     "astropy/astropy": 3,
-    "modin-project/modin": 3,
     "pylint-dev/pylint": 2,
     "bokeh/bokeh": 1,
     "facebookresearch/hydra": 1,
@@ -82,8 +82,8 @@
   },
   "family_count": 20,
   "tool_schema_fidelity": {
-    "instances_with_tools_block": 161,
-    "instances_without_tools_block": 162,
+    "instances_with_tools_block": 166,
+    "instances_without_tools_block": 168,
     "caveat": "tools captured from each episode's richest chat dump; ~half of dumps omitted the tools field, so those instances render WITHOUT the system-prompt tool-declaration block that was present at gen/serve time. Loss-MASKED context skew only (assistant targets carry the qwen3_xml call format regardless). Optional remediation for the training-task owner: backfill the canonical qwen-code tool set."
   },
   "length_audit": {
@@ -92,34 +92,34 @@
     "block_size": 32768,
     "truncation_side": "left",
     "packing": "OFF (one episode = one sample; design 2.3 left-truncation, no group_texts).",
-    "total_tokens": 7885679,
-    "total_assistant_target_tokens": 1284222,
+    "total_tokens": 8112663,
+    "total_assistant_target_tokens": 1304354,
     "token_length_distribution": {
       "min": 9815,
-      "p10": 18958,
-      "p25": 23340,
-      "p50": 24047,
-      "p75": 26956,
-      "p90": 29494,
-      "p95": 29945,
+      "p10": 18742,
+      "p25": 23336,
+      "p50": 24042,
+      "p75": 26855,
+      "p90": 29474,
+      "p95": 29871,
       "p99": 30965,
       "max": 40950,
-      "mean": 24413.9
+      "mean": 24289.4
     },
     "assistant_target_token_distribution": {
       "min": 1,
-      "p10": 1659,
-      "p25": 2559,
-      "p50": 4080,
-      "p75": 5175,
+      "p10": 1635,
+      "p25": 2388,
+      "p50": 4002,
+      "p75": 5167,
       "p90": 6008,
-      "p95": 6544,
+      "p95": 6509,
       "p99": 7876,
       "max": 8860,
-      "mean": 3975.9
+      "mean": 3905.3
     },
     "over_block_size_count": 2,
-    "over_block_size_pct": 0.62,
+    "over_block_size_pct": 0.6,
     "labels_lost_when_over_block": {
       "min": 0,
       "p10": 0,
