@@ -2850,7 +2850,7 @@
    }
   },
   "verified_head_len": 387,
-  "exploit_priority": "frontier",
+  "exploit_priority": "coverage",
   "yield_map_restrat": {
    "astropy": {
     "resolved": 3,
@@ -2972,7 +2972,8 @@
    "dask": 25
   },
   "fresh_unattempted_block_len": 1510,
-  "near_miss_tail_len": 480
+  "near_miss_tail_len": 480,
+  "exploit_priority_note": "monitor 2026-07-09: flipped frontier->coverage \u2014 idx-primary re-drew cycles-1/2 failures ahead of fresh ids (cycle-3 yield collapse to 3/17); coverage-first tries every fresh instance before any retry; the L1 near-miss lever is spent"
  },
  "kill_d1_firewall": {
   "enforced_holdout_rings": [
