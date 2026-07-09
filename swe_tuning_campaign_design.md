@@ -189,6 +189,63 @@ value-projection audit all-0).
 
 ---
 
+## STATUS (2026-07-09, evening) — ARM-1 COMPLETE + ANCHOR GATE **PASS** (zero erosion); ARM-2 (stock T) LAUNCHED
+
+**Arm-1 (M_swe_S) finished clean and PASSED the KILL-T1 anchor gate with the sharpest
+possible evidence — turn-for-turn tool-call preservation (McNemar b=c=0).**
+
+**Arm-1 final training summary** (`runs/swe_sft_arm1/Aswe_S_step400_seed71101`, `metrics.jsonl`,
+80 logged points, steps 5→400): **DONE step=400, wall 2963.1 s (7.41 s/step)**, no crash.
+Loss curve **healthy, 0 NaN/Inf**: first 0.270 → last 0.151 (min 0.051, mean 0.265); window
+means decline monotonically **0.262 [5–50] → 0.207 [100–150] → 0.195 [200–250]**. The only
+grad_norm>10 event is step 365 (grad_norm 280, loss 4.20) — an isolated **n_valid=1**
+single-target-token row at the cosine tail (LR 2e-7 ⇒ negligible weight impact); steps
+370–400 are all 0.06–0.25 / grad_norm 0.28–0.64. Per-step peak 26.67 GiB (12288 block, matches
+the probe). **Final adapter: `runs/swe_sft_arm1/Aswe_S_step400_seed71101/checkpoint-400/adapter_model.safetensors`**
+(r16/α32, 11 targets incl. MLP gate_up/down; 26.5 M trainable params, 0.295 %).
+
+**Anchor gate (§2.5 / KILL-T1), AR-mode, tool-call matched-20 exact_args — PASS.** Served both
+arms through the **identical** export→vLLM→`eval_flare_northstar_matched.py --backend
+ar-vllm-guided` path (greedy, byte-comparable; the standard AR-guided path of #29 row b / #28
+merged-AR), same 20-episode/63-turn native set (`flare_scaleup_native_58.jsonl`, gold_sha256
+mismatch **0/63**):
+
+| metric | pre-SFT base (rlv2, init+RL-v2) | post-SFT (M_swe_S) | banked anchor | verdict |
+|---|---:|---:|---:|:--|
+| tool-call matched-20 **exact_args** | **49/63** | **49/63** | 50/63 (#29 b; #28 127/247 C0) | raw 49 ≥ 47 (anchor−3) **PASS** |
+| valid_tool_call | 63/63 | **63/63** | 62/63 (A_new) | no format erosion **PASS** |
+| episode_exact | 13/20 | 13/20 | — | equal |
+| **paired McNemar** (pre-right/post-wrong `b`, post-right/pre-wrong `c`) | — | **b=0, c=0, net-loss 0, p=1.0** | net-loss not sig | **PASS** |
+
+**Not a no-op:** the SFT model is behaviorally active — **5/63 turns diverge** in greedy
+generated text/parsed calls (e.g. argument values "SKU001" vs "product_001", amount 10000 vs
+50000) — yet **none of those flips changed a correctness outcome**, so the certified tool-call
+exactness is preserved turn-for-turn (mirrors #29 a1's b=0). The pre-SFT base re-measures at
+**49/63** through this pipeline (vs the banked 50/63 — a 1-turn serving drift; the banked point
+was the A_new/C0 export), so the paired comparison (both 49/63, identical correct-set) is the
+authoritative byte-comparable result. **Value-projection audit N/A** (AR mode has no diffusion
+projection events; KILL-3 is a diffusion-only probe). Export merged the full SWE target set
+correctly: `lora_merge_count=184` (RL-v2 was 152; +32 = MLP gate_up/down × 16 layers), no
+dropped targets. Artifacts: `runs/swe_sft_arm1/anchor_gate/{mswe_S_matched20,rlv2_base_matched20}/ar-vllm-guided/turns.jsonl`,
+`anchor_mcnemar_result.json`, `export_mswe_S.log`; served model
+`models/qwen3.5-9b-fastdllm-mswe-S-vllm-bf16`; scorer `scripts/swe_sft_arm1_anchor_mcnemar.py`.
+**Secondary GSM8K N=20 retention (§2.5 row 2) was NOT run in this gate pass** — deferred, not
+blocking (KILL-T1 is the load-bearing blocking gate; #28 already bounds merged-AR GSM8K
+within-noise). Recommend the monitor run it before D2.
+
+**⇒ KILL-T1 does NOT fire for arm S. Arm-2 launched** per the design (arm T control, §2.2):
+IDENTICAL config/pool/steps (block 12288, 334-keeper pool, horizon 400, seed 71101, r16/α32,
+same 11 targets, LR 1e-5 cosine warmup 0.03) on the **stock base**
+`models/qwen3.5-9b-fastdllm-init` (Fast_dLLM conversion of stock Qwen3.5-9B, **no RL-v2 merge**;
+conversion_manifest lineage = stock). Detached+caged (`scripts/swe_sft_arm2_driver.sh`, pid
+188960 PPID 1, scope `run-p188960` MemoryMax=22G, `runs/swe_sft_arm2/`), **verified healthy:
+GPU 100 % util sustained, step-5 loss 0.263 / grad_norm 0.31 (sane), peak 26.67 GiB, trainable
+26.5 M (0.295 %), warmup 12 → stop 400**. ETA ≈ 49 min; checkpoints {100,200,300,400}. Next
+gate = the same AR-guided matched-20 anchor on arm-T's checkpoint-400 vs the stock anchor
+(~50/63 careful stock), then **D2 base-choice** (max SWE resolve × anchor-held).
+
+---
+
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
 
 > **SUPERSEDED (greedy-era rationale — kept for the record; see STATUS block above).** The ladder and the

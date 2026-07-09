@@ -1,3 +1,19 @@
+# SWE-SFT arm-1 (M_swe_S) — **COMPLETE + ANCHOR GATE PASS**
+
+> **UPDATE 2026-07-09 evening — RUN FINISHED, KILL-T1 ANCHOR GATE PASSED, ARM-2 LAUNCHED.**
+> - **Training:** DONE step=400, wall 2963.1 s (7.41 s/step), 0 NaN/Inf, loss 0.270→0.151
+>   (min 0.051). Final adapter `Aswe_S_step400_seed71101/checkpoint-400/adapter_model.safetensors`.
+> - **Anchor gate (tool-call matched-20 exact_args, AR-guided, greedy):** post-SFT **49/63** ==
+>   pre-SFT base **49/63** (banked anchor 50/63), **McNemar b=0 c=0 net-loss 0 p=1.0**,
+>   valid_tool_call **63/63**, gold-mismatch 0/63. Model is active (5/63 turns diverge) but
+>   erosion is zero. **PASS** (raw 49≥47 AND net-loss not significant). Value-projection N/A (AR).
+> - **Arm-2 (stock T control):** LAUNCHED `scripts/swe_sft_arm2_driver.sh` (pid 188960, stock
+>   base `models/qwen3.5-9b-fastdllm-init`, identical config, GPU 100 %, loss sane). See the
+>   design STATUS (2026-07-09, evening) block + `anchor_gate/anchor_mcnemar_result.json`.
+> - Secondary GSM8K N=20 deferred (not blocking). Full detail in `swe_tuning_campaign_design.md`.
+
+---
+
 # SWE-SFT arm-1 (M_swe_S) — LAUNCH STATUS: **LAUNCHED** (handover executed)
 
 > **UPDATE 2026-07-09 (later) — BOTH BLOCKERS RESOLVED; run is LIVE.**
