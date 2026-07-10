@@ -517,3 +517,48 @@ arm on the tool-call anchor, but end-to-end it resolves only **3/48** on the pri
 ≥12 entry floor**. SWE-SFT did not close the empty-patch / edit-commitment gap; it reshaped the loop failure without
 producing edits. **The K-raise campaign is gated OUT at entry** (INCONCLUSIVE-BY-POWER, not a KILL); the next lever is
 the SWE-SFT/datagen edit-commitment escalation (USER_LEVER_BELT), not K.
+
+## STATUS(2026-07-10) — STEP 5 FOLLOW-UP: DEFICIT-LOCUS AR-mode PAIRED read — verdict **MIXED (B-bound)**
+
+Ran the **same 48 Tier1-C46 instances** through the **identical SWE-SFT weights served AR** (`models/qwen3.5-9b-
+fastdllm-mswe-S-vllm-bf16` on the stage-c/w2_n50 AR path `runcage_ar.sh`: stock vLLM 0.23, gmu 0.85, seqs 4, ml 32768,
+qwen3_xml tools, qwen3 reasoning), mirroring the twin gate **byte-for-byte except the decode paradigm** (same shard
+plan, envelope temp 0.6/top_p 0.95/top_k 20 no-pp, re-drive=1, turn cap 75, seed base 1234, c=4, official docker
+scoring). AR serving verified **pure AR** (0 FLARE/decode lines). Wall 1454 s, **118.84 eps/GPU-h (8.9× the twin's
+13.33)**. Artifacts: `runs/k_gate_c46/AR_PAIRED_READ.md` + `ar_paired_report.json` + `ar/scoring/*.c46_ar.json` +
+per-episode `ar/shard_*/verified/per_task/*/runner_metadata.json`.
+
+### PRIMARY — paired resolve@1 (twin diffusion vs AR), McNemar exact
+- **AR 7/48 (14.6 %) vs twin 3/48 (6.2 %)** — both=3, twin-only b=0, AR-only c=4, net −4, **McNemar exact p=0.125
+  (NOT significant)**. Twin-resolved ⊂ AR-resolved (**b=0 → the diffusion decode never wins a task AR loses**).
+- AR-only ids: django-16801, matplotlib-25122, sympy-13647, sympy-23262. Both: django-{11163,12193,13410}.
+
+### The decisive covariate — edit-commitment is decode-mode-specific
+| signature | AR (SWE-SFT) | twin@K1 (SWE-SFT) | read |
+|---|---:|---:|---|
+| resolved | **7** (14.6 %) | 3 (6.2 %) | +4, not significant (p=0.125) |
+| edit committed (non-empty) | **46** (96 %) | 12 (25 %) | **A: decode collapses committal** |
+| empty patches | **2** | 36 | same weights, opposite behavior |
+| clean-quit → no patch | **≈1** | 29 | the twin's give-up-empty is a decode artifact |
+| median turns | 14 | 9 | AR persists; twin gives up early |
+
+### VERDICT = **MIXED, and the resolve gate is B-bound**
+Two **stacked** deficits: (A) a large **decode-mode-specific edit-commitment collapse** — identical weights commit
+46/48 edits AR-decoded vs 12/48 diffusion-decoded, so the twin's 75 %-empty failure is a FLARE-K=1 decode artifact,
+**not** the SFT data; and (B) a **binding SFT-capability ceiling** — even with full committal, AR resolves only 7/48
+(≪12 floor; 39/46 AR edits are wrong; astropy/sphinx/scikit/xarray/pytest/pylint/requests = 0 in BOTH arms). Because
+PRIMARY resolve@1 is AR≈twin (both sub-floor, p=0.125), **the campaign blocker is capability/data (B), not decode.**
+The decode deficit (A) is real and would roughly double the twin toward its AR twin, but that ceiling is 7/48 — still
+sub-floor. In this SWE regime the K=1 twin is **both weaker and 8.9× slower** than AR (its only rationale, K>1 speed,
+is unavailable until entry clears).
+
+### RANKED LEVERS
+1. **PRIMARY — lift the capability ceiling (B):** data scale-up (USER_LEVER_BELT / Opus tranche-2) + longer-seq
+   training + trajectory-shape/front-truncation fix. Binding constraint; lifts BOTH decode modes; highest EV.
+2. **SECONDARY (diffusion-track only) — recover committal (A):** decode policy on edit spans, two-stream SFT at
+   8192-with-packing, K-curriculum on commitment. Necessary for a diffusion twin to match its AR self, **insufficient
+   alone** (still sub-floor); do with/after lever 1, only if the diffusion serving path is still wanted.
+3. **Re-run the entry gate after the ceiling lifts.** K stays gated-OUT at entry (McNemar powerless < 12).
+
+**AR-vs-stock-N=50 (marginal only):** AR-SFT 7/48 (14.6 %) vs stock-AR 19/50 (38.0 %); **C46 ∩ N50 = ∅ (disjoint)** +
+stock-vs-SFT weights — two confounds, no apples-to-apples claim.
