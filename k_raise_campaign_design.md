@@ -562,3 +562,43 @@ is unavailable until entry clears).
 
 **AR-vs-stock-N=50 (marginal only):** AR-SFT 7/48 (14.6 %) vs stock-AR 19/50 (38.0 %); **C46 ∩ N50 = ∅ (disjoint)** +
 stock-vs-SFT weights — two confounds, no apples-to-apples claim.
+
+## STATUS(2026-07-10) — STEP 5 FORENSICS: committal-collapse mechanism NAMED — **context-window exhaustion, not a quit**
+
+Executed the **Forensics** phase (CPU-only, no GPU, no engine change) of the K1-committal method: turn-by-turn paired
+diff of `qwen_trace.json` + `proxy.log` across the frozen C46 pool (N=48, identical SWE-SFT weights, AR-native vs FLARE
+hybrid_clean K=1). Full write-up + scripts: `runs/k_gate_c46/K1_COMMITTAL_ANALYSIS.md`.
+
+**Headline — the "clean quit" label was wrong.** The twin does not voluntarily stop and does not emit an early
+EOS/end-of-turn instead of an edit. Terminal-cause tally over 48 twin episodes: **36/48 = CTX_OVERFLOW_400 at the frozen
+32768 wall**, 12/48 loop-halt (exit 1), **0/48 voluntary quits**. The "36 empty patches" == the 36 context deaths. AR:
+39/48 completed-with-edit, only 1/48 terminal overflow. Every death carries the byte-identical signature
+`prompt at least 32516 + 253 output = 32769 = cap+1`.
+
+**Proximate cause — argument-under-grounding on `read_file`.** Same weights, tools, envelope, harness; the twin fills
+the window faster because it drops the `limit` argument. Population read-arg grounding: **AR emits `limit` on 243/348
+(69%)** reads; **twin on only 38/251 (15%)** → **84% of twin reads run to EOF**, adding +5–7k tokens/turn and saturating
+32768 in a **median 7.5 turns** (min 3) — before localize+edit. Cleanest paired frame (matplotlib-25122, AR-resolved):
+turn-2 same file, **AR `read(off=410, limit=50)`** → survives to edit@T10 (resolved); **twin `read(off=423, no-limit)`**
+→ 565-line EOF read → 32,516 → 400. This is the 0.238-top-1 argument-grounding crux made concrete: the twin won't
+commit the numeric `limit`/`offset` it can't ground, so it defaults to the unbounded read.
+
+**Terminal trigger + AR's escape.** The qwen-code proxy handles overflow by halving `max_tokens` (8127→…→253) and the
+last rung lands one token over the cap (off-by-one). AR survives the same overflow because its windowed reads keep the
+prompt low enough for the ladder to fit **and** qwen-code client-side history-compression fires near the cap
+(AR input_tokens drops 32,263→21,461 mid-episode); the twin's prompt is already pinned at 32,516, above either escape.
+
+**Hypothesis tally (vs the pre-registered H-space):** H1 (early EOS) **REJECTED 0/48**; H3 (thinking-exit) **REJECTED**;
+H4 (harness reads output as completion) **REJECTED** (exit-0 is error-surfacing after the retry ladder, not a completion
+read); H2 **REJECTED as literally stated but CONFIRMED in spirit** — the twin under-grounds the *arguments*, not the tool
+call; **NEW dominant mechanism H5 = context exhaustion via arg-under-grounding × 32768 envelope, 36/48.**
+
+**What this changes.** The **edit-commitment collapse (A) is real but was mislabelled** as a decode-time EOS/termination
+bias. It is an infra/argument-grounding artifact, so the implied fix is **not** an EOS-penalty/min-turn decode lever.
+The **B-bound capability-ceiling verdict is UNCHANGED** (AR commits 46/48 yet resolves 7/48; 39/46 AR edits wrong) — this
+forensic does **not** reopen the entry gate. But it reprioritises the cheap diagnostic levers, ranked smallest-first for
+the REPRO+CANDIDATE steps (not run here): (1) **fix the retry-ladder off-by-one + raise `max_model_len`** (arm-neutral,
+zero model change — highest-EV, purely diagnostic); (2) **server-side read-window clamp / decode prior on `limit`**;
+(3) **argument-grounding retrain** (the durable fix, folds into the §B trajectory-shape lever). Guardrail for CANDIDATE:
+recovered committal that emits *wrong* patches is not a win — resolve@1 is the truth; expect levers 1–2 to reveal the
+twin's true capability rather than lift resolve materially.
