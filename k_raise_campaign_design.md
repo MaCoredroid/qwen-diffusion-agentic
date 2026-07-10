@@ -602,3 +602,42 @@ zero model change — highest-EV, purely diagnostic); (2) **server-side read-win
 (3) **argument-grounding retrain** (the durable fix, folds into the §B trajectory-shape lever). Guardrail for CANDIDATE:
 recovered committal that emits *wrong* patches is not a win — resolve@1 is the truth; expect levers 1–2 to reveal the
 twin's true capability rather than lift resolve materially.
+
+## STATUS(2026-07-10) — STEP 5 REPRO (GPU): committal collapse **causal-isolated to the diffusion decode**
+
+Executed the **REPRO** phase (GPU): served the twin on the frozen C46 config (FLARE `hybrid_clean` K=1, mask 248077,
+`max_model_len` 32768, gmu 0.74) and replayed **5 byte-exact divergence-point proxy dumps** (the requests that produced
+the fatal unbounded read) at the frozen envelope (temp 0.6 / top_p 0.95 / top_k 20), `N=64`/prompt, + a temperature sweep,
+a temp-0 determinism probe, and a **same-weights AR-decode control** (`careful_live_grammar`, `flare=0`). One GPU tenant,
+server torn down (GPU→baseline). Full write-up + raw JSON: `runs/k_gate_c46/K1_COMMITTAL_ANALYSIS.md` (REPRO section).
+
+**Headline — flip ONLY the decode paradigm, same weights/prompts/envelope:**
+
+| pooled (5 prompts × N=64) | read_file | reads WITH `limit` | **unbounded reads** | EOS-quit |
+|---|--:|--:|--:|--:|
+| twin — hybrid_clean (diffusion) | 320/320 | 34/320 (10.6%) | **286/320 = 89.4%** | **0** |
+| same weights — AR decode | 306/320 | 306/306 (100%) | **0/306 = 0.0%** | **0** |
+
+The diffusion decode drops the `read_file` window args on **89%** of reads (corroborates the forensic pop. 84%); the
+**identical weights AR-decoded drop them on 0%** and never overflow. Two sub-modes reproduced: offset-without-limit
+(matplotlib-25122, 39/64) and whole-file (sympy/django-12273/matplotlib-20859, 64/64). When `limit` *is* emitted it is a
+tight correct window; the greedy modal call grounds `offset=410,limit=30` — the same window AR uses. Divergence prompts
+already sit at **28.9–30.2k / 32768** (residue of earlier unbounded reads), so one dropped arg overflows.
+
+**H1/H3/H4 dead at the engine level (N>800).** read_file on 320/320 replays, 0 NO_TOOL/EOS; engine `stop_reason` over 818
+`hybrid_clean` decodes = **806 complete_tool_call, 4 max_new_tokens, 0 EOS** (no forced `tool_choice` — the model was free
+to quit and never did). **Temperature is not the lever:** unbounded rate ≈0.83–0.89 flat across temp {0,0.2,0.4,0.6}
+(0.89 at greedy), and temp-0 "greedy" is **non-deterministic** on this path (drops `limit` 11/16 even at temp 0).
+
+**Two serving-path findings:** (i) `hybrid_clean` does **not** expose per-token logprobs (HTTP 500 `list index out of
+range` on output-logprobs and `prompt_logprobs`) — the per-position EOS-vs-toolcall logprob probe is unavailable on the
+diffusion path; substituted engine `stop_reason` telemetry + resampling frequency. (ii) `hybrid_clean` is non-deterministic
+at temp 0 (byte-parity cert regime not turn-reproducible on the served path).
+
+**Verdict.** The empty-patch collapse (locus **A**) is a **diffusion-decode argument-under-grounding**, causal-isolated:
+same weights AR-decoded ground the window 100%. It is **decode/conversion-side, not weights (B) and not temperature** — so
+the smallest CANDIDATE levers are (1) **server-side read-window clamp when `limit` absent** (arm-neutral, zero model change,
+directly kills the 89%), (2) retry-ladder off-by-one fix + raise `max_model_len` (both arms, diagnostic), (3) durable:
+argument-grounding in the diffusion conversion / K-curriculum value guard, or AR-decode fallback for value spans. **Guardrail
+unchanged:** committal recovery is B-ceiling-bounded (AR commits 46/48, resolves 7/48; 39/46 wrong) — REPRO explains/isolates
+A, it does **not** lift resolve or reopen the entry gate. No promotion; the monitor takes the candidate to the cert path.
