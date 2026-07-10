@@ -452,3 +452,68 @@ passing rung with twin@K1 intact.
 base+adapter paths; `k_raise_pool_manifest.json` sha + the three intersection asserts = 0; decode flags (γ, k_max);
 value-projection audit JSON; the McNemar `(b,c)`+p at both seeds; the L1-SWE census `f_value`/entropy. Commit + push each
 artifact to origin/main with narrated reasoning ([[qwen-diffusion-commit-workflow]]).
+
+---
+
+## STATUS(2026-07-10) — STEP 5 EXECUTED: Tier1-C46 twin@K1 ENTRY GATE — ENTRY BAR **NOT MET** (3/48 < 12)
+
+Monitor-dispatched. Ran the §1.1 entry precondition: the SWE-SFT primary twin@K1 (M_swe_S = merged-RL-v2 +
+SWE-SFT arm-1 + Run-1 two-stream re-conversion, decoded **K=1 hybrid_clean**, FSM values) over the **fresh
+Tier1-C46** slice, 48 episodes through qwen-code on the FLARE vLLM engine, official swebench images + **official
+`swebench.harness.run_evaluation` docker scoring**, frozen diffusion envelope (temp 0.6 / top_p 0.95 / top_k 20,
+NO presence_penalty), turn cap 75, empty-patch re-drive retries=1, seed base 1234, c=4. **NO K>1 work** (K-curriculum
+is a separate decision on this gate). Wall 12968 s (3.6 h), 13.33 eps/GPU-h. Heavy artifacts gitignored under
+`runs/k_gate_c46/` (`report.json`/`report.md`/`build_report.py`, per-episode `diffusion/shard_*/verified/per_task/*/
+runner_metadata.json`, merged `diffusion/predictions.jsonl`, official `diffusion/scoring/*.c46_twinK1.json`).
+
+### PRIMARY — resolve@1 vs the ≥12 power floor
+- **resolved = 3/48 (6.2 %)** — `resolved_ids = [django-11163, django-12193, django-13410]` (all django). **Entry
+  floor = 12** (≈26 %, the level at which McNemar has power to detect a 3–4 resolve loss).
+- **VERDICT = INCONCLUSIVE-BY-POWER — entry bar NOT met.** Per §1.1: a twin resolving 3/48 cannot power a paired
+  par gate (you cannot lose resolves you never had), so **do NOT spend K rungs** on this base. This is **not a KILL**
+  (reframe-1: a floored entry costs nothing — the K=1 twin is intact and ships as the deliverable of the certified
+  loop; §4/step-4 anchor 50/63 + serving byte-cert already PASS). The K-track does **not** proceed; the SWE-SFT base
+  must lift **edit-commitment** first (escalate per `runs/swe_datagen_s1/USER_LEVER_BELT`).
+
+### Failure-mode breakdown vs the N=50 taxonomy (the question: did SWE-SFT move the loop-before-edit failure?)
+Answer: it moved the *loop shape* but **not** the *edit-commitment outcome*. SWE-SFT converted "loop forever then
+halt empty" into "cleanly quit early, still empty" — the empty-patch rate is essentially unchanged.
+
+| signature | twin@K1 C46 (N=48) | pre-SFT RL-v2 w2 (N=50) | read |
+|---|---:|---:|---|
+| resolved | **3** (6.2 %) | 2 (4 %) | +1 — within noise, NOT off the floor |
+| empty patches | **36** (75 %) | 35 (70 %) | **unchanged** — the gating deficit |
+| edit committed (non-empty) | 12 | 15 | slightly fewer episodes edit at all |
+| resolved-given-edit | **3/12 (25 %)** | 2/15 (13 %) | when it DOES edit, decent conditional resolve |
+| loop-halts (exit 1) | **12** | 26 | halved — fewer pathological loops |
+| clean exit-0 | **36** | 10 | **3.6× more** — model now cleanly "declares done" |
+| clean-exit-0 → **no patch** | **29** | — | the new dominant failure: quit-before-edit |
+| median turns | **9** | 25 | model gives up far earlier (not looping) |
+
+Mechanism: 29/48 (60 %) episodes exit cleanly (exit 0) convinced they are done **without ever committing an edit**;
++7/48 loop-halt empty = 36/48 empty. SWE-SFT taught the model to **stop looping** but not to **commit an edit**. The
+loop-before-edit failure became **give-up-before-edit**. Edit-commitment, not loop-halting, is the deficit that gates
+SWE resolve — and it is what the K-track has no lever over (K raises decode speed, not edit propensity).
+
+### Kill-gate + audit summary
+- **KILL-D1 (leakage) — CLEAN.** `data/swe_kraise_c46_pool/pool_manifest.json` `KILL_D1_PASS=true`; all asserts pass
+  (`Tier1_C46 ∩ {train, w2_n50, gate_ladder_5} = ∅`, `Tier1_C46 ⊂ Tier1-100`, no duplicates). pool_sha256
+  `49d8f46d…`. n=48 (Tier1-100 ∖ (w2_n50 50 ∪ gate_ladder_5), the pristine complement).
+- **KILL-3 (value-projection tripwire) — NOT CLEAN, but non-verdict-bearing.** The served engine logged
+  `projected_value_tokens_exact` (== `value_projection_events`, "value tokens the grammar OVERWROTE, MUST be 0")
+  nonzero on **4/1169 requests (0.34 %)** — values [10,1,1,1], 13 events total. This is **projection-immune for the
+  docker-scored resolve@1 PRIMARY** (a phantom value token still yields a real patch that real tests adjudicate — no
+  phantom-resolve mechanism exists on a behavioral gate), so the 3/48 verdict is uncontaminated. It **is** a
+  served-engine correctness note that WOULD contaminate a K-track tok/fwd/exact-args measurement — flagged for repair
+  before any adaptive-K rung (moot while the entry bar is unmet). Step-4's anchor/serving certs (83 turns) were 0/0;
+  this larger 1169-request SWE surface exposed the 4-request edge.
+- Scoring integrity: `error_instances=0`, `completed=12 / unresolved=9 / resolved=3 / empty=36 = 48`. Serving health:
+  decode_mode=hybrid_clean True, FLARE gate True, mask 248077 present True, 1169 hybrid_clean reqs (K=1, ~0.95
+  tok/denoise-step confirmed). Spot-checks: resolved django-11163 = genuine 570-byte diff to `forms/models.py`;
+  empty django-11749 = genuine loop-halt-no-patch even after the re-drive (not a harness extraction bug).
+
+**Bottom line (honest):** the SWE-SFT+conversion twin@K1 is byte-serving-certified and a strict superset of the AR
+arm on the tool-call anchor, but end-to-end it resolves only **3/48** on the pristine Tier1-C46 slice — **below the
+≥12 entry floor**. SWE-SFT did not close the empty-patch / edit-commitment gap; it reshaped the loop failure without
+producing edits. **The K-raise campaign is gated OUT at entry** (INCONCLUSIVE-BY-POWER, not a KILL); the next lever is
+the SWE-SFT/datagen edit-commitment escalation (USER_LEVER_BELT), not K.

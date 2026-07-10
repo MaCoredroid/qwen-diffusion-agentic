@@ -170,3 +170,24 @@ offline capture ~3 min + server boot ~1.5 min + online client ~40 s. Artifacts u
 **Gate readiness:** twin@K1 anchor+serving certified. Step 5 = 46-episode Tier1-C46 twin@K1 through qwen-code on the
 FLARE engine (official swebench images + docker scoring, frozen envelope, entry bar ≥12/46) is the next, separate
 step. NO K>1 work (K-curriculum is a separate decision on the gate result).
+
+---
+
+## STATUS(2026-07-10) — STEP 5 EXECUTED: Tier1-C46 twin@K1 ENTRY GATE — ENTRY BAR **NOT MET** (3/48 < 12)
+
+Monitor-dispatched. Ran step 5 (the §1.1 entry precondition) on M_swe_S twin@K1: 48 pristine Tier1-C46 episodes via
+qwen-code on the FLARE engine, official swebench images + official docker scoring, frozen diffusion envelope, K=1
+hybrid_clean, turn cap 75, seed base 1234, c=4. Wall 3.6 h / 13.33 eps/GPU-h. **NO K>1 work.** Full result +
+failure-mode breakdown in `k_raise_campaign_design.md` STATUS(2026-07-10); heavy artifacts gitignored under
+`runs/k_gate_c46/`.
+
+- **resolved = 3/48 (6.2 %)** vs entry floor **12** → **INCONCLUSIVE-BY-POWER — entry bar NOT met** (not a KILL; the
+  K=1 twin ships intact). **Do NOT spend K rungs.**
+- **Failure mode:** SWE-SFT reshaped the loop failure (loop-halts 26→12, median turns 25→9) but **did NOT** close the
+  edit-commitment gap — empty patches **36/48 (75 %)**, ~unchanged from the pre-SFT 35/50; 29/48 cleanly quit
+  (exit-0) with no patch. Only 12/48 commit any edit; 3/12 (25 %) of those resolve.
+- KILL-D1 leakage CLEAN (pool_sha256 `49d8f46d…`, all asserts ∅). KILL-3 value-projection tripwire NOT clean
+  (4/1169 requests, 13 events) but **projection-immune** for the docker-scored resolve verdict; flagged for repair
+  before any future K-track tok/fwd measurement.
+- **Next lever = SWE-SFT/datagen edit-commitment escalation (USER_LEVER_BELT), NOT K.** D2 open item (N=5 AR SWE
+  resolve@1) and the M_swe_T control-twin arm remain the untested alternatives before conceding the SFT base.
