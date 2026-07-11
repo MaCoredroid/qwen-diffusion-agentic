@@ -641,3 +641,49 @@ directly kills the 89%), (2) retry-ladder off-by-one fix + raise `max_model_len`
 argument-grounding in the diffusion conversion / K-curriculum value guard, or AR-decode fallback for value spans. **Guardrail
 unchanged:** committal recovery is B-ceiling-bounded (AR commits 46/48, resolves 7/48; 39/46 wrong) — REPRO explains/isolates
 A, it does **not** lift resolve or reopen the entry gate. No promotion; the monitor takes the candidate to the cert path.
+
+## STATUS(2026-07-11) — STEP 5 CANDIDATE (CPU/docker): read-window clamp — mechanism **CONFIRMED**, fix **PARTIAL**
+
+Executed the **CANDIDATE** phase (CPU/docker only, no GPU, no engine change, no server booted for scoring). The 8
+divergence instances were replayed through the twin with the experimental **read-window clamp shim** active
+(`proxy_readclamp.py`, `LUMO_PROXY_READCLAMP_LIMIT=100` — inject `limit=100` on any `limit`-less `read_file`;
+arm-neutral, zero model change) at the frozen C46 envelope + per-shard seeds. Clamp fired **50×**. Scored via the
+**OFFICIAL swebench 4.1.0 harness** (all 8 ids are SWE-Verified → the `datagen_score.sh` official path, byte-identical
+to the gate's `score_all.sh`; no gym-source id → SWE-Bench-Fork not exercised). **Independently re-scored → identical.**
+Full write-up + per-instance table: `runs/k_gate_c46/K1_COMMITTAL_ANALYSIS.md` (CANDIDATE section).
+
+**Delta vs the SAME 8 gate results (gate = 0/8 committal, 8/8 CTX_OVERFLOW, 0/8 resolve):**
+
+| metric | gate (twin@K1) | candidate (clamp) | delta |
+|---|--:|--:|--:|
+| committal (non-empty scored patch) | 0/8 | **3/8** | +3 |
+| CTX_OVERFLOW terminal (32768 wall) | 8/8 | **4/8** | −4 |
+| **RESOLVE@1 (truth)** | 0/8 | **1/8** | +1 |
+
+Committals: matplotlib-25122 (**RESOLVED** ✅), django-16256 (edited then hit wall, unresolved), matplotlib-20859
+(unresolved). Candidate terminal tally: 4 CTX / 2 error_during_execution / 2 agent_gave_up(timeout) vs gate's 8/8 CTX.
+
+**Verdict — mechanism CONFIRMED-causal, fix PARTIAL.** Neutralising the proximate cause (unbounded reads) turned the
+gate's 0-committal/8-CTX-death cohort into 3 committals, 4 CTX deaths, 1 resolve — **direct causal confirmation of the
+H5 read-arg-under-grounding → CTX-exhaustion mechanism** (bound the reads and episodes survive to commit). But PARTIAL:
+(i) **4/8 still die of CTX** (clamp cuts per-read growth but many clamped reads still accrete to the cap; every death
+still shows the `32516/253/32769` cap+1 signature); (ii) the shim **introduced new failure modes** — 2 exec-errors + 2
+upstream **timeouts** — so 8→4 is not all clean recovery; (iii) **resolve barely moves and stays below AR** (AR resolves
+**3/8** on these same ids — matplotlib-25122, sympy-13647, sympy-23262 — the clamp recovers only 1; the other 2
+committals are committed-but-wrong). The **B-ceiling guardrail holds exactly as predicted**: lifting committal (A) lifts
+resolve only marginally and cannot exceed the SFT ceiling. The clamp is a valid **diagnostic** (lets the twin's real
+capability show instead of dying at the wall) and a serving-layer floor — **not** a resolve fix, and it does **not**
+reopen the entry gate.
+
+**Promotion recommendation.** Promote off the experimental shim onto the **standard cert path**, NOT straight to
+production (it mutates tool-call args in the loop): **(1) matched-20 anchor** (§2.3, McNemar net-loss vs frozen anchor
+not significant, with the clamp in the loop) **+ (2) A6 online==offline spot-cert** (served==offline under the shim).
+Both PASS → production. Arm-neutral serving-side intervention ([[diffusion-promotion-discipline]]); the **durable** fix
+stays argument-grounding in the conversion / K-curriculum value guard ([[retrain-freely-rule]]).
+
+**SEPARATE MUST-FIX (restated, independent of the clamp): harness retry-ladder off-by-one.** The candidate run proves
+it is still live — all 4 CTX deaths carry the byte-identical **`253 out / 32516 prompt / 32769 = cap+1`** signature.
+Ladder bottoms at `max_tokens=253` while prompt is pinned at 32,516 and the harness prompt estimate reads 1 low, so the
+final retry lands deterministically one token over. Fix both arms: floor the last rung at `cap − prompt − margin` (clamp
+`max_tokens` so `prompt+max_tokens ≤ cap`) and correct the estimate. Orthogonal to the clamp (clamp reduces *how often*
+the cap is reached; this fixes *what happens when it is*). Highest-EV, zero model change, symmetric.
