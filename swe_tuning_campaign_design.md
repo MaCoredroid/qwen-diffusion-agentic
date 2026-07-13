@@ -1032,3 +1032,28 @@ add merged-AR only if the pair diverges.
   this campaign** (D1 already GO at yield 0.25) to inject SWE-capable base weights and re-convert, and/or
   prioritize the decode-loop loop-halt fix. Only *this* outcome re-justifies the training spend.
 - Either way, N=50 is the cheapest experiment (~4 GPU-h) that converts the n=5 tie into a decision.
+
+---
+
+## STATUS(2026-07-13) — ITERATION-2 twin@plain CERTS (#128 part 2): preservation PASS + read-clamp CERTIFIED
+
+Two certs on **twin@plain** (`models/qwen3.5-9b-fastdllm-mswe2-S-twinK1-vllm-bf16`, the iteration-2
+re-conversion of the windowed-SWE-SFT primary), mirroring the iteration-1 #29-protocol Stage-A cert
+byte-for-byte except the model path. Artifacts (gitignored) under `runs/iter2_cert_probe/`.
+
+**PART 1 — preservation cert (A6/A7 online==offline, mirror of `stage_a_cert_mswe_S`).** Same matched-20
+reference, same A6 (10 single-turn, **cold/fresh APC**) + A7 (10 multi-turn, **warm APC**) turnset, offline
+in-process FLARE hybrid_clean LLM vs launcher-booted AsyncLLM server (:9952, mask 248077, canvas 32).
+**Result: 20/20 token-identical, 20/20 BYTE-identical, 20/20 quality-identical online==offline, zero
+value-projection, no divergent turns** — matches the iteration-1 bar (also 20/20). **VERDICT PASS.**
+
+**PART 2 — read-clamp standard cert** (`runs/k_gate_c46/proxy_readclamp.py`, injects `limit` into
+`read_file` calls missing a positive limit; byte-identical passthrough otherwise). (a) **Anchor
+non-perturbation:** matched-20 anchor routed through the ENABLED clamp proxy (limit=100) vs the no-clamp
+online run — the anchor has zero read_file tools so the clamp fires **0×**; **5/5 byte-identical**,
+exact/valid retained. (a′) **read_file arg-exactness:** all **50 real clamp fires** from the C46 candidate
+run rewrite ONLY `limit` (offset/file_path byte-identical), **0 violations**; `test_readclamp.py` **10/10**.
+(b) **A6-style online==offline WITH CLAMP ACTIVE (5 turns):** **5/5 byte + 5/5 quality identical** vs the
+offline reference. **VERDICT: shim CERTIFIED for gate use** — the C46 re-gate (#129) runs twin@plain WITH clamp.
+
+GPU: RTX 5090, one server at a time, server DOWN + GPU idle at exit. Report: `runs/iter2_cert_probe/REPORT.md`.

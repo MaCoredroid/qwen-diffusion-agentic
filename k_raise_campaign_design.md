@@ -1628,3 +1628,40 @@ parallel span commit at SWE-Verified parity). Pre-registered inputs the research
 
 Deliverable: SECTION W (research findings + prioritized experiment ladder with per-rung budget and kill rules),
 then execute the top rung. The C46 re-gate / quality track proceeds in parallel and is unaffected.
+
+---
+
+## STATUS(2026-07-13) — V1-PROBE EXECUTED (#128 part 2): DIRECTIVE-3 rule output = V-TRACK CLOSED (superseded by DIRECTIVE-4)
+
+The V2 dominance probe was **re-run verbatim on twin@V1** (`v2_dominance_probe.py`; same spans/grid/battery,
+only the model object changed). Probe-loadable object = the fastdllm-HF form = re-conversion base
+`mswe-S-iter2-merged` **+ the V1 copy-span-infill conversion adapter** (PEFT `merge_and_unload`, scale 2.0);
+the exported vllm twin cannot be probed (official Qwen layout, mask stripped). Canonical battery **identical to
+the iteration-1 baseline**: 40 keeper + 20 C46 = 60 turns, **889 spans, same turn_id set + span count**
+(`--c46-turns 20 --span-cap 35`; C46 dumps unchanged since Jul 9), 1778 forwards, ~25 min GPU. Artifacts
+(gitignored): `runs/iter2_cert_probe/v1_probe/` (`v1_probe_verdict.json`, `interior_exactness.json`,
+`v2_probe_report_twinV1.json`; a first pass at the default `--span-cap 60` = 974 spans is kept as `*_cap60.*`).
+
+**Preservation precondition — twin@V1 K=1 serving sanity: PASS.** 3 matched anchor turns on the twin@V1 FLARE
+hybrid engine: valid 3/3, exact_args 3/3, **byte-identical to twin@plain online 3/3** → the V1 objective did
+**not** break K=1 serving.
+
+**DIRECTIVE-3 decision rule, applied verbatim (both conditions required):**
+| condition | bar | iter-1 baseline | **twin@V1 (canonical, same battery)** | met? |
+|---|---|---|---|---|
+| (i) interior parallel-masked copy exactness | **≥0.80** | 0.107 (design-reported 0.087) | **0.117** (+0.010; span-mean 0.16→0.18; the cap-60 first pass read 0.133) | **NO** |
+| (ii) dominance fire on copy-token mass | **≥0.40** | 0.0022 | **0.0037** (+0.0015; whole-span fire 0.45%→0.55%) | **NO** |
+
+**Both gates MISS by ~two orders of magnitude.** The lift is **small and directionally correct** but the
+failure structure is **unchanged**: `byte_mismatch` **57%** of mass (still the wall), verify-reject **0.0**
+(safety intact), value-region tok/fwd **1.00×**, mining healthy (gold∈C **594/594**), pos-0/verify clean-left
+≈0.99/0.998 (still transcribes near-perfectly **sequentially**, almost never **in parallel**). **The
+pre-registered DIRECTIVE-3 rule therefore returns V-TRACK CLOSED** (a big-but-insufficient lift is still CLOSED).
+
+**Disposition: SUPERSEDED by DIRECTIVE-4 (same day, above).** The user chose NOT to act on the pre-registered
+closure and instead opened a dedicated research+design phase (SECTION W): the measured **verify asymmetry**
+(near-perfect sequential/verify vs near-zero parallel emit) reframes the result as *the whole-span-on-masked-canvas
+commit rule was wrong / the in-conversion dose too small*, not a proven capability ceiling. Net: the DIRECTIVE-3
+**rule output is CLOSED**, but the **V-track stays open for the SECTION-W redesign** per DIRECTIVE-4. Either way
+**twin@plain remains the shipping candidate**, the C46 re-gate (#129) runs twin@plain WITH the certified
+read-clamp, and no V2-decode ship happens on current evidence. GPU-h this stage: ~1.4 (server DOWN + GPU idle at exit).
