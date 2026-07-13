@@ -1585,3 +1585,21 @@ V-track re-enters **only** folded into the iteration-2 re-conversion (V1 as the 
 where V1 can close the measured 0.087→0.95 joint-exactness gap; **re-run this exact probe on the iteration-2 twin before
 any V2 decode ship.** Until then, the census verdict stands unchanged: ship twin@K1, value path K=1. GPU-h this probe:
 ~1.1 (server DOWN + GPU idle at exit).
+
+---
+
+## DIRECTIVE-3(2026-07-13) — USER ADJUDICATION OF THE V2-PROBE KILL: PIGGYBACK V1 ARM
+
+The V2 probe fired its pre-registered kill (0.22% of copy mass vs the ≥40% bar; STATUS(v2-probe), d8e3519).
+Presented options: (a) piggyback V1 arm on the required iteration-2 re-conversion, (b) full standalone V1
+campaign, (c) honor the kill fully. **USER CHOSE (a) — piggyback.**
+
+Terms (registered): the iteration-2 re-conversion step (#128) runs TWO arms — **twin@plain** (the standard
+certified path; unchanged, remains the shipping candidate) and **twin@V1** (same conversion with the SECTION-V
+copy-span joint-infill objective folded into L_diff; ~1.2 GPU-h marginal). Then the V2 DOMINANCE PROBE RE-RUNS
+verbatim on twin@V1. Decision rule, pre-registered now: the V-track PROCEEDS only if (i) interior
+parallel-masked copy exactness lifts 0.087 → ≥0.80 on the probe's span battery AND (ii) dominance fire rate
+clears the original ≥40% copy-mass bar; anything less = V-track CLOSED with the census→probe→piggyback evidence
+chain, twin@plain ships, no further V spend. twin@V1 must additionally pass the SAME preservation/KILL-T1
+anchors as twin@plain before any probe result counts (a V1 arm that breaks exactness is dead regardless of speed).
+No standalone V1 campaign is licensed by this directive.
