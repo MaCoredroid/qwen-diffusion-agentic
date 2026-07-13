@@ -1,0 +1,17 @@
+{
+ "n_requested": 116,
+ "n_present": 116,
+ "n_missing": 0,
+ "missing": [],
+ "n_gym": 78,
+ "n_verified": 38,
+ "concurrency": 4,
+ "base_seed": 1234,
+ "shard_sizes": [
+  29,
+  29,
+  29,
+  29
+ ],
+ "dataset_json": "/home/mark/qwen_diffusion/runs/swe_datagen_s1/opus_tranche2/batch/dataset.json"
+}
