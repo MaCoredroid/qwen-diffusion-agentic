@@ -1,0 +1,23 @@
+diff --git a/third_party/lmflow/pipeline/finetuner.py b/third_party/lmflow/pipeline/finetuner.py
+index b73a469..f5d174a 100644
+--- a/third_party/lmflow/pipeline/finetuner.py
++++ b/third_party/lmflow/pipeline/finetuner.py
+@@ -551,6 +551,18 @@ class Finetuner(BaseTuner):
+         if data_collator is None:
+             data_collator = default_data_collator
+ 
++        # V1 copy-span joint-infill (k_raise_campaign_design.md SECTION V.1) — ENV-GATED, strict no-op
++        # unless FASTDLLM_V1_COPY_SPAN=1. arm A (the plain conversion) does NOT set this flag, so its
++        # code path and byte-reproducibility are unchanged. All V1 logic lives in scripts/v1_copy_span_infill.py.
++        if os.environ.get("FASTDLLM_V1_COPY_SPAN", "").strip().lower() in {"1", "true", "yes", "on"}:
++            import sys as _sys
++            _v1_dir = os.path.join(os.environ.get("QWEN_DIFFUSION_ROOT", "/home/mark/qwen_diffusion"), "scripts")
++            if _v1_dir not in _sys.path:
++                _sys.path.insert(0, _v1_dir)
++            from v1_copy_span_infill import wrap_collator_with_copy_span
++            data_collator = wrap_collator_with_copy_span(data_collator)
++            print("[fastdllm-train] FASTDLLM_V1_COPY_SPAN=1 -> copy-span joint-infill collator ACTIVE (arm B)", flush=True)
++
+         if training_args.use_customized_optim:
+             BaseTrainer = FinetuningTrainer
+             FinetuningTrainer = self.create_customized_optimizer(
