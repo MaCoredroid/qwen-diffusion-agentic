@@ -1665,3 +1665,285 @@ commit rule was wrong / the in-conversion dose too small*, not a proven capabili
 **rule output is CLOSED**, but the **V-track stays open for the SECTION-W redesign** per DIRECTIVE-4. Either way
 **twin@plain remains the shipping candidate**, the C46 re-gate (#129) runs twin@plain WITH the certified
 read-clamp, and no V2-decode ship happens on current evidence. GPU-h this stage: ~1.4 (server DOWN + GPU idle at exit).
+
+---
+
+# SECTION W — VERIFY-ASYMMETRY ADJUDICATION + THE DRAFT-AND-VERIFY LADDER (DIRECTIVE-4 deliverable)
+
+Appended 2026-07-13 to answer DIRECTIVE-4. Inputs: three commissioned research briefs (Angle A draft-and-verify,
+Angle B dedicated training regimes, Angle C pointer/conditioning mechanisms) **plus an adversarial verification pass
+that re-read and re-computed every load-bearing number from the raw records** —
+`runs/iter2_cert_probe/v1_probe/v2_probe_raw_twinV1.json`, `runs/v2_probe/v2_probe_raw.json`, both
+`interior_exactness*.json`, `v1_probe_verdict.json`, the probe script, and the model's attention-mask code
+(`models/qwen3.5-9b-fastdllm-mswe-S-merged/modeling.py`). Where a brief and the raw artifacts disagreed, **the
+artifact number wins and the correction is stated inline** — several headline claims (including one phrase inside
+DIRECTIVE-4 itself) did not survive and are corrected below. Same discipline as SECTIONS A–C/V: pre-registered
+kills, measured numbers only, honest ceilings. Nothing above this section changes: SECTION V's safety architecture
+(copy-assert, derived-lock, KILL-T1 zero tolerance, §C golden protocol, §7 leakage firewall) is inherited wholesale.
+**W replaces only two things: V2's commit rule (dominance-on-masked-canvas → pointer-draft + verify-accept) and
+V1's training regime (mixed in-conversion dose → isolated dose-response ladder).**
+
+## W.0 The adjudication — draft-and-verify IS the missing decode rule; it is NOT lossless by construction
+
+### W.0.a What the raw probe records already prove (re-computed this session, both twins)
+
+The V2/V1 probes logged per-position `verify_eq_gold`/`verify_eq_cand` arrays for all 594 in-window spans. Re-scored
+under a **write-the-candidate-in + one-forward-verify** commit rule instead of dominance-on-masked-canvas:
+
+| quantity (twin@V1 iter-2; iter-1 in parens) | measured |
+|---|---|
+| whole-span verify-clean, one forward, greedy accept | **570/594 = 0.960** (568/594 = 0.956) |
+| …on the same spans where dominance fired | 0.2–0.4 % → **a ~480× commit-rule reversal** |
+| error structure | 24 (26) spans with ANY error; 22 (24) exactly one token; **zero adjacent-error pairs** — point defects |
+| whole-32 clean measured vs independence a³² | 0.941 vs 0.923 — the a^L extrapolation is slightly *pessimistic* at this conditional |
+| multi-round spec-decode sim, gold-aligned candidate (teacher-forced oracle) | **17.58 (17.37) tok/fwd** on copy mass |
+| deployable stubborn-top-1 candidate | **7.40 tok/fwd**; whole-clean 517/594 = 0.870 span-count / **0.83 by mass** |
+| candidate mining | gold ∈ C on **594/594**; n_cand ≤4 for 82.5 %, ≤8 for 90.2 % (max 270) |
+| long-run mass | capped spans (run>32): 431, mean run 249, total 107,395 tok; max 1902 — long runs sustain multi-round blocks |
+| verify confidence proxy (pos-0) | mean 0.9773 / median 0.9992 / p10 0.9724 / 93.9 % ≥ 0.9 |
+
+Both twins give the same numbers — **the verify capability is already saturated and did not need V1.** The
+dominance rule was the wall, not a missing capability: DIRECTIVE-4 item 1's hypothesis is **CONFIRMED in
+direction.** Task #9 (`qwen35_specdecode_acceptance_result.md`) reads post-hoc as the same asymmetry from the other
+side: its *draft* used the broken parallel-masked capability (0.087) at the cost of a full 9B forward and its verify
+was fine — evidence **for** inverting the roles (draft = free CPU pointer, verify = the intact forward). External
+anchors: FreeDave (arXiv 2510.00294, training-free lossless dLLM draft-verify, up to **2.8×**), CopySpec/LLMA-class
+copy-reference speculation (2–3× on editing workloads). The engine pin already carries the needed primitives
+(variable-accept GDN state scatter `num_accepted_tokens` + `ssm_state_indices`, `dflash_drafter_plan.md`; APC
+never-remask bitwise gates, `lossless_apc_design.md`).
+
+### W.0.b The correction that changes the promotion path (adversarial pass, A1 — read before quoting any brief)
+
+**KILLED: "lossless by construction / KILL-T1 + golden protected by construction."** The probe's "verify" is NOT the
+serial K=1 commit conditional, so the Leviathan/Chen spec-decode theorem does not apply as invoked. Mechanism
+(code-level): `flare_two_stream_bool_mask` (`modeling.py:198`) sets `noisy_to_noisy_mask = ~q_clean & ~kv_clean &
+same_block` — noisy-stream queries attend **bidirectionally within the block**. The verify forward writes the whole
+candidate span in and re-scores, so the logits "verifying" position i attend to drafted tokens at positions ≥ i
+**including the token being verified**. Serial K=1 commits from the first-masked position with the suffix *masked*.
+Different conditionals, demonstrably: at pos-0 — the serial conditional — argmax==gold is **0.9865 (twinV1) /
+0.9916 (iter-1)**, while interior full-reveal verify is 0.9975/0.9973 (matched battery; the oft-quoted 0.9978 is the
+unmatched cap-60 arm). **DIRECTIVE-4's phrase "sequential/verify argmax 0.9978" conflates two quantities:
+sequential ≈ 0.987–0.992, full-reveal verify ≈ 0.997–0.998.** ("Clean-left re-score" in the briefs is a misnomer —
+it is full-reveal-within-block.)
+
+Consequence, registered as the new promotion rule: **pointer-draft + full-reveal-verify defines a NEW decode
+envelope. KILL-T1 exact_args and golden 19/50 must be RE-CERTIFIED empirically (W-2), never claimed by
+construction.** Mitigating measured fact: at pos-0 — the only like-for-like position — full-reveal changes argmax
+accuracy by ≈0 (twinV1 0.9865 vs 0.9865; iter-1 0.9916 → 0.9899), so the leak inflation is plausibly small in
+practice. That rehabilitates the *pricing*, not the losslessness theorem.
+
+### W.0.c The corrected math (what survives, at the serial-faithful anchor)
+
+- **Acceptance anchor = 0.987–0.992/token (serial conditional, greedy), not 0.9978.** Whole-32 span:
+  0.9865³² = **0.65** / 0.9916³² = **0.76** (vs 0.93 claimed in the briefs).
+- **Oracle multi-round re-priced: ~14.6–15.8 tok/fwd** on copies (vs 17.58 claimed); deployable stubborn-top-1
+  7.40 stands. Value-region ≈ 2.4–2.7×; **blended estimate ~1.6–1.8×** (vs shipped 1.06×), under the census S2
+  ceiling 2.98× (`992,727/(634,823/2.43+357,904/1.196) = 1.77×` reproduces exactly).
+- **Both pre-registered bars still clear without training**: fire ≈ 96 % of in-window copy mass at the verify
+  conditional (deployable whole-clean 0.87 span-count / 0.83 mass) vs the ≥40 % KILL bar; value-region ≥ the ~1.6×
+  worth-it floor.
+- **The one unmeasured quantity everything prices from:** every measured accept bit is *greedy argmax-match*. The
+  frozen-envelope acceptance **E[p̃(gold)] under temp 0.6 → top_k 20 → top_p 0.95 is unmeasured** — and the
+  multi-round sims are teacher-forced (post-rejection rounds reuse gold-prefix-conditioned bits), an oracle upper
+  bound. Rung W-0 exists to read exactly these.
+- **Dose-response re-baselined (A3):** the matched-battery V1 number is **0.1072 → 0.1168, +0.96 pp/400 steps**
+  (span-mean 0.161 → 0.181; `v1_probe_verdict.json`). The "+2.6 pp → 0.133" figure came from the cap-60 first pass
+  whose twinV1 arm used a *different span set* (670 spans) — not a matched comparison; struck. The strategic read
+  (massively underdosed vs the 0.80 bar) is unchanged; every W.2 slope argument uses +0.96 pp from 0.117.
+
+### W.0.d Verdict
+
+**Draft-and-verify is adjudicated the missing decode rule** — the cheapest, best-evidenced lever on the 64 %
+arg-value mass, recovering approximately what SECTION V priced V1 training to deliver (design 1.77×) for zero
+training spend — **and it is rung 1 of the ladder.** But it ships only through an *empirical* new-envelope
+certification (W-2), per [[diffusion-promotion-discipline]] (CONSTRAINED lane: copy-assert-gated commits, credited
+only against decode-only K=1 at the golden number). Training (W.2) and conditioning (W.3) are demoted to
+*acceptance-raisers and contingency*, entered on pre-registered triggers only.
+
+## W.1 THE EXPERIMENT LADDER (cheapest-decisive first; every rung pre-registered before spend)
+
+| rung | what | GPU-h | decides |
+|---|---|---:|---|
+| **W-0** | serial-faithful acceptance probe (training-free, HF-form, no engine change) | **1.5–2** | is the envelope tax small enough; is full-reveal verify a usable surrogate |
+| **W-1** | decode-loop prototype (engine value-branch, no training) | 3–5 | on-policy value tok/fwd ≥1.6×; KILL-T1 anchor + K=1 byte-cert |
+| **W-2** | new-envelope certification: golden 19/50 §C both gates + derived-byte audit | 4–6 | SHIP / revert |
+| W-3 (trigger T-a/T-c) | training ladder W.2 (B3 gym → B1/B2 dose-response) | ≤ ~30 worst | is emission certainty trainable at 5090 dose |
+| W-4 (trigger T-b) | conditioning boosters W.3 (C2/C3/C4 probes) | ~3–4 | can input-side alignment raise acceptance/fire |
+
+Decode-only path to a shipped rung: **~9–13 GPU-h.** Grand worst-case (all triggers fire): **~45 GPU-h.** Earliest
+decisive kill: **~2 GPU-h** (W-0). Triggers: **T-a** = W-0 kills on envelope tax → W.2 training becomes primary
+(with W-0's softmax logs as calibration data). **T-b** = W-2 ships but blended plateaus < 1.6× on-policy → W.3
+boosters. **T-c** = training also flat → W-B3 synthetic gym adjudicates trainable-vs-architectural, then stop clean.
+
+### W.1.a Rung W-0 — serial-faithful acceptance probe (~1.5–2 GPU-h, no training, no engine change)
+
+**Design (exact).** Extend `runs/iter2_cert_probe/v1_probe/v2_dominance_probe_twinV1.py` on the identical canonical
+battery (60 turns, 889 spans, span-cap 35, same turn_id set) with three changes:
+
+1. **Full 23k context window** — kills the 1792-token instrument artifact that excluded 4,859/15,656 = 31 % of copy
+   mass from the headline; far-source verify quality gets measured for the first time.
+2. **Three logged reads per span, full softmax (not binary match bits), warped by the exact engine sampler order
+   (temp 0.6 → top_k 20 → top_p 0.95):**
+   (a) *serial-faithful staged reads* — for position i: gold prefix clean, mask [i:L], read the first-masked
+   position. This IS the K=1 decode conditional. Stratified 8 log-spaced offsets per span (~4.8k forwards), full
+   per-position reads on any span whose stratified reads disagree with (b);
+   (b) *full-reveal verify read* (the deploy candidate, today's probe verify) — logging per-position divergence vs
+   (a): Δargmax rate and ΔE[p̃(gold)] at interior positions, not just pos-0. Free extra: log the same forward's
+   **clean-stream causal logits** — if those track (a), the two-stream architecture gives a leak-free verify surface
+   in one forward;
+   (c) *false-accept battery* (Angle C) — perturbed candidates: off-by-one offset, single-token substitution,
+   whitespace variant. Require P(full-span accept | wrong candidate) ≈ 0 under the chosen accept rule, else add a
+   prob floor and re-simulate.
+3. **Post-hoc rejection-sampling simulation at the frozen envelope** (accept d_i w.p. p̃_i(d_i); first rejection
+   samples the residual; re-mine; multi-round): report committed copy-mass tok/fwd under (i) serial-faithful bits =
+   ground truth and (ii) full-reveal bits = deploy rule. The (i)–(ii) gap **is the leak tax, measured.** Carry the
+   caveat: multi-round remains teacher-forced post-rejection (oracle upper bound) until W-1.
+
+**Pre-registered KILL/PROCEED.**
+- **PROCEED to W-1 iff ALL:** serial-faithful simulated commit ≥ **8 tok/fwd** on in-window copy mass; implied
+  blended ≥ **1.5×**; false-accept full-span rate **= 0** (post floor-tuning); serial-vs-full-reveal committed gap
+  ≤ **15 % relative**.
+- **KILL/re-price iff:** mean envelope acceptance ā = E[p̃(gold)] < **0.98/token** or implied blended < 1.5× — the
+  envelope tax was the hidden wall; trigger T-a, training ladder becomes primary.
+- **SURROGATE-FAIL iff:** the (i)–(ii) gap > 15 % — full-reveal verify is not a usable one-forward surrogate;
+  price a staged/clean-stream verify (changes v, re-run the economics) before any W-1 engineering.
+
+### W.1.b Rung W-1 — decode-loop prototype (~3–5 GPU-h incl. anchors, no training)
+
+Implement pointer-draft + verify-accept in the engine's value-body branch (`_hybrid_clean_step`, the CAD
+monkeypatch surface — R1 byte-exact certified): live n-gram miner (the probe's, run forward), draft written into
+the noisy-stream span slots (clipped at the `</parameter>` boundary the FSM knows, L ≤ bd 32), accept rule at the
+W-0-measured op-point with residual sampling, re-mask + re-mine after first rejection. Close the 67/594
+top-1≠gold ranking gap with re-mine-after-divergence or ≤8-row batched verify (covers 90.2 % of spans; batch-row
+width-32 latency on the GDN hybrid gets profiled here — per [[gpu-utilization-standard]], profile, don't guess).
+**GDN discipline is the main engineering risk:** rejected suffixes must never fold into the recurrent state — use
+the pin's variable-accept scatter; APC never-remask holds because only accepted==final tokens commit.
+**Report:** on-policy committed tok/fwd on C46 edit turns (the teacher-forcing caveat dies here), matched-20
+KILL-T1 anchor, K=1 byte-exact certificate re-run (feature-OFF path byte-identical — mandatory §5 rule).
+**KILL/pre-registered:** on-policy value-region tok/fwd < 1.6× ⇒ SPEED-FAIL soft stop (ship K=1, bank the probe);
+any KILL-T1 regression or accept-log violation ⇒ hard KILL. PROCEED ⇒ W-2.
+
+### W.1.c Rung W-2 — new-envelope certification (~4–6 GPU-h, eval-dominated)
+
+Full §C protocol on the W-1 artifact: (1) GOLDEN — vs banked stock-AR **19/50** on frozen `w2_n50` (McNemar exact,
+§C.4 alphas); (2) K-ISOLATION — vs twin@K1 same-seed paired; plus the V.3 derived-byte-identical audit (V-ON vs
+V-OFF, zero divergences over derived tokens) and exact_args matched-20 at zero tolerance. **Because W.0.b demoted
+losslessness, this rung IS the promotion event, not paperwork.** KILL: statistically below golden, or any derived
+byte drift ⇒ revert to K=1 serving; the probe evidence stays banked; escalate to W.2/W.3 as acceptance-raisers
+rather than ship.
+
+## W.2 The dedicated training regime (Angle B, re-baselined on the matched numbers) — rungs on trigger T-a/T-c
+
+**Dose honesty first.** V1's 400 mixed in-conversion steps supervised on the order of ~10⁵ span tokens (order of
+magnitude only — no counter persisted; trainer_state logs loss/lr) and moved the matched metric **+0.96 pp**
+(0.1072→0.1168). Published capability injections: dParallel ≈ **140M** self-distilled tokens (92k×256×6, LoRA
+r=32, LLaDA-8B → 8.5–10.5× step-compression at held accuracy; its critical ablation — certainty loss *without* the
+correct-only guard: 10.4× but accuracy 76→58 — maps directly onto KILL-T1); Fast-dLLM v2 ~1B tokens for the whole
+AR→BD adaptation. **~2–3 orders of magnitude underdosed — DIRECTIVE-4 item 2 corroborated.** (dParallel fine HPs
+are unverified-as-cited; spot-check before copying exactly.) The leading indicator is the **span-length frontier**
+(max L with whole-span exactness ≥0.9): currently **1** on both twins (whole-fire 0.917 @ len 1, ≤0.074 @ 2–3, 0 @
+≥4). Induction-circuit formation is abrupt, so kills key on the frontier, not linear extrapolation of token-pooled
+exactness. Per [[retrain-freely-rule]], the isolated phase below is licensed precisely because the mixed
+in-conversion dose was measured insufficient — do not let the twin@V1 checkpoint constrain the design.
+
+- **W-B3 — synthetic offset-copy gym (2–4 GPU-h, FIRST training rung — a decisive negative is available).**
+  5–10M tokens of random-token strings (len 2–64, no semantic prior — forces a pure offset circuit) at varied
+  distances (≤8k) inside realistic tool-call envelopes; whole-span parallel-masked joint CE; then 1–2M real
+  keeper-span tokens to bind. **KILL: synthetic whole-span exactness cannot exceed 0.8 @ L=8 by 8M tokens ⇒ the
+  failure is architectural (GDN two-stream), killing W-B1/W-B2 escalation for ~3 GPU-h.** Discard the adapter if
+  the real-span probe doesn't transfer (≥0.30 at bind end).
+- **W-B1 — flagship: isolated certainty-forcing self-distillation on deterministic copy-span targets.** Data:
+  twin K=1 emissions over the train-keeper pool's edit turns (leakage firewall verbatim — train keepers only, zero
+  eval-ring ids, KILL-D1 re-asserted). **Data-yield honesty (A6):** sequential-emission keep-rate is priced by the
+  serial conditional, ~0.78–0.86 per 18-token span at greedy (0.987–0.992¹⁸) and lower at the engine's temp 0.6 —
+  do NOT plan on "≈ all." Objective: decode-faithful structural mask (context clean, **whole span masked**, future
+  masked — the serve canvas, unlike V1's random-noise mixture); loss = joint CE + β=2 certainty (entropy @ T=0.5)
+  **only on argmax-correct positions** (the load-bearing guard); 10 % plain-conversion replay. LoRA r=32 **all
+  modules** (attn+GDN+MLP), lr 2e-5, eff. batch 64. **Dose checkpoints (log-spaced): 2M / 8M / 32M / 128M span
+  tokens ≈ 0.3 / 1.2 / 4.5 / 18 GPU-h** + 0.5 GPU-h probe each (the canonical 594-span battery, unchanged).
+  Pre-registered dose-response from the corrected 0.117 start: ~0.25 @ 2M, ~0.45 @ 8M, ~0.70 @ 32M, ≥0.80 @ 128M;
+  frontier 1 → 2–3 → 4–7 → 8–15 → 16+.
+- **W-B2 — GLAT-style error-keyed glancing curriculum, run as W-B1's ablation arm to the 8M gate** (reveal
+  N = ceil(λ·L·ê) scattered interior anchors, anneal to whole-span; +30–50 % step time). Decision rule: the arm
+  with a ≥1.5× frontier lead at 8M absorbs the remaining budget. Both arms to the 8M gate ≈ 8 GPU-h combined.
+- **KILL rules (all arms):** KR-1 at 8M: KILL if exactness < 0.30 AND frontier ≤ 2; at 32M: KILL if < 0.55 or
+  frontier < 8. KR-2 every checkpoint: exact_args matched-20 zero-loss + retention — non-negotiable, stop on trip
+  (the S2 KL-trip lesson, 0.0699 > 0.05 @ step 120, stands). KR-3: train loss improves but probe doesn't ⇒
+  train/serve mismatch — debug, never escalate dose. KR-4: promote ONLY through W-1/W-2 (re-probe fire ≥ 40 %,
+  verify-reject ≤ 0.20, value ≥ 1.6×, then golden §C).
+- **Ceiling honesty:** no published result shows 0.80+ single-forward exactness on 16–32-token spans (dParallel
+  commits ~8–10 tok/step). The 0.80 emission bar exceeds published evidence — which is exactly why the ladder makes
+  draft-verify primary and training the *acceptance-raiser*: the promote surface is verified acceptance, not raw
+  emission. Worst case ≈ 30 GPU-h; earliest training kill ≈ 3.
+
+## W.3 Pointer/conditioning mechanisms (Angle C) — boosters on trigger T-b, or W-B1 format inputs
+
+Mechanistic frame (consistent with every W.0 number): the transformer copy circuit is induction-style — attend from
+the *previous token's* source occurrence to its successor. Parallel masking destroys the left neighbor, so interior
+positions cannot compute span alignment; writing the candidate in (verify) restores it — hence 0.107 vs 0.997.
+GDN linear layers are provably weak at exact long-range copy (fixed-size state); exact copy rides the sparse
+full-attention retrieval heads — so every mechanism keeps alignment on attention layers or host-side.
+
+- **W-C2 — evidence-conditioned transcription (~0.3 GPU-h):** duplicate the mined candidate sentinel-delimited
+  immediately left of the block; re-run the interior-exactness battery. Bar: ≥ 0.5 zero-shot ⇒ decode-side win,
+  compose with verify; < 0.5 ⇒ demote to W-B1 input format (converts free recall into transcription-at-short-offset
+  and makes the training target deterministic). Scratch region mined from in-window context only (firewall clean),
+  stripped before commit.
+- **W-C3 — position-coupled alignment (0.5 zero-shot + 1.5 LoRA GPU-h):** alias masked slot i's position channel to
+  `source_start+i` so a fixed-offset head solves the copy by position arithmetic. Pin-expressibility check FIRST
+  (cudagraph/FLARE bookkeeping); GDN layers ignore RoPE — attention-only reach, GDN-confusion smoke mandatory. Bar:
+  interior ≥ 0.5 by step 400 — must decisively beat the +0.96 pp/400 matched flat slope — else kill.
+- **W-C4 — retrieval-head attention-bias steering (~0.5 GPU-h, offline HF-form only):** PASTA-style offset-aligned
+  bias on top-k retrieval heads (head census via needle/copy battery first). Bar: interior ≥ 0.5 or ≥ 10× fire
+  lift; highest pin-port risk of the zero-delta family — a negative port-feasibility read kills it before any
+  engineering. Composes safely with verify (steering raises fire; verify gates commits).
+
+## W.4 How every rung reports against the golden number + KILL-T1 (uniform block, pre-registered)
+
+Every W rung's result report MUST carry, in this order:
+1. **KILL-T1 surface:** matched-20 `exact_args` vs the twin@K1 anchor — raw ≥ anchor AND McNemar net-loss = 0.
+   Hard KILL on trip, at every rung including probes that touch no weights (W-0 reports it as N/A-by-construction
+   with the no-weight-delta hash; W-1+ measure it).
+2. **K=1 byte-exact certificate** whenever the decode loop is touched (W-1+): feature-OFF path byte-identical to
+   shipped serving (the twin@V1 3/3 sanity precedent).
+3. **Envelope status line (new, from W.0.b):** does this rung's commit rule reproduce the serial K=1 envelope
+   distribution? For pointer-draft + full-reveal verify the honest answer is **NO — new envelope**; therefore no
+   ship without W-2's §C both-gates pass (GOLDEN vs 19/50 + K-ISOLATION vs twin@K1). "Lossless by construction"
+   is banned phrasing in W reports.
+4. **Corruption counters:** accept-log/copy-assert violations = 0; derived-byte-identical audit (V-ON/V-OFF) = 0
+   divergences; false-accept battery result (W-0 rule carried forward).
+5. **Leakage line:** training rungs consume train-keeper spans only (zero eval-ring/`w2_n50`/C46 ids, KILL-D1
+   re-assert at launch); C46-based probe rungs are decode-measurement only, never training.
+6. **GPU-h + server-DOWN/GPU-idle-at-exit**, per the standing hygiene rule.
+7. **Promotion lane:** CONSTRAINED ([[diffusion-promotion-discipline]]) — draft-verify commits are copy-assert-gated
+   decode mechanics, credited only if the W-2 artifact beats decode-only K=1 at the golden number.
+
+Golden-cadence honesty: the §C golden gate costs ~4–6 GPU-h/arm — it runs at W-2 and at any training promote (KR-4)
+ONLY; per-checkpoint safety is the cheap anchor set (exact_args + retention), never the golden eval.
+
+## W.5 — 10-line brief (SECTION W in one screen)
+
+1. **Adjudication:** the verify asymmetry is real and the commit rule was the wall — write-candidate-in +
+   one-forward verify accepts **0.956–0.960** of whole spans where dominance fired 0.2 % (~480× reversal, both
+   twins, zero training) — but the verify forward is **full-reveal-within-block, NOT the serial conditional**, so
+   the draft-verify path is a **new decode envelope**, not lossless by construction.
+2. **Corrected anchors:** serial-faithful acceptance 0.9865–0.9916/token (whole-32: 0.65–0.76); full-reveal 0.9973–
+   0.9975; V1 dose-response +0.96 pp/400 matched (not +2.6 pp); oracle ~14.6–15.8 tok/fwd; **blended est.
+   ~1.6–1.8×** vs shipped 1.06×, ceiling 2.98×.
+3. **Rung W-0 (~1.5–2 GPU-h, training-free):** full-window probe re-run logging staged serial-faithful softmax
+   (E[p̃(gold)] at the frozen envelope), full-reveal divergence, false-accept battery, + rejection-sampling sim.
+4. **W-0 kill:** proceed iff serial-faithful sim ≥ 8 tok/fwd on copy mass, blended ≥ 1.5×, false-accept = 0,
+   leak gap ≤ 15 %; ā < 0.98/token ⇒ envelope tax was the hidden wall ⇒ training becomes primary.
+5. **Rung W-1 (3–5 GPU-h):** engine prototype in the CAD value branch (pin's variable-accept GDN scatter; APC
+   never-remask); kill: on-policy value < 1.6× (soft) or any KILL-T1/corruption trip (hard).
+6. **Rung W-2 (4–6 GPU-h):** THE promotion event — golden 19/50 §C both gates + derived-byte audit; no ship
+   without it.
+7. **Training (T-a/T-c, ≤ ~30 GPU-h):** W-B3 synthetic gym (2–4 h, decisive architectural negative available) →
+   W-B1 certainty-forcing self-distillation vs W-B2 glancing arm to the 8M gate (~8 h) → winner to 128M;
+   frontier-keyed kills, exact_args anchor every checkpoint.
+8. **Conditioning (T-b, ~3–4 GPU-h):** C2 evidence-adjacency, C3 position-coupling, C4 retrieval-head steering —
+   probe-first, pin-feasibility-gated, compose with verify.
+9. **Budgets:** decode path ~9–13 GPU-h to a shipped rung; grand worst-case ~45; earliest decisive kill ~2.
+10. **Highest-risk assumption:** frozen-envelope acceptance **E[p̃(gold)] ≥ ~0.98/token on copy positions** — every
+    accept bit measured so far is greedy argmax at the *wrong (full-reveal) conditional*; the whole ~1.6–1.8×
+    pricing and the rung ordering rest on that one unmeasured number, which W-0 reads first.
