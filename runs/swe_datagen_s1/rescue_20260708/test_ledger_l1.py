@@ -79,11 +79,23 @@ def main():
     assert ex_frf[:3] == ["fam__x-1", "fam__x-2", "fam__x-3"], f"frontier head unexpected: {ex_frf}"
     print(f"[3] near-miss-first OK: coverage head={ex_cov[:3]}  frontier head={ex_frf[:3]}")
 
-    # (4) cmd_record untouched (textual)
+    # (4) L1-LEVER SURFACE. The L1 restrat's guarantee is proven by (1)-(3): the
+    # eligible-pool DRAW is backward-compatible and the near-miss-first ordering is
+    # correct. The original byte-identity snapshots of cmd_record/cmd_state vs the
+    # pre-L1 backup are OBSOLETE — both functions legitimately evolved AFTER this
+    # 2026-07-08 rescue (majority-no_prediction auto-infra #89, epoch markers,
+    # opus_track exclusion, and the 2026-07-12 ctx-overflow truth-telling wiring),
+    # none of which touch the L1 draw. We therefore assert the draw invariants hold
+    # (above) and that the ctx-overflow wiring is present, rather than pin the ancient
+    # snapshot. cmd_state is NOT touched by the truth-telling change.
     import inspect
-    assert inspect.getsource(L.cmd_record) == inspect.getsource(Lb.cmd_record), "cmd_record changed!"
-    assert inspect.getsource(L.cmd_state) == inspect.getsource(Lb.cmd_state), "cmd_state changed!"
-    print("[4] cmd_record + cmd_state textually identical to backup OK")
+    rec_src = inspect.getsource(L.cmd_record)
+    assert "_ctx_overflow_ids" in rec_src and "env_limited" in rec_src, \
+        "ctx-overflow truth-telling wiring missing from cmd_record!"
+    assert "env_limited" not in inspect.getsource(L.cmd_state), \
+        "cmd_state should be untouched by the ctx-overflow truth-telling change"
+    print("[4] L1 draw invariants proven by [1]-[3]; cmd_record carries the "
+          "ctx-overflow env_limited wiring; cmd_state untouched OK")
 
     print("\nALL LEDGER L1 TESTS PASSED")
 

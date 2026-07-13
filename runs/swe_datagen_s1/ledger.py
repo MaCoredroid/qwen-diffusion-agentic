@@ -33,10 +33,14 @@ subcommands:
 
   record <batchdir> <batch_id> <attempts.jsonl>
       Classify every id in <batchdir>/subset.json from the batch score report +
-      pull.jsonl and APPEND one attempts row each. Idempotent per (instance_id,
-      batch_id) — the SAME instance may be recorded once per batch (best-of-k),
-      and re-running a batch's record never double-writes it. Verdicts:
+      pull.jsonl + the driver's per-task runner_metadata and APPEND one attempts row
+      each. Idempotent per (instance_id, batch_id) — the SAME instance may be
+      recorded once per batch (best-of-k), and re-running a batch's record never
+      double-writes it. Verdicts:
         resolved | unresolved | empty_patch | error   (episode ran + scored)
+        env_limited                                    (context-window cap-death:
+                                                        empty patch, but env-limited
+                                                        NOT an honest miss)
         no_prediction                                  (episode ran, nothing scoreable)
         env_unavailable                                (image pull failed — never ran)
 
@@ -57,7 +61,13 @@ import json, sys, time, argparse
 from collections import Counter
 from pathlib import Path
 
-REAL_VERDICTS = {"resolved", "unresolved", "empty_patch", "error", "no_prediction"}
+# A ctx-cap-death (`env_limited`) is a REAL attempt exactly like the `empty_patch`
+# it replaces (episode ran, produced no scoreable patch, was not resolved) — so it
+# stays in REAL_VERDICTS and yield/coverage accounting is byte-identical to the old
+# empty_patch labeling. Only the LABEL is corrected (empty_patch-as-honest-miss ->
+# env-limited); the rolling-yield denominator and best-of-k coverage do not move.
+REAL_VERDICTS = {"resolved", "unresolved", "empty_patch", "error",
+                 "env_limited", "no_prediction"}
 
 
 def _valid(rows: list[dict]) -> list[dict]:
@@ -250,14 +260,43 @@ def _load_report(batchdir: Path) -> dict:
     return {}
 
 
+def _ctx_overflow_ids(batchdir: Path) -> set[str]:
+    """Instance ids whose episode DIED on context-window exhaustion, read from the
+    driver's per-task runner_metadata (`terminal_cause == "ctx_overflow"`) under
+    <batchdir>/gen/*/verified/per_task/<iid>/runner_metadata.json — the harness
+    truth-telling tag (run_swe_bench_qwen_code.py). These are ENV-LIMITED cap-deaths
+    (the served 32768 window is exhausted; the retry ladder surfaces vLLM's 400), NOT
+    honest empty-patch misses, so _classify reroutes them out of the empty_patch bucket.
+
+    PROSPECTIVE ONLY: historical batches whose runner_metadata predate the
+    terminal_cause field yield an EMPTY set here, so their rows keep the old
+    empty_patch labeling (no retroactive surgery)."""
+    out: set[str] = set()
+    gen = batchdir / "gen"
+    if not gen.is_dir():
+        return out
+    for mp in gen.glob("*/verified/per_task/*/runner_metadata.json"):
+        try:
+            m = json.loads(mp.read_text())
+        except Exception:
+            continue
+        if m.get("terminal_cause") == "ctx_overflow" and m.get("instance_id"):
+            out.add(m["instance_id"])
+    return out
+
+
 def _classify(iid: str, resolved: set, empty: set, error: set,
-              unresolved: set, pull_failed: set) -> str:
+              unresolved: set, pull_failed: set, ctx_overflow: set = frozenset()) -> str:
     if iid in pull_failed:
         return "env_unavailable"
     if iid in resolved:
         return "resolved"
     if iid in empty:
-        return "empty_patch"
+        # A context-window cap-death also leaves an EMPTY patch, but it is env-limited
+        # (the served window is exhausted), NOT the "agent chose not to edit" honest
+        # miss `empty_patch` means. Tag it env_limited so the ledger tells the truth.
+        # Same REAL/non-resolved accounting as empty_patch -> yield/coverage unchanged.
+        return "env_limited" if iid in ctx_overflow else "empty_patch"
     if iid in error:
         return "error"
     if iid in unresolved:
@@ -274,13 +313,18 @@ def cmd_record(batchdir: Path, batch_id: str, attempts: Path,
     empty = set(rep.get("empty_patch_ids", []))
     error = set(rep.get("error_ids", []))
     pull_failed = _pull_failed_ids(batchdir)
+    # Context-window cap-deaths (driver terminal_cause=="ctx_overflow"): reroute these
+    # out of empty_patch-as-honest-miss into env_limited (truth-telling). Empty on any
+    # pre-tag historical batch -> old labeling preserved (no retroactive surgery).
+    ctx_overflow = _ctx_overflow_ids(batchdir)
     # Idempotent per (instance_id, batch_id): the same instance may appear across
     # batches (best-of-k), but a given batch's row is written at most once.
     have = {(r.get("instance_id"), r.get("batch_id")) for r in _read_jsonl(attempts)}
 
     # Classify the WHOLE batch up front (independent of `have`) so the batch-level
     # infra decision below sees every id, not just the not-yet-written subset.
-    verdicts = {iid: _classify(iid, resolved, empty, error, unresolved, pull_failed)
+    verdicts = {iid: _classify(iid, resolved, empty, error, unresolved, pull_failed,
+                               ctx_overflow)
                 for iid in ids}
 
     # HARDEN (task-3): a missing prediction is ALWAYS a pipeline gap, NEVER teacher
@@ -300,13 +344,17 @@ def cmd_record(batchdir: Path, batch_id: str, attempts: Path,
 
     ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     added = {"resolved": 0, "unresolved": 0, "empty_patch": 0, "error": 0,
-             "no_prediction": 0, "env_unavailable": 0}
+             "env_limited": 0, "no_prediction": 0, "env_unavailable": 0}
     with attempts.open("a") as f:
         for iid in ids:
             if (iid, batch_id) in have:
                 continue
             v = verdicts[iid]
             row = {"instance_id": iid, "batch_id": batch_id, "verdict": v, "ts": ts}
+            # Stamp the cap-death cause on the row so an env_limited attempt is
+            # distinguishable from any other verdict at the attempts.jsonl level too.
+            if v == "env_limited":
+                row["terminal_cause"] = "ctx_overflow"
             # INFRA-INVALID (explicit: gen never booted a server; OR auto: the batch
             # is majority no_prediction == a scoring/prediction-path break). Flag
             # EVERY row uniformly so ledger yield / the kill window / coverage all

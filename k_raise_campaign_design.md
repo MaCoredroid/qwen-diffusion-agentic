@@ -687,3 +687,30 @@ Ladder bottoms at `max_tokens=253` while prompt is pinned at 32,516 and the harn
 final retry lands deterministically one token over. Fix both arms: floor the last rung at `cap − prompt − margin` (clamp
 `max_tokens` so `prompt+max_tokens ≤ cap`) and correct the estimate. Orthogonal to the clamp (clamp reduces *how often*
 the cap is reached; this fixes *what happens when it is*). Highest-EV, zero model change, symmetric.
+
+### STEP 5 HARNESS TRUTH-TELLING — DONE (2026-07-12; labeling only, ladder behavior untouched)
+
+Landed the *truth-telling half* of the retry-ladder finding (the *behavioral* off-by-one fix above stays open): a
+cap-death (context-overflow retry ladder exhausts → vLLM's terminal 400 surfaced as the episode `result`) now produces a
+**distinguishable, env-limited terminal record** instead of masquerading as an honest empty-patch miss / clean exit-0
+quit — the exact mislabel the AR_PAIRED read flagged (29 "clean quits" that were really 36 cap-deaths). Wired end-to-end:
+
+- **Driver** `scripts/run_swe_bench_qwen_code.py`: new `_classify_terminal_cause` writes
+  `runner_metadata.terminal_cause="ctx_overflow"` from the terminal `[API Error: 400 … maximum context length …]`
+  payload (API-error framing required; newest-attempt-first so an empty re-drive falls back to the real terminal —
+  the 6/41 empty-retry C46 cases). Both host + container orchestration paths.
+- **Ledger** `runs/swe_datagen_s1/ledger.py`: `record` scans per-task `runner_metadata` (`_ctx_overflow_ids`) and
+  `_classify` reroutes an empty-patch cap-death `empty_patch → env_limited` (new verdict, in `REAL_VERDICTS` so
+  rolling-yield + best-of-k coverage are byte-identical to the old empty_patch accounting — **only the lying label
+  changes**), stamping `terminal_cause` on the attempts row.
+- **Gate report builders** `runs/k_gate_c46/build_report.py` + `build_candidate_report.py`: consume the tag → a distinct
+  `ctx_overflow_deaths` (env-limited) bucket, kept OUT of `clean_exit0` / `empty_patches (honest miss)`.
+- **Untouched:** retry ladder (`build_context_retry_body`), clamp shim (`proxy_readclamp.py`), all decode. Labeling only.
+- **Unit test** `scripts/test_terminal_cause_classification.py` (13 cases, green): mock cap-death record
+  (32516/253/32769) → driver `ctx_overflow`, ledger `env_limited` (not empty_patch), scoreable outcomes unaffected,
+  empty-retry fallback, and the no-retroactive-surgery path.
+
+**Prospective only — no retroactive surgery.** The C46 gate arm (36 cap-deaths) and epoch-2 datagen batches predate the
+tag → `_ctx_overflow_ids` returns ∅ → they keep the historical `empty_patch`/`clean_exit0` labels (re-running
+`build_report.py` on the frozen arm still shows `ctx_overflow_deaths=0`, `empty_patches=36`). Detail + caveat banked in
+`runs/k_gate_c46/K1_COMMITTAL_ANALYSIS.md` § "Harness TRUTH-TELLING fix — DONE".

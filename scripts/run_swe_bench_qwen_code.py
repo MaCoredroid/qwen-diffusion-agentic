@@ -47,6 +47,7 @@ import argparse
 import datetime as _dt
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -747,6 +748,72 @@ def _classify_empty_patch_cause(trace_path: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Terminal-cause classification (HARNESS TRUTH-TELLING fix, 2026-07-12).
+#
+# When the proxy's context-overflow retry ladder EXHAUSTS (halves max_tokens
+# 8127→…→253 while the prompt stays pinned at the 32516 cap and every rung lands
+# one token over — the 32516/253/32769 cap+1 signature documented in
+# runs/k_gate_c46/K1_COMMITTAL_ANALYSIS.md "Terminal trigger"), the proxy forwards
+# vLLM's final HTTP 400 to qwen-code, which surfaces it as the episode's TERMINAL
+# `result` payload ("[API Error: 400 This model's maximum context length is N
+# tokens. …]"). Such an episode is NOT a voluntary exit-0 quit and NOT an honest
+# empty-patch miss — it is ENV-LIMITED (the served context window is exhausted).
+# We tag it here so the ledger + gate report builders can map it to env-limited
+# instead of empty_patch-as-honest-miss / exit-0-clean (the mislabel the AR_PAIRED
+# read called out). This is a labeling fix ONLY — it does NOT change the retry
+# ladder, the clamp shim, or any decode piece.
+_CTX_OVERFLOW_RE = re.compile(r"maximum context length is\s+\d+\s+tokens", re.IGNORECASE)
+TERMINAL_CTX_OVERFLOW = "ctx_overflow"
+
+
+def _result_is_ctx_overflow(result_tail: str | None) -> bool:
+    """True iff the terminal `result` payload is vLLM's context-length 400.
+
+    Requires BOTH the "maximum context length is N tokens" phrase AND the upstream
+    API-error framing (qwen-code emits "[API Error: 400 …]"), so a model that merely
+    QUOTES the phrase in a normal summary is not misclassified as an env-limited death.
+    """
+    if not result_tail:
+        return False
+    txt = result_tail
+    return bool(_CTX_OVERFLOW_RE.search(txt)) and ("API Error" in txt or "400" in txt)
+
+
+def _agent_metas(summary: dict) -> list[dict]:
+    """The ordered agent attempts on this episode: the main drive followed by any
+    empty-patch re-drives (`qwen_retry1`, `qwen_retry2`, …). The LAST attempt that
+    produced a terminal result is the episode's true terminal event."""
+    metas: list[dict] = []
+    q = summary.get("qwen")
+    if isinstance(q, dict):
+        metas.append(q)
+    for k in sorted(k for k in summary if k.startswith("qwen_retry")):
+        rv = summary.get(k)
+        if isinstance(rv, dict):
+            metas.append(rv)
+    return metas
+
+
+def _classify_terminal_cause(agent_metas: list[dict]) -> str | None:
+    """Return a DISTINGUISHABLE env-limited terminal cause, else None (a normal
+    terminal — the exit-mode / patch covariates already describe it).
+
+    Walks the attempts newest-first: the latest attempt WITH a terminal result is
+    the episode's terminal event (a re-drive that produced nothing — empty
+    result_tail — is skipped so we fall back to the drive that actually terminated).
+    Currently only `ctx_overflow` is distinguished (the 32768-window exhaustion the
+    retry ladder surfaces)."""
+    for meta in reversed(agent_metas):
+        if not isinstance(meta, dict):
+            continue
+        rt = meta.get("result_tail")
+        if not rt:
+            continue
+        return TERMINAL_CTX_OVERFLOW if _result_is_ctx_overflow(rt) else None
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Eval dispatch: mock (no docker) | offload (alienware x86) | local | skip.
 # All paths emit the flywheel eval_report.json / normalized_eval.json /
 # predictions.jsonl schema so `_aggregate` is identical to the flywheel.
@@ -1046,6 +1113,11 @@ def _process_one(*, instance_id: str, instance: dict, dataset_name: str, per_tas
             pass
 
     _remove_workspace(cache_path, workspace_path)
+    # Truth-telling terminal-cause tag (None = normal terminal; "ctx_overflow" =
+    # the context-window-exhaustion death the retry ladder surfaces). Consumed by
+    # ledger.record + the gate report builders so a cap-death is NOT recorded as an
+    # honest empty-patch / exit-0-clean.
+    summary["terminal_cause"] = _classify_terminal_cause(_agent_metas(summary))
     summary["ended_at"] = _iso_now()
     runner_meta_path.write_text(json.dumps(summary, indent=2))
     return summary
@@ -1174,6 +1246,9 @@ def _process_one_container(*, instance_id: str, instance: dict, dataset_name: st
         if not args.container_keep:
             _teardown_container(container, workspace_path)
 
+    # Truth-telling terminal-cause tag (see _process_one): distinguishes a
+    # context-window-exhaustion cap-death from an honest empty-patch / clean exit.
+    summary["terminal_cause"] = _classify_terminal_cause(_agent_metas(summary))
     summary["ended_at"] = _iso_now()
     runner_meta_path.write_text(json.dumps(summary, indent=2))
     return summary
