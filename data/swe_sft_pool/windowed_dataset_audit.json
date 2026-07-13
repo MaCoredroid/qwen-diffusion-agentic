@@ -1,6 +1,6 @@
 {
   "artifact": "swe_sft_windowed_dataset",
-  "built_at": "2026-07-13T12:39:11Z",
+  "built_at": "2026-07-13T15:21:59Z",
   "built_by": "runs/swe_datagen_s1/build_windowed_dataset.py",
   "supersedes": "iteration-1 front-truncation (build_swe_sft_lmflow_pretok.py @ max-len 12288)",
   "config": {
@@ -11,7 +11,7 @@
   },
   "source_pool": {
     "keepers_jsonl": "runs/swe_datagen_s1/keepers/keepers.jsonl",
-    "keepers_count": 334
+    "keepers_count": 383
   },
   "leakage_firewall": {
     "eval_holdout_ids": 113,
@@ -24,9 +24,9 @@
   },
   "outputs": {
     "windowed_tokenized_jsonl": "data/swe_sft_pool/train_swe_sft_windowed.tokenized.jsonl",
-    "sha256": "30ff60456f07ba6db5abd8826374adb466a7137198b8ae33abab2703e8f6b322",
-    "n_rows_windows": 889,
-    "n_episodes": 334
+    "sha256": "909c92eae5d9e576b389bf7264c800700210d7c4c3af6f82fdd2966ff394220a",
+    "n_rows_windows": 987,
+    "n_episodes": 383
   },
   "retention": {
     "iteration1_front_trunc_pct": 69.88,
@@ -34,46 +34,46 @@
       911531,
       1304354
     ],
-    "iteration2_total_episode_labels": 1304354,
-    "iteration2_emitted_labels": 1304354,
+    "iteration2_total_episode_labels": 1454824,
+    "iteration2_emitted_labels": 1454824,
     "iteration2_retention_pct": 100.0,
     "iteration2_retention_precap_pct": 100.0,
     "beats_iteration1": true,
     "delta_pp_vs_iteration1": 30.12
   },
   "window_counts": {
-    "total_windows": 889,
+    "total_windows": 987,
     "windows_per_episode_precap_hist": {
-      "1": 26,
-      "2": 70,
-      "3": 229,
-      "4": 9
+      "1": 48,
+      "2": 77,
+      "3": 247,
+      "4": 11
     },
-    "mean_windows_per_episode": 2.662,
+    "mean_windows_per_episode": 2.577,
     "max_windows_emitted": 4,
     "episodes_capped": 0,
     "labels_dropped_by_cap": 0
   },
   "position_histogram": {
     "window_position_counts": {
-      "early": 166,
-      "late": 424,
-      "mid": 273,
-      "full": 26
+      "early": 176,
+      "late": 462,
+      "mid": 301,
+      "full": 48
     },
     "emitted_label_tokens_by_third_iter2": {
-      "early": 279674,
-      "late": 676671,
-      "mid": 348009
+      "early": 292290,
+      "late": 775381,
+      "mid": 387153
     },
     "all_label_tokens_by_third_full_episode": {
-      "early": 189297,
-      "mid": 467019,
-      "late": 648038
+      "early": 195411,
+      "mid": 502779,
+      "late": 756634
     },
     "retained_label_tokens_by_third_iter1_fronttrunc": {
-      "mid": 263145,
-      "late": 647933,
+      "mid": 278213,
+      "late": 756413,
       "early": 453
     },
     "note": "iter1 front-truncation concentrates retained labels in LATE; iter2 windows recover EARLY+MID coverage (compare the two by-third distributions)."
@@ -96,6 +96,24 @@
       "window_within_block"
     ],
     "details": [
+      {
+        "episode_id": "getmoto__moto-5136",
+        "ep_tokens": 33401,
+        "n_windows": 2,
+        "audited_window": {
+          "w_start": 29363,
+          "w_end": 33140,
+          "len": 3777,
+          "n_spans": 3,
+          "position": 0.9731295470195503
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
       {
         "episode_id": "dask__dask-10556",
         "ep_tokens": 9815,
@@ -257,30 +275,12 @@
         "spans_wrap_assistant_turns": true,
         "window_within_block": true,
         "PASS": true
-      },
-      {
-        "episode_id": "django__django-11239",
-        "ep_tokens": 23264,
-        "n_windows": 3,
-        "audited_window": {
-          "w_start": 18380,
-          "w_end": 22734,
-          "len": 4354,
-          "n_spans": 4,
-          "position": 0.9584981086657497
-        },
-        "slice_is_exact_serve_slice": true,
-        "boundaries_on_turn_edges": true,
-        "decoded_byte_identical": true,
-        "spans_wrap_assistant_turns": true,
-        "window_within_block": true,
-        "PASS": true
       }
     ]
   },
   "system_coverage": {
-    "episodes_with_system_in_first_window": 312,
-    "pct": 93.4,
+    "episodes_with_system_in_first_window": 333,
+    "pct": 86.9,
     "note": "fraction of episodes whose EARLIEST emitted window still carries the system+task prompt (loss-masked). iteration-1 kept only the LATE window and dropped system+task on all 328 truncated episodes."
   },
   "dedup_weighting": {

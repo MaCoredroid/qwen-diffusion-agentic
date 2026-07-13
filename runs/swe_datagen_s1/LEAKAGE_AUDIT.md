@@ -11,6 +11,60 @@ Re-runnable verbatim at pool freeze: `runs/swe_datagen_s1/leakage_audit.py`.
 
 ---
 
+## POOL-FREEZE RE-AUDIT — 2026-07-13 (tranche-2 promotion, 334 → 383 keepers)
+
+Re-ran `leakage_audit.py` **verbatim** on the **383-keeper** pool after promoting the
+**49 Opus-4.8 tranche-2 keepers** (iteration-2). Pre-registered pool-freeze gate; the
+iteration-2 two-arm retrain (#127) consumes this pool.
+
+**Integrity pins (all PASS):** holdout = **113** sha-asserted ids, sha256
+`c56f473a…168e` pin-assert **PASS**; keepers snapshot sha256 `b5a628a1…`;
+SWE-Gym disjoint-repo assert **PASS** (0 repo collisions).
+
+**Pool shape:** 383 keepers = **199 SWE-bench_Verified + 184 SWE-Gym**. Same-repo
+pairs **5850**, flagged **371**, text-sim p95 **0.120** / p99 **0.208**, max severity
+**8.89**. **No sev-10.** The 11 function-overlap pairs (the top-severity tier) are all
+**pre-existing django/sympy Verified keepers** — same-file/same-function touched by two
+different tasks with low text-sim (≤0.44); adjudication **unchanged** from 2026-07-09
+(SUBSYSTEM_ADJACENT / BENIGN).
+
+**NEW-49 involvement:** only **4** flagged pairs, all BENIGN — `pydata__xarray-3993 ×
+xarray-4094` (file `dataarray.py`, **func-overlap = ∅**, sev 5.13, text-sim 0.065);
+`scikit-learn-13124 × {14053, 14087}` and `scikit-learn-13135 × 13142` (no file overlap,
+sev ≤0.44). **Zero** new keeper reaches the function-overlap tier. Max text-sim among
+NEW-involved pairs = **0.22**.
+
+**Eyeball (6 random new keepers + broad 49-sweep):** 6/6 **CLEAN** — every gold-patch
+line found in context came from **mid-episode tool outputs** (the agent's own reads/edits),
+never the oracle (prompt + first user). Broad oracle-leak sweep over all 49 flagged only
+`python__mypy-12548`, adjudicated **BENIGN**: the single matching line
+`raise RuntimeError("Parameters cannot be constrained to")` is a **pre-existing line
+quoted inside the bug-report traceback** (the crash site the issue reports); the actual
+fix (new `isinstance`/`infer_constraints` branching) is **not** in the prompt. **0
+holdout-id mentions** in any new keeper's oracle; **NEW(49) ∩ holdout = ∅**.
+
+**Quarantine:** `pydata__xarray-6461` remains excluded — **0** quarantined ids in the
+383 pool (the windowed builder independently asserts quarantine-in-train = 0).
+
+**DROP-LIST:** `[]` — no tranche-2 keeper adjudicated `ANSWER_LEAK`; **zero** keepers
+removed on leakage grounds. The 383 pool is clean for the iteration-2 retrain.
+
+**Extraction-fidelity note (why this audit ran on re-extracted keepers):** the as-run
+per-shard extraction (`opus_tranche2/run_shards.sh:229`) passed `gen_root=gen_shard$SH`
+— a symlink dir that reaches `per_task/` but **not** the per-episode `dumps_<iid>/`, so
+all 49 keepers were written with **empty `messages`/`tools`** and stock-9B provenance
+(fidelity `LOW(no_dump_matched)`). The full trajectories were intact on disk. Re-ran
+`extract_keepers.py` **verbatim** with the correct `gen_root=…/opus_tranche2/gen` and
+the Opus teacher env → all 49 recover to fidelity `high(all_toolcall_turns)` (985
+assistant turns, correct `opus-4.8` provenance). This audit + the windowed rebuild ran
+on those re-extracted keepers.
+
+**GATE VERDICT:** **PASS.** holdout sha PASS · SWE-Gym disjoint PASS · 0 new
+`ANSWER_LEAK` · pool clean for iteration-2. _Re-audit generated
+`2026-07-13T15:20:20Z` · CPU-only · 2.01 s · sha pins PASS._
+
+---
+
 ## POOL-FREEZE RE-AUDIT — 2026-07-09 (Task #87, gates the initial SFT set)
 
 Re-ran `leakage_audit.py` **verbatim** (baseline commit `db8d269`) on the current
