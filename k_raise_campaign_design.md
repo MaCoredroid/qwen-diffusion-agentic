@@ -751,3 +751,333 @@ the measured entropy wall (S2 kill: 1.053 tok/fwd at token-exact bar; 0.238 top-
 gate + γ relaxation + in-conversion training is the designed escape and is UNPROVEN above K=4. Code/edit content is
 the most parallel-friendly content class in the dLLM literature, which is the honest reason to attempt the >4 rungs
 at all. Each rung ships-or-stops-clean; a full-ladder miss still banks the best passing (K, 19/50-matched) twin.
+
+---
+
+# DESIGN-EXT(2026-07-12) — the three sections the DIRECTIVE commissioned
+
+Appended to answer DIRECTIVE(2026-07-12) points 2 (ladder → 6 → 8–10), 3c (post-train on-policy speed-RL), and
+1 (the golden-number gate as a stats spec). Same voice, same evidence discipline, same pre-registered-KILL structure
+as §§0–11. **Nothing above this line changed.** These sections DO NOT relax the §1.1 entry precondition: the extended
+ladder and the RL lever start from the **iteration-2 M_swe** (task #124, IN FLIGHT) once a twin@K1 clears the golden
+number at K=1 — a K>1 rung is never spent on a floored twin (the campaign is gated OUT at entry today, 3/48 on C46).
+
+## A. RUNGS ABOVE 4 — K6 and K8–10 (the entropy wall, re-derived for copy-heavy edit content)
+
+### A.0 The reframe that makes 6–10 *arithmetically* possible: `f_blocked`, not `f_value`
+
+The whole doc above (§6.1, §10, `l1_content_mix_result.md` §4) prices the blended ceiling at **`1/f_value`** — the
+must-be-exact fraction. At the code estimate `f_value ≈ 0.25–0.40` that ceiling is **2.5–4×**, and **the directive's
+6–10 avg committed tok/fwd sits ABOVE it.** Stating that head-on: *if the speed limiter is the must-be-exact fraction,
+K6–K10 blended is unreachable on code and Section A is dead on arrival.* The only honest path to 6–10 is that the
+limiter is **not** `f_value`. It is **`f_blocked`** — the fraction of positions the entropy gate actually *stops* (a
+sub-γ / thin-top-2 position that forces K=1, §5). The two diverge exactly on **copy spans**:
+
+- **GSM8K (why S2 walled at 1.05):** value tokens are **DERIVED** — `7×8=56`, the running sum, the `#### answer`. Derived
+  ⇒ genuinely uncertain ⇒ top-1 conditional **0.238** (`s2_pilot_result.md`) ⇒ the gate blocks them ⇒ `f_blocked ≈ f_value`
+  ⇒ K averages to ≈1. There is no gap to exploit.
+- **SWE edit/diff (the bet):** a large fraction of must-be-exact tokens are **COPIED, not derived** — re-emitted verbatim
+  from the file already in the prompt: unified-diff **context lines** (the 3 unchanged lines the format mandates around
+  every hunk), the re-stated function signature / class body being edited, identifiers and paths that already appear in
+  the retrieved source. A copied token is must-be-exact **and** low-entropy (top-1 → 1.0 because it is a literal copy),
+  so the gate **does not block it** — it commits in the parallel run. On copy-heavy content **`f_blocked ≪ f_value`**, and
+  the ceiling `1/f_blocked` can plausibly reach 6–10. This is the `C≈0` copy-span class ParallelBench certifies
+  parallel-safe (`training_redesign_10x_research`, cited §3), instantiated on the one content class that is *made of* copies.
+
+**So Section A's central, testable, UNPROVEN claim:** SWE edit content decomposes into (a) a small **derived-reasoning +
+derived-value** core that stays K≈1 (the 0.238 wall, untouched), and (b) a large **copy + structural-boilerplate** mass
+that is parallel-committable at high K — and (b) is large enough that the **blended** average clears 6, maybe 10. **The
+§6.1 L1-SWE census is now the load-bearing pre-measurement:** it must report `f_blocked` (fraction gate-stopped on real
+keeper edit trajectories), not just `f_value`. **If the census shows `f_blocked ≳ 0.15` on edit content, K6 is
+pre-KILLed on evidence before a rung is spent** (ceiling < 6.7). This is the cheapest possible way to be wrong.
+
+### A.1 (i) The training signal that could push committed-run length past the wall — on edit content specifically
+
+The §4 objective (O1 frontier-adjacency + O2 span-class weighting, O3 curriculum) generalizes cleanly, with **one new
+span class** the code setting demands:
+
+- **COPY-SPAN class (new).** Extend the Run-1 span tagger (already tags VALUE for `VALUE_SPAN_LOSS_WEIGHT=2.0`) with a
+  **copy detector**: a target token is COPY iff it is verbatim-alignable to a token in the retrieved context / the file
+  span being edited (a decode-time-verifiable predicate, A.3). Put COPY spans in the **high-joint-commit** class with
+  connectives; keep **DERIVED** values (computed literals, brand-new identifiers not in context, line numbers) in the
+  **K=1** class. The trained propensity is literally *"parallelize copies and connectives, serialize what you must
+  invent."* This is the specific new signal that GSM8K could not offer (arithmetic has no copy mass) and edit diffs
+  offer in bulk.
+- **What edit content actually gives the copy+structural class (cite the content, per the directive):**
+  - **Unified-diff boilerplate** — `@@ -a,b +c,d @@` hunk headers, the ` `/`-`/`+ line-prefix column, closing
+    brackets/parens, `EOF`/newline runs: deterministic given the language and the chosen hunk; near-zero entropy.
+  - **Indentation / opener runs** — Python 4-space blocks, `def …(self` / `return ` / `self.` / `import ` openers: the
+    low-entropy connective mass §3 already credited, denser on code than on GSM8K prose.
+  - **Copy-from-context spans** — the diff's mandatory unchanged **context lines** and any re-emitted signature/identifier:
+    verbatim in the prompt ⇒ top-1 ≈ 1.0 ⇒ committed in the run. This is the mass that does not exist in arithmetic.
+  - **Edit-diff repetition structure** — a rename/refactor re-emits the same token many times; the `-`(old) and `+`(new)
+    halves of a hunk share most of their tokens, so once the model commits the old line the new line is largely a copy of it.
+- **Directive lever (b) SWE-content K-consistency SFT** rides the same signal on `runs/swe_datagen_s1/keepers` edit
+  trajectories (train-side only, §7 firewall): a short K-consistency pass that presents the denoiser with contiguous
+  copy+structural frontiers from real patches. Marginal cost ≈ the plain conversion (§8); **promotion-gated** — credited
+  only if it beats decode-only-on-twin@K1 at the golden number ([[diffusion-promotion-discipline]]).
+- **The honest adverse prior, restated for high K:** the derived core does **not** move (0.238 is a base-distribution
+  property, §3). So the *reasoning-span* tok/fwd on the derived fraction stays ≈1 at every rung; **all** of K6–K10's
+  headroom is bought from the copy+structural mass. If that mass is thinner than the census hopes, the rungs SPEED-FAIL
+  and stop clean — they cannot manufacture parallelism the content does not contain (the S2 lesson, §3 last bullet).
+
+### A.2 (ii) Block-size implications — canvas, the 12288 SFT block, the 32k window, APC
+
+- **Canvas (bd) vs commit width K.** The commit run is clipped `[1, k_max]` inside the denoise canvas (`bd_size=32`).
+  K6 needs `k_max=6`; K8–10 needs `k_max=10`. Geometrically **bd=32 already supports K≤10 with ~3× headroom** (a staged
+  trailing-mask window of ≥ 2·k_max keeps the contiguous-run clip honest) — **no bd change is required for the numeric K
+  target.** "Large diffusion blocks" (the directive's phrase) as a *bd bump* (bd 64/128 — wider parallel canvas, more
+  copy-span opportunity per forward) is a **separate, optional re-conversion lever** at a different bd, [[retrain-freely-rule]];
+  it is NOT on the K6/K8 critical path and is only pulled if k_max=10 within bd=32 SPEED-FAILs for lack of canvas.
+- **The 12288 is the SFT AR block, not the conversion block.** `swe_tuning_campaign_design` AMENDMENT-B measured
+  `block_size=12288` for the **single-stream SWE-SFT** (the 32768/24576 OOM on the fla `chunk_fwd_o`; 12288 = 24.8 GiB
+  peak, ~6.5 margin). The **two-stream re-conversion** that trains twin@Kc runs at **block 512 / bd 32** (§4). So K6–K10
+  live inside a 32-token canvas trained under a 512 block — **the 12288 memory wall does not bind the K rungs at all.**
+  The 12288 front-truncation (69.88 % assistant-label retention) is an SFT-capability concern (it is why §1.1 gates on a
+  non-floor twin), orthogonal to K.
+- **32k serving window — the interaction that matters, and does NOT rescue it.** Higher K reaches EOS in fewer forwards,
+  but it does **not** reduce prompt growth — and prompt growth is the measured killer: 36/48 C46 twin deaths are
+  **CTX_OVERFLOW_400** at the 32768 wall from `read_file` **arg-under-grounding** (84 % forensic / 89.4 % REPRO unbounded
+  reads, `K1_COMMITTAL_ANALYSIS.md`). **K speeds the decode, not the context economy** — a K10 twin that still drops
+  `limit` still dies at 32,516 in a median 7.5 turns. **Therefore every rung >4 is co-gated on the read-window clamp cert
+  (task #128) being live**; without it the golden-number gate is CTX-bound, not K-bound, and would mislabel a clamp
+  failure as a K failure. (This is also why the §5 value-block must, if anything, get *tighter* at high K — A.3.)
+- **APC (lossless prefix cache, `lossless_apc_design.md`) interaction.** The APC keys cached KV to the **committed
+  prefix boundary**. Higher-K advances that boundary in larger jumps but the boundary is still a commit point, and the
+  **never-remask** rule (§5, GDN FR13 discipline) guarantees committed = final, so the cache stays **lossless** at any K —
+  no re-validation of a K10 commit is possible-or-needed because a committed run is immutable. The one caveat: a wrongly
+  committed high-K copy is now *cached* and propagates; the copy-assert (A.3) is what keeps that from happening.
+
+### A.3 (iii) Value-span protection at high K — the §5 rule must SURVIVE and TIGHTEN
+
+The §5 value-blocked rule (values always K=1) is **non-negotiable and gets a third layer for K>4**, because the
+K1-committal forensics prove the exact failure the naive high-K commit would amplify: **the twin is *confidently wrong*
+on value args — it drops `limit`/`offset` at 84–89 % and never grounds them** (`K1_COMMITTAL_ANALYSIS.md`,
+`runs/k_gate_c46`). A blind high-K run would parallel-commit those wrong-or-missing args faster. So:
+
+1. **Tool-call args:** FSM-forced K=1, adaptive-K OFF on that path — **unchanged** (§2.3, §5). K is raised on free-text
+   connective/copy spans ONLY; **args stay K=1 by construction.**
+2. **Free-text derived values** (computed literals, line numbers, new identifiers not in context): the §5 contiguous-prefix
+   entropy block + the top-2-margin "confidently-wrong-identifier" guard — **unchanged**, and now **load-bearing at K10**
+   (one thin-margin position halts the whole run, capping the blast radius of a wrong commit).
+3. **NEW — the COPY-ASSERT (K>4 only).** A position is eligible for a commit **wider than 4** ONLY if its top-1 token
+   **exact-matches** the aligned token in the retrieved source span (a decode-time predicate, cheap: the source is in
+   context). A high-K run is thus provably a **verified copy**, not a hopeful parallel guess. Any position that is not a
+   verified copy caps the run at `k_max=4` (falls back to the §6 K4 regime). This converts "trust the model at K10" into
+   "the model may only go past 4 where it is literally transcribing context" — the design-time answer to the directive's
+   "any K>1 must not worsen value grounding." **The copy-assert never fires on args (FSM path) and never fires on derived
+   values (not in context) — it is exactly the mechanism that keeps K high on copies and K=1 on everything that must be
+   invented.** Audit `copy_assert_violations == 0` is added to the §2.5 KILL-3 counter set.
+
+### A.4 (iv) Per-rung gate — golden number + committed-tok/fwd counter + kill + honest GPU-h
+
+Both rungs are adjudicated by the **Section C golden-number gate** (twin@K vs banked stock-AR 19/50 on frozen `w2_n50`)
+**AND** the §2.1 K-isolation gate (twin@K vs twin@K1, same-seed paired — isolates the K effect from SFT). Speed is the
+episode-weighted **avg committed tok/fwd** from the engine counters over the gate run itself (directive point 2), with
+the §2.5 value-projection audits clean (now including `copy_assert_violations`). Dual-exit per §6: SPEED-FAIL is a soft
+stop (ship the last passing rung), PAR-KILL/golden-number-below is a hard revert.
+
+| rung | k_max | copy-assert | speed target (episode-weighted avg committed tok/fwd) | golden-number gate | trained arm | SPEED-PASS ⇒ | SPEED-FAIL ⇒ | KILL ⇒ | GPU-h (5090, honest) |
+|---|---|---|---|---|---|---|---|---|---|
+| **K6** | 6 | ON (>4) | **≥ 6.0** blended | not below 19/50 (§C) | twin@K6 = re-conversion curriculum→6 (O1+O2+COPY class, O3), 2 seeds | ship K6, go K8 | try SWE-content K-cons. SFT; if still <6 **stop-ship K4** | golden-number PAR-KILL, or copy-assert audit nonzero, or retention/anchor KILL ⇒ revert twin@K1 | **~8–11** |
+| **K8–10** | 10 | ON (>4) | **≥ 8.0** blended (10 is the stretch edge) | not below 19/50 (§C) | twin@K10 = curriculum→10, 2 seeds (+optional bd-64 re-conv if canvas-bound) | ship K8–10 (record max held K) | ship K6 (last pass) | as K6 | **~10–13** (+~3–5 if bd-64 pulled) |
+
+**Kill criteria (pre-registered, per rung):** (a) **golden-number PAR-KILL** — twin@K statistically below stock-AR 19/50
+by the §C McNemar rule ⇒ revert; (b) **SPEED-FAIL** — census-or-measured avg committed tok/fwd below the rung target at
+the golden number ⇒ soft stop, ship last pass; (c) **copy-assert / value-projection audit nonzero** (KILL-3) ⇒ the
+tok/fwd number is contaminated, revert; (d) **retention/anchor KILL** (§2.4/§2.3, GSM8K ≤ anchor−2 or matched-20
+significant net-loss) ⇒ revert; (e) **CTX-bound INVALIDATION** — if the read-window clamp (#128) is not live, the golden
+gate row is INCONCLUSIVE-BY-CTX, not a K verdict. **Census pre-KILL (A.0): `f_blocked ≳ 0.15` on edit content ⇒ K6 not
+attempted.**
+
+### A.5 (v) Stop-clean semantics — ship the last passing rung, explicitly
+
+The extended ladder inherits §6's dual-exit and §0's downside-is-free reframe **verbatim**: the K=1 twin is the certified
+deliverable of the loop and is **never at risk**. Concretely, the ship rule is a monotone staircase — **K1 → K1.5 → K2 →
+K4 → K6 → K8–10** — and the shipped artifact is **the highest rung that held BOTH the golden number and its speed
+target**. A K8 SPEED-FAIL ships K6; a K6 golden-number PAR-KILL ships K4; a K6 census pre-KILL ships K4 without a rung
+spent. **A full miss above K4 costs nothing beyond the census + one decode-only pass** — the banked (K, 19/50-matched)
+twin from §6 is the floor. There is no rung whose failure retires a capability or the golden number (that is the entire
+point of the behavioral gate, §0).
+
+## B. POST-TRAIN ON-POLICY SPEED-RL LEVER (S4-style, user-licensed — DIRECTIVE 3c)
+
+**When this lever is pulled:** ONLY after the SFT/conversion ladder (§4 + Section A) stalls **below the K target at the
+golden number** — i.e. in-conversion K-consistency delivered a golden-number-holding twin but its speed plateaued under
+6 (the honest expected failure: the copy mass engaged but not enough). Speed-RL is the post-SFT lever to push committed
+tok/fwd the last stretch **without** dropping below 19/50. It is NOT a capability lever (it cannot lift the SFT ceiling;
+that is iteration-2's job) and is explicitly deferred until a golden-number-holding K=1/K≈2–4 base exists.
+
+### B.1 Reward design — resolve-gated speed, never speed-gated resolve
+
+- **Primary reward = terminal resolve (0/1), official docker.** `r_resolve ∈ {0,1}` = the official
+  `swebench.harness.run_evaluation` verdict (patch applies ∧ all FAIL_TO_PASS + PASS_TO_PASS green) — the same
+  ground-truth reward the SFT datagen rejection-samples on (`swe_tuning_campaign_design §1.1`). This is the gate.
+- **Speed shaping — ONLY on resolving episodes.**
+  `r = r_resolve · (1 + λ · clip((avg_committed_tok_per_fwd − K_ref)/K_ref, 0, 1))`, with `λ` small (≈0.2–0.3) and
+  `K_ref` = the current shipped rung's tok/fwd. **On a FAILING episode `r_resolve = 0` ⇒ the speed term is multiplied
+  out ⇒ zero reward for being fast-and-wrong.** This is the load-bearing asymmetry: the model can only earn the speed
+  bonus by resolving *and* being fast, so it cannot game the reward by committing garbage quickly (the exact pathology a
+  naive tok/fwd reward would train — a K10 twin that overshoots EOS and emits nothing, cf. the §0.I overshoot). The
+  avg_committed_tok_per_fwd is the audited engine counter (value-projection + copy-assert clean, §2.5 / A.3), not a
+  self-report.
+- **Group-relative (GRPO) advantage:** rollout a group of `g` diffusion-decoded episodes per instance; advantage =
+  reward − group mean. **A group with zero resolves is a zero-variance group ⇒ no gradient** — so speed-RL only produces
+  signal on instances the base *sometimes* resolves. This is the sparse-terminal-reward problem `swe_tuning_campaign_design
+  §2.1` flagged: **speed-RL is viable only on a base that already resolves a non-trivial fraction of the train-side
+  curriculum** (post iteration-2), and must curriculum on resolvable instances or spend all its rollouts on zero-gradient
+  groups.
+
+### B.2 Rollout infra — the honest reality check (this is where the lever is expensive)
+
+- **Diffusion-twin rollouts MUST serve on OUR vllm-pin engine on the 5090.** The reward being trained *is* the diffusion
+  decode's committed tok/fwd — you **cannot** roll out AR and reward AR speed. So unlike the accelerated-RL methodology
+  (`methodology_diffusion_accelerated_rl.md`, which correctly makes the *default* rollout path stock guided-AR because
+  the twin is **not** a bulk-throughput multiplier — measured 0.73–0.94× AR at batch>1, best-of-N signal REFUTED), **this
+  loop's rollouts are diffusion-decoded by necessity.** That is the tax the directive names.
+- **The flywheel GB10 host serves AR-only — pattern-reuse its harness, NOT its server.** Reuse the flywheel's
+  **verifiable-reward** machinery (official docker scoring, the ledger, coverage/best-of-k accounting,
+  `runs/swe_datagen_s1` pattern) as the reward oracle — it is server-agnostic (docker scores a patch string). The
+  **serving** side stays on the 5090 FLARE engine. Loop topology: **{5090 diffusion engine → rollouts} → {docker
+  verifiable-reward, wherever docker runs} → {5090 → GRPO gradient step}**, serial on one GPU.
+- **Throughput reality check — budget episodes/step honestly.** Measured diffusion rollout throughput is **21.4
+  eps/GPU-h at c=4** (`runs/w2_n50/report.json` secondary; AR is 99.6, 4.65× faster — the twin's structural batch-occupancy
+  collapse, §9.2, 0.45 effective batch at b16). So a GRPO step of `g=6 × p=8 = 48` rollouts costs **48 / 21.4 ≈ 2.24
+  GPU-h of rollout alone**, before scoring and the gradient step. **This dominates everything:** a *minimal* 30-step run
+  ≈ 30 × 2.24 ≈ **67 GPU-h of rollout**; a *real* 80–100-step run is **180–350+ GPU-h**. Two honest consequences: (1)
+  **the §9 infra track (B-P1 EOS-aware canvas + batch-occupancy) is a hard prerequisite** — it is the only lever that
+  moves 21.4 eps/GPU-h and therefore the RL budget; pull it before RL. (2) **Scope RL small and curriculum'd** — few
+  steps, resolvable-instance curriculum, `g` as small as the group-variance tolerates — this is a *finishing* lever on a
+  narrow speed gap, not a from-scratch trainer.
+
+### B.3 On-policy / off-policy contamination rules
+
+- **This is genuinely ON-policy for the diffusion decode.** The behavior policy (rollout) and the target policy (updated)
+  are **both the diffusion twin@K** — we are training the diffusion decode to be faster, so target == behavior. This is
+  the *opposite* of the methodology loop (target = AR, behavior = diffusion ⇒ needs importance correction, #30). **No
+  cross-paradigm importance weight is needed** when rollouts are regenerated each step.
+- **Bounded staleness if rollouts are reused.** If throughput forces reusing a rollout batch across `s` gradient steps
+  (tempting at 21.4 eps/GPU-h), the reuse is off-policy in *version* only (same paradigm). Apply the standard clipped
+  per-token importance weight **within-paradigm** `w_t = clip(exp(logp_θ − logp_θ_old), 1−ε, 1+ε)` on the
+  reasoning/free/copy tokens, **masking FSM-forced structural tokens** (they are policy-independent), exactly the
+  localized correction `methodology §off-policy` derives. Cap staleness `s ≤ 4` and trip on `max |logp_θ − logp_θ_old|`.
+- **Value/arg tokens are excluded from the policy loss** (they are FSM-forced or K=1-serial) — so the RL gradient acts on
+  the parallelizable spans only, which is also where the speed reward lives. Contamination guard: `hybrid_clean`
+  does **not** expose per-token logprobs on the served path (HTTP 500, `K1_COMMITTAL_ANALYSIS.md` REPRO) — the RL loop
+  must read logprobs from the **training-forward** (offline re-score), not the served engine; a served-vs-training logprob
+  spot-cert (A6-style) is a pre-registered gate before any update.
+
+### B.4 KL / retention safety kit — the S2 lesson, verbatim
+
+- **KL-to-base early-stop at 0.05** (the S2 trip: `KL_TO_BASE_COEFF=0.05`, `kill_retention_tripped` fired at step 120 in
+  `s2_pilot_result.md`; RL-v2 used the same on value/free tokens, structural masked). Rolling `max_KL_to_base` reported
+  every step; trip ⇒ halt, keep the last pre-trip checkpoint.
+- **Retention anchors every N steps** (the batteries §2.3/§2.4): GSM8K legacy N=20 (**anchor 13/20**, KILL ≤ anchor−2),
+  tool-call **matched-20 exact_args** (anchor twin@K1's own; KILL on significant McNemar net-loss). These pin general
+  reasoning and the certified tool-call spine against speed-RL erosion — speed-RL that resolves faster but forgets the
+  tool-call args is a KILL, not a win.
+- **Golden-number re-gate is the acceptance test** (§C): a speed-RL checkpoint ships ONLY if it holds 19/50 on `w2_n50`
+  AND beats the pre-RL rung's committed tok/fwd. Speed bought below the golden number is reverted ([[diffusion-promotion-discipline]]).
+
+### B.5 Leakage — train-side instances only, zero-overlap proof per batch
+
+- **Train-side pool ONLY:** SWE-Gym keepers + the **387 Verified-adjacent** ids (all 500 Verified test − the 113-id eval
+  holdout) per `runs/swe_datagen_s1/USER_LEVER_BELT.md` (ENACTED 2026-07-07). **Never** the 113-id holdout
+  (`inner5 ∪ tier0_20 ∪ tier1_100`, sha `c56f473ad31e…d168e`) — which **contains `w2_n50` and Tier1-C46**, the eval rings.
+- **Per-batch KILL-D1:** before every RL step, hash-assert `rollout_instance_ids ∩ eval_holdout_113 = ∅` against the
+  pinned `.eval_holdout_sha256`; any ring-file drift or intersection ⇒ **halt the run** (not just the batch). This is
+  stricter than the once-at-launch SFT assert because RL draws instances continuously — the proof is **per batch**,
+  logged with each step's `pool_sha256`.
+- **Verified-adjacent is a repo/era-adjacency caveat, not a leak** (USER_LEVER_BELT records it): the standard-practice
+  firewall — *no evaluated instance ever trains* — holds; the golden number `w2_n50` stays never-trained forever.
+
+## C. GOLDEN-NUMBER GATE PROTOCOL — the stats spec (DIRECTIVE point 1)
+
+### C.1 The frozen reference — pinned to the exact file, hash, and per-instance vector
+
+- **Pool:** the frozen **50-id `w2_n50`** pool. `pool_sha256 = fe1973937dfb500b5ced1f129648fbec712ee66c74bc357b4fd2b58d3057be4c`
+  (`runs/w2_n50/report.json`). Subset list `runs/w2_n50/subset_n50.json`; per-instance envelope seeds
+  `runs/w2_n50/inputs/seed_map.json` (base 1234, per-id offset — e.g. astropy-14182→1234, astropy-14539→2234).
+- **Run of record:** commit **`f33fb6b`** ("W2 N=50 verdict banked"). **The banked file's own hash is pinned:**
+  `sha256(runs/w2_n50/report.json) = 54a1b9373b3d6593a51bb191b3d2c39b83d0b931bc851385469d3e9da1bc22f6`. Any gate row
+  MUST re-assert both hashes at eval-launch; a drift ⇒ the reference is not the run of record ⇒ do not adjudicate.
+- **The banked stock-AR per-instance verdict vector (the golden number, n=50, 19 resolved):**
+  `django-{12713,13315,13933,14089,14373,14855,15104,15561,16082,16429,16493}`,
+  `matplotlib-{13989,24970}`, `pydata/xarray-4075`, `scikit-learn-{12585,14053}`, `sympy-{16886,20154,23824}`.
+  The other 31 ids are stock-AR unresolved. **This 50-length 0/1 vector is the paired reference** — twin@K is scored
+  per-id against it, not against a re-run of AR (the AR arm is banked, frozen, never re-served).
+
+### C.2 The frozen envelope + scoring (identical to the run of record — the FLARE fragility rule)
+
+- **Sampling envelope:** temp **0.6** / top_p **0.95** / top_k **20**, **NO presence penalty** (the FLARE fragility rule —
+  presence penalty perturbs the grammar path; the run of record has none). Proxy-forced, native `qwen3_xml`, turn cap 75,
+  empty-patch re-drive retries=1, episode-in-official-container `swebench/sweb.eval.x86_64.<inst>`.
+- **Scoring:** official `swebench.harness.run_evaluation` docker, **no mock** — byte-identical to the banked AR path
+  (`runs/w2_n50/score_all.sh`).
+- **CTX-overflow truth-telling labels ACTIVE** (the 2026-07-12 fix, §STATUS): a cap-death is recorded
+  `terminal_cause="ctx_overflow"` (env-limited), kept OUT of `clean_exit0`/`empty_patches` — so a twin that dies at the
+  32768 wall is scored **env-limited, not an honest empty-patch miss**. A gate run whose twin CTX-death rate is nonzero
+  is **CTX-bound** and its golden-number verdict is INCONCLUSIVE-BY-CTX until the read-window clamp (#128) is live
+  (A.2) — the label makes this visible instead of silently deflating resolve.
+
+### C.3 The paired statistic — TWO gates, and why both
+
+The confound (banked AR = **stock** weights; twin@K = **SFT+conversion** weights + diffusion paradigm) means the
+golden-number comparison is a **capability+paradigm bar** (the user's pinned absolute number), not an isolated K-effect.
+So the protocol runs **two** paired McNemar gates and both must hold:
+
+1. **GOLDEN-NUMBER gate (the directive's bar):** twin@K vs the **banked stock-AR vector** (C.1), paired on the 50 ids.
+   `b` = (AR resolves ∧ twin@K fails), `c` = (twin@K resolves ∧ AR fails), net = `b − c`. Two-sided **exact-binomial
+   McNemar** on `(b,c)`. **PASS = "not statistically below 19/50"**: `p ≥ 0.05` (twin not detectably worse than the
+   golden number). The strict-parity reading `|net| ≤ 2 ∧ p ≥ 0.05` (`report.json::parity_rule`) is reported alongside
+   but the directive's operational bar is *not-below*.
+2. **K-ISOLATION gate (isolates K from SFT):** twin@K vs **twin@K1**, same-seed paired (§2.1) — the only gate that
+   attributes a resolve change to K rather than to weights. **PASS = §2.1 PAR-HOLD** (`net-loss ≤ 2 ∧ p ≥ 0.05`).
+
+**A rung ships only if BOTH pass.** Gate 1 answers "did we match the golden number"; gate 2 answers "did K cost us
+resolves". Golden-hold with a K-isolation PAR-KILL means the SFT base is carrying a twin that K is degrading ⇒ revert K.
+
+### C.4 Alpha + power honesty at n=50 — what deltas are actually detectable
+
+At `α = 0.05` two-sided, McNemar's exact test on `n_d = b + c` discordant pairs can declare a regression **only when the
+discordant split is steeply lopsided.** Computed exactly (rejection boundary = largest `min(b,c)` with `2·P(X ≤ min) ≤
+0.05`, `X ~ Binom(n_d, ½)`):
+
+| discordant pairs `n_d` | rejects when `min(b,c) ≤` | ⇒ minimum **detectable net-loss** `b−c` |
+|---:|---:|---:|
+| 10 | 1 | **8** |
+| 12 | 2 | 8 |
+| 14 | 2 | 10 |
+| 16 | 3 | 10 |
+| 17 (today's twin: b=17,c=0) | 4 | 9 |
+| 20 | 5 | 10 |
+| 24 | 6 | 12 |
+| 30 | 9 | 12 |
+
+**The honest reading:** at n=50 the gate detects only a **large** regression — a net-loss of roughly **8–12 resolves**
+(≈16–24 pp) depending on the discordance rate. It **cannot** certify a tight match: a twin resolving, say, 14/50 (net-loss
+~5 against 19) is **"not detectably below 19/50" and PASSES** — the non-inferiority band is wide. The golden number
+itself is only pinned to **±6–7 resolves**: Wilson 95 % CI for 19/50 is **[12.9/50, 25.9/50]** (≈[25.9 %, 51.9 %]). So
+"matching 19/50" at n=50 operationally means **"not catastrophically below,"** and a true equivalence-to-within-2-resolves
+is **UNVERIFIABLE at n=50** (a TOST/equivalence test on a ±2 margin has near-zero power here). **Registered consequence:**
+the gate is a coarse floor, not a fine parity certifier. Tightening requires more ids — which **burns holdout** (a
+USER_LEVER_BELT decision, §7) — never silently reusing w2_n50 or a training-adjacent id. Today's twin (2/50, b=17/c=0,
+p≈0.0) is decisively below and this is why the campaign is gated OUT at entry.
+
+### C.5 Seed policy
+
+- **twin@K** is served at **primary seed 1234** (the banked `seed_map.json` base — true per-id envelope pairing against
+  the banked AR) and **confirmed-in-direction at robustness seed 20260701** ([[retrain-freely-rule]]: never a par call
+  on one seed). The **verdict is on the primary; the robustness seed must not flip the direction.**
+- **The banked AR is NOT re-seeded** — it is the frozen f33fb6b vector (C.1). The pairing is twin@K(seed 1234) vs
+  banked-AR(its own recorded seeds); the envelope seeds match by construction (same `seed_map.json`), so the only
+  difference from the AR arm is weights+paradigm — the exactly-pinned confound of C.3, not a seed artifact.
+
+### C.6 The invariant — K is never bought below the golden number
+
+**Pre-registered, non-negotiable:** no rung ships whose twin@K falls into golden-number PAR-KILL (C.3 gate 1 fails) or
+whose golden-number verdict is INCONCLUSIVE-BY-CTX (C.2, clamp not live) or INCONCLUSIVE-BY-POWER (twin below the §1.1
+entry floor). **Speed with quality below 19/50 is not a win — it is a revert.** The shipped artifact is always the
+highest rung that held the golden number AND its speed target (A.5); a speed gain that costs the golden number reverts to
+the last golden-number-holding rung, K=1 included. This is the §0 downside-is-free reframe applied to the directive's
+absolute bar: the campaign can only ever *add* speed on top of a 19/50-matched twin, never trade the number away for it.
