@@ -1,0 +1,295 @@
+{
+  "artifact": "swe_sft_windowed_dataset",
+  "built_at": "2026-07-13T12:39:11Z",
+  "built_by": "runs/swe_datagen_s1/build_windowed_dataset.py",
+  "supersedes": "iteration-1 front-truncation (build_swe_sft_lmflow_pretok.py @ max-len 12288)",
+  "config": {
+    "block": 12288,
+    "max_windows_per_episode": 6,
+    "seed": 71101,
+    "label_policy": "assistant spans only (== iteration-1)"
+  },
+  "source_pool": {
+    "keepers_jsonl": "runs/swe_datagen_s1/keepers/keepers.jsonl",
+    "keepers_count": 334
+  },
+  "leakage_firewall": {
+    "eval_holdout_ids": 113,
+    "eval_holdout_sha256": "c56f473ad31e52bee0f85151562f4e2122e4815dfa3f1b776b15fe121e8d168e",
+    "sha_asserted_equal": true,
+    "keeper_x_holdout_overlap": 0,
+    "quarantined_present_in_train": 0,
+    "windows_from_keeper_episodes_only": true,
+    "external_text": "NONE (windows are boundary-aligned slices of keeper renders)"
+  },
+  "outputs": {
+    "windowed_tokenized_jsonl": "data/swe_sft_pool/train_swe_sft_windowed.tokenized.jsonl",
+    "sha256": "30ff60456f07ba6db5abd8826374adb466a7137198b8ae33abab2703e8f6b322",
+    "n_rows_windows": 889,
+    "n_episodes": 334
+  },
+  "retention": {
+    "iteration1_front_trunc_pct": 69.88,
+    "iteration1_kept_over_total": [
+      911531,
+      1304354
+    ],
+    "iteration2_total_episode_labels": 1304354,
+    "iteration2_emitted_labels": 1304354,
+    "iteration2_retention_pct": 100.0,
+    "iteration2_retention_precap_pct": 100.0,
+    "beats_iteration1": true,
+    "delta_pp_vs_iteration1": 30.12
+  },
+  "window_counts": {
+    "total_windows": 889,
+    "windows_per_episode_precap_hist": {
+      "1": 26,
+      "2": 70,
+      "3": 229,
+      "4": 9
+    },
+    "mean_windows_per_episode": 2.662,
+    "max_windows_emitted": 4,
+    "episodes_capped": 0,
+    "labels_dropped_by_cap": 0
+  },
+  "position_histogram": {
+    "window_position_counts": {
+      "early": 166,
+      "late": 424,
+      "mid": 273,
+      "full": 26
+    },
+    "emitted_label_tokens_by_third_iter2": {
+      "early": 279674,
+      "late": 676671,
+      "mid": 348009
+    },
+    "all_label_tokens_by_third_full_episode": {
+      "early": 189297,
+      "mid": 467019,
+      "late": 648038
+    },
+    "retained_label_tokens_by_third_iter1_fronttrunc": {
+      "mid": 263145,
+      "late": 647933,
+      "early": 453
+    },
+    "note": "iter1 front-truncation concentrates retained labels in LATE; iter2 windows recover EARLY+MID coverage (compare the two by-third distributions)."
+  },
+  "block_fit": {
+    "block": 12288,
+    "windows_over_block": 0,
+    "max_window_len": 12286,
+    "assertion": "0 windows exceed block (guaranteed by construction)",
+    "PASS": true
+  },
+  "serve_exact_spot_audit": {
+    "n_audited": 10,
+    "all_pass": true,
+    "checks": [
+      "slice_is_exact_serve_slice",
+      "boundaries_on_turn_edges",
+      "decoded_byte_identical",
+      "spans_wrap_assistant_turns",
+      "window_within_block"
+    ],
+    "details": [
+      {
+        "episode_id": "dask__dask-10556",
+        "ep_tokens": 9815,
+        "n_windows": 1,
+        "audited_window": {
+          "w_start": 0,
+          "w_end": 9509,
+          "len": 9509,
+          "n_spans": 10,
+          "position": 0.6871625063678044
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "matplotlib__matplotlib-22719",
+        "ep_tokens": 23560,
+        "n_windows": 2,
+        "audited_window": {
+          "w_start": 10999,
+          "w_end": 20633,
+          "len": 9634,
+          "n_spans": 11,
+          "position": 0.7120118845500849
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "sympy__sympy-20801",
+        "ep_tokens": 29680,
+        "n_windows": 3,
+        "audited_window": {
+          "w_start": 18854,
+          "w_end": 29434,
+          "len": 10580,
+          "n_spans": 5,
+          "position": 0.8751179245283018
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "matplotlib__matplotlib-23412",
+        "ep_tokens": 23915,
+        "n_windows": 3,
+        "audited_window": {
+          "w_start": 0,
+          "w_end": 11967,
+          "len": 11967,
+          "n_spans": 29,
+          "position": 0.2774409366506377
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "django__django-12419",
+        "ep_tokens": 23183,
+        "n_windows": 3,
+        "audited_window": {
+          "w_start": 0,
+          "w_end": 10001,
+          "len": 10001,
+          "n_spans": 4,
+          "position": 0.4013501272484148
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "python__mypy-10689",
+        "ep_tokens": 30627,
+        "n_windows": 4,
+        "audited_window": {
+          "w_start": 0,
+          "w_end": 11559,
+          "len": 11559,
+          "n_spans": 8,
+          "position": 0.3295131746498188
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "dask__dask-10128",
+        "ep_tokens": 23349,
+        "n_windows": 2,
+        "audited_window": {
+          "w_start": 9443,
+          "w_end": 20451,
+          "len": 11008,
+          "n_spans": 11,
+          "position": 0.6976958327979785
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "pydantic__pydantic-4920",
+        "ep_tokens": 24447,
+        "n_windows": 3,
+        "audited_window": {
+          "w_start": 9000,
+          "w_end": 20159,
+          "len": 11159,
+          "n_spans": 12,
+          "position": 0.6573403689614268
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "django__django-13925",
+        "ep_tokens": 28451,
+        "n_windows": 3,
+        "audited_window": {
+          "w_start": 9489,
+          "w_end": 21750,
+          "len": 12261,
+          "n_spans": 25,
+          "position": 0.613370356050754
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      },
+      {
+        "episode_id": "django__django-11239",
+        "ep_tokens": 23264,
+        "n_windows": 3,
+        "audited_window": {
+          "w_start": 18380,
+          "w_end": 22734,
+          "len": 4354,
+          "n_spans": 4,
+          "position": 0.9584981086657497
+        },
+        "slice_is_exact_serve_slice": true,
+        "boundaries_on_turn_edges": true,
+        "decoded_byte_identical": true,
+        "spans_wrap_assistant_turns": true,
+        "window_within_block": true,
+        "PASS": true
+      }
+    ]
+  },
+  "system_coverage": {
+    "episodes_with_system_in_first_window": 312,
+    "pct": 93.4,
+    "note": "fraction of episodes whose EARLIEST emitted window still carries the system+task prompt (loss-masked). iteration-1 kept only the LATE window and dropped system+task on all 328 truncated episodes."
+  },
+  "dedup_weighting": {
+    "primary_rule": "CAP windows/episode (stratified subsample) -> bounds row-count inflation under the trainer's uniform row sampler.",
+    "secondary_rule": "sample_weight=1/n_windows per row for an optional weighted trainer (NOT required; trainer consumes input_ids+assistant_spans unchanged)."
+  },
+  "downstream": {
+    "consumer": "runs/swe_datagen_s1/build_swe_sft_lmflow_pretok.py --tokenized <this> --max-len 12288 (left-trunc becomes a no-op since windows <= block).",
+    "trainer": "scripts/swe_sft_arm1_qlora_train.py (unchanged)."
+  },
+  "final_rebuild_preregistration": "MECHANICAL re-run of this exact script (same seed/block/cap) on the post-promotion keepers.jsonl; no design changes."
+}

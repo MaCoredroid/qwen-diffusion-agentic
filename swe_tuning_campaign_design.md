@@ -320,6 +320,97 @@ the K-carrying conversion are captured in **`CONVERSION_READY.md`** (do-not-exec
 
 ---
 
+## STATUS (2026-07-13) — ITERATION-2 DATA SHAPE AMENDMENT: **EPISODE WINDOWING replaces front-truncation** (§2.3 amended C; built + audited, retrain not launched)
+
+The C46 paired AR-arm read (**#117**) flagged **trajectory shape** as a candidate deficit:
+iteration-1 trained on **front-truncated** episodes. The single training window per episode
+was the *last* `12288` tokens (`build_swe_sft_lmflow_pretok.py`, `truncation_side=left`),
+keeping the final edit-and-verify turns but **dropping every early/mid turn** — measured
+**assistant-label retention 69.88 %** (911,531 / 1,304,354 target tokens). The model **never
+trained on mid-episode context management** (of the early-third label tokens it saw **453**,
+i.e. **0.2 %**). Iteration-2 fixes the shape.
+
+**AMENDMENT C — §2.3 data materialisation: single front-truncated window → a set of
+SERVE-EXACT SLIDING WINDOWS that TILE each episode.** Builder
+`runs/swe_datagen_s1/build_windowed_dataset.py` (CPU-only, deterministic seed 71101),
+ALONGSIDE (not replacing) `build_swe_sft_dataset.py`. It emits the **same tokenized schema**
+(`conversation_id / input_ids / assistant_spans / n_tokens / n_label_tokens`, + window
+metadata), so `build_swe_sft_lmflow_pretok.py` → `swe_sft_arm1_qlora_train.py` consume it
+**unchanged** (the downstream left-truncation becomes a **no-op**, 0 rows truncated, since
+every window ≤ block). Windowing scheme, spelled out:
+
+1. **Render once, serve-exact.** Each episode is rendered ONCE with the 9B **serving**
+   `chat_template.jinja` via the reused `keeper_to_instance` / `conv_for_template` (byte-identical
+   to `train_swe_sft.tokenized.jsonl`; verified 5/5 re-render == stored ids+spans). A window is
+   ALWAYS a **contiguous slice** `full_ids[w_start:w_end]` with `w_start,w_end` on
+   **`<|im_start|>` turn boundaries** — so no message / `<tool_call>` / `<tool_response>`
+   envelope is ever split (consecutive `tool` messages share one `<|im_start|>user` wrapper =
+   ONE turn-block), and the slice is byte-identical to what the served model sees at that read
+   position under the campaign's `truncation_side=left`. We do **NOT** re-render sub-conversations
+   (the template's `last_query_index`/`<think>` gating and `raise_exception('No user query
+   found')` make standalone re-rendering of a mid-episode slice non-serve-exact — proven, so the
+   slice-of-the-full-render construction is the correct serve-exact primitive).
+
+2. **PREFIX-anchored forward tiling with bounded read-back.** Window 1 = the **prefix**
+   `[0 : ≤block]` — carries **system + task + early turns** (the model trains on the *fresh task
+   → first actions*, mirroring serve where early turns see the full prefix). Each later window
+   starts `ctx_overlap=3072` tokens before the previous window's end (snapped to a turn boundary):
+   a bounded slab of **loss-masked read-back context**, then it owns the next run of assistant
+   turns that fit its ≤block budget. Stride ≈ `block − ctx_overlap` ≈ 9216 target tokens ⇒
+   window count is **bounded** (`ceil(episode / stride)`), not the O(#turns) blow-up of maximal
+   read-back. Later windows reproduce serve-time left-truncated read windows, so **mid-episode
+   context management is now a training target**.
+
+3. **Block-fit — by construction, not after the fact.** Every window ≤ `block=12288`
+   (`block % 32 == 0` for the pretok pad path). Guaranteed because the right edge is the largest
+   turn boundary ≤ `w_start+block`. **Measured: 0 / 889 windows exceed block; max window 12286.**
+
+4. **Label policy = iteration-1 (assistant spans only).** A window's `assistant_spans` are ONLY
+   the assistant turns it **owns** (remapped by `−w_start`); read-back context turns (incl.
+   assistant turns owned by an earlier window) are **loss-masked**. Targets are **DISJOINT**
+   across windows (each assistant turn owned exactly once) ⇒ every label trained ⇒ retention
+   ~100 %.
+
+5. **Coverage target (early/mid/late), quantified.** Windows tile the whole episode, so retained
+   labels are spread across the trajectory instead of concentrated LATE. **Measured on the 334
+   keepers:** windows by position **early 166 · mid 273 · late 424 · full (single-window) 26**;
+   retained label tokens per episode-third recover from iteration-1's **{early 453, mid 263k,
+   late 648k}** to iteration-2's **full {early 189k, mid 467k, late 648k}** (100 % of each third).
+   System+task present in the earliest window for **312 / 334** episodes (93.4 %) vs iteration-1
+   which dropped it on all 328 truncated episodes.
+
+6. **Dedup / anti-domination rule.** A long episode yields more windows (rows) than a short one.
+   **Primary rule (works with the trainer's UNCHANGED uniform row sampler): CAP windows/episode
+   at `--max-windows=6`**, and if an episode needs more, keep the FIRST (early) + LAST (late)
+   window and evenly-spaced interior windows (**stratified**, so early/mid/late survive the cap).
+   At the current pool the cap is a **no-op safety ceiling** (measured max = **4** windows/episode,
+   mean **2.66**; 0 episodes capped ⇒ retention stays 100 %); it protects the FINAL rebuild if
+   longer episodes appear. **Secondary/optional:** every row carries `sample_weight = 1/n_windows`
+   so a future *weighted* trainer can exactly equalise per-episode without a rebuild (not required;
+   effective row inflation is bounded ≤ cap× and proportionate to trajectory length). *Note for the
+   retrain-task owner:* rows grow **334 → 889**, so the fixed-horizon step budget sees each window
+   fewer times — revisit HORIZON/epochs for iteration-2 (retrain-freely).
+
+**VALIDATION (334 keepers, all gates green).** retention **100.00 %** (1,304,354 / 1,304,354;
+**+30.12 pp** vs 69.88 %, beats the bar) · **889 windows** (hist {1:26, 2:70, 3:229, 4:9}) ·
+block-fit **0 over 12288** · serve-exact spot-audit **10/10 PASS** (exact-slice + turn-boundary +
+decoded-byte-identical + spans-wrap-assistant + within-block, across 1–4-window episodes) ·
+leakage **no-op** (holdout 113 sha==pin, keeper∩holdout **0**, quarantine-in-train **0**, windows
+from keeper episodes only, external text NONE) · downstream `build_swe_sft_lmflow_pretok.py`
+consumes it **unchanged** (889 instances, **0 rows left-truncated**, retention 1.0, max_seq 12286).
+Artifacts: builder `runs/swe_datagen_s1/build_windowed_dataset.py`; dataset
+`data/swe_sft_pool/train_swe_sft_windowed.tokenized.jsonl`; audit
+`data/swe_sft_pool/windowed_dataset_audit.json`; report
+`data/swe_sft_pool/windowed_dataset_report.md`.
+
+**PRE-REGISTERED (final rebuild).** The FINAL post-promotion rebuild is a **MECHANICAL re-run of
+this exact script** (same seed 71101, block 12288, ctx_overlap 3072, cap 6) on the updated
+`keepers.jsonl` after tranche-2 promotion (**#125**) — **no design changes**. Iteration-2 retrain
+(**#127**) points `build_swe_sft_lmflow_pretok.py --tokenized` at the windowed file. **No training
+launched by this step.**
+
+---
+
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
 
 > **SUPERSEDED (greedy-era rationale — kept for the record; see STATUS block above).** The ladder and the
