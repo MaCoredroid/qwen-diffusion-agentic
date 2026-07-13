@@ -1603,3 +1603,28 @@ clears the original ≥40% copy-mass bar; anything less = V-track CLOSED with th
 chain, twin@plain ships, no further V spend. twin@V1 must additionally pass the SAME preservation/KILL-T1
 anchors as twin@plain before any probe result counts (a V1 arm that breaks exactness is dead regardless of speed).
 No standalone V1 campaign is licensed by this directive.
+
+---
+
+## DIRECTIVE-4(2026-07-13) — USER: DESIGN GOAL-SPECIFIC LOSS + TRAINING, DO THE RESEARCH FIRST
+
+The V1 piggyback probe measured interior parallel-masked copy exactness 0.107→0.133 vs the 0.80 DIRECTIVE-3 bar —
+the conservative in-conversion dose is insufficient. USER DIRECTIVE: do NOT close the V-track on this evidence;
+instead run a dedicated RESEARCH + DESIGN phase for a loss/training regime purpose-built for the goal (large-block
+parallel span commit at SWE-Verified parity). Pre-registered inputs the research must confront:
+
+1. **The verify asymmetry (measured, runs/iter2_cert_probe/v1_probe/)**: pos-0 argmax 0.99, sequential/verify
+   argmax 0.9978 token-pooled, parallel-masked interior 0.087–0.133. The model KNOWS the content and can VERIFY a
+   written-in span nearly perfectly in one forward; it cannot EMIT it parallel-masked. Hypothesis to adjudicate:
+   a pointer-drafter + single-forward verify commit (spec-decode semantics, lossless acceptance under the frozen
+   envelope) fires on most copy spans WITH NO TRAINING — i.e., V2's dominance-on-masked-canvas was the wrong
+   commit rule, not a missing capability. In-repo prior art: task #9 lossless self-spec-decode acceptance.
+2. **Dose-response honesty**: +2.6pp/400 in-conversion steps at weight 2.0 mixed with other objectives says little
+   about an ISOLATED objective at higher dose (span-only batches, longer schedule, self-distillation from the
+   model's own sequential emissions where the target is deterministic). Design a dose-response experiment with
+   checkpointed kills, not a single big bet.
+3. **Constraints**: conversion-preservation cert must survive (no architecture surgery beyond LoRA-scale),
+   KILL-T1 exact_args + golden number remain non-negotiable, leakage firewall unchanged, single-5090 budgets.
+
+Deliverable: SECTION W (research findings + prioritized experiment ladder with per-rung budget and kill rules),
+then execute the top rung. The C46 re-gate / quality track proceeds in parallel and is unaffected.
