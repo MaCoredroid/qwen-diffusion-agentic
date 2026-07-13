@@ -714,3 +714,40 @@ quit — the exact mislabel the AR_PAIRED read flagged (29 "clean quits" that we
 tag → `_ctx_overflow_ids` returns ∅ → they keep the historical `empty_patch`/`clean_exit0` labels (re-running
 `build_report.py` on the frozen arm still shows `ctx_overflow_deaths=0`, `empty_patches=36`). Detail + caveat banked in
 `runs/k_gate_c46/K1_COMMITTAL_ANALYSIS.md` § "Harness TRUTH-TELLING fix — DONE".
+
+---
+
+## DIRECTIVE(2026-07-12) — END GOAL PINNED BY USER: K=5–10 AT THE GOLDEN NUMBER (stock-AR 19/50)
+
+User directive (this session, verbatim intent): *after SWE-SFT, the end goal is to raise K to 5 or 10 (large
+diffusion blocks) while MATCHING the pre-SFT anchor — stock-AR 19/50 vs twin 2/50 on N=50 SWE-Verified — as the
+golden number; drive via SFT or post-training; no leakage.*
+
+What this pins / changes vs the 2026-07-06 design above:
+
+1. **GOLDEN NUMBER pinned.** The §2 behavioral parity bar is now anchored to the banked stock-AR **19/50** on the
+   frozen `w2_n50` 50-id pool (f33fb6b run of record). Gate at EVERY rung: twin@K on the SAME frozen pool, frozen
+   envelope (temp 0.6 / top_p 0.95 / top_k 20, NO presence penalty — the FLARE fragility rule), official docker
+   scoring, ctx-overflow truth-telling labels active. PASS = not statistically below 19/50 (McNemar paired vs the
+   banked stock-AR per-instance verdicts; α per §2). K is NEVER bought with quality below the golden number.
+2. **LADDER EXTENDED.** §6 staged targets 1.5 → 2 → 4 now continue **→ 6 → 8–10** avg committed tok/fwd (engine
+   counters, episode-weighted, measured over the gate run itself). Rungs >4 are new territory beyond the original
+   design; same dual-exit kill discipline per rung (ship the last passing rung, stop clean, K=1 twin never at risk).
+3. **TRAINING LEVERS licensed (user: "sft or post train"):** (a) in-conversion K-consistency `L_diff` (§4,
+   unchanged, first lever); (b) SWE-content K-consistency SFT on keeper trajectories (train-side only); (c)
+   **post-train on-policy RL** (S4-style speed-reward gated on resolve, flywheel-pattern harness) as the post-SFT
+   lever if in-conversion stalls — design to be appended (see DESIGN-EXT task), honest about the caveat that
+   diffusion-twin rollouts must serve on OUR engine (the flywheel GB10 host serves AR-only).
+4. **LEAKAGE unchanged (user: "no leak"):** §7 firewall stands — 113-id eval holdout hash-asserted (KILL-D1);
+   `w2_n50` ⊂ holdout is EVAL-ONLY forever; all training data from SWE-Gym + Verified-train-adjacent per
+   USER_LEVER_BELT; per-tranche zero-overlap proof required before any promote.
+5. **SEQUENCING unchanged:** iteration-2 (Opus tranche-2 datagen → windowed retrain → clamp cert → C46 re-gate,
+   user-funded ~$230, IN FLIGHT) remains the entry precondition — the K ladder starts from the iteration-2 M_swe.
+
+**Honest odds (registered now, before results):** the QUALITY half (twin 2/50 → 19/50-matched at K=1) is the
+harder, unproven half — the AR-SFT arm itself sits at 7/48 on C46 and is untested on w2_n50; no measured lever yet
+moves the capability ceiling except data scale/shape (iteration-2's bet). The SPEED half above K≈2–4 contends with
+the measured entropy wall (S2 kill: 1.053 tok/fwd at token-exact bar; 0.238 top-1 conditional) — the behavioral
+gate + γ relaxation + in-conversion training is the designed escape and is UNPROVEN above K=4. Code/edit content is
+the most parallel-friendly content class in the dLLM literature, which is the honest reason to attempt the >4 rungs
+at all. Each rung ships-or-stops-clean; a full-ladder miss still banks the best passing (K, 19/50-matched) twin.
