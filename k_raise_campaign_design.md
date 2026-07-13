@@ -1538,3 +1538,50 @@ value path clean.
     fire-rate on arg-value copy mass + verify-reject-rate + the KILL-T1 anchor; run it as a sibling of the §6.1 census,
     **before any V1 training spend**. Fires ≥40 % clean ⇒ free value-span speed and a priced V1; fires <40 % ⇒ stop the
     V-track clean.
+
+## STATUS(v2-probe) — 2026-07-13: V2 DOMINANCE PROBE EXECUTED — pre-registered **SPEED-FAIL, V-track STOPS before V1 spend** (`runs/v2_probe/`)
+
+The V.4 recommended-first probe ran, decode-only, on the current iteration-1 twin (`models/qwen3.5-9b-fastdllm-mswe-S-merged`,
+HF form, teacher-forced) with **zero retrain**. Reused instruments verbatim: the census 4-gram copy detector
+(`census_content_mix`) for ARG_VALUE copy-run segmentation (same runs as `copy_runs.json`), and the census FLARE
+two-stream suffix-mask reader (`flare_two_stream_noisy_logits`, flare_shift) — extended from first-masked-position to
+**whole-span (block-suffix) masking** + a live-context n-gram candidate miner + a clean-left verify forward. Data: **60
+real edit turns** (40 keeper train-side edit turns from `probe_manifest.edit_turns` + 20 on-policy C46 edit turns mined
+from the frozen twin@K1 diffusion dumps; C46 eval-only, decode-measurement not training). **889 arg-value copy spans**
+(627 keeper + 262 C46), **594 source-in-window** (decode-faithful; 295 out-of-window = probe's 1792-tok window artifact,
+excluded from headline), 1778 forwards, ~25 min GPU. Scripts + `V2_PROBE_REPORT.md`/`.json` + raw per-position dump in
+`runs/v2_probe/` (gitignored; paths above). Grid: γ_V∈{0.6,0.7,0.8} (census entropy-gate values), δ∈{0.5,1.0,2.0} nats/tok
+(**exploratory** — SECTION V gives no δ grid). Primary op-point (δ1.0, γ0.6, verify-ON, in-window).
+
+**Headline — the KILL bar (fire on ≥40 % of arg-value copy-token mass) is MISSED by two orders of magnitude:**
+- **Dominance fires on 0.22 % of arg-value copy-token mass** (in-window; 0.18 % over all spans) — strict whole-span fire
+  0.45 % of mass. Across the **entire (δ,γ_V) grid the committed copy-mass frac stays in 0.04–0.28 %** — the verdict is
+  δ/γ-insensitive. **< 40 % ⇒ SPEED-FAIL (V.4 soft-stop): ship the K=1 value path, do NOT spend V1 training now.**
+- **Implied value-region committed tok/fwd = 1.00×** (verify) / 1.001× (dominance-only) — vs the design's 2.43× verify
+  ceiling and 3.12× copy-free ceiling, and far under the ~1.6× "worth-it" floor. **Implied blended 1.063× vs the census's
+  shipped on-policy 1.06×** — i.e. **zero lift** (design's 1.77×-if-V2-hit-2.43× is not reached; V2-on-current-twin adds
+  nothing).
+- **Failure-reason breakdown (mass-weighted, this is what V1 must train):** `byte_mismatch` **61.0 %**, `margin_short`
+  27.5 %, `gamma_fail` 11.0 %, FIRE 0.45 %. Candidate mining is **healthy** (gold copy-string ∈ mined candidate set on
+  **594/594** in-window spans) — the wall is **not** mining ambiguity, it is **per-position joint exactness**.
+
+**The load-bearing mechanism (validated against the census anchor, cleanly separates "can't parallel" from "can't copy"):**
+whole-span position-0 (clean left-context) argmax==gold **1.00** / conf 0.99 (≥ census 0.804), but **interior positions
+(parallel-masked left neighbours) argmax==gold = 0.087**, while the **verify pass (clean-left full reveal) argmax==gold
+= 0.998**. So the twin transcribes copy args **near-perfectly sequentially (K=1)** and **almost never in parallel** —
+exactly V.0(b): a naïve whole-span commit corrupts essentially all ≥2-token spans, and 90 % of the mass lives in runs
+≥16 which fire at **0 %**. This is the precise, priced V1 target: **lift interior joint whole-span exactness 0.087 →
+≥0.95** (V.1 kill: ≥0.95 by step 300). V2 cannot dominate until V1 lands.
+
+**Gates — only the SPEED gate fails; the safety gates are clean (no corruption):** verify-reject-rate 0.0–12.5 % across
+the grid (**all < 20 %**; verify never finalizes a mismatch → APC stays lossless), copy-assert makes a wrong whole-span
+commit structurally impossible, and derived values can never satisfy the copy-assert ⇒ `copy_assert_violations`/derived-
+byte-diff = 0 by construction (KILL-T1 and the derived-byte audit are **not** at risk — this probe measures fire-rate, not
+regression). The verdict is a **SPEED soft-stop, not a hard KILL of V-track's premise.**
+
+**Decision (pre-registered, V.4):** **STOP the V-track before any V1 training spend on this evidence.** The probe did its
+job — it **priced V1 precisely** (byte_mismatch-dominated: V1's job is *joint transcription*, not mining or thresholds).
+V-track re-enters **only** folded into the iteration-2 re-conversion (V1 as the O2 copy sub-bucket, [[retrain-freely-rule]]),
+where V1 can close the measured 0.087→0.95 joint-exactness gap; **re-run this exact probe on the iteration-2 twin before
+any V2 decode ship.** Until then, the census verdict stands unchanged: ship twin@K1, value path K=1. GPU-h this probe:
+~1.1 (server DOWN + GPU idle at exit).
