@@ -1166,3 +1166,375 @@ from ~1.3× toward ~2.3–3×, but the honest re-scope is that even a perfectly 
 blended, not 5–10×** — the K=5–10 directive is not reachable on this data shape without also moving the 64% arg mass
 onto the adaptive-K path (a harness/edit-format change). Re-run the census (0.3 GPU-h) after any such change before
 spending a rung.
+
+---
+
+# SECTION V — VALUE-SPAN K TRACK: copy-span joint-infill (V1, train) + pointer-constrained whole-span commit (V2, decode)
+
+Appended to answer DIRECTIVE-2(2026-07-12). The reasoning-span ladder (§4–6, Section A) explicitly **locks the
+arg-value path at K=1** (§5 rule 1, A.3 rule 1). DIRECTIVE-2 re-opens that lock **for the COPY subclass only**: value
+tokens whose exact string is already in context (paths, identifiers, re-emitted source blocks) are a *transcription/
+pointer* problem with one retrievable joint completion, not an *invention* problem. This section designs the two
+licensed levers — **V1** (train the denoiser to joint-infill whole copy spans) and **V2** (a decode-time constrained
+whole-span commit) — and prices them against the census. **Same evidence discipline, same pre-registered-KILL
+structure, same voice. Nothing above this section changes; V2 formally amends A.3 rule 1 for the copy subclass and
+that amendment is documented in V.2.**
+
+**Why this is a different problem than the historical value-SFT failures (the honest lineage).** The 2026-06 neutral
+SFT variants named in DIRECTIVE-2 — value-span mask forcing (`qwen35_public_train_candidate_value_span_result.md`),
+candidate-ranker (`qwen35_candidate_ranker_*`), skeleton-value-infill (`qwen35_skeleton_value_infill_*`) — attacked raw
+**exactness** on a base that *could not ground arguments at K=1 at all*. They were pre-grounding capability patches and
+they churned. Today's object is different in kind: it grounds copy args well at K=1 sequential (the certified matched-20
+`exact_args` 49–51/63, `swe_tuning_campaign_design §STATUS`), and the V-track question is **parallelizing an
+already-exact sequential capability**, not manufacturing exactness. That is why it is attackable now and was not then —
+and it is why the V-track's entire risk surface is *"does parallel commit preserve the exactness K=1 already has,"* a
+regression question with a zero-tolerance anchor (V.3), not a capability-lift question.
+
+## V.0 The census verdict — read this before funding either lever (`runs/k_census/`)
+
+**`CENSUS_REPORT.md` now exists** (aggregated verdict, `census_counters.json`) — this section uses its verdicts and
+adds one artifact the census did not: `copy_runs.json` (`census_copy_runs.py`, this section), because the census emits
+per-*token* copy fractions but not per-*span* run lengths, and the V2 whole-span projection needs the latter. All share
+the same 4-gram detector (`census_content_mix.py::tok_ngrams`, n=4); counts drift <0.03 %, immaterial. **Read the census
+verdict first, because it re-frames the whole V-track:** the census fired the §A.0 pre-KILL (`f_blocked` pooled 0.335 ≫
+0.15 at γ0.6), pre-KILLed K4/K6/K8–10 (even the §5-relaxed ceiling 2.98× < K4's 3.0), SPEED-FAIL-flagged K1.5/K2
+(ladder-as-written ceiling 1.27×, on-policy measured **1.06×**), and shipped **twin@K1** — *for the reasoning-span
+ladder as written, with args locked at K=1.* **The census's own §1 structural finding is the V-track's mandate:** 64 %
+of model-chosen mass is tool-call **arg values** the §5 firewall forces to K=1, and **57 % of model-chosen tokens are
+verbatim copies — but the copy mass lives inside those locked args** ("the parallelizable copies are on the wrong side
+of the value firewall," CENSUS §1). The census then names the V-track as one of two candidate unlocks (§8.2b: "push
+copy-run length past the ~25 % per-position block wall *with* a hard copy-assert so §5's value protection is
+preserved"). **SECTION V is the design of that census-recommended lever** — and it inherits the census's honest ceiling:
+even perfectly executed it tops out near ~3× blended, not 5–10× (V.0(d)).
+
+**(a) The mix — value mass is copy-majority, and it is the arg-value region that carries it** (`content_mix.json`, 334
+keepers, model-chosen `mc = 992,727` tok, grammar folded out):
+
+| region | frac of model-chosen | copy within region | derived within region |
+|---|---:|---:|---:|
+| **ARG_VALUE** | 0.6395 | **67.9 %** (431,048 tok) | 32.1 % (203,775 tok) |
+| **FREETEXT** | 0.3605 | 38.4 % (137,417 tok) | 61.6 % (220,487 tok) |
+| **pooled** | 1.000 | copy 0.5726 | derived 0.4274 |
+
+So `f_value` candidates span **0.4274** (derived-only, the true must-invent floor) to **0.8616** (arg-locked +
+freetext-derived, the K=1 domain *if only freetext copies parallelize* — i.e. today's §5-locked reality). The arg-value
+region alone is 0.6395 of model-chosen mass, **two-thirds of it copy** — this is the mass DIRECTIVE-2 is buying.
+
+**(b) The exactness gap — the load-bearing number V1 exists to close** (`entropy_probe.json`, FLARE two-stream noisy
+probe on the iteration-1 twin `qwen3.5-9b-fastdllm-mswe-S-merged`, decode-faithful suffix-mask = exactly the condition a
+parallel commit faces):
+
+| class | mean top-1 conf | median | **top-1 exact** | f_blocked γ0.7 / γ0.8 |
+|---|---:|---:|---:|---:|
+| **ARG_VALUE / copy** | 0.767 | 0.919 | **0.804** | 0.294 / 0.355 |
+| ARG_VALUE / derived | 0.599 | 0.607 | 0.612 | 0.577 / 0.651 |
+| FREETEXT / copy | 0.748 | 0.875 | 0.784 | 0.340 / 0.423 |
+| FREETEXT / derived | 0.634 | 0.647 | 0.635 | 0.532 / 0.637 |
+
+The crux honesty: **copy args ground well at K=1 *sequential* (certified `exact_args`), but per-position top-1 under a
+suffix-mask is only 0.804** — and whole-span exactness compounds that: an *independent* 6-token copy span at 0.804/pos
+is `0.804^6 ≈ 0.27` byte-exact. **A naïve parallel commit of copy args at the iteration-1 twin's confidence corrupts
+roughly ¾ of ≥6-token spans.** That single fact is (i) why V1 training is needed (lift *joint whole-span* exactness far
+above the independent-position product by teaching pointer/transcription behavior), and (ii) why V2 needs verify-then-
+accept as a floor even before V1 lands. It is also the exactness the KILL-T1 anchor (V.3) guards to zero regression.
+
+**(c) The whole-span opportunity is real — and it lives in ARG_VALUE, not FREETEXT** (`copy_runs.json`, contiguous
+copy-run segmentation, this section's new measurement):
+
+| region | # copy runs | **mean run len** | max | copy mass in runs ≥6 / ≥8 / ≥16 |
+|---|---:|---:|---:|---:|
+| **ARG_VALUE** | 31,533 | **13.7 tok** | 1761 | **90.3 % / 85.9 % / 72.3 %** |
+| FREETEXT | 85,231 | **1.6 tok** | 348 | 30.7 % / 25.5 % / 13.9 % |
+
+This is the decisive shape fact and it **sharpens the V-track to an ARG_VALUE(copy) lever specifically**: arg-value
+copies are **long contiguous runs** (72 % of their mass in spans ≥16 tokens — the re-emitted source blocks of
+`str_replace`/`edit` old-string args, the verbatim file regions), so a single whole-span commit banks many tokens.
+FREETEXT copies are **fragmented single tokens** (75,405 of 85,231 runs are length-1 — a shared word here and there,
+not a transcribable span), so freetext-copy is *not* a whole-span lever and is left to the §4–6 reasoning-K entropy
+gate where it already lives. **V1/V2 target ARG_VALUE copy runs; freetext stays with the A-ladder.**
+
+**(d) The honest revision of DIRECTIVE-2's 5× arithmetic.** DIRECTIVE-2 sketched `f_value≈0.5 → effective 0.2 → 5×`.
+That rested on the value/structural *heuristic* (fold ~50 % "structural" mass free). The span-length evidence does **not
+support** it: the freetext mass that heuristic called "free structural connective" is exactly the fragmented,
+mean-1.6-token, *derived* freetext — it has no long parallel runs. Priced on what the census actually measures:
+
+- **Value-span (ARG_VALUE) ceiling if copy fully commits free** = `634k / 203k(derived) = 3.12×` (`copy_runs.json`).
+- **Blended (model-chosen) hard ceiling** = `1 / derived_frac_of_mc = 1/0.4274 = 2.34×` — the copy/derived floor,
+  identical to the census's S3 "derived-only most-generous" 2.34× (`census_counters.json`).
+- **Census S2 entropy-gate ceiling** (pooled `1/f_blocked`, §5 relaxed + copy-assert everywhere): `1/0.335 = 2.98×` at
+  γ0.6, `1.76×` at γ0.9 — the census's own most-aggressive scenario.
+- **Census S1 ladder-as-written ceiling** (args locked): `1.27×` (γ0.6). On-policy **measured 1.06×**.
+
+**So the measured, untrained, evidence-floor ceiling is ~2.3–3.0×, not 5×** — and this matches the census exactly. The
+key reconciliation the census leaves open and V-track closes: **the census flags that reaching its S2 2.98× requires
+"abandoning the §5 value-protection rule and letting the model parallel-commit tool arguments" — the exact behavior the
+K1-committal forensics proved dangerous** (drops `limit`/`offset` at 84–89 %). **V-track is precisely the mechanism that
+realizes the census's S2 ceiling WITHOUT abandoning §5:** the copy-assert + verify (V.2) permit parallel commit *only*
+where the token is byte-verified against a context source — so it does not relax §5, it **splits §5** into a copy
+subclass (unlockable, provably verified) and a derived subclass (`limit`/`offset` and all invented values — stays locked
+forever, can never satisfy the copy-assert). S2's 2.98× becomes *safely* reachable, not recklessly.
+
+**The quantitative V1 target, stated as a gap between two measured numbers:** the census's arg-copy `f_blocked` = 0.257
+at γ0.6 implies the *untrained* twin, under the contiguous-run rule, commits a copy run of only `(1−0.257)/0.257 ≈ 2.9`
+tokens before a sub-γ position halts it (CENSUS §3) — **but `copy_runs.json` shows the DATA carries arg-value copy runs
+of mean 13.7 tokens (90 % of copy mass in runs ≥6).** V1's job is exactly to close the **2.9 (untrained-committable) →
+13.7 (data-available)** gap — teach the denoiser to transcribe the whole run the data actually contains instead of
+stalling at ~3 tokens. That gap is the measurable V1 lift (V.1 kill criterion), and V2's verify makes even the untrained
+2.9-run safe to commit today.
+
+Registered plainly: **5× is NOT arithmetically implied on this data shape.** ~2.3× is the copy/derived floor, ~3× the
+entropy-gate ceiling, and the honest V-track contribution is lifting the census's shipped 1.06× toward ~1.8–2.3× — a
+real ~2× improvement that is still ~2–3× short of the K5–10 directive. Reaching K5 needs *both* V-track *and* a data-
+shape change that moves more mass onto the copy-parallel path (CENSUS §8.2a) — a *both-levers-succeed* target, absorbed
+honestly, not a V-track-alone one.
+
+**(e) Scope fence — what V-track does NOT touch.** The K1-committal forensics (`K1_COMMITTAL_ANALYSIS.md`) name the
+twin's `limit`/`offset` drop (84–89 % unbounded reads → CTX death). Those are **DERIVED** numeric args (you *compute* a
+line range; they are not in context to copy) with top-1 exact 0.612 (ARG_VALUE/derived above). **V-track does not touch
+them** — they stay K=1 and their grounding is iteration-2's capability job (task #126/#127). Conflating "attack value
+spans at K>1" with "fix limit/offset" would be a category error: V-track parallelizes the *copy* subclass that is
+already exact; the derived-arg grounding gap is orthogonal and out of scope.
+
+## V.1 DESIGN V1 — copy-span joint-infill consistency (training, folded into the conversion)
+
+**Objective (exact).** Extend the §4 two-stream `L_diff` with a **whole-copy-span joint-infill target**. For a keeper
+assistant turn, identify its arg-value copy spans (below); for a sampled span of length `L`, **mask ALL `L` positions
+simultaneously** in the denoise stream (not a random ρ-subset), keep the entire prior context — which by construction
+**contains the verbatim source string** — clean, and compute `L_diff` as the **joint cross-entropy over all `L` masked
+positions from a single forward**: `L_copy = − Σ_{i=1..L} log p_θ(v_i | ctx, mask[1..L])`. The clean stream `L_AR` is
+unchanged (byte-identical to the AR forward, §4). This trains the exact decode geometry V2 will run: "given the source
+is in context and the whole value slot is blank, transcribe it in one shot." It generalizes O1 (frontier-adjacency
+joint commit) from *contiguous-trailing* to *whole-slot* masking, on the one span class where the completion is a
+retrievable pointer rather than a guess.
+
+**Span identification at train time — reuse the census detector, and tighten it for precision.** The span tagger reuses
+`census_content_mix.py`'s 4-gram copy predicate (`tok_ngrams`, n=4) that already produced the V.0 numbers, but with one
+**precision fix that the training use demands and the census measurement did not**:
+
+- *Census predicate (loose):* token is copy iff its trailing 4-gram ∈ `context_ngram_SET`. Honest detector accounting:
+  **recall** misses copies shorter than 4 tokens and copies whose run boundary breaks a 4-gram at a re-tokenization
+  seam (the length-1/2-3 buckets in `copy_runs.json` are partly this artifact); **precision** admits **false-positive
+  runs** — a 4-gram (`def __init__(`, `        return `) that occurs *somewhere* in context but where the token is
+  actually derived, not a pointer to a single source location. On a 1761-token "run" the loose predicate cannot tell a
+  genuine re-emitted block from a coincidental multi-site overlap.
+- *V1 span-selection predicate (tight):* a training copy span must be a **contiguous substring of a SINGLE context
+  span** (align the candidate run to one source location by longest-match, not to the union n-gram set). This is
+  strictly a subset of the loose predicate; it trades recall for precision, which is the correct trade for a *training
+  target* (a mislabeled derived-as-copy span trains the confidently-wrong-identifier failure — the §3 transfer risk and
+  a KILL-T1 regression). Report the tight-detector's kept-span count and the loose→tight shrinkage as a data-honesty
+  line in the V1 manifest.
+
+**Span-length curriculum (mirrors O3).** Anneal the sampled `L`: **`L ∈ {2,3,4}` for the first ~⅓** of the conversion
+(establish stable short-transcription without destabilizing the K=1 base), then grow the sampling ceiling `L→8`, then
+`L→16+` over the remainder — matched to the `copy_runs.json` mass (90 % of copy mass is in runs ≥6, so the curriculum
+must reach ≥16 to bank the bulk, but only after the short-span base is stable). Cap span sampling so no single microbatch
+is dominated by one 1761-token run (weight by `min(L, 32)` so canvas-scale spans do not swamp the loss).
+
+**Loss composition vs plain `L_diff` and vs the §4 K-consistency `L_diff` — compose or conflict (explicit).** V1 does
+**not** add a fourth objective; it **amends O2's span-class weighting**. O2 today has two buckets: reasoning/connective
+(joint-commit) and VALUE (K=1 sequential, the "values-always-sequential" invariant). V1 **splits the VALUE bucket by the
+copy predicate**:
+- **ARG_VALUE / copy → the joint-commit bucket** (the new `L_copy` whole-span target). *This is the invariant change
+  DIRECTIVE-2 licenses:* "values-always-sequential" becomes **"copies-parallel, derived-sequential."**
+- **ARG_VALUE / derived and FREETEXT / derived → stay K=1 sequential CE** (unchanged; the 0.238-class must-invent mass).
+
+So V1 and the §4 K-consistency objective **compose cleanly IFF the tight span tagger cleanly separates copy from
+derived value tokens**, and **conflict IFF it does not** — a derived value trained under `L_copy` is exactly the
+poisoned target O2 was built to exclude. **The composition's correctness is therefore identical to the tagger's
+precision**, which is why V.1's tight predicate and the V.3 derived-byte-identical audit are non-negotiable. Weighting:
+keep `VALUE_SPAN_LOSS_WEIGHT=2.0` on the derived-value K=1 CE (unchanged), and put `L_copy` at the O1 joint-commit
+weight; the two never touch the same token (copy vs derived partition), so they are additive, not competing, on any
+given position.
+
+**What the denoiser must LEARN vs must NOT UNLEARN.**
+- *Learn (the lift):* **pointer/transcription** — when the source is in context and the slot is masked, copy it jointly.
+  The measurable target is *joint whole-span byte-exactness far above the independent-position product* (V.0(b): lift
+  6-token joint exact from ~0.27 toward ~0.95).
+- *Not unlearn (the guard):* **K=1 sequential exactness on DERIVED values** — the chain-rule capability the certified
+  `exact_args` rests on. Derived values never enter `L_copy`; the retention/anchor kit (§4 in-training safety, KL-to-base
+  0.05 early-stop, matched-20 `exact_args` probe every 50 steps) pins it. **V1 that lifts copy-span parallelism but
+  drops derived `exact_args` is a KILL, not a win** (V.3).
+
+**Train-data honesty.** `L_copy` supervises **keeper trajectories only** (`runs/swe_datagen_s1/keepers`, 334 →
+iteration-2's expanded pool), **train-side, zero holdout** — the §7 firewall stands verbatim (the source string for
+each copy span is the keeper's *own* prior context, e.g. its `read_file` result; no eval-ring instance, no
+`w2_n50`/Tier1-C46 id, KILL-D1 re-asserted at train-launch). V1 is a **re-weight of the iteration-2 re-conversion**
+(§4 two-stream, block 512 / bd 32), not a new training stage — marginal cost ≈ the plain conversion ([[retrain-freely-rule]]:
+fold it in, do not bolt it on).
+
+## V.2 DESIGN V2 — pointer-constrained whole-span commit (decode, CONSTRAINED lane)
+
+Promotable under the CONSTRAINED lane of [[diffusion-promotion-discipline]] (credited only if it beats decode-only K=1
+at the golden number). **V2 is A.3's copy-assert re-scoped to the arg-value path** — and it therefore formally **amends
+A.3 rule 1**: "tool-call args stay FSM-forced K=1 by construction" now reads **"tool-call arg *derived* spans stay K=1;
+arg *copy* spans are eligible for a whole-span commit under the dominance rule + copy-assert + verify below."** This is
+the exact "re-open values-stay-K=1 as a measured question for the copy subclass only" DIRECTIVE-2 licenses; everything
+A.3 said about derived values and freetext is unchanged.
+
+**Candidate mining from live context.** Maintain a rolling **context n-gram index** over everything the runner has seen
+this episode — `read_file` results, prior tool outputs, prior assistant turns — keyed for fast longest-match: paths,
+identifiers, string/number literals, and (the big mass) verbatim source blocks. When the FSM enters a `<parameter=key>`
+value body (it *knows* it is in a value slot — this is the grammar-masked path), and once ≥1 value token is emitted to
+anchor position, query the index for **context substrings that start-align to the emitted value prefix**. The candidate
+set `C` = maximal verbatim matches. Mining is CPU-cheap (the source is already in the prompt); it is the same index the
+census 4-gram detector implies, run forward at decode time instead of offline.
+
+**The joint-dominance commit rule (exact score + threshold).** Stage `L = min(candidate_remaining_len, k_max, canvas_room)`
+trailing masks on the value frontier; one forward reads the `L` joint (`+1`-shifted) probe logits. Per masked position
+`i`, `c_i = max-softmax(pre-temperature logits)` (temperature-independent commit decision, §5). Candidate score
+`S(cand) = Σ_{i=1..L} log p_θ(cand_i)`. **Commit the whole `L`-span in one forward IFF all three hold:**
+1. **single-candidate dominance:** `S(top1) − S(top2) ≥ δ·L` (margin scales with length; if `|C|=1`, auto-pass);
+2. **contiguous confidence:** `min_{i} c_i ≥ γ_V` (every position clears the entropy gate — the §5 leading-run rule, no
+   sub-γ hole inside the span);
+3. **copy-assert (the A.3 predicate, verbatim):** `argmax_i == cand_i` byte-equal at every committed position.
+
+Any position failing (2) or (3) **caps the run there** and the tail falls back to K=1 (§5 contiguous-prefix block).
+Failing (1) → **no whole-span commit, fall back to K=1** for the slot (today's behavior). One sentence: *commit a whole
+arg-value span in one forward iff a single context-mined candidate dominates the joint score by margin ≥ δ·L, every
+position clears γ_V, and every committed token is byte-equal to the aligned candidate; else K=1.*
+
+**Verify-then-accept (optional forward 2) + cost accounting.** The V.0(b) gap (0.804 top-1 under suffix-mask) means a
+suffix-masked joint propose can be confidently wrong on a minority of positions even when dominance fires. Verify bounds
+that: forward 2 re-presents the proposed span as **clean left-context with masks only AFTER it**, reads each proposed
+position's conditional under *no* suffix-mask, and **accepts the leading run whose re-scored `argmax` still == `cand_i`**;
+the first mismatch caps the accepted run (rest → K=1). **Cost:** a span of length `L` costs **1 forward** (dominance-only)
+or **2 forwards** (verify) to commit `L` tokens, vs `L` forwards at K=1. Verify roughly *halves* the win but makes a
+wrong whole-span commit **structurally impossible** (a mismatched position is never finalized → never-remask preserved →
+APC stays lossless). **Recommendation: verify-ON until V1 lands and the reject rate is measured <5 %, then consider
+verify-OFF only if the derived-byte-identical audit (V.3) stays clean at zero.**
+
+**Failure fallback.** No dominant candidate, or sub-γ_V hole, or copy-assert miss → **K=1 exactly as today** (§5). V2
+can only ever *add* whole-span commits on top of the K=1 path; its worst case is "never fires" = today's speed, never a
+regression. This is the §0 downside-is-free reframe applied to decode.
+
+**Engine integration honesty (where this hooks, and what it must respect).**
+- *Decode loop:* hooks in `_hybrid_clean_step`'s value-body branch — the same monkeypatch surface the CAD sampler
+  (`eval_flare_freetext_cad.py`, R1 byte-exact certified) already extends. It is a **new dominant-candidate staging
+  path** *inside* the grammar-masked value slot, replacing the current forced-K=1 stepping there. Re-run the k=1
+  byte-exact certificate after the change (mandatory, §5 rule).
+- *Grammar masking:* the FSM still owns the envelope (`<parameter=..>`/`</parameter>` are GRAMMAR/K=0). V2 acts only on
+  the **interior value tokens**; the candidate must not cross the closing `</parameter>` (clip `L` at the slot boundary
+  the FSM knows). No grammar token is ever whole-span-committed by V2.
+- *APC (lossless prefix cache):* a whole-span commit advances the committed prefix boundary by `L` in one step; the
+  **never-remask + copy-assert** guarantee committed == verified-copy == final, so the cache stays **lossless** (A.2's
+  argument, now with verify as the extra belt against a wrongly-cached copy).
+- *Sync-scheduler / width (§9.2):* a whole-span commit is a **large variable-width draft** (`L` up to k_max). At **B=1
+  (the goal per [[goal-5x-rollout-b1]]) this is pure win** — no co-batch. At B>1 it **worsens straggler/head-of-line** on
+  the forced-sync scheduler unless §9.2 width-bucketing co-batches like-width value commits; register that V2's batched
+  throughput benefit is gated on §9.2, while its B=1 benefit is not.
+
+**Measured throughput projection (`copy_runs.json`, the census span-length distribution).** Value-span (ARG_VALUE)
+committed tok/fwd if every copy run of length ≥ `Lmin` commits whole (`v` forwards/run; all other value tokens at 1/fwd):
+
+| commit rule | Lmin≥2 | Lmin≥4 | Lmin≥6 | Lmin≥8 | copy-all-free ceiling |
+|---|---:|---:|---:|---:|---:|
+| **v=1 (dominance-only)** | **2.70×** | 2.60× | 2.45× | 2.31× | **3.12×** |
+| **v=2 (verify-then-accept)** | 2.45× | 2.43× | 2.33× | 2.22× | 3.12× |
+
+So V2 takes the value region from **1.0× → ~2.2–2.7×** (verify-ON, realistic Lmin≥4: **2.43×**). Because the top-X% of
+copy spans by length carry almost all the mass (90 % in runs ≥6), committing **only** the long spans (Lmin≥6/8) still
+banks **2.2–2.5×** — V2 does not need to fire on short fragments to win. **Blended over model-chosen**, priced against
+the census's *measured* free-text on-policy (not an optimistic guess): value region 2.43× via V2 + free-text **1.196×**
+(CENSUS §5, γ0.6 on-policy) → `992,727 / (634,823/2.43 + 357,904/1.196) = 1.77×`; if the A-ladder later lifts free-text
+to its copy/derived ceiling (1.62×) and V2 reaches the value ceiling (3.12×), the blended is the `1/0.4274 = 2.34×`
+floor of V.0(d). **This is the honest V-track contribution: it lifts the census's shipped on-policy 1.06× (both regions
+serial) to ~1.8× (value region unlocked via V2, free-text still at its measured wall) and toward ~2.3× only if the
+A-ladder free-text lever also engages — the doubling of the value region is the whole V-track story, and it is worth
+~+0.7× blended on top of what the census shipped.**
+
+## V.3 GATES + KILLS (non-negotiable — spell them out)
+
+**KILL-T1 — `exact_args` matched-20 anchor, ZERO regression (the load-bearing gate).** V-track mutates the arg path, so
+the certified argument capability is the primary tripwire. Anchor = **twin@K1's own matched-20 `exact_args`** (§2.3).
+V-track tightens §2.3's `anchor−3` allowance to **zero tolerance: raw ≥ anchor AND McNemar net-loss vs anchor not
+significant (p≥0.05) with net-loss = 0 on the paired arg-corruption reads.** A single whole-span commit that corrupts an
+arg drops `exact_args` → **immediate KILL, revert the V-lever.** This is stricter than every other rung because a
+value-copy corruption is exactly the failure V-track must prove it does not introduce.
+
+**Golden-number gate (§C) at any rung that ships V-track.** The combined twin@K-with-V is adjudicated by **both** §C
+gates: (1) GOLDEN — vs banked stock-AR **19/50** on frozen `w2_n50`, PASS = not statistically below (McNemar exact,
+α per §C.4); (2) K-ISOLATION — vs twin@K1 same-seed paired (isolates the V-effect from SFT). **Ships only if both pass**,
+frozen envelope + CTX-truth-telling labels active (§C.2); a CTX-bound row is INCONCLUSIVE-BY-CTX until the read-window
+clamp (#128) is live, not a V verdict.
+
+**Derived-value byte-identical audit (define it).** V-track must leave derived values *exactly* as K=1. Two-layer audit:
+- *Structural (per-commit):* every V2 whole-span commit logs its positions; assert each is a **verified copy**
+  (copy-assert holds) → **`copy_assert_violations == 0`, folded into the §2.5 KILL-3 counter set.** A derived position
+  can never satisfy the copy-assert (not in context), so it can never be whole-span-committed by construction.
+- *Paired byte-diff (per-eval):* run the shipping twin **V-ON vs V-OFF** on the same inputs, same seed, greedy; over
+  every **derived** value token (census tight-detector label), assert **byte-identical output, zero divergences.** Any
+  derived-span byte drift ⇒ the V-lever leaked past the copy subclass ⇒ **KILL.**
+
+**Per-lever pre-registered kill criteria.**
+- **V1 KILL (train):** held-out **whole-copy-span joint byte-exactness** (spans len 4–8, tight detector, decode-faithful
+  suffix-mask) must reach **≥ 0.95 by ~step 300**; **KILL if < 0.90 after 400 steps** (the denoiser is not learning
+  pointer behavior — no lift over the independent-position product ~0.27, so V2 will never dominate). AND **retention
+  KILL:** derived `exact_args` (matched-20) regresses ⇒ V1 unlearned the must-invent capability ⇒ revert (= KILL-T1).
+  Held-out copy spans are **train-side keeper spans withheld from the V1 loss**, not eval-ring (zero holdout burn).
+- **V2 KILL / soft-stop (decode):** the dominance rule must fire on **≥ 40 % of arg-value copy-token mass** (below that,
+  the projected value-span tok/fwd falls under ~1.6× and the decode complexity is not worth it) — firing < 40 % is a
+  **SPEED-FAIL (soft stop, ship K=1 value path)**, not a KILL. Verify-reject-rate **> 20 %** (with verify ON) is also a
+  **SPEED-FAIL** (propose quality too low, V1 not ready — verify never corrupts, it falls back to K=1). The only V2
+  **hard KILL** is a nonzero derived-byte-diff or `copy_assert_violations > 0` (corruption).
+
+**Honest GPU-h budget per lever (5090; the diffusion par-eval is the cost, not the train).**
+
+| lever | GPU-h | what dominates |
+|---|---:|---|
+| **V2 decode-only probe** (iteration-1 twin, matched-20 + a few C46 edit turns; measures fire-rate + reject-rate + KILL-T1) | **~1–2** | one decode pass, no retrain |
+| **V1 marginal train** (fold into iteration-2 re-conversion, 2 seeds ≈1.2) + preservation battery (~1) | **~2–3** | ≈ the plain conversion |
+| **V-shipping rung eval** (golden + K-isolation on the slow diffusion twin, ~46 eps @ 21 eps/GPU-h × arms) | **~4–6** | the 21 eps/GPU-h twin tax (§8; §9 B-P1 reduces it) |
+| **V-track total through one shipped rung** | **~8–11** | eval-dominated, same class as an A.4 rung |
+
+## V.4 Sequencing — V2 decode-probe FIRST, then V1 folded into iteration-2
+
+**Yes: the V2 decode-only probe should run BEFORE any V1 training spend.** It is prototypable on the **current
+iteration-1 twin** (`models/qwen3.5-9b-fastdllm-mswe-S-merged`, the census model) with **zero retrain**, because it
+measures the *mechanics* (dominance-fire-rate on arg-value copy mass, verify-reject-rate, and the KILL-T1 `exact_args`
+anchor) which do not depend on the golden-number capability. Two decisive outcomes, both cheap:
+- If dominance fires on **≥40 % of arg-value copy mass at verify-reject <20 % with `exact_args` held**, **V2 banks
+  value-span speed with NO training** and quantifies exactly how much residual V1 must close — a genuine free lever on
+  the copy mass the A-ladder locks.
+- If verify-reject is **high** (the 0.804 top-1 gap biting), the probe **prices V1's job precisely** before spending on
+  it — the cheapest possible way to size the training, in the exact spirit of the §6.1 census pre-KILL.
+
+**vs the A-ladder:** V-track is **orthogonal** — it attacks the arg-value(copy) token class the A-ladder locks at K=1,
+so the blended average is the two levers *combined* (V.2: value region ~2.4× via V2 + free-text at its **measured** 1.20×
+→ **~1.8× blended today**, rising to ~2.3× only if the A-ladder later lifts free-text off its measured wall). Run the
+**V2 probe as a sibling of the §6.1 census** (both are cheap iteration-1-twin measurements), before committing to any rung
+above K4.
+
+**vs iteration-2:** V1 **folds into the iteration-2 re-conversion** as a new O2 sub-bucket ([[retrain-freely-rule]] — do
+not train a separate V1 checkpoint), so it is gated behind iteration-2's M_swe exactly like the rest of the ladder. The
+recommended order: **(1) V2 decode probe on the iteration-1 twin (now, ~1–2 GPU-h) → (2) §6.1 census pre-KILL adjudication
+→ (3) if V2 fires but reject is high, fold V1 into the iteration-2 re-conversion → (4) adjudicate the combined twin at
+the golden number.** A V2-probe SPEED-FAIL (fires <40 %) stops the V-track before any training spend, banking the K=1
+value path clean.
+
+## V.5 — 10-line brief (the V-track in one screen)
+
+1. **V2-dominance rule (one sentence):** commit a whole arg-value span in one forward iff a single context-mined
+   candidate dominates the joint score by margin ≥ δ·L, every position clears γ_V, and every committed token is
+   byte-equal to the aligned candidate (copy-assert); else fall back to K=1.
+2. **Ceiling arithmetic (measured census):** value-region 1.0×→**2.43×** (v2 verify, Lmin≥4, `copy_runs.json`),
+   copy-free ceiling **3.12×**; **blended lifts the census's shipped on-policy 1.06× → ~1.8×** (V2 on value + measured
+   free-text 1.196×) **→ ~2.34× floor** only if the A-ladder free-text lever also engages; census S2 gate ceiling 2.98×.
+3. **The honest revision (agrees with CENSUS_REPORT.md):** DIRECTIVE-2's 5× is **not** supported by measured evidence —
+   the census fired the §A.0 pre-KILL and capped even §5-relaxed at 2.98×; V-track is the census-named (§8.2b) *safe*
+   realization of that ~3× (copy-assert splits §5 instead of abandoning it), not a 5–10× lever.
+4. **The load-bearing fact:** arg-value copy is **long runs** (mean 13.7 tok, 72 % mass in runs ≥16) — the real
+   whole-span lever; freetext copy is **fragmented** (mean 1.6) — left to the A-ladder.
+5. **The gap V1 closes:** copy args are exact at K=1 sequential (`exact_args` 49–51/63) but only **0.804** per-position
+   under suffix-mask (≈0.27 for an independent 6-token span) — V1 lifts *joint* whole-span exactness to ≥0.95.
+6. **V1 highest-risk assumption:** the tight copy/derived span tagger's **precision** — a derived value mislabeled copy
+   trains the confidently-wrong-identifier failure (KILL-T1); composition with §4 is correct *iff* the tagger is.
+7. **V2 highest-risk assumption:** **candidate mining picks the right source substring** when a block appears multiply in
+   context — verify-then-accept + copy-assert bound it, but a mis-mined dominant candidate is the corruption path.
+8. **Gates (zero-tolerance):** KILL-T1 `exact_args` (raw ≥ anchor, net-loss 0), golden-number §C at any V-rung,
+   derived-byte-identical audit (V-ON vs V-OFF, 0 divergences), `copy_assert_violations == 0` (KILL-3).
+9. **Total GPU-h:** ~**8–11** through one shipped rung (eval-dominated by the 21 eps/GPU-h twin tax); the V2 probe alone
+   is **~1–2**.
+10. **Recommended first probe:** V2 decode-only on the **current iteration-1 twin** (no retrain) — measure dominance-
+    fire-rate on arg-value copy mass + verify-reject-rate + the KILL-T1 anchor; run it as a sibling of the §6.1 census,
+    **before any V1 training spend**. Fires ≥40 % clean ⇒ free value-span speed and a priced V1; fires <40 % ⇒ stop the
+    V-track clean.
