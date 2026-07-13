@@ -1112,3 +1112,57 @@ Ceiling arithmetic this unlocks (the reason to fund it): f_value ≈ 0.5 with co
 parallel, effective f_value ≈ 0.2 ⇒ blended ceiling 1/0.2 ≈ 5× — the user's K=5 becomes arithmetically reachable;
 without the V-track the blended goal is likely capped ≈2×. The V-track is therefore NOT optional garnish; it is
 load-bearing for DIRECTIVE(2026-07-12).
+
+---
+
+## STATUS(census) — 2026-07-12: L1-SWE CENSUS EXECUTED — §6.1 measured, DESIGN-EXT §A.0 pre-KILL **FIRES**
+
+Full report `runs/k_census/CENSUS_REPORT.md`; headline JSON `runs/k_census/census_counters.json`. Object =
+iteration-1 twin (HF two-stream form `…-mswe-S-merged`, identical weights). **~0.30 GPU-h, server down, GPU idle
+at exit (383 MiB / 0%).** Three phases, all reusing validated instruments: A = content-mix over all 334 keepers
+(offline, CAD-class token classification); B = teacher-forced top-1 conditional entropy via the FLARE two-stream
+noisy probe on real keeper spans (decode-faithful clean==noisy suffix-mask, 3,390 probes / 80 turns); C = bounded
+on-policy adaptive-K decode on 6 Tier1-C46 first-turns (the CAD sampler, k_max=4, γ∈{0.6,0.9}).
+
+**MEASURED (replaces the §6.1 / §10 estimated `f_value ≈ 0.30`):**
+- **Content mix** (all assistant tokens): grammar-scaffold **22.3%** / arg-value **49.7%** / free-text **28.0%**.
+  Of model-chosen tokens: **arg-value 64.0% · free-text 36.0%**; **copy 57.3% · derived 42.7%**.
+- **THE structural finding:** the keeper agent emits every edit as a **structured tool call** (`edit(old_string,
+  new_string)`, `run_shell_command(<heredoc>)`), so the copy-heavy edit mass §A.0 bet on **lives inside tool-call
+  arguments — the path §5/§A.3.1 hard-force to K=1.** The parallelizable copies are on the wrong side of the value
+  firewall. The adaptive-K free-text domain (36%) is reasoning-dominated.
+- **Span top-1 conditional** (code analogue of GSM8K 0.238): mean 0.60–0.77 (code carries more low-entropy copy
+  mass than arithmetic; arg-copy median **0.92**), **but free-text-derived p10 = 0.246 ≈ 0.238** and the
+  distribution is bimodal.
+- **f_blocked (§A.0 limiter) = 0.335 pooled at γ0.6 (min over ALL classes 0.257, even arg-copy).** f_blocked ≥ 0.15
+  on **every** span class at **every** γ ⇒ **the pre-registered A0 pre-KILL FIRES** (1/0.335 = 2.98 < 6.7).
+- **On-policy (Phase C):** free-text adaptive-K engages **avg 1.20 tok/fwd (γ0.6) / 1.06 (γ0.9)**, k1_share 85–95%
+  — the S2 GSM8K 1.05 wall reproduced on SWE reasoning. Blended-with-arg-lock **≈ 1.06× / 1.02×**.
+
+**BLENDED-K CEILINGS (measured):** design-as-written (args K=1 + free-text gate) = **1.27× (γ0.6) / 1.13× (γ0.9)**;
+most-aggressive (§5 relaxed, copy-assert on ALL positions, k_max→∞) = **2.98× (γ0.6) / 1.76× (γ0.9)**;
+content-only f_value ceilings 1/f_value = 1.56× (arg-locked) / 1.16× (realistic) / 2.34× (derived-only).
+
+**PER-RUNG VERDICT (pre-registered §6/§A.4 rules):**
+
+| rung | blended target | design ceiling | §5-relaxed ceiling | on-policy | verdict |
+|---|---:|---:|---:|---:|---|
+| K1.5 | 1.3 | 1.27× | 2.98× | 1.06× | **SPEED-FAIL-EXPECTED** |
+| K2 | 1.5 | 1.27× | 2.98× | 1.06× | **SPEED-FAIL-EXPECTED** |
+| K4 | 3.0 | 1.27× | 2.98× | — | **PRE-KILL** |
+| K6 | 6.0 | 1.27× | 2.98× | — | **PRE-KILL** (f_blocked 0.335≫0.15 AND 2.98<6) |
+| K8–10 | 8.0 | 1.27× | 2.98× | — | **PRE-KILL** |
+
+**Ship = twin@K1** (§A.5 staircase; no rung above K1 clears its speed target on this data). The K-ladder as written
+is capped at ~1.1–1.3× blended on the current keeper data shape. The user's K=5–10 goal is unreachable here by ~4–8×.
+
+**Reconciliation with SECTION V (V-track) ceiling arithmetic — HONEST CORRECTION.** SECTION V projects "effective
+f_value ≈ 0.2 ⇒ blended ≈ 5×" if copy spans go parallel. The census does not support 5× on measured evidence:
+(a) **derived (non-copy) mass is 42.7%, not 20%** — so even every copy going perfectly parallel yields effective
+f_value 0.427 ⇒ ceiling **2.34×**, not 5×; (b) **copies do not cleanly parallelize** — arg-copy f_blocked = 0.257
+at γ0.6 (a ≥25% per-position block rate ⇒ contiguous copy-runs of ~2.9, not ∞). The realistic upper bound with
+copy-spans fully unlocked **and** §5 relaxed is **≈2.98× (γ0.6)**. **The V-track is worth pursuing to lift the ceiling
+from ~1.3× toward ~2.3–3×, but the honest re-scope is that even a perfectly executed V-track tops out near ~3×
+blended, not 5–10×** — the K=5–10 directive is not reachable on this data shape without also moving the 64% arg mass
+onto the adaptive-K path (a harness/edit-format change). Re-run the census (0.3 GPU-h) after any such change before
+spending a rung.
