@@ -411,6 +411,83 @@ launched by this step.**
 
 ---
 
+## STATUS (2026-07-13, later) — ITERATION-2 RETRAIN COMPLETE + KILL-T1 anchor gate **PASS both arms** (zero erosion, b=c=0); **D1(iter2) recorded** — both arms conversion-ready
+
+**Both iteration-2 SWE-SFT arms (windowed pool, retrain-freely) PASSED the KILL-T1 anchor gate
+with the SAME sharpest-possible signature as iteration-1 — turn-for-turn tool-call preservation,
+McNemar b=c=0, against the SAME base anchor files iteration-1 banked (NOT regenerated).** The
+data-shape fix (episode windowing, Amendment C) did not cost any certified tool-call exactness on
+either base. The campaign's iteration-2 base weights are conversion-ready.
+
+**Iteration-2 training summaries** (retrain-freely; only the dataset differs from iter-1 —
+same trainer, block 12288, horizon 400, seed 71101, r16/α32, 11 targets incl. MLP gate_up/down,
+LR 1e-5 cosine warmup 0.03; pool = the **tranche-2-promoted 383-keeper windowed** tokenized set
+`data/swe_sft_pool/train_swe_sft_windowed.tokenized.jsonl` → **987 windows**, 0 left-truncated,
+max_seq 12286):
+
+| arm | out dir | wall (s/step) | loss first→last (min, mean) | NaN/Inf | grad_norm>10 | peak |
+|---|---|---|---|---|---|---|
+| **S** (init+RL-v2 base) | `runs/swe_sft_arm1_iter2/Aswe_S_step400_seed71101/checkpoint-400` | 2365.2 s (5.91) | 0.379→0.107 (0.024, 0.162) | 0 | **0 events** | 26.66 GiB |
+| **T** (stock init base) | `runs/swe_sft_arm2_iter2/Aswe_T_step400_seed71101/checkpoint-400` | 2370.2 s (5.93) | 0.379→0.112 (0.024, 0.162) | 0 | **0 events** | 26.66 GiB |
+
+Both curves healthy and near-identical (as designed, only base differs); iteration-2 is *cleaner*
+than iteration-1 — **no** grad_norm>10 tail spike (iter-1 had the isolated step-365 n_valid=1 row on
+both arms), and the walls are shorter (windowed rows are shorter on average than the front-truncated
+12288-token rows). Window means decline monotonically (S: 0.202 [5–50] → 0.116 [200–250]).
+
+**Anchor gate (§2.5 / KILL-T1), AR-mode, tool-call matched-20 exact_args — PASS both arms.** Same
+serving path as iteration-1: each iteration-2 adapter folded via the flywheel
+`export_qwen35_9b_fastdllm_vllm.py` into its arm's converted base (`lora_merge_count=184`, no dropped
+targets, both arms) → served through the **identical** vLLM 0.23 AR config (gmu 0.66 / max-len 4096 /
+enforce-eager / mamba-align-1024 / gdn-triton) → `eval_flare_northstar_matched.py --backend
+ar-vllm-guided` on the same 20-episode/63-turn native set (`flare_scaleup_native_58.jsonl`). The
+**post-SFT candidate is paired turn-for-turn against the SAME iteration-1 base anchor turns.jsonl**
+(reused, not regenerated — arm-S pre = rlv2 base 49/63, arm-T pre = stock base 51/63); `gold_sha256`
+mismatch **0/63** on both. One GPU tenant, server torn down between arms.
+
+| arm | pre-SFT base anchor (iter-1, reused) | post-SFT (iter-2 M_swe) | raw bar (anchor−3) | McNemar b / c / p | SFT active (text-divergent) | KILL-T1 |
+|---|---:|---:|---|---|---|:--|
+| **S** (M_swe_S iter2) | **49/63** (rlv2 base) | **49/63** | ≥46 **PASS** | **0 / 0 / 1.0** | 3/63 (0 correctness flips) | **PASS** |
+| **T** (M_swe_T iter2) | **51/63** (stock base) | **51/63** | ≥48 **PASS** | **0 / 0 / 1.0** | 7/63 (0 correctness flips) | **PASS** |
+
+**Not a no-op:** both iteration-2 models are behaviorally active (S 3/63, T 7/63 turns diverge in
+greedy generated text/parsed calls) yet **zero** of those flips changed a correctness outcome —
+identical "active but zero-erosion" signature to iteration-1 (S 5/63, T 7/63). `valid_tool_call`
+63/63 and `episode_exact` (S 13/20, T 14/20) both held exactly. Value-projection audit N/A (AR mode,
+no diffusion projection events). Artifacts:
+`runs/swe_sft_arm1_iter2/anchor_gate/{mswe_S_matched20/ar-vllm-guided/turns.jsonl,anchor_mcnemar_result.json,export_mswe_S_iter2.log}`,
+`runs/swe_sft_arm2_iter2/anchor_gate/{mswe_T_matched20/ar-vllm-guided/turns.jsonl,anchor_mcnemar_result.json,export_mswe_T_iter2.log}`;
+served exports `models/qwen3.5-9b-fastdllm-{mswe-S,mswe-T}-iter2-vllm-bf16`; scorer
+`scripts/swe_sft_arm1_anchor_mcnemar.py`; gate driver `scripts/swe_sft_arm2_gate_driver.sh`.
+
+### D1(iter2) DECISION — recorded (pre-registered PASS rule: no significant regression vs each arm's own base anchor; b=c=0 ideal)
+
+| input | arm-1 **M_swe_S** iter2 (init+RL-v2 + windowed SWE-SFT) | arm-2 **M_swe_T** iter2 (stock init + windowed SWE-SFT) |
+|---|---|---|
+| final / min loss (400 steps) | 0.107 / **0.024** | 0.112 / **0.024** |
+| wall (s/step) | 2365.2 s (5.91) | 2370.2 s (5.93) |
+| NaN/Inf; grad spikes | 0; **none** | 0; **none** |
+| pre-SFT base anchor (iter-1, reused) | 49/63 (rlv2 base) | 51/63 (stock base) |
+| post-SFT iter2 anchor | **49/63** | **51/63** |
+| McNemar b / c / p | 0 / 0 / 1.0 | 0 / 0 / 1.0 |
+| KILL-T1 verdict | **PASS** (zero erosion) | **PASS** (zero erosion) |
+| SFT active (text-divergent turns) | 3/63 | 7/63 |
+
+**Decision:** **KILL-T1 fires for NEITHER iteration-2 arm.** Both hold the certified tool-call anchor
+turn-for-turn (b=c=0), so the pre-registered PASS rule (no significant regression vs the arm's own
+base) is met with the ideal signature — a *strict* pass, not a within-margin pass. Per the D1 default
+(§2.4) + campaign directive, **arm-1 / M_swe_S = PRIMARY** (preserves the certified tool-call gain,
+single-stage), **arm-2 / M_swe_T = CONTROL TWIN** (stock substrate, needs a later tool-call RL redo).
+**Both are conversion-ready (iter2);** freeze in `CONVERSION_READY_iter2.md`. Same caveat as iter-1:
+arm-2's raw +2 (51 vs 49) is measured against a *different* (stock) base that never carried the
+tool-call gain — **not** a capability delta over arm-1; the true D2 tiebreak (**max SWE resolve@1 AR
+subject to anchor-held**, design step 2b) is still **NOT run** and remains the one open input before a
+single-arm K-track commit. The iteration-2 shape fix's *intended* payoff (edit-commitment on
+Tier1-C46, the #117/§STATUS-2026-07-10 3/48 deficit) is a SWE-resolve measurement, **not** part of
+this tool-call anchor gate — it is the next, separate step.
+
+---
+
 ## 0. FRAME — what the ladder established and the decision this campaign resolves
 
 > **SUPERSEDED (greedy-era rationale — kept for the record; see STATUS block above).** The ladder and the
