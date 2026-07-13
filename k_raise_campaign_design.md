@@ -1081,3 +1081,34 @@ entry floor). **Speed with quality below 19/50 is not a win — it is a revert.*
 highest rung that held the golden number AND its speed target (A.5); a speed gain that costs the golden number reverts to
 the last golden-number-holding rung, K=1 included. This is the §0 downside-is-free reframe applied to the directive's
 absolute bar: the campaign can only ever *add* speed on top of a 19/50-matched twin, never trade the number away for it.
+
+---
+
+## DIRECTIVE-2(2026-07-12) — USER: ATTACK VALUE SPANS AT K>1 THROUGH TRAINING ("hard doesn't mean give up")
+
+User directive (verbatim intent): *we DO need a lever to attack value spans at K>1 through training — it being
+hard is not a reason to give up.* This licenses a **VALUE-SPAN K TRACK (V-track)** alongside the reasoning-span
+ladder, and it re-opens the "values stay K=1 forever" rule AS A MEASURED QUESTION for the COPY subclass only.
+
+Evidence honesty — why this is attackable NOW when it wasn't before: the historical neutral SFT variants
+(value-span mask forcing, candidate-ranker, skeleton-value-infill) attacked raw EXACTNESS on a model that could
+not ground arguments at K=1 at all. Today's object grounds at ~98% source-verbatim at K=1; the question is
+PARALLELIZING an already-exact capability. The census (runs/k_census/) measures the copy/derived split: copy-class
+value tokens (target string exists verbatim in context) are the majority of value mass with top1_exact 0.80 /
+median conf 0.92 — a pointer/transcription structure with ONE retrievable joint completion. DERIVED values
+(computed numbers, invented names) remain chain-rule-bound and stay K=1 — the V-track does NOT touch them.
+
+Levers licensed (design to be appended as SECTION V):
+- **V1 (training)**: copy-span joint-infill consistency in the conversion — mask ENTIRE copy spans, supervise all
+  positions jointly conditioned on the context containing the source string; span-length curriculum; span
+  identification reuses the census ngram-copy detector (census_content_mix.py).
+- **V2 (constrained decode)**: pointer-constrained whole-span commit — candidate set mined from context n-grams;
+  commit the full span in one forward when one candidate jointly dominates; optional 1-forward verify-then-accept.
+  Promotable under the CONSTRAINED lane per [[diffusion-promotion-discipline]].
+- **Gates (non-negotiable)**: value exactness held at the KILL-T1 anchor (exact_args, matched-20), golden number
+  held (§C), derived-value spans measurably untouched, committed tok/fwd gain reported on value spans separately.
+
+Ceiling arithmetic this unlocks (the reason to fund it): f_value ≈ 0.5 with copy-majority ⇒ if copy spans go
+parallel, effective f_value ≈ 0.2 ⇒ blended ceiling 1/0.2 ≈ 5× — the user's K=5 becomes arithmetically reachable;
+without the V-track the blended goal is likely capped ≈2×. The V-track is therefore NOT optional garnish; it is
+load-bearing for DIRECTIVE(2026-07-12).
