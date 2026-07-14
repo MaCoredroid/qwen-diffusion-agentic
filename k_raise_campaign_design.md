@@ -2016,3 +2016,25 @@ decode is. The quality goal and the speed goal have therefore CONVERGED on the s
 W-ladder (draft-and-verify with DIRECTIVE-5 recency-first batched verification) is now load-bearing for BOTH goal
 halves; W-0 launches immediately on the freed GPU. A W-1 engine prototype, if W-0 proceeds, gets gated on C46
 under the NEW decode envelope (same 48-id pool, same scoring) — that is the next legitimate twin entry attempt.
+
+---
+
+## DIRECTIVE-6(2026-07-14) — USER: DRAFTER DESIGNED ON SUFFIX-DECODING REFERENCE CODE
+
+The W-1 drafter shall be built by REFERENCING/ADAPTING proven suffix-decoding implementations (SuffixDecoding,
+arXiv 2411.04975 / Snowflake reference code; REST-style retrieval tries) rather than the probe's ad-hoc exact
+n-gram index. Required properties, adapted to the FLARE block loop:
+
+1. **Suffix automaton / suffix tree over the live context tokens** — longest-suffix-match retrieval in O(match)
+   with INCREMENTAL append per turn (agentic contexts grow monotonically; no rebuilds mid-episode).
+2. **Longest-match CONTINUATION drafting**: draft what historically FOLLOWED the matched suffix, not only bounded
+   grammar-delimited candidates — this extends firing beyond arg-values into the freetext copy mass (census: 38.4%
+   of freetext tokens are copies), the headroom above W-0's blended 1.877×.
+3. **Recency-first tie-break preserved** (DIRECTIVE-5): among equal-length matches, most recent source wins —
+   W-0 measured 97.7% of copy mass sourced within 1792 tokens; frequency ranking is secondary to recency here.
+4. **Safety rules unchanged**: byte-equal copy-assert at verify, batched verify with early exit, grammar-mask
+   compatibility (drafts must be completable under the FSM), value-span verify bar unchanged, and the W-0
+   off-by-one pointer-slip class covered by the miner cert (seed-anchored exact match — the suffix automaton's
+   anchored match property must be certified to never draft the slipped-by-one candidate class).
+5. **W-1 deliverable order**: port/adapt reference implementation -> miner cert battery (incl. pointer-slip) ->
+   wire into FLARE loop behind an env gate -> bounded live A/B -> C46 re-run under the new envelope.
