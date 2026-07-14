@@ -2180,3 +2180,59 @@ variable-accept state scatter (DIRECTIVE-5.2b / W.1.b GDN discipline) in `qwen3_
 sampled GPU battery but the live re-run is owed at C46; (ii) throughput uses certified ā=0.9913 + re-mined
 common-prefix lengths — the teacher-forcing caveat dies only on-policy at the live rung; (iii) window 3072
 (on-policy fully covered).
+
+## STATUS(W-1b) — model-runner seam CLOSED + LIVE fires with real speedup (2026-07-13) — PROCEED-CONDITIONAL
+
+Object = twin@plain (`qwen3.5-9b-fastdllm-mswe2-S-twinK1`), the same K=1 twin W-0/W-1 probed. Server DOWN,
+GPU idle (385 MiB, 0%) at exit; one server booted for the LiveCert (~0.3 GPU-h of the ~4 budget).
+
+**SEAM (the risky engineering, in the pin `qwen3_5-flare-modelstate`).** The batched verify canvas is realized
+as a WIDER read-only denoise: `_hc_stage_verify` writes `[clean tail + drafted span]` into the noisy canvas at a
+per-request variable width (`_hc_draft_len = tail_len+k`, the SAME variable-width scheduler contract the commit
+path already uses — NO async optimistic-advance, so the §0.D IMA/width-clobber class is sidestepped by
+construction: stale trailing slots are causally/window excluded). `_hc_verify_read` reads the k-position argmax
+window; **whole-span accept** bulk-commits via `apply_verified_draft` (the span folds at the NORMAL block commit
+→ the **GDN variable-accept state scatter IS the existing exact-k block-commit fold**, `block_start += n`,
+`num_sampled=n` → num_accepted scatter; no new state code, no approximation). **Reject commits NOTHING** and arms a
+one-step cooldown → next forward is a plain single-`[MASK]` K=1 read, so the emitted stream is byte-identical to
+K=1 *regardless of the verify mask* (the deployed config is `VLLM_FLARE_BIDIR_PROBE=1` full-reveal, so accept is a
+NEW envelope per W.0.b — reject-safety does not depend on it). Gated `VLLM_FASTDLLM_W1_DRAFT_VERIFY=1` (the
+un-prefixed `FASTDLLM_*` flag does NOT propagate to the EngineCore worker — vLLM only forwards `VLLM_`-prefixed
+env; alias added). Default OFF ⇒ no controller ⇒ byte-identical K=1.
+
+**CPU CERTS (70/70 PASS).** New `tests/v1/sample/test_w1b_engine_seam.py` (5): (1) **state-scatter equivalence** —
+accept-k then continue == decode-k-serially, byte-exact committed stream AND identical per-commit
+`(num_sampled, block_start)` trajectory; (2) **reject zero-residue** — poisoned source, every verify rejects,
+commit trajectory byte-identical to K=1, 0 falsely accepted; (3) **no-false-accept** whole-span rule; (4) gate-ON
+accept byte-identical + fewer forwards; (5) gate-OFF inert. Plus the 65 pre-existing hybrid_clean/w1 tests
+(gate-OFF byte-parity) unchanged.
+
+**LIVE (real forwards, bounded smoke — twinK1, bidir/sync/B=1, temp 0).**
+- **Boot:** modified pin boots clean gate-ON; gate confirmed `True` in the EngineCore log.
+- **FA / byte-safety:** copy-heavy turns (long verbatim code-block `content` args) → **content byte-exact 3/3**,
+  **projected_value_tokens_exact == 0 on every request** (the value-projection tripwire), path turns fall back to
+  K=1 byte-identically ⇒ **no deploy-class false accept observed** (a full-reveal leak would corrupt the copy).
+  NOT the full perturbed-candidate battery — bounded.
+- **Throughput (matched K=1 no-fire baseline vs firing, same 3 prompts):** model_forwards **115/80/95 → 33/26/25**
+  for byte-identical 131/96/111-tok outputs ⇒ copy-mass tok/fwd **~1.15 → ~4.0** (≈3.5× fewer model forwards),
+  wall **3.33/2.32/2.77 s → 1.46/1.00/1.00 s = 2.3–2.8×**; ms/committed-tok **25.4 → 11.1 (0.44×)** on the 131-tok
+  turn. Live blended vs the CPU-cert 14.41 copy-tok/fwd is not directly comparable (bounded, non-corpus).
+- **Reject tax (honest):** short/hard spans (file paths) PROPOSE but the strict whole-span **full-reveal** verify
+  REJECTS them all → K=1 fallback (byte-identical) + a wasted-verify forward each ⇒ net small SLOWDOWN on
+  non-copy. Copy fraction governs the blended win. This is a W-2 tuning lever (per-span propose gating / accept the
+  matching prefix instead of whole-span).
+- **A6 gate-ON (bounded):** fired turns exact-args valid (content 3/3); non-fired turns byte-identical to K=1.
+
+**REQUIRED FIX found live.** The drafter fired 0× at first (self-match: `observe` had grown the copy-source
+automaton with the query suffix, so `longest_suffix_match` matched the whole emitted tail — only occurrence is the
+current position → empty continuation). Fixed to the **prompt-lookup contract** (`observe` grows the query only;
+copy sources = the seeded prompt, where the agentic copy mass lives; query capped at 256). After the fix the
+drafter fires on real copies (CPU + live confirmed).
+
+**VERDICT = PROCEED-CONDITIONAL** for the C46-under-new-envelope full run. The risky engineering (seam + GDN
+exact-k scatter) is DONE, CPU-certified, and LIVE-fires with real, byte-safe speedup on the arg-value copy mass.
+**OWED before the full run** (the formal LiveCert battery, un-run for bounded-budget reasons): (a) the perturbed
+FA battery (off-by-one / substitution / whitespace) through the live engine; (b) the W-0 span-corpus live
+throughput + blended tok/fwd; (c) the formal 5-turn A6 online==offline; (d) the 6-episode C46 A/B
+(`runs/k_gate_c46_iter2` ctx_overflow ids). Plus the reject-tax tuning lever above. Pin commits are LOCAL on
+`qwen3_5-flare-modelstate` (origin is upstream vllm — never pushed there).
