@@ -2647,3 +2647,227 @@ principled fix targets the WHOLE deficient conditional. X.1-as-designed: KILLED 
 X.1b (re-dose: low weight, KL-guarded, mixed curriculum), X.2 (AR-self-distillation of the full read-phase
 conditional — deterministic targets from the 12/48 AR policy; the X.1 lesson strengthens this), X.3 (AR-assist
 router, ships at AR-read quality today). All within budget; C46 loop now ~3h.
+
+---
+
+# SECTION Y — CONVERSION AS LONG-CONTEXT AR-SELF-DISTILLATION (the principled fix the X.1 kill demands)
+
+Appended 2026-07-14. Same rigor as W/X: pre-registered kills, measured numbers only, one cheap decisive instrument
+reused (the N=64 battery), honest ceilings, cost + kill per rung. **This section is the user-endorsed rethink of the
+root defect.** X.1/X.2 attack the read-arg *slot*; Y attacks the *conditional that produced it*. The premise, stated as
+a diagnosis and verified against the record below:
+
+> **The conversion's root defect is LONG-CONTEXT CONDITIONAL INFIDELITY.** The twin is trained as denoising-SFT at
+> block **512** (plain: `kraise_reconvert_mswe_S_driver.sh:59`) / **4096** (X.1: `x1_conversion_runner.sh`, STATUS
+> 2026-07-14 "BLOCK 4096, peak 29.3 GiB") and **served at 32768** (STATUS 2026-07-10 REPRO, `max_model_len 32768`).
+> Everything short is at parity; every measured deficit lives at the cap.
+
+**Premise verified against the docs (five load-bearing facts, all already banked):**
+1. **Short context = parity.** Matched-20 AR-mode `exact_args` = **49/63 both arms** (KILL-T1 iter-2, `CONVERSION_READY_iter2.md`
+   GATE FREEZE; twin-diffusion vs AR §Step4 #114). The tool-call conditional is byte-intact at ≤~2k.
+2. **Every deficit fires at 28.9–30.2k.** The 5 divergence prompts sit at **28.9–30.2k / 32768** (STATUS REPRO,
+   `runs/k_gate_c46/K1_COMMITTAL_ANALYSIS.md`); grounding collapses only near-cap; committal collapse == context-window
+   exhaustion at 32768 (36/48 twin CTX-deaths, `32516/253/32769` signature).
+3. **Same weights AR-decoded are FAITHFUL at the cap.** AR grounds `read_file` windows **306/306 = 100%** (REPRO) /
+   **295/295 = 100%** (X.1 arm iii) at 28–30k; the diffusion decode drops them **89.4%**. The capability is present in
+   the weights; the **decode-paradigm conditional** drifted (temperature-flat 0.83–0.89, greedy non-deterministic).
+4. **Symptom patches move the failure MASS, they don't remove it.** Read-window **clamp**: CTX-deaths 8/8→4/8 but
+   **+2 exec-errors +2 timeouts**, resolve 0→1 (STATUS CANDIDATE). **X.1** (rww=5.0, block-4096, 800 steps): grounding
+   10.6%→**100%**, ctx-deaths 26→18, **but loop-halts 14→34** (71% of episodes), committed edits 22→16, C46 **1/48**
+   (`f16d59c`). The narrow high-weight patch traded one pathology for another — **KL uninstrumented, drift the prime
+   suspect.**
+5. **The trained/served length mismatch is the mechanism, not an accident.** The conversion never trains a read (or any
+   value) at the 28–30k position where it fails; the denoiser under-grounds because it **has never seen the near-cap
+   conditional.** Y is the fix that removes the mismatch instead of patching its downstream symptom.
+
+**Relation to X.1/X.2 (do not double-count).** X.2 (task #145, in flight) is the **read-arg-only, weight-2.0,
+KL-guarded pilot of Y at max_len 4096** (`scripts/x2_ar_self_distill.py`: CE on same-weights AR-greedy `limit`/`offset`
+targets, reserved 8-episode KL probe). **Y is X.2 generalized on two axes the X.1 kill proved are load-bearing: the
+WHOLE assistant conditional (not one slot) and SERVING-LIKE LENGTH (12288+, not 4096).** Y and X.3 remain orthogonal:
+X.3 (AR-assist routing) is the ~0-training architectural floor that ships regardless; Y is the training cure that, if it
+lands, retires the concession X.3 makes.
+
+## Y.1 OBJECTIVE — full-trajectory conditional matching against the same weights' AR policy
+
+**The bet, in one sentence.** Instead of up-weighting a failing token class, **make the diffusion twin's serial (K=1)
+readout conditional match, position-by-position across the whole assistant trajectory, the SAME weights' deterministic
+AR-greedy conditional — measured at serving-like context length.** The teacher is free, deterministic, and proven
+faithful at the cap (fact 3); the student and teacher are **identical weights differing only in decode mode**
+(`DECODE_POLICY=careful_live_grammar, flare=0` vs `hybrid_clean`), so this is self-distillation, not a foreign teacher.
+
+**Exact formulation — CE-on-AR-greedy (PRIMARY) vs KL-on-AR-logits (optional richness).**
+- **PRIMARY = token-CE on AR-greedy targets.** For each supervised assistant position, the label is the token the
+  same-weights AR-greedy decode emits from that exact prefix. **Why this and not KL on 32 GB:** (i) it is **exactly what
+  serves** — the hybrid_clean K=1 readout is a greedy/near-greedy argmax over the clean-stream logits, so hard-label CE
+  is *on the serving distribution*, not a softened surrogate; (ii) targets are **token-ids only** → precompute once,
+  store cheaply, feed the existing chunked-CE trainer verbatim (Y.2); (iii) `x2_ar_self_distill.py` already implements
+  the data path (splice AR value tokens into the keeper row, K=1 sequential labels) — Y widens the label set from
+  read-arg slots to all assistant positions.
+- **KL-on-AR-logits — costed and DEFERRED to a trigger.** Matching the full next-token distribution carries the
+  teacher's dark knowledge but is expensive on this stack: the logit tensor is `[L, vocab=248320]`. **Precompute is
+  infeasible** (full logits for thousands of positions at L=12288); **on-the-fly needs a second frozen bf16 forward per
+  step**, which on top of the trainable path blows the 32 GB budget (16.68 GiB weight floor ×2). The affordable
+  compromise is **top-k truncated KL** (k=128: store top-128 logprobs + a tail bucket per position, KL over the
+  truncated support). **RULE:** run CE-on-greedy first; escalate to top-128 KL **only if** CE clears the N=64 grounding
+  battery but *fails the loop-halt canary* (Y.3) — i.e. only if hard labels prove too brittle on the broad policy. The
+  serving readout being greedy makes CE the honest default.
+
+**Which positions get supervised — coverage by SAMPLING, never by weight (the X.1 lesson, encoded).**
+- **VALUE-SPAN = ALWAYS.** All tool-call argument bodies — the derived `limit`/`offset` read window (the measured 84–89%
+  failure locus) **plus** every other value slot (`file_path`, `new_string`, edit/write args). This is the class that
+  fails and the class serving depends on.
+- **REASONING = SAMPLED (partial coverage, e.g. 30–50% of reasoning positions per episode, deterministic by seed).**
+  Reasoning is high-entropy (census top-1 ≈ 0.238; S2 confirmed the joint-commit wall). Matching *every* reasoning token
+  to a single greedy AR rollout would over-constrain the model to one trajectory and is the most likely source of the
+  X.1-class broad-policy distortion. Sampling gives the trajectory-level conditioning signal (so late reasoning is
+  trained near-cap) without collapsing reasoning diversity.
+- **Uniform loss weight = 1.0.** The differentiation between classes is **coverage** (value-always vs reasoning-sampled),
+  **not** a per-class multiplier. X.1's 5.0 and X.2's 2.0 are both dropped. This is the single most important
+  structural change vs X.1: no narrow high-weight patch can distort the broad policy if there is no high weight.
+
+**The two-stream interaction — WHICH logits, and how the twin still denoises (the crux the design must nail).** The twin
+serves FLARE and must keep the denoise capability that W-2 draft-verify rides on. The two objectives are **decoupled by
+which stream carries which loss:**
+- **Distillation acts on the CLEAN stream.** The K=1 serial readout that serving commits is the **clean-stream,
+  strictly-causal next-token logits** (`L_AR`, the stream that is byte-identical to AR by construction — SECTION X
+  preamble). The AR-self-distillation CE/KL is applied **only to these clean-stream position-t logits.** This is exactly
+  the conditional that under-grounds at the cap, and exactly the one the AR teacher is faithful on.
+- **The denoise stream keeps its own loss, UNCHANGED.** The bidirectional-within-block denoise CE (`noisy_to_noisy_mask`,
+  `modeling.py:198`; two-stream `L_diff`) is retained on a co-trained slice so the parallel-decode / draft-verify
+  geometry is preserved. Y **never** distills onto the denoise (bidir) logits — that geometry legitimately differs from
+  the strictly-causal AR conditional (the X.2 "honest risk" note), so forcing it to match AR would be ill-posed. The
+  denoise stream stays a *denoiser*; the clean stream is made *AR-faithful at length*.
+
+This decoupling is also what unlocks the length plan (Y.2): the distillation half is single-stream and strictly-causal —
+**identical in shape to the SFT objective that already reached block 12288** — while only the (length-limited) two-stream
+denoise-preservation slice stays at the ≤4096–8192 block the two-stream forward can afford.
+
+## Y.2 LENGTH PLAN UNDER 32 GB — the honest max, code-grounded
+
+**Why the conversion trains at 512/4096 (the constraint, found in the trainer, stated honestly).** The two-stream FLARE
+forward **materializes `[2L, vocab=248320]` logits (~16 GB bf16 at 32k) and measured-OOMs above block 8192** — verbatim
+from the trainer header (`scripts/swe_sft_arm1_qlora_train.py` lines 7–8, citing `runs/swe_sft_arm1/ARM1_LAUNCH_STATUS.md`).
+The conversion additionally runs on a **bf16 LoRA base (16.68 GiB weight floor, NOT 4-bit)** — `run_flare_redesign_run1.sh`
+/ `train_s2_finetune.py` carry no `load_in_4bit`. bf16 base + **2× streams** ⇒ block 4096 peaks **29.3 GiB** on the 32 GB
+card (X.1 STATUS). So the two-stream recipe's honest ceiling is **~4096, ~8192 absolute max before the 2L-logit OOM.**
+This is a *recipe* limit, not an architecture limit — and Y.1's decoupling sidesteps it.
+
+**The demonstrated single-stream max = 12288 (this is the asset).** The SFT ran the **single-stream QLoRA trainer**
+(`swe_sft_arm1_qlora_train.py`: `load_in_4bit=True, nf4, double_quant, compute_dtype bf16` → ~5.5 GiB weights;
+`gradient_checkpointing`; **lm_head+CE gradient-checkpointed over sequence chunks, `logits_chunk=2048`, so the full
+`[L, 248320]` logits are never materialized — peak is one `[chunk, vocab]` tile**) at **block 12288**: post-load resident
+**11.82 GiB**, **5.91 s/step**, 400 steps in 39.4 min (`runs/swe_sft_arm1_iter2/Aswe_S_step400_seed71101/train.log`).
+Because Y.1's distillation half is single-stream + strictly-causal + K=1 — **the same objective shape as this SFT** — it
+runs on this exact validated trainer and reaches **12288 today, measured, not hoped.**
+
+| trainer / objective | quant | streams | CE | demonstrated block | peak mem |
+|---|---|---|---|---:|---:|
+| two-stream conversion (plain/X.1) | bf16 | 2 (clean+denoise) | full `[2L,V]` logits | 4096 (8192 OOM wall) | 29.3 GiB @4096 |
+| **single-stream QLoRA SFT (Y reuses)** | 4bit-nf4 | 1 (causal) | **chunked, `[chunk,V]`** | **12288** | **11.82 GiB post-load** |
+
+**Honest max statement.** Distillation half: **12288 = DEMONSTRATED**; **16384 = FEASIBLE stretch** (chunked CE makes
+logit memory O(chunk·V), *L-independent*; the binding cost above 12288 is attention/GDN activations — and GDN is linear
+O(L), favorable — plus grad-checkpoint recompute *time*, so 16384 costs step-time, not a memory wall); **32768 =
+UNVERIFIED**, gated behind a pre-registered "one 100-step 32k segment fits" sub-probe before any 32k curriculum spend.
+Denoise-preservation slice: held at **≤4096** throughout (its two-stream ceiling).
+
+**Curriculum: 4096 → 12288 → (16384 on trigger).** Distillation block climbs; denoise slice stays ≤4096.
+
+**Long-context sample sourcing — the windowed dataset exists, but caps at 12286 (the load-bearing honesty).** The keeper
+windowed pool `data/swe_sft_pool/train_swe_sft_windowed.tokenized.jsonl` (987 windows, `build_windowed_dataset.py` block
+12288 / ctx_overlap 3072 / cap 6, retention 100%, **max_seq 12286**) supplies the 12288 rung directly, and
+`x2_ar_self_distill.py` already oversamples high-context read windows + synthesizes near-cap exploration states. **BUT
+12286 < 28900** — even the demonstrated max trains reads ~2.4× *below* the failing onset. Two pre-registered options:
+- **(a) Re-window at ≥28k** (keeper episodes reach 30k+, so the source exists): extend `build_windowed_dataset.py` to
+  block 24576–32768 and place supervised value slots at ≥24k. **Gated behind the 32k-fits sub-probe** (Y.2 stretch).
+- **(b) Bet on 12k→32k generalization + the certified serving clamp as residual guard.** GDN linear attention
+  extrapolates better than softmax O(L²); train the correct conditional at 12288 and rely on length-generalization to
+  28–30k, with the arm-neutral read-window clamp (already certified) catching the residual.
+
+**Recommendation: (b) as the base plan, (a) attempted only if R2 lands 8–11/48 but ctx-deaths still bind** — because
+(a) requires proving the unverified 32k trainer, which is the single biggest compute risk. State plainly: **if reads
+trained at 12k still drift at 28k, the length constraint is not fully trainable on 32 GB and the honest fallback is X.3.**
+
+## Y.3 DOSE + GUARDS (the guards X.1 omitted are now non-negotiable)
+
+- **Steps / LR.** Screen `{200, 400, 600}` checkpoints (SFT unit = 400; X.1 saturated grounding by step 600). **LR 1e-5**
+  (the certified conversion LR — conservative), cosine. **Uniform loss weight 1.0** (Y.1).
+- **KL-to-base 0.05 trip — WIRED (X.1's fatal omission, fixed).** `scripts/s2_kl_probe.py` (rolling KL-to-base, cap 0.05,
+  `kill_retention_tripped` → halt) runs **every 50 steps** on the reserved held probe `x2_kl_probe.json` (built from the
+  8 reserved KL-probe episodes' NON-read assistant turns — the broad-policy drift detector, *disjoint* from training).
+  Precedent: S2 tripped **0.0699 > 0.05 at step 120** and correctly early-stopped. This is the direct guard against the
+  loop-halt drift that killed X.1.
+- **Loop-halt canary (8-ep) — a STANDING mid-training gate, not just a post-hoc gate.** The **8 divergence episodes**
+  (the clamp-CANDIDATE set) are replayed through the current-checkpoint twin at **every ~200-step checkpoint**. Two
+  pre-registered fail conditions, either halts the dose: **committal (non-empty scored patch) must not fall** below the
+  pre-distill twin, and **loop-halt count must not rise.** This is exactly the instrument that would have caught X.1's
+  14→34 loop-halt explosion *before* the multi-GPU-h C46 spend. ~0.3 GPU-h/checkpoint (8 short replays, no scoring
+  needed for the loop-halt/committal counters).
+- **KILL-T1 anchor — every 50 steps.** Matched-20 AR-mode `exact_args`, paired McNemar vs the 49/63 frozen anchor;
+  **net-loss must = 0.** (The short-context conditional must stay byte-intact — fact 1 is the thing we must not break.)
+
+## Y.4 GATES + BUDGET (pre-registered proceed/kill per rung; honest GPU-h)
+
+| rung | what | pre-registered PROCEED gate | KILL → | GPU-h |
+|---|---|---|---|---:|
+| **R0** | AR-greedy teacher gen (value-always + reasoning-sampled + near-cap synth); leakage asserts (holdout sha, train/KL disjoint — `x2` builds these) | data manifest + leakage asserts pass | fix data | **1–2** |
+| **R1** | distill @ **4096**, 400 steps, single-stream QLoRA + chunked CE | N=64 battery grounding **≥70%** ∧ 8-ep canary not-worse ∧ KL≤0.05 ∧ KILL-T1=0 | → escalate to top-128 KL (Y.1) if battery passes but canary fails; else STOP | **3–4** |
+| **R2** | distill @ **12288** curriculum + **C46 re-gate** | C46 **≥12/48** ∧ canary not-worse ∧ **W-2 draft-verify battery holds** (arej=0, tok/fwd not regressed — Y.5 risk 1) | → (a) re-window ≥28k *iff* 8–11/48 & ctx-death-bound; else X.3 | **6–8** |
+| **R3** | @ **16384** stretch (trigger-only) | C46 improves over R2 | STOP, ship R2 | **6–8 (contingent)** |
+
+**The cheap decisive instrument is unchanged and reused:** the **N=64 read-arg replay battery** (5 prompts @ 28.9–30.2k
+× 64, grounding rate; twin baseline 10.6%/35.6%, AR 100%; ~1 GPU-h) is the R1 screen and the R2 re-check. **Honest total:
+R0+R1+R2 ≈ 10–14 GPU-h core; ≤ 22 GPU-h with the R3 stretch.** Server torn down at every exit.
+
+**How X.2's result (in flight, task #145) modifies the plan:**
+- **If X.2 (read-arg-only @4096, weight 2.0, KL-guarded) clears the loop-halt canary AND lifts C46** → the distillation
+  *mechanism* is validated; Y's marginal, untested bet is only **full-trajectory coverage + LENGTH**, so **skip re-proving
+  R1 and go straight to R2 (12288 curriculum)**. X.2 becomes Y's R1.
+- **If X.2 grounds the battery but STILL moves failure mass** (loop-halts rise even at weight 2.0 + KL guard) → this
+  **confirms the global long-context shift**: the read-arg conditional cannot be repaired in isolation at 4096, and Y's
+  **whole-trajectory + ≥12k-length curriculum is the load-bearing lever, not the target signal.** Proceed to R2 with the
+  reasoning-sampled full-trajectory objective as the *primary* hypothesis. Either X.2 outcome de-risks exactly one Y axis
+  before the larger spend — X.2 is the pilot, Y is the scale-up.
+
+## Y.5 RISKS (named, with the guard for each)
+
+1. **Catastrophic forgetting of the DENOISE capability (the deepest, and NEW vs X.1/X.2).** Distilling the clean-stream
+   serial conditional could erode the bidir denoise-stream that W-2 draft-verify rides on — a capability X.1/X.2 never
+   threatened because they kept the two-stream recipe throughout. **Guard:** co-train the two-stream `L_diff` on a
+   ≤4096 slice *every step* (never a pure single-stream run), and add a **NEW R2 gate**: the W-2 draft-verify N=64
+   false-accept + tok/fwd battery must hold (arej=0, tok/fwd not regressed from the newenv 1.02→1.38 baseline). The twin
+   must still serve FLARE.
+2. **Teacher-target OOD / imperfection.** The AR teacher grounds reads **100% at 28–30k** (295/295, 306/306 — CITE), so
+   the target conditional is *in-distribution at the failing regime* — this is the premise's strength. **But AR resolves
+   only 12/48**: the teacher is faithful on the *conditional* yet imperfect on the *outcome* (the B-ceiling), so Y
+   recovers the twin **toward** AR (12/48), not past it — no gate may claim otherwise. And AR-greedy at 28k is a single
+   deterministic sample of an imperfect policy; over-matching the **reasoning** conditional (top-1 0.238, genuinely
+   high-entropy) to one greedy rollout risks reducing quality/diversity — mitigated by reasoning being *sampled*, not
+   always-on, and by the KL guard.
+3. **Compute honesty.** 12288 single-stream QLoRA is **demonstrated** (5.91 s/step); **16384 is projected, not
+   measured**; **32768 is unverified** and likely infeasible at useful step-time on 32 GB — Y does **not** promise reads
+   trained *at* 28–30k without first passing the pre-registered "one 100-step 32k segment fits" sub-probe. No 32k
+   curriculum spend is authorized before that probe.
+4. **The length-generalization gap (the single highest-risk assumption).** Even at the demonstrated 12288 max, training
+   tops out **2.4× below** the 28.9–30.2k failing onset. Y **bets** that distilling the correct conditional at 12k, with
+   value-always coverage, **generalizes to 28k** (GDN linear-attention extrapolation) + the certified serving clamp as
+   residual guard. **If C46 ctx-deaths persist because 12k-trained reads still drift at 28k, the honest verdict is that
+   the long-context constraint is not fully trainable on 32 GB, and the answer reverts to X.3 AR-assist routing** (the
+   architectural-negative branch, built in parallel as the floor).
+
+---
+
+**SECTION Y — FINAL 8-LINE BRIEF.**
+1. **Objective (2 sentences).** Cure the conversion's long-context conditional infidelity by distilling the diffusion
+   twin's K=1 clean-stream readout, across the whole assistant trajectory, onto the SAME weights' deterministic AR-greedy
+   conditional — measured at serving-like length — with uniform weight and coverage-by-sampling, not the X.1 narrow
+   high-weight patch. The denoise stream keeps its own two-stream loss so the twin still serves FLARE.
+2. **Max trainable context + why.** **12288 is demonstrated** (single-stream QLoRA-4bit + chunked-CE trainer,
+   `swe_sft_arm1_qlora_train.py`, 11.82 GiB post-load, 5.91 s/step); the two-stream denoise recipe OOMs above **8192**
+   (materializes `[2L, 248320]` logits), so distillation is single-stream to reach 12288, denoise-slice stays ≤4096;
+   16384 is a step-time stretch, 32768 unverified.
+3. **Total GPU-h.** **~10–14 core** (R0 2 + R1 4 + R2 8), **≤22** with the 16384 stretch; each rung gated by the ~1 GPU-h
+   N=64 battery + the 8-ep loop-halt canary + KL-0.05 + KILL-T1, server down at exit.
+4. **Single highest-risk assumption.** That the 12288→32768 gap is a **generalization the GDN twin makes**, not a
+   length-extrapolation wall — i.e. that reads trained at 12k stay grounded at 28k; if false, no ≤32 GB dose fixes it and
+   **X.3 AR-assist routing is the floor.**
