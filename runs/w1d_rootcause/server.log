@@ -1,0 +1,870 @@
+Running as unit: w1d_trace.scope; invocation ID: 028f77b5cef042e798623fd21e26101f
+[flare-hybrid-serve] engine=0.1.dev200+g2665ed704.precompiled policy=hybrid_clean decode=hybrid_clean apc=1 block=1024 canvas=32 flare=1 bidir=1 mask=248077 temp=0.0 port=9952
+(APIServer pid=955364) INFO 07-13 22:50:32 [api_utils.py:339] 
+(APIServer pid=955364) INFO 07-13 22:50:32 [api_utils.py:339]        █     █     █▄   ▄█
+(APIServer pid=955364) INFO 07-13 22:50:32 [api_utils.py:339]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.1.dev200+g2665ed704
+(APIServer pid=955364) INFO 07-13 22:50:32 [api_utils.py:339]   █▄█▀ █     █     █     █  model   /home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-mswe2-S-twinK1-vllm-bf16
+(APIServer pid=955364) INFO 07-13 22:50:32 [api_utils.py:339]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=955364) INFO 07-13 22:50:32 [api_utils.py:339] 
+(APIServer pid=955364) INFO 07-13 22:50:32 [api_utils.py:273] non-default args: {'model_tag': '/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-mswe2-S-twinK1-vllm-bf16', 'chat_template': '/home/mark/shared/lumoFlyWheel_codex_fork/docker/chat_templates/qwen3-openai-codex.jinja', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_xml', 'host': '127.0.0.1', 'port': 9952, 'model': '/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-mswe2-S-twinK1-vllm-bf16', 'dtype': 'bfloat16', 'max_model_len': 32768, 'enforce_eager': True, 'served_model_name': ['qwen3.5-9b-flare-hybrid-clean'], 'override_generation_config': {'temperature': 0.0}, 'attention_backend': 'TRITON_ATTN', 'reasoning_parser': 'qwen3', 'gpu_memory_utilization': 0.74, 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float32', 'mamba_block_size': 1024, 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 1024, 'max_num_seqs': 4, 'enable_chunked_prefill': True, 'enable_flashinfer_autotune': False, 'diffusion_config': {'canvas_length': 32, 'max_denoising_steps': 8}, 'gdn_prefill_backend': 'triton'}
+(APIServer pid=955364) WARNING 07-13 22:50:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_FASTDLLM_W1_DRAFT_VERIFY
+(APIServer pid=955364) WARNING 07-13 22:50:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_DECODE
+(APIServer pid=955364) WARNING 07-13 22:50:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE
+(APIServer pid=955364) WARNING 07-13 22:50:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_FLARE_BIDIR_PROBE
+(APIServer pid=955364) WARNING 07-13 22:50:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_W1_TRACE
+(APIServer pid=955364) WARNING 07-13 22:50:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_BLOCK
+(APIServer pid=955364) WARNING 07-13 22:50:32 [envs.py:2035] Unknown vLLM environment variable detected: VLLM_QWEN3_5_FLARE_MASK
+(APIServer pid=955364) INFO 07-13 22:50:32 [model.py:606] Resolved architecture: Qwen3_5ForConditionalGeneration
+(APIServer pid=955364) INFO 07-13 22:50:32 [model.py:1736] Using max model len 32768
+(APIServer pid=955364) INFO 07-13 22:50:32 [scheduler.py:252] Chunked prefill is enabled with max_num_batched_tokens=1024.
+(APIServer pid=955364) INFO 07-13 22:50:32 [config.py:575] Warning: Prefix caching in Mamba cache 'align' mode is currently enabled. Its support for Mamba layers is experimental. Please report any issues you may observe.
+(APIServer pid=955364) INFO 07-13 22:50:32 [vllm.py:1093] Asynchronous scheduling is disabled.
+(APIServer pid=955364) WARNING 07-13 22:50:32 [vllm.py:1147] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(APIServer pid=955364) WARNING 07-13 22:50:32 [vllm.py:1195] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=955364) INFO 07-13 22:50:32 [kernel.py:286] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(APIServer pid=955364) INFO 07-13 22:50:33 [vllm.py:1400] Cudagraph is disabled under eager mode
+(APIServer pid=955364) WARNING 07-13 22:50:33 [vllm.py:2216] Model Runner V2 does not yet support the thinking_token_budget request parameter. Set VLLM_USE_V2_MODEL_RUNNER=0 if this is required.
+(APIServer pid=955364) INFO 07-13 22:50:33 [compilation.py:312] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=955364) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=955486) INFO 07-13 22:50:41 [core.py:114] Initializing a V1 LLM engine (v0.1.dev200+g2665ed704) with config: model='/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-mswe2-S-twinK1-vllm-bf16', speculative_config=None, tokenizer='/home/mark/qwen_diffusion/models/qwen3.5-9b-fastdllm-mswe2-S-twinK1-vllm-bf16', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=32768, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='qwen3', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=qwen3.5-9b-flare-hybrid-clean, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [1024], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native']), enable_flashinfer_autotune=False, enable_cutedsl_warmup=True, moe_backend='auto', linear_backend='auto')
+(EngineCore pid=955486) INFO 07-13 22:50:42 [parallel_state.py:1588] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.0.0.148:34069 backend=nccl
+(EngineCore pid=955486) INFO 07-13 22:50:42 [parallel_state.py:1923] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+(EngineCore pid=955486) INFO 07-13 22:50:42 [gpu_worker.py:360] Using V2 Model Runner
+(EngineCore pid=955486) INFO 07-13 22:50:42 [model_runner.py:281] Loading model from scratch...
+(EngineCore pid=955486) INFO 07-13 22:50:42 [cuda.py:542] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(EngineCore pid=955486) INFO 07-13 22:50:42 [mm_encoder_attention.py:373] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(EngineCore pid=955486) INFO 07-13 22:50:42 [qwen_gdn_linear_attn.py:228] Using Triton/FLA GDN prefill kernel (requested=triton, head_k_dim=128).
+(EngineCore pid=955486) INFO 07-13 22:50:42 [cuda.py:423] Using AttentionBackendEnum.TRITON_ATTN backend.
+(EngineCore pid=955486) INFO 07-13 22:50:42 [weight_utils.py:849] Filesystem type for checkpoints: EXT4. Checkpoint size: 17.98 GiB. Available RAM: 25.00 GiB.
+(EngineCore pid=955486) INFO 07-13 22:50:42 [weight_utils.py:872] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+(EngineCore pid=955486) Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+(EngineCore pid=955486) Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:00<00:01,  2.21it/s]
+(EngineCore pid=955486) Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:00<00:00,  2.09it/s]
+(EngineCore pid=955486) Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:01<00:00,  2.04it/s]
+(EngineCore pid=955486) Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:01<00:00,  2.30it/s]
+(EngineCore pid=955486) Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:01<00:00,  2.22it/s]
+(EngineCore pid=955486) 
+(EngineCore pid=955486) INFO 07-13 22:50:44 [default_loader.py:430] Loading weights took 1.83 seconds
+(EngineCore pid=955486) INFO 07-13 22:50:44 [model_runner.py:302] Model loading took 17.66 GiB and 2.407352 seconds
+(EngineCore pid=955486) WARNING 07-13 22:50:44 [qwen3_5_flare.py:258] FLARE block size 32 is not a multiple of the GDN chunk 64; commit boundaries will land mid-chunk and the fp32 boundary snapshot will not be a clean recurrent checkpoint. Set diffusion_config.canvas_length / VLLM_QWEN3_5_FLARE_BLOCK to a multiple of 64.
+(EngineCore pid=955486) WARNING 07-13 22:50:44 [qwen3_5_flare.py:440] Qwen3_5FlareModelState: model exposes no flare_gdn_route(); the route_i GROUND invariant is UNVERIFIED and assumed from VLLM_QWEN3_5_FLARE_ROUTE='route_i'. If the served forward is not the route_i FLARE forward, denoise/commit state discipline is invalid and this will not be caught here.
+(EngineCore pid=955486) INFO 07-13 22:50:44 [qwen3_5_flare.py:407] Qwen3_5FlareModelState ready: decode_mode=hybrid_clean block_size=32 bidir_probe=1 windowed_probe=1 readonly_denoise=1 canonical_publish=False route_verified=False
+(EngineCore pid=955486) INFO 07-13 22:50:44 [topk_topp_sampler.py:39] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+(EngineCore pid=955486) INFO 07-13 22:50:45 [qwen3_5_flare.py:1869] FLARE W-1b copy draft-and-verify gate: True
+(EngineCore pid=955486) INFO 07-13 22:50:45 [interface.py:773] Setting attention block size to 528 tokens to ensure that attention page size is >= mamba page size.
+(EngineCore pid=955486) INFO 07-13 22:50:45 [interface.py:797] Padding mamba page size by 0.76% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=955486) INFO 07-13 22:50:46 [gpu_worker.py:538] Available KV cache memory: 5.2 GiB
+(EngineCore pid=955486) INFO 07-13 22:50:46 [kv_cache_utils.py:2146] GPU KV cache size: 152,917 tokens
+(EngineCore pid=955486) INFO 07-13 22:50:46 [kv_cache_utils.py:2147] Maximum concurrency for 32,768 tokens per request: 4.67x
+(EngineCore pid=955486) INFO 07-13 22:50:46 [qwen_triton_warmup.py:364] Warming up Qwen Triton kernels for model_type=qwen3_5_text.
+(EngineCore pid=955486) INFO 07-13 22:50:46 [deep_gemm.py:175] deep_gemm not found in site-packages, trying vendored vllm.third_party.deep_gemm
+(EngineCore pid=955486) INFO 07-13 22:50:46 [deep_gemm.py:202] DeepGEMM PDL enabled on vllm.third_party.deep_gemm.
+(EngineCore pid=955486) INFO 07-13 22:50:46 [kernel_warmup.py:93] Skipping FlashInfer autotune because it is disabled.
+(EngineCore pid=955486) INFO 07-13 22:50:46 [cutedsl_warmup.py:97] Skipping CuTeDSL warmup because no compile units were requested.
+(EngineCore pid=955486) INFO 07-13 22:50:46 [qwen3_5_flare.py:659] FLARE hybrid_clean req=_warmup_1_ done: model_forwards=1 forced_token_count=0 value_tokens=0 projected_value_tokens_exact=0 generated_tokens=1 stop_reason=None w1[on=True spans=0 toks=0 vfwd=0 rej=0]
+(EngineCore pid=955486) INFO 07-13 22:50:46 [qwen3_5_flare.py:659] FLARE hybrid_clean req=_warmup_3_ done: model_forwards=1 forced_token_count=0 value_tokens=0 projected_value_tokens_exact=0 generated_tokens=1 stop_reason=None w1[on=True spans=0 toks=0 vfwd=0 rej=0]
+(EngineCore pid=955486) INFO 07-13 22:50:46 [qwen3_5_flare.py:659] FLARE hybrid_clean req=_warmup_0_ done: model_forwards=1 forced_token_count=0 value_tokens=0 projected_value_tokens_exact=0 generated_tokens=1 stop_reason=None w1[on=True spans=0 toks=0 vfwd=0 rej=0]
+(EngineCore pid=955486) INFO 07-13 22:50:46 [qwen3_5_flare.py:659] FLARE hybrid_clean req=_warmup_2_ done: model_forwards=1 forced_token_count=0 value_tokens=0 projected_value_tokens_exact=0 generated_tokens=1 stop_reason=None w1[on=True spans=0 toks=0 vfwd=0 rej=0]
+(EngineCore pid=955486) INFO 07-13 22:50:46 [jit_monitor.py:72] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(EngineCore pid=955486) INFO 07-13 22:50:46 [core.py:344] init engine (profile, create kv cache, warmup model) took 1.64 s
+(EngineCore pid=955486) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=955486) INFO 07-13 22:50:49 [vllm.py:1093] Asynchronous scheduling is disabled.
+(EngineCore pid=955486) WARNING 07-13 22:50:49 [vllm.py:1147] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(EngineCore pid=955486) WARNING 07-13 22:50:49 [vllm.py:1195] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=955486) INFO 07-13 22:50:49 [kernel.py:286] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(EngineCore pid=955486) INFO 07-13 22:50:49 [vllm.py:1400] Cudagraph is disabled under eager mode
+(EngineCore pid=955486) WARNING 07-13 22:50:49 [vllm.py:2216] Model Runner V2 does not yet support the thinking_token_budget request parameter. Set VLLM_USE_V2_MODEL_RUNNER=0 if this is required.
+(EngineCore pid=955486) INFO 07-13 22:50:49 [compilation.py:312] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=955364) INFO 07-13 22:50:49 [api_server.py:606] Supported tasks: ['generate']
+(APIServer pid=955364) INFO 07-13 22:50:49 [parser_manager.py:37] "auto" tool choice has been enabled.
+(APIServer pid=955364) WARNING 07-13 22:50:49 [model.py:1488] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'temperature': 0.0}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=955364) INFO 07-13 22:50:49 [hf.py:548] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=955364) INFO 07-13 22:50:58 [base.py:236] Multi-modal warmup completed in 8.261s
+(APIServer pid=955364) INFO 07-13 22:50:58 [base.py:236] Readonly multi-modal warmup completed in 0.473s
+(APIServer pid=955364) INFO 07-13 22:50:58 [api_server.py:610] Starting vLLM server on http://127.0.0.1:9952
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:37] Available routes are:
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /openapi.json, Methods: HEAD, GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /docs, Methods: HEAD, GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /docs/oauth2-redirect, Methods: HEAD, GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /redoc, Methods: HEAD, GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /load, Methods: GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /version, Methods: GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /health, Methods: GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /metrics, Methods: GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /tokenize, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /detokenize, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/models, Methods: GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /ping, Methods: GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /ping, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /invocations, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/chat/completions/batch, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/responses, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/completions, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/messages, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/messages/count_tokens, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /generative_scoring, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/chat/completions/render, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/completions/render, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/chat/completions/derender, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /v1/completions/derender, Methods: POST
+(APIServer pid=955364) INFO 07-13 22:50:58 [launcher.py:46] Route: /inference/v1/generate, Methods: POST
+(APIServer pid=955364) INFO:     Started server process [955364]
+(APIServer pid=955364) INFO:     Waiting for application startup.
+(APIServer pid=955364) INFO:     Application startup complete.
+(APIServer pid=955364) INFO:     127.0.0.1:39996 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=955364) INFO:     127.0.0.1:47798 - "GET /health HTTP/1.1" 200 OK
+(EngineCore pid=955486) WARNING 07-13 22:51:05 [jit_monitor.py:128] Triton kernel JIT compilation during inference: preprocess_mamba_align_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) WARNING 07-13 22:51:05 [jit_monitor.py:128] Triton kernel JIT compilation during inference: precopy_mamba_align_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) WARNING 07-13 22:51:05 [jit_monitor.py:128] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) WARNING 07-13 22:51:05 [jit_monitor.py:128] Triton kernel JIT compilation during inference: postprocess_mamba_fused_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) WARNING 07-13 22:51:05 [jit_monitor.py:128] Triton kernel JIT compilation during inference: layer_norm_fwd_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=19 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   tail_ids=[198, 1932, 3082, 17293, 14, 15] tail='\ndb/migrations/0'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   draft=[15, 19, 17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='042_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   pred =[15, 19, 17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='042_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=20 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   tail_ids=[1932, 3082, 17293, 14, 15, 15] tail='db/migrations/00'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   draft=[19, 17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='42_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   pred =[19, 17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='42_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=21 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   tail_ids=[3082, 17293, 14, 15, 15, 19] tail='/migrations/004'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   draft=[17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='2_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   pred =[17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='2_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=22 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   tail_ids=[17293, 14, 15, 15, 19, 17] tail='igrations/0042'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   draft=[2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   pred =[2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=23 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   tail_ids=[14, 15, 15, 19, 17, 2797] tail='/0042_add'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   draft=[3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:05 [qwen3_5_flare.py:2433]   pred =[3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=24 k=7 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 19, 17, 2797, 3442] tail='0042_add_index'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=25 k=6 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[15, 19, 17, 2797, 3442, 9748] tail='042_add_index.sql'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[440, 6681, 411, 2144, 11, 1608] draft_txt=' with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[198, 6681, 411, 2144, 11, 1608] pred_txt ='\n exactly this content, using'
+(EngineCore pid=955486) WARNING 07-13 22:51:06 [jit_monitor.py:128] Triton kernel JIT compilation during inference: _causal_conv1d_update_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) WARNING 07-13 22:51:06 [jit_monitor.py:128] Triton kernel JIT compilation during inference: fused_recurrent_gated_delta_rule_packed_decode_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) WARNING 07-13 22:51:06 [jit_monitor.py:128] Triton kernel JIT compilation during inference: _triton_mrope_forward. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) WARNING 07-13 22:51:06 [jit_monitor.py:128] Triton kernel JIT compilation during inference: reduce_segments. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=31 tail_len=8 k=24 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 21898, 38000, 3308] tail='content>\nCREATE INDEX CON'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[43208, 8662, 6961, 35899, 516, 24325, 26406, 198, 262, 6004, 9861, 318, 42466, 816, 11, 3354, 3625, 15616, 8, 198, 262, 5120, 2552, 1897] draft_txt='CURRENTLY idx_orders_tenant_created\n    ON orders (tenant_id, created_at DESC)\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[43208, 8662, 6961, 35899, 516, 24325, 26406, 198, 262, 6004, 9861, 318, 42466, 816, 11, 3354, 3625, 15616, 8, 198, 262, 5120, 2552, 1897] pred_txt ='CURRENTLY idx_orders_tenant_created\n    ON orders (tenant_id, created_at DESC)\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=0 k=22 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[8, 198, 262, 5120, 2552, 1897] tail=')\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[4178, 27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=" ('pending', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[4178, 27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =" ('pending', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=1 k=21 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[198, 262, 5120, 2552, 1897, 4178] tail="\n    WHERE status IN ('"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="pending', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="pending', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=2 k=20 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[262, 5120, 2552, 1897, 4178, 27293] tail="    WHERE status IN ('pending"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=3 k=19 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[5120, 2552, 1897, 4178, 27293, 504] tail=" WHERE status IN ('pending',"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=" 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =" 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=4 k=18 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[2552, 1897, 4178, 27293, 504, 359] tail=" status IN ('pending', '"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=5 k=17 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[1897, 4178, 27293, 504, 359, 20034] tail=" IN ('pending', 'processing"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=6 k=16 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[4178, 27293, 504, 359, 20034, 4515] tail=" ('pending', 'processing');"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=7 k=15 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[27293, 504, 359, 20034, 4515, 198] tail="pending', 'processing');\n"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='ANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='ANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=8 k=14 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   tail_ids=[504, 359, 20034, 4515, 198, 1058] tail="', 'processing');\nAN"
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   draft=[939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='ALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:06 [qwen3_5_flare.py:2433]   pred =[939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='ALYZE orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=9 k=13 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[359, 20034, 4515, 198, 1058, 939] tail=" 'processing');\nANAL"
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='YZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='YZE orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=10 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[20034, 4515, 198, 1058, 939, 38877] tail="processing');\nANALYZ"
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='E orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='E orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=11 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[4515, 198, 1058, 939, 38877, 36] tail="');\nANALYZE"
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=12 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[198, 1058, 939, 38877, 36, 9861] tail='\nANALYZE orders'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=';\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =';\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=13 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[1058, 939, 38877, 36, 9861, 26] tail='ANALYZE orders;'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=14 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[939, 38877, 36, 9861, 26, 198] tail='ALYZE orders;\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-bee02cbdda1ee9d6-a96f960b done: model_forwards=46 forced_token_count=40 value_tokens=37 projected_value_tokens_exact=0 generated_tokens=86 stop_reason=complete_tool_call w1[on=True spans=1 toks=24 vfwd=23 rej=22]
+(APIServer pid=955364) INFO:     127.0.0.1:47808 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=19 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[198, 1932, 3082, 17293, 14, 15] tail='\ndb/migrations/0'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[15, 19, 17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='042_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[15, 19, 17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='042_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=20 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[1932, 3082, 17293, 14, 15, 15] tail='db/migrations/00'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[19, 17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='42_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[19, 17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='42_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=21 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[3082, 17293, 14, 15, 15, 19] tail='/migrations/004'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='2_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='2_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=22 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[17293, 14, 15, 15, 19, 17] tail='igrations/0042'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=23 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   tail_ids=[14, 15, 15, 19, 17, 2797] tail='/0042_add'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   draft=[3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:07 [qwen3_5_flare.py:2433]   pred =[3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=24 k=7 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 19, 17, 2797, 3442] tail='0042_add_index'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=25 k=6 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[15, 19, 17, 2797, 3442, 9748] tail='042_add_index.sql'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[440, 6681, 411, 2144, 11, 1608] draft_txt=' with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[198, 6681, 411, 2144, 11, 1608] pred_txt ='\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=31 tail_len=8 k=24 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 21898, 38000, 3308] tail='content>\nCREATE INDEX CON'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[43208, 8662, 6961, 35899, 516, 24325, 26406, 198, 262, 6004, 9861, 318, 42466, 816, 11, 3354, 3625, 15616, 8, 198, 262, 5120, 2552, 1897] draft_txt='CURRENTLY idx_orders_tenant_created\n    ON orders (tenant_id, created_at DESC)\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[43208, 8662, 6961, 35899, 516, 24325, 26406, 198, 262, 6004, 9861, 318, 42466, 816, 11, 3354, 3625, 15616, 8, 198, 262, 5120, 2552, 1897] pred_txt ='CURRENTLY idx_orders_tenant_created\n    ON orders (tenant_id, created_at DESC)\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=0 k=22 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[8, 198, 262, 5120, 2552, 1897] tail=')\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[4178, 27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=" ('pending', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[4178, 27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =" ('pending', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=1 k=21 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[198, 262, 5120, 2552, 1897, 4178] tail="\n    WHERE status IN ('"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="pending', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="pending', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=2 k=20 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[262, 5120, 2552, 1897, 4178, 27293] tail="    WHERE status IN ('pending"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=3 k=19 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[5120, 2552, 1897, 4178, 27293, 504] tail=" WHERE status IN ('pending',"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=" 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =" 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=4 k=18 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[2552, 1897, 4178, 27293, 504, 359] tail=" status IN ('pending', '"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=5 k=17 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[1897, 4178, 27293, 504, 359, 20034] tail=" IN ('pending', 'processing"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="');\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=6 k=16 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[4178, 27293, 504, 359, 20034, 4515] tail=" ('pending', 'processing');"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\nANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=7 k=15 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[27293, 504, 359, 20034, 4515, 198] tail="pending', 'processing');\n"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='ANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='ANALYZE orders;\n</\n\n<|im_start|>user\n<think>\n'
+(APIServer pid=955364) INFO 07-13 22:51:08 [loggers.py:273] Engine 000: Avg prompt throughput: 53.2 tokens/s, Avg generation throughput: 7.8 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=955364) INFO 07-13 22:51:08 [metrics.py:160] DiffusionDecoding metrics: Committed token throughput: 7.78 tokens/s, Mean denoising steps per canvas: 15.10, Mean tokens committed per denoising step: 1.19, Committed: 150 tokens, Denoising steps: 126, Canvas positions evaluated: 2265
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=8 k=14 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   tail_ids=[504, 359, 20034, 4515, 198, 1058] tail="', 'processing');\nAN"
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   draft=[939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='ALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:08 [qwen3_5_flare.py:2433]   pred =[939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='ALYZE orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=9 k=13 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[359, 20034, 4515, 198, 1058, 939] tail=" 'processing');\nANAL"
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='YZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='YZE orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=10 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[20034, 4515, 198, 1058, 939, 38877] tail="processing');\nANALYZ"
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='E orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='E orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=11 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[4515, 198, 1058, 939, 38877, 36] tail="');\nANALYZE"
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' orders;\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=12 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[198, 1058, 939, 38877, 36, 9861] tail='\nANALYZE orders'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=';\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[26, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =';\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=13 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[1058, 939, 38877, 36, 9861, 26] tail='ANALYZE orders;'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=14 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[939, 38877, 36, 9861, 26, 198] tail='ALYZE orders;\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-91dce49da75379b4-88b68552 done: model_forwards=46 forced_token_count=40 value_tokens=37 projected_value_tokens_exact=0 generated_tokens=86 stop_reason=complete_tool_call w1[on=True spans=2 toks=48 vfwd=46 rej=44]
+(APIServer pid=955364) INFO:     127.0.0.1:47816 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=19 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[198, 1932, 3082, 17293, 14, 15] tail='\ndb/migrations/0'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[15, 19, 17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='042_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[15, 19, 17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='042_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=20 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[1932, 3082, 17293, 14, 15, 15] tail='db/migrations/00'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[19, 17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='42_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[19, 17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='42_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=21 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[3082, 17293, 14, 15, 15, 19] tail='/migrations/004'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[17, 2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='2_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[17, 2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='2_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=22 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   tail_ids=[17293, 14, 15, 15, 19, 17] tail='igrations/0042'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   draft=[2797, 3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='_add_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:09 [qwen3_5_flare.py:2433]   pred =[2797, 3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='_add_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=23 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[14, 15, 15, 19, 17, 2797] tail='/0042_add'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[3442, 9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='_index.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[3442, 9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='_index.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=24 k=7 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 19, 17, 2797, 3442] tail='0042_add_index'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[9748, 440, 6681, 411, 2144, 11, 1608] draft_txt='.sql with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[9748, 198, 6681, 411, 2144, 11, 1608] pred_txt ='.sql\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=25 k=6 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[15, 19, 17, 2797, 3442, 9748] tail='042_add_index.sql'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[440, 6681, 411, 2144, 11, 1608] draft_txt=' with exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[198, 6681, 411, 2144, 11, 1608] pred_txt ='\n exactly this content, using'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=31 tail_len=8 k=24 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 21898, 38000, 3308] tail='content>\nCREATE INDEX CON'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[43208, 8662, 6961, 35899, 516, 24325, 26406, 198, 262, 6004, 9861, 318, 42466, 816, 11, 3354, 3625, 15616, 8, 198, 262, 5120, 2552, 1897] draft_txt='CURRENTLY idx_orders_tenant_created\n    ON orders (tenant_id, created_at DESC)\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[43208, 8662, 6961, 35899, 516, 24325, 26406, 198, 262, 6004, 9861, 318, 42466, 816, 11, 3354, 3625, 15616, 8, 198, 262, 5120, 2552, 1897] pred_txt ='CURRENTLY idx_orders_tenant_created\n    ON orders (tenant_id, created_at DESC)\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=0 k=22 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[8, 198, 262, 5120, 2552, 1897] tail=')\n    WHERE status IN'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[4178, 27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=" ('pending', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[4178, 27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =" ('pending', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=1 k=21 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[198, 262, 5120, 2552, 1897, 4178] tail="\n    WHERE status IN ('"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="pending', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[27293, 504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ="pending', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=2 k=20 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[262, 5120, 2552, 1897, 4178, 27293] tail="    WHERE status IN ('pending"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="', 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[504, 359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ="', 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=3 k=19 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[5120, 2552, 1897, 4178, 27293, 504] tail=" WHERE status IN ('pending',"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=" 'processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[359, 20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =" 'processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=4 k=18 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[2552, 1897, 4178, 27293, 504, 359] tail=" status IN ('pending', '"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="processing');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[20034, 4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ="processing');\nANALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=5 k=17 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[1897, 4178, 27293, 504, 359, 20034] tail=" IN ('pending', 'processing"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="');\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[4515, 198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ="');\nANALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=6 k=16 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[4178, 27293, 504, 359, 20034, 4515] tail=" ('pending', 'processing');"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[198, 1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\nANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[198, 1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='\nANALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=7 k=15 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[27293, 504, 359, 20034, 4515, 198] tail="pending', 'processing');\n"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[1058, 939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='ANALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[1058, 939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='ANALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=8 k=14 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   tail_ids=[504, 359, 20034, 4515, 198, 1058] tail="', 'processing');\nAN"
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   draft=[939, 38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='ALYZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:10 [qwen3_5_flare.py:2433]   pred =[939, 38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='ALYZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=9 k=13 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   tail_ids=[359, 20034, 4515, 198, 1058, 939] tail=" 'processing');\nANAL"
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   draft=[38877, 36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='YZE orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   pred =[38877, 36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='YZE orders;\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=10 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   tail_ids=[20034, 4515, 198, 1058, 939, 38877] tail="processing');\nANALYZ"
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   draft=[36, 9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='E orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   pred =[36, 9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='E orders;\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=11 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   tail_ids=[4515, 198, 1058, 939, 38877, 36] tail="');\nANALYZE"
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   draft=[9861, 26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' orders;\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   pred =[9861, 26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =' orders;\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=12 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   tail_ids=[198, 1058, 939, 38877, 36, 9861] tail='\nANALYZE orders'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   draft=[26, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=';\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   pred =[26, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =';\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=13 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   tail_ids=[1058, 939, 38877, 36, 9861, 26] tail='ANALYZE orders;'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   draft=[198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   pred =[198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=14 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   tail_ids=[939, 38877, 36, 9861, 26, 198] tail='ALYZE orders;\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   draft=[71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   pred =[510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-81729b735fd9fe3a-a0da76b5 done: model_forwards=46 forced_token_count=40 value_tokens=37 projected_value_tokens_exact=0 generated_tokens=86 stop_reason=complete_tool_call w1[on=True spans=3 toks=72 vfwd=69 rej=66]
+(APIServer pid=955364) INFO:     127.0.0.1:47822 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=19 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   tail_ids=[198, 74, 23, 82, 21849, 51024] tail='\nk8s/deployment'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   draft=[32300, 440, 6681, 411, 2144, 11, 1608, 3165, 2378] draft_txt='.yaml with exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   pred =[32300, 198, 6681, 411, 2144, 11, 1608, 3165, 2378] pred_txt ='.yaml\n exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=20 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   tail_ids=[74, 23, 82, 21849, 51024, 32300] tail='k8s/deployment.yaml'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   draft=[440, 6681, 411, 2144, 11, 1608, 3165, 2378] draft_txt=' with exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:11 [qwen3_5_flare.py:2433]   pred =[198, 6681, 411, 2144, 11, 1608, 3165, 2378] pred_txt ='\n exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=28 tail_len=6 k=26 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 2000, 5460, 25] tail='content>\napiVersion:'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[10187, 5285, 16, 198, 14868, 25, 64055, 198, 17111, 25, 198, 220, 803, 25, 32419, 63307, 198, 220, 4325, 25, 13767, 198, 9253, 25, 198, 220] draft_txt=' apps/v1\nkind: Deployment\nmetadata:\n  name: billing-worker\n  namespace: payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[10187, 5285, 16, 198, 14868, 25, 64055, 198, 17111, 25, 198, 220, 803, 25, 32419, 63307, 198, 220, 4325, 25, 13767, 198, 9253, 25, 198, 220] pred_txt =' apps/v1\nkind: Deployment\nmetadata:\n  name: billing-worker\n  namespace: payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=0 k=28 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[13767, 198, 9253, 25, 198, 220] tail=' payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[78014, 25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' replicas: 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[78014, 25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =' replicas: 4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=1 k=27 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[198, 9253, 25, 198, 220, 78014] tail='\nspec:\n  replicas'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=': 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =': 4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=2 k=26 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[9253, 25, 198, 220, 78014, 25] tail='spec:\n  replicas:'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =' 4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=3 k=25 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[25, 198, 220, 78014, 25, 220] tail=':\n  replicas: '
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=4 k=24 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[198, 220, 78014, 25, 220, 19] tail='\n  replicas: 4'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=5 k=23 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[220, 78014, 25, 220, 19, 198] tail='  replicas: 4\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=6 k=22 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[78014, 25, 220, 19, 198, 220] tail=' replicas: 4\n '
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =' selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=7 k=21 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[25, 220, 19, 198, 220, 9089] tail=': 4\n  selector'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=':\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =':\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=8 k=20 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[220, 19, 198, 220, 9089, 25] tail=' 4\n  selector:'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=9 k=19 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[19, 198, 220, 9089, 25, 198] tail='4\n  selector:\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=10 k=18 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[198, 220, 9089, 25, 198, 262] tail='\n  selector:\n   '
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =' matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=11 k=17 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[220, 9089, 25, 198, 262, 2353] tail='  selector:\n    match'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='Labels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='Labels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=12 k=16 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[9089, 25, 198, 262, 2353, 22933] tail=' selector:\n    matchLabels'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=':\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =':\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=13 k=15 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   tail_ids=[25, 198, 262, 2353, 22933, 25] tail=':\n    matchLabels:'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   draft=[198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:12 [qwen3_5_flare.py:2433]   pred =[198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='\n      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=14 k=14 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[198, 262, 2353, 22933, 25, 198] tail='\n    matchLabels:\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='      app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=15 k=13 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[262, 2353, 22933, 25, 198, 406] tail='    matchLabels:\n     '
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =' app: billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=16 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[2353, 22933, 25, 198, 406, 878] tail=' matchLabels:\n      app'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=': billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[25, 32419, 63307, 198, 510, 198, 198, 248044, 846, 198, 248058, 198] pred_txt =': billing-worker\n</\n\n<|endoftext|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=17 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[22933, 25, 198, 406, 878, 25] tail='Labels:\n      app:'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt =' billing-worker\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=18 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[25, 198, 406, 878, 25, 32419] tail=':\n      app: billing'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[63307, 198, 510, 198, 198, 248044, 846, 198, 248058, 198] pred_txt ='-worker\n</\n\n<|endoftext|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=19 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[198, 406, 878, 25, 32419, 63307] tail='\n      app: billing-worker'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[198, 510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='\n</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=20 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[406, 878, 25, 32419, 63307, 198] tail='      app: billing-worker\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[510, 198, 198, 248045, 846, 198, 248058, 198] pred_txt ='</\n\n<|im_start|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-909399a3e3cb8724-86fd6cb9 done: model_forwards=47 forced_token_count=42 value_tokens=38 projected_value_tokens_exact=0 generated_tokens=89 stop_reason=complete_tool_call w1[on=True spans=4 toks=98 vfwd=93 rej=89]
+(APIServer pid=955364) INFO:     127.0.0.1:47826 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=19 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[198, 74, 23, 82, 21849, 51024] tail='\nk8s/deployment'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[32300, 440, 6681, 411, 2144, 11, 1608, 3165, 2378] draft_txt='.yaml with exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[32300, 198, 6681, 411, 2144, 11, 1608, 3165, 2378] pred_txt ='.yaml\n exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=20 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   tail_ids=[74, 23, 82, 21849, 51024, 32300] tail='k8s/deployment.yaml'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   draft=[440, 6681, 411, 2144, 11, 1608, 3165, 2378] draft_txt=' with exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:13 [qwen3_5_flare.py:2433]   pred =[198, 6681, 411, 2144, 11, 1608, 3165, 2378] pred_txt ='\n exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=28 tail_len=6 k=26 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 2000, 5460, 25] tail='content>\napiVersion:'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[10187, 5285, 16, 198, 14868, 25, 64055, 198, 17111, 25, 198, 220, 803, 25, 32419, 63307, 198, 220, 4325, 25, 13767, 198, 9253, 25, 198, 220] draft_txt=' apps/v1\nkind: Deployment\nmetadata:\n  name: billing-worker\n  namespace: payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[10187, 5285, 16, 198, 14868, 25, 64055, 198, 17111, 25, 198, 220, 803, 25, 32419, 63307, 198, 220, 4325, 25, 13767, 198, 9253, 25, 198, 220] pred_txt =' apps/v1\nkind: Deployment\nmetadata:\n  name: billing-worker\n  namespace: payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=0 k=28 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[13767, 198, 9253, 25, 198, 220] tail=' payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[78014, 25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' replicas: 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[78014, 25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' replicas: 4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=1 k=27 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[198, 9253, 25, 198, 220, 78014] tail='\nspec:\n  replicas'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=': 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =': 4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=2 k=26 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[9253, 25, 198, 220, 78014, 25] tail='spec:\n  replicas:'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' 4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=3 k=25 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[25, 198, 220, 78014, 25, 220] tail=':\n  replicas: '
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=4 k=24 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[198, 220, 78014, 25, 220, 19] tail='\n  replicas: 4'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=5 k=23 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[220, 78014, 25, 220, 19, 198] tail='  replicas: 4\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=6 k=22 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[78014, 25, 220, 19, 198, 220] tail=' replicas: 4\n '
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=7 k=21 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[25, 220, 19, 198, 220, 9089] tail=': 4\n  selector'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=':\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =':\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=8 k=20 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[220, 19, 198, 220, 9089, 25] tail=' 4\n  selector:'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=9 k=19 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[19, 198, 220, 9089, 25, 198] tail='4\n  selector:\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=10 k=18 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[198, 220, 9089, 25, 198, 262] tail='\n  selector:\n   '
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=11 k=17 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[220, 9089, 25, 198, 262, 2353] tail='  selector:\n    match'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='Labels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='Labels:\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=12 k=16 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   tail_ids=[9089, 25, 198, 262, 2353, 22933] tail=' selector:\n    matchLabels'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   draft=[25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=':\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:14 [qwen3_5_flare.py:2433]   pred =[25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =':\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=13 k=15 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[25, 198, 262, 2353, 22933, 25] tail=':\n    matchLabels:'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=14 k=14 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[198, 262, 2353, 22933, 25, 198] tail='\n    matchLabels:\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='      app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=15 k=13 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[262, 2353, 22933, 25, 198, 406] tail='    matchLabels:\n     '
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' app: billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=16 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[2353, 22933, 25, 198, 406, 878] tail=' matchLabels:\n      app'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=': billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[25, 32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =': billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=17 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[22933, 25, 198, 406, 878, 25] tail='Labels:\n      app:'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[32419, 63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' billing-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=18 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[25, 198, 406, 878, 25, 32419] tail=':\n      app: billing'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[63307, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='-worker\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=19 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[198, 406, 878, 25, 32419, 63307] tail='\n      app: billing-worker'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=20 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[406, 878, 25, 32419, 63307, 198] tail='      app: billing-worker\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-84a919c0cc16e9da-a6698584 done: model_forwards=47 forced_token_count=42 value_tokens=38 projected_value_tokens_exact=0 generated_tokens=89 stop_reason=complete_tool_call w1[on=True spans=5 toks=124 vfwd=117 rej=112]
+(APIServer pid=955364) INFO:     127.0.0.1:47838 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=19 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[198, 74, 23, 82, 21849, 51024] tail='\nk8s/deployment'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[32300, 440, 6681, 411, 2144, 11, 1608, 3165, 2378] draft_txt='.yaml with exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[32300, 198, 6681, 411, 2144, 11, 1608, 3165, 2378] pred_txt ='.yaml\n exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=0 tail_len=20 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   tail_ids=[74, 23, 82, 21849, 51024, 32300] tail='k8s/deployment.yaml'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   draft=[440, 6681, 411, 2144, 11, 1608, 3165, 2378] draft_txt=' with exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:15 [qwen3_5_flare.py:2433]   pred =[198, 6681, 411, 2144, 11, 1608, 3165, 2378] pred_txt ='\n exactly this content, using write_file'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=28 tail_len=6 k=26 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 2000, 5460, 25] tail='content>\napiVersion:'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   draft=[10187, 5285, 16, 198, 14868, 25, 64055, 198, 17111, 25, 198, 220, 803, 25, 32419, 63307, 198, 220, 4325, 25, 13767, 198, 9253, 25, 198, 220] draft_txt=' apps/v1\nkind: Deployment\nmetadata:\n  name: billing-worker\n  namespace: payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   pred =[10187, 5285, 16, 198, 14868, 25, 64055, 198, 17111, 25, 198, 220, 803, 25, 32419, 63307, 198, 220, 4325, 25, 13767, 198, 9253, 25, 198, 220] pred_txt =' apps/v1\nkind: Deployment\nmetadata:\n  name: billing-worker\n  namespace: payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=0 k=28 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   tail_ids=[13767, 198, 9253, 25, 198, 220] tail=' payments\nspec:\n '
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   draft=[78014, 25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' replicas: 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   pred =[78014, 25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248044, 846, 198, 248058, 198] pred_txt =' replicas: 4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|endoftext|>user\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=1 k=27 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   tail_ids=[198, 9253, 25, 198, 220, 78014] tail='\nspec:\n  replicas'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   draft=[25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=': 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   pred =[25, 220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 510, 198, 198, 248045, 1628, 198, 248058, 198] pred_txt =': 4\n  selector:\n    matchLabels:\n      app: billing-worker\n</\n\n<|im_start|>function\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=2 k=26 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   tail_ids=[9253, 25, 198, 220, 78014, 25] tail='spec:\n  replicas:'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   draft=[220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   pred =[220, 19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 198, 198, 248045, 1628, 198, 248058, 198] pred_txt =' 4\n  selector:\n    matchLabels:\n      app: billing-worker\n```\n\n<|im_start|>function\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=3 k=25 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   tail_ids=[25, 198, 220, 78014, 25, 220] tail=':\n  replicas: '
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   draft=[19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='4\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   pred =[19, 198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 198, 198, 248045, 1628, 198, 248058, 198] pred_txt ='4\n  selector:\n    matchLabels:\n      app: billing-worker\n```\n\n<|im_start|>function\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=4 k=24 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   tail_ids=[198, 220, 78014, 25, 220, 19] tail='\n  replicas: 4'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   draft=[198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   pred =[198, 220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 198, 198, 248045, 1628, 198, 248058, 198] pred_txt ='\n  selector:\n    matchLabels:\n      app: billing-worker\n```\n\n<|im_start|>function\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=60 tail_len=5 k=23 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   tail_ids=[220, 78014, 25, 220, 19, 198] tail='  replicas: 4\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   draft=[220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='  selector:\n    matchLabels:\n      app: billing-worker\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:2433]   pred =[220, 9089, 25, 198, 262, 2353, 22933, 25, 198, 406, 878, 25, 32419, 63307, 198, 71093, 198, 198, 248045, 1628, 198, 248058, 198] pred_txt ='  selector:\n    matchLabels:\n      app: billing-worker\n```\n\n<|im_start|>function\n<tool_call>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:16 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-8619f2b23754121e-88ba3334 done: model_forwards=32 forced_token_count=42 value_tokens=23 projected_value_tokens_exact=0 generated_tokens=74 stop_reason=complete_tool_call w1[on=True spans=6 toks=150 vfwd=126 rej=120]
+(APIServer pid=955364) INFO:     127.0.0.1:37422 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=31 tail_len=1 k=31 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 727, 4563, 47988] tail='content>\ndef parse_iso'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[23, 21, 15, 16, 3553, 25, 592, 8, 1411, 8606, 25, 198, 262, 413, 869, 38783, 482, 57, 33782, 198, 285, 869, 283, 869, 25216, 16, 60, 478, 13503, 15, 15] draft_txt="8601(value: str) -> datetime:\n    if value.endswith('Z'):\n        value = value[:-1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[23, 21, 15, 16, 3553, 25, 592, 8, 1411, 8606, 25, 198, 262, 413, 869, 38783, 482, 57, 33782, 198, 285, 869, 283, 869, 25216, 16, 60, 478, 13503, 15, 15] pred_txt ="8601(value: str) -> datetime:\n    if value.endswith('Z'):\n        value = value[:-1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=0 k=22 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[16, 60, 478, 13503, 15, 15] tail="1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[25, 15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=":00'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[25, 15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =":00'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=1 k=21 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[60, 478, 13503, 15, 15, 25] tail="] + '+00:"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="00'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="00'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=2 k=20 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[478, 13503, 15, 15, 25, 15] tail=" + '+00:0"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="0'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="0'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=3 k=19 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[13503, 15, 15, 25, 15, 15] tail=" '+00:00"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=4 k=18 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 25, 15, 15, 6] tail="00:00'"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=5 k=17 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[15, 25, 15, 15, 6, 198] tail="0:00'\n"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=6 k=16 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[25, 15, 15, 6, 198, 262] tail=":00'\n   "
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=7 k=15 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 6, 198, 262, 460] tail="00'\n    return"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=8 k=14 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   tail_ids=[15, 6, 198, 262, 460, 8606] tail="0'\n    return datetime"
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   draft=[6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:17 [qwen3_5_flare.py:2433]   pred =[6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=9 k=13 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   tail_ids=[6, 198, 262, 460, 8606, 6186] tail="'\n    return datetime.from"
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   draft=[14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='isoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   pred =[14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='isoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=10 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   tail_ids=[198, 262, 460, 8606, 6186, 14970] tail='\n    return datetime.fromiso'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   draft=[2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='format(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   pred =[2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='format(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=11 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   tail_ids=[262, 460, 8606, 6186, 14970, 2171] tail='    return datetime.fromisoformat'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   draft=[3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   pred =[3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=12 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   tail_ids=[460, 8606, 6186, 14970, 2171, 3553] tail=' return datetime.fromisoformat(value'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   draft=[8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=')\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   pred =[8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =')\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=13 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   tail_ids=[8606, 6186, 14970, 2171, 3553, 8] tail=' datetime.fromisoformat(value)'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   draft=[198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   pred =[198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=14 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   tail_ids=[6186, 14970, 2171, 3553, 8, 198] tail='.fromisoformat(value)\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   draft=[71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:2433]   pred =[510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:18 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-914e4ad9ffe90bf2-962d8b0a done: model_forwards=39 forced_token_count=47 value_tokens=30 projected_value_tokens_exact=0 generated_tokens=86 stop_reason=complete_tool_call w1[on=True spans=7 toks=181 vfwd=142 rej=135]
+(APIServer pid=955364) INFO:     127.0.0.1:37438 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=955364) INFO 07-13 22:51:18 [loggers.py:273] Engine 000: Avg prompt throughput: 257.4 tokens/s, Avg generation throughput: 45.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=955364) INFO 07-13 22:51:18 [metrics.py:160] DiffusionDecoding metrics: Committed token throughput: 45.30 tokens/s, Mean denoising steps per canvas: 14.46, Mean tokens committed per denoising step: 1.25, Committed: 453 tokens, Denoising steps: 362, Canvas positions evaluated: 6549
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=31 tail_len=1 k=31 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 727, 4563, 47988] tail='content>\ndef parse_iso'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[23, 21, 15, 16, 3553, 25, 592, 8, 1411, 8606, 25, 198, 262, 413, 869, 38783, 482, 57, 33782, 198, 285, 869, 283, 869, 25216, 16, 60, 478, 13503, 15, 15] draft_txt="8601(value: str) -> datetime:\n    if value.endswith('Z'):\n        value = value[:-1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[23, 21, 15, 16, 3553, 25, 592, 8, 1411, 8606, 25, 198, 262, 413, 869, 38783, 482, 57, 33782, 198, 285, 869, 283, 869, 25216, 16, 60, 478, 13503, 15, 15] pred_txt ="8601(value: str) -> datetime:\n    if value.endswith('Z'):\n        value = value[:-1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=0 k=22 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[16, 60, 478, 13503, 15, 15] tail="1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[25, 15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=":00'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[25, 15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =":00'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=1 k=21 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[60, 478, 13503, 15, 15, 25] tail="] + '+00:"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="00'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="00'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=2 k=20 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[478, 13503, 15, 15, 25, 15] tail=" + '+00:0"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="0'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="0'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=3 k=19 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[13503, 15, 15, 25, 15, 15] tail=" '+00:00"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=4 k=18 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 25, 15, 15, 6] tail="00:00'"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=5 k=17 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[15, 25, 15, 15, 6, 198] tail="0:00'\n"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=6 k=16 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[25, 15, 15, 6, 198, 262] tail=":00'\n   "
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=7 k=15 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 6, 198, 262, 460] tail="00'\n    return"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=8 k=14 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[15, 6, 198, 262, 460, 8606] tail="0'\n    return datetime"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=9 k=13 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[6, 198, 262, 460, 8606, 6186] tail="'\n    return datetime.from"
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='isoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='isoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=10 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[198, 262, 460, 8606, 6186, 14970] tail='\n    return datetime.fromiso'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='format(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='format(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=11 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[262, 460, 8606, 6186, 14970, 2171] tail='    return datetime.fromisoformat'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=12 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[460, 8606, 6186, 14970, 2171, 3553] tail=' return datetime.fromisoformat(value'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=')\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =')\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=13 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[8606, 6186, 14970, 2171, 3553, 8] tail=' datetime.fromisoformat(value)'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=14 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   tail_ids=[6186, 14970, 2171, 3553, 8, 198] tail='.fromisoformat(value)\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   draft=[71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:19 [qwen3_5_flare.py:2433]   pred =[510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-99221c3c09cfcee1-8063d9bc done: model_forwards=39 forced_token_count=47 value_tokens=30 projected_value_tokens_exact=0 generated_tokens=86 stop_reason=complete_tool_call w1[on=True spans=8 toks=212 vfwd=158 rej=150]
+(APIServer pid=955364) INFO:     127.0.0.1:37444 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=31 tail_len=1 k=31 accept=True
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   tail_ids=[1733, 29, 198, 727, 4563, 47988] tail='content>\ndef parse_iso'
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   draft=[23, 21, 15, 16, 3553, 25, 592, 8, 1411, 8606, 25, 198, 262, 413, 869, 38783, 482, 57, 33782, 198, 285, 869, 283, 869, 25216, 16, 60, 478, 13503, 15, 15] draft_txt="8601(value: str) -> datetime:\n    if value.endswith('Z'):\n        value = value[:-1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   pred =[23, 21, 15, 16, 3553, 25, 592, 8, 1411, 8606, 25, 198, 262, 413, 869, 38783, 482, 57, 33782, 198, 285, 869, 283, 869, 25216, 16, 60, 478, 13503, 15, 15] pred_txt ="8601(value: str) -> datetime:\n    if value.endswith('Z'):\n        value = value[:-1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=0 k=22 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   tail_ids=[16, 60, 478, 13503, 15, 15] tail="1] + '+00"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   draft=[25, 15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=":00'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   pred =[25, 15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =":00'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=1 k=21 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   tail_ids=[60, 478, 13503, 15, 15, 25] tail="] + '+00:"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   draft=[15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="00'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   pred =[15, 15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="00'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=2 k=20 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   tail_ids=[478, 13503, 15, 15, 25, 15] tail=" + '+00:0"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   draft=[15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="0'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   pred =[15, 6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="0'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=3 k=19 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   tail_ids=[13503, 15, 15, 25, 15, 15] tail=" '+00:00"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   draft=[6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt="'\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:20 [qwen3_5_flare.py:2433]   pred =[6, 198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ="'\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n"
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=4 k=18 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 25, 15, 15, 6] tail="00:00'"
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[198, 262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=5 k=17 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[15, 25, 15, 15, 6, 198] tail="0:00'\n"
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='    return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[262, 460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='    return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=6 k=16 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[25, 15, 15, 6, 198, 262] tail=":00'\n   "
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[460, 8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' return datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[460, 8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' return datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=7 k=15 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[15, 15, 6, 198, 262, 460] tail="00'\n    return"
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[8606, 6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=' datetime.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[8606, 6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =' datetime.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=8 k=14 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[15, 6, 198, 262, 460, 8606] tail="0'\n    return datetime"
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[6186, 14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='.fromisoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[6186, 14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='.fromisoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=9 k=13 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[6, 198, 262, 460, 8606, 6186] tail="'\n    return datetime.from"
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[14970, 2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='isoformat(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[14970, 2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='isoformat(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=10 k=12 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[198, 262, 460, 8606, 6186, 14970] tail='\n    return datetime.fromiso'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[2171, 3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='format(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[2171, 3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='format(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=11 k=11 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[262, 460, 8606, 6186, 14970, 2171] tail='    return datetime.fromisoformat'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[3553, 8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='(value)\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[3553, 8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='(value)\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=12 k=10 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[460, 8606, 6186, 14970, 2171, 3553] tail=' return datetime.fromisoformat(value'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[8, 198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt=')\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[8, 198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt =')\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=13 k=9 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[8606, 6186, 14970, 2171, 3553, 8] tail=' datetime.fromisoformat(value)'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[198, 71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='\n```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[198, 510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='\n</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433] [W1TRACE] slot=1 base=63 tail_len=14 k=8 accept=False
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   tail_ids=[6186, 14970, 2171, 3553, 8, 198] tail='.fromisoformat(value)\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   draft=[71093, 248046, 198, 248045, 74455, 198, 248068, 198] draft_txt='```<|im_end|>\n<|im_start|>assistant\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:2433]   pred =[510, 198, 198, 248045, 846, 198, 248068, 198] pred_txt ='</\n\n<|im_start|>user\n<think>\n'
+(EngineCore pid=955486) INFO 07-13 22:51:21 [qwen3_5_flare.py:659] FLARE hybrid_clean req=chatcmpl-bbecefa0db55002e-8d7774e8 done: model_forwards=39 forced_token_count=47 value_tokens=30 projected_value_tokens_exact=0 generated_tokens=86 stop_reason=complete_tool_call w1[on=True spans=9 toks=243 vfwd=174 rej=165]
+(APIServer pid=955364) INFO:     127.0.0.1:37448 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=955364) INFO 07-13 22:51:28 [loggers.py:273] Engine 000: Avg prompt throughput: 102.6 tokens/s, Avg generation throughput: 17.4 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=955364) INFO 07-13 22:51:28 [metrics.py:160] DiffusionDecoding metrics: Committed token throughput: 17.40 tokens/s, Mean denoising steps per canvas: 10.31, Mean tokens committed per denoising step: 1.69, Committed: 174 tokens, Denoising steps: 103, Canvas positions evaluated: 1794
+(APIServer pid=955364) INFO 07-13 22:51:38 [loggers.py:273] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(EngineCore pid=955486) INFO 07-13 22:57:09 [core.py:1214] [shutdown] EngineCore: trigger received signal=SIGTERM
+(APIServer pid=955364) INFO 07-13 22:57:09 [launcher.py:100] [shutdown] API server: shutdown triggered
+(APIServer pid=955364) INFO 07-13 22:57:09 [launcher.py:116] [shutdown] API server: stopping engine client mode=abort timeout=0s
+(EngineCore pid=955486) INFO 07-13 22:57:09 [core.py:1333] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=955486) INFO 07-13 22:57:09 [core.py:1364] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=955486) INFO 07-13 22:57:09 [core.py:1227] [shutdown] EngineCore: exiting busy loop
+(APIServer pid=955364) INFO 07-13 22:57:09 [core_client.py:655] [shutdown] MPClient: start timeout=0s
+(APIServer pid=955364) INFO 07-13 22:57:09 [core_client.py:657] [shutdown] MPClient: stopping engine manager
+(APIServer pid=955364) WARNING 07-13 22:57:09 [utils.py:626] [shutdown] Process manager: force killing remaining processes count=1
+(APIServer pid=955364) INFO 07-13 22:57:09 [core_client.py:659] [shutdown] MPClient: engine manager stopped
+(APIServer pid=955364) INFO 07-13 22:57:09 [core_client.py:660] [shutdown] MPClient: cleaning up background resources
+(APIServer pid=955364) INFO 07-13 22:57:09 [core_client.py:662] [shutdown] MPClient: complete
+(APIServer pid=955364) INFO 07-13 22:57:09 [launcher.py:125] [shutdown] API server: engine client stopped
+(APIServer pid=955364) INFO 07-13 22:57:09 [launcher.py:128] [shutdown] API server: signalling HTTP server shutdown
+(APIServer pid=955364) INFO 07-13 22:57:09 [launcher.py:149] [shutdown] API server: shutting down FastAPI HTTP server
+(APIServer pid=955364) INFO:     Shutting down
+(APIServer pid=955364) INFO:     Waiting for application shutdown.
+(APIServer pid=955364) INFO:     Application shutdown complete.
+/home/mark/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/multiprocessing/resource_tracker.py:279: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

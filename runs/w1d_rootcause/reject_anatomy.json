@@ -1,0 +1,10 @@
+{
+ "verify_reads": 174,
+ "accepts": 9,
+ "rejects": 165,
+ "span_boundary_lcp>=2": 137,
+ "context_divergence_lcp0": 14,
+ "single_position_lcp1": 14,
+ "span_boundary_mean_recoverable_prefix": 8.84,
+ "note": "gated VLLM_W1_TRACE, idx3/4/5 x3 copy-heavy turns"
+}

@@ -2281,3 +2281,52 @@ speedup on the arg-value copy mass" (those 3 W-1b smoke cases happened to be the
 enacted): make the live verify commit only the **serial-K=1-equal prefix, deterministically** (fix seam faithfulness
 to the CPU-certified guard), add a real value-divergence tripwire, then re-run the LiveCert before any gate-ON
 dispatch. The K=1 gate-OFF path remains byte-exact + deterministic and is unaffected (gate default OFF).
+
+## STATUS(W-1d) — root-caused the W-1c seam corruption + hard byte-assert + recert — **VERDICT: STOP (numeric, not commit-slice)**
+
+Object = twin@plain twinK1, C46-iter2 envelope, gate `VLLM_FASTDLLM_W1_DRAFT_VERIFY` OFF/ON. Three bounded boots
+(root-cause trace, gate-ON recert, gate-OFF control); server DOWN + GPU idle (385 MiB, 0%) at exit; ~0.6 GPU-h of ~3.
+Pin `abb2f65`+W1d fixes are LOCAL on `qwen3_5-flare-modelstate` (never pushed). Full result + harnesses + raw:
+`runs/w1d_recert/` (`W1D_STATUS.md`, `results.json`) + root-cause trace `runs/w1d_rootcause/`.
+
+**ROOT CAUSE — the W-1c "truncated commit of accepted span" hypothesis is DISPROVEN.** Three independent lines:
+(i) a CPU ideal-oracle repro of the REAL `_hybrid_clean_step` (`runs/w1d_recert` harness) shows gate-ON == gate-OFF
+committed stream for ALL `cl∈{8,16,32}` × every `align_off` (**0 divergences**) → the phase-machine accounting is
+byte-faithful; (ii) the live hard byte-assert counter is **`arej=0`** across all 34 gate-ON requests → no
+truncated/altered commit ever occurred; (iii) the gated GPU span trace shows the accepted spans are byte-EXACT copies
+(`draft==pred==gold`) and the corruption lands **downstream of a byte-correct accept**. The actual root cause: firing
+the fast path replaces `k` uniform-width K=1 forwards with ONE variable-width bidirectional verify forward + a
+zero-forward span commit, which shifts the live GPU numeric trajectory (cudagraph-per-width, GDN snapshot/restore,
+argmax near-ties) off the deterministic gate-OFF K=1 path, so a **downstream temp-0 argmax flips run-to-run**. It is
+genuinely non-reproducible (idx5 was 0/5 in the W-1c boot but **5/5 in both W-1d boots**; idx4 flipped **1/5 WITHIN one
+boot**, same slot/input/sequential) — so the "TWO defects" framing is not borne out: it is ONE class (fast-path
+numeric non-reproducibility). Secondary/latent: under `BIDIR_PROBE=1` the verify read is full-reveal BIDIRECTIONAL
+(`_apply_bidir_key_window`), not a causal K=1 check, so its argmax is a bidirectional reconstruction (leak) that can
+bless over-copy spans.
+
+**FIXES (permanent hardening; fast path stays gate-default-OFF).** (1) HARD BYTE-ASSERT (mandated, fail-closed) in
+`_hc_verify_read`: refuse+fall-back-K=1 (`w1_assert_rejects++`) if the candidate would truncate at `max_new_tokens`,
+and assert committed-span==candidate post-commit — makes the truncated/altered-commit class structurally impossible.
+(2) `apply_verified_draft(ids, block_limit=…)` — the accept's forced run now respects the chunk boundary exactly as
+`decode_probe` (was UNBOUNDED; a real K=1-unfaithfulness, though not the active corruption). (3) `w1_assert_rejects`
+in `stats()`+done-line (`arej=`) + gated `VLLM_W1_TRACE`. CPU: **15 W-1 tests** pass (3 new) + **58 hybrid_clean
+regression tests green** (gate-OFF parity intact).
+
+**DECISIVE CONTROL RECERT (6 snippets × 5 reps).** gate-OFF K=1 = **30/30 exact, 6/6 bit-reproducible** (UNAFFECTED).
+gate-ON W-1 WITH the W-1d fixes = **29/30 exact, 5/6 bit-reproducible** (idx4 k8s flips: rep0 truncated at
+`replicas: 4`, reps1-4 OK), **`arej=0`** → the residual corruption is NOT the commit-slice class the byte-assert
+guards. **BAR (gate-ON 30/30 bit-reproducible) NOT MET.**
+
+**REJECT ANATOMY (174 verify reads).** 94.8% reject; of rejects **83% span-boundary over-copy** (LCP≥2, mean 8.8
+recoverable prefix tok — the drafter greedily extends the copy past the content boundary into the prompt scaffold/
+```` ``` ````-fence/chat-template; whole-span-or-nothing rejects it all), 8.5% context-divergence (LCP=0), 8.5%
+single-position. **Prefix-commit lever = NOT strict-subset-safe → NOT implemented:** the verify is a leaked
+bidirectional read, so the longest-accepted-prefix is NOT the causal-K=1 prefix (can commit DIFFERENT tokens, not
+merely fewer), and it does not fix the downstream numeric flip.
+
+**VERDICT = STOP.** Fixes committed as permanent hardening; the gate-ON fast path is not bit-reproducible vs the
+certified deterministic K=1 (29/30) because the defect is downstream GPU numeric non-reproducibility, not a
+commit-slice bug. The byte-faithful redesign (DESIGN-ONLY, W-2): **verify at the block commit using the authoritative
+causal block-commit logits** (accept only the prefix whose block-commit argmax==draft) — removes BOTH the leaked verify
+read AND the extra perturbing forward. Re-owe the 6-ep C46 A/B + C46-new-envelope only after that redesign. K=1
+gate-OFF remains byte-exact + deterministic (gate default OFF).

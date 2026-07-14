@@ -1,0 +1,138 @@
+{
+ "rung": "W-1d root-cause + fix + recert",
+ "object": "twin@plain twinK1, FLARE hybrid_clean, mask 248077, maxlen 32768, gmu 0.74, BIDIR_PROBE=1; gate VLLM_FASTDLLM_W1_DRAFT_VERIFY OFF(ref)/ON(with W-1d fixes)",
+ "root_cause": {
+  "w1c_hypothesis": "truncated commit of accepted span (commit-slice length mismatch)",
+  "disproven_by": [
+   "CPU ideal-oracle repro of the REAL _hybrid_clean_step: gate-ON == gate-OFF committed stream for ALL cl in {8,16,32} x every align_off (0 divergences) -> phase-machine accounting is byte-faithful",
+   "live byte-assert counter arej=0 across all 34 gate-ON requests -> no truncated/altered commit ever occurred; accepts commit the candidate byte-for-byte",
+   "GPU trace (VLLM_W1_TRACE): the 9 accepted spans are byte-EXACT copies of the true content (draft==pred==gold); idx4 corruption occurred DOWNSTREAM of a byte-correct accept"
+  ],
+  "actual_root_cause": "Firing the W-1 fast path replaces k uniform-width K=1 denoise forwards with ONE variable-width bidirectional verify forward + a zero-forward span commit. This shifts the live GPU numeric trajectory (cudagraph capture per width, GDN recurrent snapshot/restore, argmax near-ties) off the deterministic gate-OFF K=1 path, so a downstream temp-0 argmax flips run-to-run -- corruption gate-OFF K=1 never exhibits. Boot/run-fragile: idx5 was 0/5 in the W-1c boot but 5/5 in both W-1d boots; idx4 flipped 1/5 WITHIN one W-1d boot (same slot, same input, sequential) -> true runtime non-reproducibility, not a logic bug.",
+  "secondary_structural": "The verify read is a full-reveal bidirectional denoise (VLLM_FLARE_BIDIR_PROBE=1), NOT a causal K=1 check: each draft position attends to future draft positions (_apply_bidir_key_window). So the per-position argmax is a bidirectional reconstruction, not the serial-K=1 argmax -> it can bless over-copy spans and its accept decision is not K=1-faithful. (Empirically it still rejected the scaffold over-copies in-trace, so this is a latent risk; the active corruption is the numeric one above.)",
+  "two_defects_verdict": "The W-1c 'idx5 100% deterministic + idx3/4 non-det => TWO defects' framing is NOT borne out: it is ONE class (fast-path numeric non-reproducibility vs the deterministic K=1 schedule), whose per-boot cudagraph capture makes it look within-boot-deterministic (idx5 0/5 in one boot) but run-to-run non-deterministic across/within boots."
+ },
+ "fixes_applied": {
+  "hard_byte_assert": "_hc_verify_read: BEFORE commit, refuse (fail-closed to K=1, w1_assert_rejects++) if the candidate would be truncated at max_new_tokens; AFTER commit, assert committed span == candidate ids (logs on mismatch). Makes the truncated/altered-commit corruption class structurally impossible under future regressions.",
+  "block_limited_accept": "apply_verified_draft(ids, block_limit): the accepted span's trailing forced run now respects the chunk-aligned block boundary exactly as decode_probe does (was UNBOUNDED bulk_forced_prefix -> a real K=1-unfaithfulness, though not the active corruption, which is in forced-run-free value regions).",
+  "counters": "w1_assert_rejects added to stats() + done-line (arej=); gated VLLM_W1_TRACE instrumentation for span-level candidate/pred/committed bytes."
+ },
+ "cpu_tests": "15 W-1 tests pass (incl. 3 new: byte-assert fail-closed on cap truncation, no spurious assert on clean run, accept respects block-limit) + 58 hybrid_clean regression tests green (gate-OFF parity intact).",
+ "recert_decisive_control": {
+  "gate_off_K1": {
+   "per_snippet": [
+    {
+     "idx": 0,
+     "distinct": 1,
+     "exact": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 1,
+     "distinct": 1,
+     "exact": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 2,
+     "distinct": 1,
+     "exact": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 3,
+     "distinct": 1,
+     "exact": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 4,
+     "distinct": 1,
+     "exact": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 5,
+     "distinct": 1,
+     "exact": 5,
+     "bit_reproducible": true
+    }
+   ],
+   "total_exact": "30/30",
+   "bit_reproducible": "6/6"
+  },
+  "gate_on_W1_with_fixes": {
+   "per_snippet": [
+    {
+     "idx": 0,
+     "distinct": 1,
+     "exact": 5,
+     "n": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 1,
+     "distinct": 1,
+     "exact": 5,
+     "n": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 2,
+     "distinct": 1,
+     "exact": 5,
+     "n": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 3,
+     "distinct": 1,
+     "exact": 5,
+     "n": 5,
+     "bit_reproducible": true
+    },
+    {
+     "idx": 4,
+     "distinct": 2,
+     "exact": 4,
+     "n": 5,
+     "bit_reproducible": false
+    },
+    {
+     "idx": 5,
+     "distinct": 1,
+     "exact": 5,
+     "n": 5,
+     "bit_reproducible": true
+    }
+   ],
+   "total_exact": "29/30",
+   "bit_reproducible": "5/6",
+   "byte_assert_fired": "arej=0 (no truncated/altered commit)",
+   "idx4_flip": "rep0=75tok TRUNCATED, rep1-4=90tok OK -> 4/5, distinct=2, downstream of a byte-correct accept"
+  },
+  "BAR": "gate-ON 30/30 exact AND bit-reproducible",
+  "MET": false,
+  "reading": "gate-OFF K=1 is 30/30 exact + 6/6 bit-reproducible (UNAFFECTED by the fixes). gate-ON W-1 WITH the W-1d fixes is 29/30 exact + 5/6 bit-reproducible (idx4 flips). The byte-assert never fired (arej=0), proving the residual corruption is NOT the commit-slice class the assert guards -- it is the downstream numeric non-reproducibility, which no seam logic fix removes."
+ },
+ "reject_anatomy": {
+  "source": "gated GPU trace, 174 verify reads over idx3/4/5 x3 copy-heavy turns",
+  "accepts": 9,
+  "rejects": 165,
+  "reject_rate": "94.8%",
+  "categories": {
+   "span_boundary_over_copy_lcp>=2": 137,
+   "context_divergence_lcp0": 14,
+   "single_position_lcp1": 14
+  },
+  "span_boundary_mean_recoverable_prefix_tokens": 8.8,
+  "reading": "83% of rejects are span-boundary over-copies: the drafter greedily extends the copy PAST the content boundary into the prompt's trailing scaffold (``` fence, chat template), and whole-span-or-nothing verify rejects the ENTIRE span. 8.5% context-divergence (drafter mines irrelevant prompt text, e.g. the instruction line). 8.5% single-position."
+ },
+ "prefix_commit_lever_verdict": {
+  "safe_as_strict_subset": false,
+  "why": "The verify is a full-reveal bidirectional read, so the longest-accepted-prefix (LCP of draft vs the LEAKED argmax) is NOT the causal-K=1-matching prefix -- prefix-commit can commit DIFFERENT tokens than K=1, not merely fewer. It also does not address the primary defect (downstream numeric non-reproducibility). NOT implemented.",
+  "faithful_redesign_DESIGN_ONLY": "Verify at the BLOCK COMMIT using the authoritative causal block-commit logits (which ARE the K=1 next-token logits): accept only the prefix whose block-commit argmax == draft. This removes BOTH the separate leaked verify read AND the extra variable-width perturbing forward, so it is byte-faithful AND non-perturbing. This is the W-2 lever."
+ },
+ "VERDICT": "STOP",
+ "verdict_reason": "The W-1d exit bar (gate-ON 30/30 bit-reproducible) is NOT met (29/30, idx4 non-reproducible) EVEN WITH the mandated byte-assert + block-limit fixes, because the residual corruption is downstream GPU numeric non-reproducibility induced by the fast path's altered forward trajectory -- not the commit-slice class the assert makes impossible. The byte-assert (arej=0) + block-limit are committed as permanent structural hardening; the fast path stays gate-default-OFF. Re-owe C46 A/B only after the byte-faithful block-commit-verify redesign (W-2)."
+}
