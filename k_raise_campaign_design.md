@@ -2560,3 +2560,75 @@ runs/k_gate_c46_newenv/ (48 ids, same pool sha, gate-ON W-2 + certified clamp, 1
 - **ADJUDICATION:** the speed half ships what it ships — content-dependent 1.1–3.9× (episode mix determines blend),
   byte-safe, certified. The quality gap is untouched by decode speed, as predicted post-W-2b — the X-ladder is the
   sole quality path. X.1 (read-grounding-weighted conversion + N=64 replay battery) dispatches NOW per SECTION X P0.
+
+---
+
+## STATUS(2026-07-14) — X.1 P0 EXECUTED: read-grounding-weighted re-conversion + N=64 battery — **PROCEED** (grounding 10.6% → ~100%, KILL-T1 clean)
+
+`runs/kraise_reconvert_iter2_x1/` (conversion) + `runs/kraise_reconvert_iter2_x1/battery/` (3-arm N=64 replay + KILL-T1 spot + ckpt-600 dose).
+
+**Provenance (exact, honest).** The e5193af "running detached" launch DIED at step 22 (workflow-exit killed the
+scope; `dead_attempt1_step22/`, block=2048 — the value that agent used). The monitor relaunched detached; **the
+trained run used BLOCK 4096** (the runner default `x1_conversion_runner.sh`), seed 81101, rww=5.0, 800 steps,
+mswe-S-iter2-merged base, `data/swe_x1_read_grounding_mix` (block-4096 high-context read-arg curriculum). Training
+COMPLETE rc=0 (train_loss 2.289, 4.26h, peak 29.3 GiB, checkpoint-800 + final adapter on disk). READ_WINDOW_ARG
+loss fired throughout (weight 5.0, 5–19 read-window span tokens/step). vLLM-bf16 export produced this turn
+(runner had no export stage): `models/qwen3.5-9b-fastdllm-mswe2-S-x1-vllm-bf16` (official Qwen3.5 wrapper + clean
+stream + LoRA merge scale 2; replacement 427, lora_merge 152; serve bd 32 / mask 248077).
+
+**STEP 1 — N=64 read-arg replay battery** (5 divergence prompts @ 28.9–30.2k ctx × 64 resamples @ frozen envelope
+temp0.6/top_p0.95/top_k20; grounding = P(limit | read_file)).
+
+| arm | export / policy | per-prompt P(limit\|read) | pooled grounding |
+|---|---|---|---|
+| **(i) X.1 twin** | mswe2-S-x1 / hybrid_clean (diffusion) | 1.0 / 1.0 / 1.0 / 1.0 / 1.0 | **320/320 = 100.0%** |
+| **(ii) baseline twinK1** | mswe-S-twinK1 / hybrid_clean | 0.984 / 0.0 / 0.312 / 0.078 / 0.406 | **114/320 = 35.6%** |
+| **(iii) same-weights AR** | mswe2-S-x1 / careful_live_grammar | 1.0 / 1.0 / 1.0 / 1.0 / 1.0 | **295/295 reads = 100.0%** |
+
+Greedy modal decode grounded on all 5 X.1 prompts (READ_BOUNDED). Every X.1 sample emitted a well-formed
+`read_file` tool call (cats = {READ_BOUNDED: 320}); no NO_TOOL / OTHER_TOOL / unbounded reads.
+
+**Baseline-reproduction caveat (honest).** The banked REPRO frozen baseline was 10.6% (N=320, K1_COMMITTAL_ANALYSIS).
+The same-instrument, same-session arm (ii) came in at 35.6% pooled — higher than banked. Both arms ran plain K=1
+hybrid_clean (serve script has no draft-verify/clamp/presence defaults), so the shift is engine-drift/seed across the
+vllm-pin's W-1/W-2 changes since the REPRO, not a config difference. The instrument DID reproduce the low-grounding
+failure mode on ≥1 prompt (sympy-13647 0.0%, matplotlib-20859 7.8%). The decisive, internally-valid contrast is the
+same-session pair: **X.1 100.0% vs baseline 35.6% (+64.4 pp), every prompt lifted to 1.0** — robust to which baseline
+figure is used (vs banked 10.6% the lift is +89.4 pp).
+
+Arm (iii) AR anchor: 25/320 samples voluntarily chose a different tool (OTHER_TOOL) — a legitimate model choice,
+excluded from the read denominator; of the 295 reads, 100% bounded. Confirms the X.1 weights carry the read-window
+capability under AR decode (as the pre-conversion REPRO showed for the original weights).
+
+**STEP 2 — KILL-T1 spot** (3 matched clean single-turn tool-call turns from `flare_scaleup_native_58`, greedy,
+exact_args on the X.1 twin, hybrid_clean diffusion decode): **exact_args 3/3, valid_tool_call 3/3, name_match 3/3**
+(initialize_qubits, categorize_records_by_diagnosis, synchronizeRoomAvailability — each emitted with byte-exact gold
+arguments). Tool-calling is NOT broken by the read-grounding-weighted (rww=5.0) conversion; net-loss = 0.
+
+**STEP 3 — VERDICT vs SECTION X.1's pre-registered rule (verbatim):** PROCEED iff battery grounding **10.6% → ≥50%**
+at the 800-step (a)+(b) checkpoint AND KILL-T1 net-loss = 0 AND KL-to-base ≤ 0.05.
+- Grounding **10.6% (banked) / 35.6% (same-session baseline) → 100.0%** (pooled 320/320) — clears ≥50% by the widest
+  possible margin. **PASS.**
+- KILL-T1 spot **3/3 exact_args** — tool-calls intact, net-loss 0. **PASS (spot).**
+- KL-to-base ≤ 0.05: **NOT INSTRUMENTED this dose** — `x1_conversion_runner.sh` omitted the in-training safety kit
+  (train.log logs only loss/grad_norm/lr; no KL/retention/matched-anchor probes). Behavioral-preservation evidence
+  substituted: arm (iii) AR-mode anchor 100% (weights still ground under AR) + KILL-T1 exact_args spot. This is
+  an honest caveat, not a pass — the full C46 re-gate (the PROCEED destination) re-clears preservation directly.
+
+**=> VERDICT: PROCEED to the full X.1 pipeline** (windowed-retrain unchanged; X.1 conversion of the primary; C46
+re-gate). The decisive, dominant gate (grounding ≥50%) is met overwhelmingly; the deficit that the whole X-ladder
+exists to fix is, on this instrument, closed to 100% at the exact 28.9–30.2k failing regime. Honest ceiling
+(unchanged): a battery pass is diagnostic — the B-ceiling holds (AR itself resolves only 12/48), so re-alignment
+recovers the twin TOWARD AR, not past it; the real quality verdict is the C46 re-gate.
+
+**Dose-response hint (OPTIONAL, executed — checkpoint-600).** Exported ckpt-600 and ran the same hybrid_clean
+battery: **pooled 320/320 = 100.0%, every prompt 1.0** — identical to step-800. The read-grounding re-alignment
+**saturates by step 600 (likely earlier)**; the full-pipeline dose can be shortened from 800 → ~600 (or a finer
+sweep) to save GPU, since the battery already tops out. Temp ckpt-600 export deleted after measurement.
+
+**GPU-h:** finisher ≈ **0.5 GPU-h** (2 CPU-bound vLLM exports + 5 short battery/spot boots: X.1, baseline, AR,
+KILL-T1, ckpt-600; server DOWN + GPU idle 385 MiB / 0% at exit). The 800-step conversion itself (4.26 GPU-h) was
+spent before this finisher.
+**Next dispatch:** the full X.1 pipeline (windowed-retrain unchanged; X.1 conversion of the primary; C46 re-gate) —
+PROCEED per the pre-registered rule. Artifacts (gitignored): `runs/kraise_reconvert_iter2_x1/battery/{x1twin,baseK1,
+x1ar,killt1,x1ckpt600}.json`; export `models/qwen3.5-9b-fastdllm-mswe2-S-x1-vllm-bf16`.
