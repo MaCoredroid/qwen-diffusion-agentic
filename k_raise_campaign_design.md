@@ -2540,3 +2540,23 @@ trained to derive the correct `limit`/`offset` from causal context the way the s
 X.3 works** (it sidesteps by using the AR path outright). The N=64 battery is precisely the instrument that reads
 trainable-vs-architectural for ~1 GPU-h — which is why it is the recommended first move and why X.3 is built in parallel as
 the hedge against the assumption being false.
+
+---
+
+## STATUS(2026-07-14) — C46 NEW-ENVELOPE EXECUTED: quality unchanged (3/48, floor NOT met) — SPEED REAL BUT MODEST AT EPISODE SCALE; safety PERFECT
+
+runs/k_gate_c46_newenv/ (48 ids, same pool sha, gate-ON W-2 + certified clamp, 1998 requests).
+
+- **Quality: twin gate-ON 3/48** (floor 12 NOT met; vs banked AR 12/48 McNemar p=0.004 twin⊂AR; vs gate-OFF twin
+  1/48: +2 resolves b=2/c=0 p=0.5 — directional, not significant). Failure anatomy consistent: 26/48 ctx_overflow
+  deaths; committal IMPROVED (22 committed edits vs 13 gate-OFF; empty patches 10 vs 23) but resolves did not follow.
+  Note: episode-level outcomes are NOT bit-identical to gate-OFF (harness timing/budget dynamics differ — 2
+  budget_exit55, loop_halts 14 vs 6); per-request bit-identity holds only at fixed (context, seed).
+- **Speed at SWE-episode scale (the honest number): tok/fwd 1.02→1.38 (1.35×), wall/episode 311→277s (1.12×).**
+  Far below the 3.3–3.9× corpus numbers because C46's episodes are read/prefill-dominated and reasoning-heavy;
+  the draft-verify gains concentrate on copy-heavy WRITE content (where the corpus measured 2.5–3.9×). On-policy
+  span fire rate 27% (12099 accepted / 33189 rejected).
+- **Safety: PERFECT.** arej=0 across all 1998 requests; no corruption class; stable 48-episode serving cert earned.
+- **ADJUDICATION:** the speed half ships what it ships — content-dependent 1.1–3.9× (episode mix determines blend),
+  byte-safe, certified. The quality gap is untouched by decode speed, as predicted post-W-2b — the X-ladder is the
+  sole quality path. X.1 (read-grounding-weighted conversion + N=64 replay battery) dispatches NOW per SECTION X P0.
