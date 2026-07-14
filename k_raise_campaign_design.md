@@ -2122,3 +2122,61 @@ KILL-T1 `exact_args` matched-20 certification is now mandatory and decisive** �
 is a NEW envelope, **not** lossless by construction) and W.4 (KILL-T1 re-certified empirically, "lossless by construction"
 banned). Carry-forward caveats: (i) multi-round sim is teacher-forced post-rejection (oracle upper bound — W-1 kills this
 on-policy); (ii) window 3072 eager (on-policy fully covered; >3072 tail keeper-synthetic).
+
+---
+
+## STATUS(W-1) — 2026-07-13: RUNG W-1 ENGINE PROTOTYPE BUILT + GUARDED FA CERT — **deploy-class false-accepts = 0 (STRUCTURAL); PROCEED to the live C46-under-new-envelope rung**
+
+Build phase CPU-first (pure-python drafter + guard); GPU idle at exit (385 MiB desktop, 0%), no server booted.
+Object = twin@plain (the served K=1 twin W-0 probed). Full result: `runs/w1_prototype/W1_STATUS.md` +
+`runs/w1_prototype/remine_cert.json`.
+
+**MINER (DIRECTIVE-6).** `scripts/w1_suffix_miner.py` — online Ukkonen **suffix automaton** over live context
+tokens; longest-suffix match O(match); **incremental append per turn** (no rebuilds); recency-first distinct
+continuation candidates; **maximal-common-prefix** across all longest-match sources; CONTINUATION drafting beyond
+grammar delimiters. **MINER CERT (`test_w1_suffix_miner.py`, 2234 checks PASS):** the anchored matcher NEVER drafts
+the off-by-one pointer-slip class — `anchor_violations=0, slip_source_used=0` over 500 adversarial cases; every
+candidate is a byte-exact context slice anchored at an EXACT suffix-match end. The W-0 off-by-one (4% accept if
+drafted) is now **structurally undraftable**, not thresholded.
+
+**GUARD.** `scripts/w1_guard.py` (15 checks PASS) — the pre-registered commit rule derived from the W-0 raw records:
+commit **at most the maximal common prefix** of all anchored sources (byte-identical regardless of which source is
+right), gated by G1 batched verify (cap 8, one forward), **G2 2nd-candidate margin**, G3 source-distance
+(D_SAFE=1024, below the 1025–3072 FA band), G4 byte-equal copy-assert, G5 FSM-completability. Fallback ALWAYS K=1.
+The decisive W-0 case k315t28 (a near-dup that is recent AND uniquely verify-accepts while gold rejects,
+gold_rec_rank=1) is unseparable by verify/margin alone — **only n_cand≥2 flags it**, so the common-prefix commit
+never emits a divergent tail. **Structural FA=0:** gold was copied ⇒ gold ∈ candidates ⇒ the common prefix is a
+prefix of gold ⇒ every committed token == the gold token, byte-for-byte; off-by-one/substitution/near-dup-tail
+tokens diverge from gold and lie beyond the common prefix.
+
+**GUARDED FALSE-ACCEPT CERT (`w1_remine_cert.py`, CPU, exact W-0 population re-mined, 498 in-window spans):**
+
+| bar | required | measured |
+|---|---|---|
+| deploy-class full-span false-accepts committed | **= 0** | **0** ✅ |
+| SAM candidate set == exact-substring oracle / off-by-one / single-sub in candidates | 0 | **0 / 0 / 0** ✅ |
+| committed token ≠ gold token (structural) | 0 | **0** ✅ |
+| committed tok/fwd on copy mass (guard tax vs W-0 18.18) | — | **14.41** (~26% raw tax) |
+| value-region / **blended** speedup | ≥1.6× / ≥1.5× | **2.72× / 1.863×** ✅ (W-0 unguarded 1.885×) |
+
+Routing: 428 committed / 44 k1_ambig_diverge / 26 k1_ambig_far. Common-prefix commit mean **16.15 tok** (near
+full-span) ⇒ the FA-safety cost on the blended metric is only **~1.2% relative** despite the ~26% raw copy-tok/fwd
+tax. Both W-1 KILL bars clear.
+
+**ENGINE INTEGRATION (pin `qwen3_5-flare-modelstate`, gated `FASTDLLM_W1_DRAFT_VERIFY`, default OFF).**
+`vllm/v1/sample/w1_draft_verify.py` (self-contained certified port + `W1DraftVerifyController`);
+`HybridCleanProbeDecoder` gains an OPTIONAL `draft_controller` (default `None`) + `apply_verified_draft()`.
+**Gate-OFF byte-parity PROVEN** (`test_w1_draft_verify.py` 7/7: committed + forwards + fsm-tokens identical
+with/without a controller; gate-ON commits a byte-exact verified copy with zero extra forwards). No regressions
+(existing hybrid_clean 23 + flare_decode 26 + free_text 9 PASS). Change is +39/-1, purely additive/inert — serving
+unchanged until the controller is wired.
+
+**VERDICT = PROCEED.** MINER CERT PASS, guarded deploy-class FA = **0** (structural, hard bar met), guard tax
+negligible on blended (1.863× vs 1.885×), gate-OFF byte-parity proven. **Next: the live C46-under-new-envelope run**
+(same 48-id pool, same scoring — the legitimate twin entry attempt per STATUS C46-iter2), which requires the
+remaining model-runner seam: schedule the m batched verify canvases as independent batch entries + the GDN
+variable-accept state scatter (DIRECTIVE-5.2b / W.1.b GDN discipline) in `qwen3_5_flare.py`. **Caveats (honest):**
+(i) the FA=0 cert is structural + banked-model-forwards, NOT a fresh live-engine forward pass — stronger than a
+sampled GPU battery but the live re-run is owed at C46; (ii) throughput uses certified ā=0.9913 + re-mined
+common-prefix lengths — the teacher-forcing caveat dies only on-policy at the live rung; (iii) window 3072
+(on-policy fully covered).
