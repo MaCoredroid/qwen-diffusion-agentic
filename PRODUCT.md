@@ -19,8 +19,13 @@ lossless APC and the certified tool-call bridge.
 3. **SERVING CERTS as release CI**: KILL-T1 matched-20 exact-args (b=c=0 class), A6 online==offline, A7
    multi-turn APC, preservation cert (#29 protocol), FA battery 0, loop-halt canary, ctx-overflow truth-telling.
 4. **dtype**: bf16.
-5. **Opt-in flag (non-default)**: per-request AR decode policy + the AR-read router — shipped as a documented
-   escape hatch, NOT the product's identity.
+5. **DIFFUSION-ONLY AT SHIP (user directive 2026-07-14)**: the final served artifact exposes ONLY the
+   diffusion decode path. The AR mode and router are DELETED from the serving surface at ship — no flag, no
+   escape hatch. AR remains an INTERNAL tool only: the distillation teacher (training-time) and the gate
+   comparator (eval-time). Honest note: the weights inherently retain AR capability (same weights); "delete"
+   means the serving surface and config, enforced by a release-CI check that the shipped server rejects
+   AR-policy requests. Consequence accepted: no post-ship AR fallback — the release cert battery is the
+   sole quality guarantee.
 
 ### The critical path to v1 (as of this writing)
 
