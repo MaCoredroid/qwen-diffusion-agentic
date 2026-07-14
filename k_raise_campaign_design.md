@@ -1947,3 +1947,23 @@ ONLY; per-checkpoint safety is the cheap anchor set (exact_args + retention), ne
 10. **Highest-risk assumption:** frozen-envelope acceptance **E[p̃(gold)] ≥ ~0.98/token on copy positions** — every
     accept bit measured so far is greedy argmax at the *wrong (full-reveal) conditional*; the whole ~1.6–1.8×
     pricing and the rung ordering rest on that one unmeasured number, which W-0 reads first.
+
+---
+
+## DIRECTIVE-5(2026-07-14) — USER DESIGN REFINEMENTS TO THE W-LADDER DRAFT-AND-VERIFY RULE
+
+Two user-directed refinements, binding on W-0 measurement and the W-1 prototype:
+
+1. **RECENCY-FIRST candidate ordering.** Mine/verify candidates in REVERSAL order of context (most recent
+   first). Rationale: agentic-SWE copy locality (old_string ≈ the last read; paths ≈ recent tool outputs);
+   recency-first (a) resolves near-duplicate ambiguity in large contexts without extra verify cost — the primary
+   mitigation for the large-window false-accept risk, and (b) drives expected candidates-verified-per-span toward
+   1. W-0 MUST report: recency-hit-rate (fraction of gold spans whose gold candidate is the most-recent mined
+   match) + the source-distance distribution (tokens between span and its source).
+2. **CHEAP, BATCHABLE VERIFY.** Verification must be designed batched: (a) candidate-level — m candidate
+   canvases for one span batch as sequences in ONE forward; recency-first keeps m small; a MOVING WINDOW over
+   the candidate list caps batch size when mining returns many; (b) span-level (measure before trusting) —
+   multiple drafted spans in the same block verified in ONE joint canvas/forward; W-0/W-1 must quantify the
+   COUPLING RISK (wrong draft at span A perturbing verification of span B) before joint-verify is enabled;
+   fallback = per-span verify. Verify cost model (forwards per committed token, batched) is a required W-0 output
+   alongside the acceptance numbers.
