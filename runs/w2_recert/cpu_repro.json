@@ -1,0 +1,30 @@
+{
+  "case_A_divergence_sweep": {
+    "configs_tested": 56,
+    "diverging_configs": 0,
+    "diverging": []
+  },
+  "case_B_prefix_commit_parity": [
+    {
+      "cl": 8,
+      "byte_parity": true,
+      "off_stream_matches_target": true,
+      "spans_committed": 4,
+      "tokens_committed": 27,
+      "rejects": 1,
+      "verify_forwards": 4,
+      "assert_rejects": 0
+    },
+    {
+      "cl": 16,
+      "byte_parity": true,
+      "off_stream_matches_target": true,
+      "spans_committed": 2,
+      "tokens_committed": 27,
+      "rejects": 1,
+      "verify_forwards": 2,
+      "assert_rejects": 0
+    }
+  ],
+  "all_byte_parity": true
+}

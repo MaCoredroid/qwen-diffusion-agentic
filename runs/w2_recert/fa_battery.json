@@ -1,0 +1,68 @@
+{
+ "fa_battery": "near-dup pointer-slip x12",
+ "correct_resolution": "12/12",
+ "false_accepts": 0,
+ "rows": [
+  {
+   "file": "a.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "cfg.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "m.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "s.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "r.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "t.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "k.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "d.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "v.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "n.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "p.py",
+   "correct": true,
+   "false_accept": false
+  },
+  {
+   "file": "c.py",
+   "correct": true,
+   "false_accept": false
+  }
+ ],
+ "note": "content byte-exact modulo a single trailing-newline decode artifact (gate-independent); every divergent near-dup line resolved to its TRUE continuation -> no pointer-slip"
+}

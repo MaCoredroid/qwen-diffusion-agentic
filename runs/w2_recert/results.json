@@ -1,0 +1,52 @@
+{
+ "rung": "W-2 causal block-commit verify redesign + drafter boundary-trim",
+ "object": "twin@plain twinK1, FLARE hybrid_clean, mask 248077, maxlen 32768, gmu 0.74, seqs 4, BIDIR_PROBE=1; gate VLLM_FASTDLLM_W1_DRAFT_VERIFY OFF(ref)/ON(W-2)",
+ "design": {
+  "verify_forward": "CAUSAL (forced in prepare_attn for _hc_verify slots; kills the bidir full-reveal leak) + FIXED block-commit width (reuses the commit's captured cudagraph -> deterministic replay, removes the W-1d variable-width numeric fork) + read-only (is_encoder_phase False -> snapshot/restored, zero GDN advance)",
+  "accept": "PREFIX-COMMIT: longest prefix m where causal-argmax==draft; commit draft[:m], divergent position K=1 (one-step cooldown); byte-assert retained (fail-closed)",
+  "boundary_trim": "grammar_clip G5 hook trims the drafted span at the first content/scaffold boundary (fence/special) before staging (the 83%-over-copy lever)",
+  "architectural_finding": "the FLARE commit folds the whole block to ONE end-state (postprocess_state feeds neutral num_accepted=1); there are NO per-position GDN states to select, so literal 'ride the commit forward, zero extra forward, prefix-commit' is not jointly realizable. Realized: a fixed-block-WIDTH causal read-only verify forward that reuses the commit's captured graph (deterministic) + prefix-commit via the existing deferred block-commit fold."
+ },
+ "cpu_tests": {
+  "boundary_trim": "9/9",
+  "w2_causal_verify": "3/3",
+  "w1_draft_verify+engine_seam": "15/15",
+  "hybrid_clean_regression": "58/58",
+  "ideal_oracle_divergence_sweep": "0/56 diverge",
+  "prefix_commit_parity": "byte-exact, assert_rejects=0"
+ },
+ "live_recert": {
+  "control_gate_off": {
+   "exact": "30/30",
+   "bit_reproducible": "6/6"
+  },
+  "gate_on_W2": {
+   "exact": "30/30",
+   "bit_reproducible": "6/6",
+   "note": "idx4 (W-1d 4/5 flip) now 5/5 -> BAR MET by construction"
+  },
+  "fa_battery": {
+   "correct_resolution": "12/12",
+   "false_accepts": 0,
+   "arej": 0
+  },
+  "throughput": {
+   "corpus": "34 reqs (30 recert + 4 warmup), copy-heavy write_file",
+   "model_forwards_off": 2519,
+   "model_forwards_on": 759,
+   "blended_speedup_off_fwd_over_on_fwd": 3.319,
+   "blended_tok_per_fwd_off": 1.191,
+   "blended_tok_per_fwd_on": 3.951,
+   "copy_tok_per_verify_fwd": 19.56,
+   "reject_share_full": "0/90 (0.0%)",
+   "reject_share_partial_diverged": "10/90 (11.1%)",
+   "vs_W1b": "3.32x blended > W-1b 2.35x/1.95x; reject share 11.1% partial vs W-1d 94.8%",
+   "ms_per_tok_off": 23.96,
+   "ms_per_tok_on": 9.41,
+   "latency_speedup": 2.55
+  },
+  "unfired_byte_parity": "gate-ON committed stream == gate-OFF K=1 across the full 30-req corpus (30/30 exact each vs same gold, det_on==det_off)"
+ },
+ "VERDICT": "PROCEED",
+ "verdict_reason": "gate-ON now matches gate-OFF reproducibility (6/6) AND exactness (30/30) with arej=0 and 0 false accepts, at 3.32x blended forwards-speedup. The W-1d numeric non-reproducibility is resolved by the causal fixed-width read-only verify; the boundary-trim + prefix-commit cut the reject tax from 94.8% to 11.1% partial / 0% full."
+}

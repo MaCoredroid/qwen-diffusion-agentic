@@ -1,0 +1,49 @@
+{
+ "tag": "off",
+ "per_idx": [
+  {
+   "idx": 0,
+   "n": 5,
+   "distinct": 1,
+   "exact": 5,
+   "bit_reproducible": true
+  },
+  {
+   "idx": 1,
+   "n": 5,
+   "distinct": 1,
+   "exact": 5,
+   "bit_reproducible": true
+  },
+  {
+   "idx": 2,
+   "n": 5,
+   "distinct": 1,
+   "exact": 5,
+   "bit_reproducible": true
+  },
+  {
+   "idx": 3,
+   "n": 5,
+   "distinct": 1,
+   "exact": 5,
+   "bit_reproducible": true
+  },
+  {
+   "idx": 4,
+   "n": 5,
+   "distinct": 1,
+   "exact": 5,
+   "bit_reproducible": true
+  },
+  {
+   "idx": 5,
+   "n": 5,
+   "distinct": 1,
+   "exact": 5,
+   "bit_reproducible": true
+  }
+ ],
+ "exact_total": "30/30",
+ "bit_reproducible_total": "6/6"
+}
