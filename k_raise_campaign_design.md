@@ -1992,3 +1992,27 @@ Two user design rules for the SECTION-W draft-and-verify mechanism, binding on W
 These compose with the W-0 extra readouts already pinned (clamped-trace in-window coverage; ambiguity vs context
 depth): recency-first is the designed MITIGATION for the large-context ambiguity risk — W-0 measures whether it
 suffices (false-accept 0 bar unchanged).
+
+---
+
+## STATUS(2026-07-14) — C46 RE-GATE (ITER-2) EXECUTED: **SPLIT VERDICT — CAPABILITY PROVEN IN THE WEIGHTS, DECODE MODE IS NOW THE SOLE BINDING CONSTRAINT**
+
+Run of record runs/k_gate_c46_iter2/ (48 ids, pool sha 49d8f46d…, frozen envelope, official scoring, truth-telling
+labels ACTIVE, twin served WITH the certified read-clamp).
+
+- **AR arm (iter-2 SFT fold, AR-decoded): 12/48** — up from 7/48 (iter-1). The iteration-2 quality levers (383-pool
+  + windowing) MOVED the capability ceiling; the SFT weights now demonstrably carry entry-gate-level capability.
+- **twin@K1+clamp: 1/48** (iter-1: 3/48) — ENTRY BAR ≥12/46 **NOT MET**; twin⊂AR, McNemar b=0/c=11, p=0.00098.
+- **LOCUS_VERDICT: A — conversion/decode-mode-specific deficit.** Same weights: AR 12/48 vs diffusion-K=1 1/48.
+- Truth-telling first outing: twin failure mass = **21/48 ctx_overflow_deaths** (honestly labeled, no longer
+  clean-quit masquerade), 23 empty patches, 13 committed edits, 6 loop halts. The certified clamp (limit=100) did
+  not suffice — non-read bloat routes still drive the context wall (consistent with the iter-1 PARTIAL finding).
+- KILL-3 note: value-projection tripwire fired on 14/1201 served requests (1.17%) — projection-immune for the
+  docker-scored verdict; flagged for any future served-engine tok/fwd measurement.
+
+**ADJUDICATION (supersedes the pre-registered "principled stop"):** the stop's premise — "a second miss means the
+ceiling is the 9B student" — is REFUTED by the AR arm's 12/48. The student is NOT the ceiling; the K=1 diffusion
+decode is. The quality goal and the speed goal have therefore CONVERGED on the same object: the decode rule. The
+W-ladder (draft-and-verify with DIRECTIVE-5 recency-first batched verification) is now load-bearing for BOTH goal
+halves; W-0 launches immediately on the freed GPU. A W-1 engine prototype, if W-0 proceeds, gets gated on C46
+under the NEW decode envelope (same 48-id pool, same scoring) — that is the next legitimate twin entry attempt.
