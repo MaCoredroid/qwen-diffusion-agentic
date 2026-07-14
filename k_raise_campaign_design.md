@@ -2378,3 +2378,165 @@ Unfired byte-parity: gate-ON committed stream == gate-OFF K=1 across the full co
 **VERDICT = PROCEED.** Byte-exact + bit-reproducible (W-1d bar met) + 0 false accepts + arej=0 at 3.32× blended
 forwards-speedup. Re-owe the 6-ep C46 A/B then the C46-new-envelope certification. Gate stays default-OFF; engine pin
 stays local.
+
+---
+
+# SECTION X — THE QUALITY-GAP LEVER LADDER (the content fix the W-ladder cannot supply)
+
+Appended 2026-07-14. Same rigor as W: pre-registered kills, measured numbers only, one cheap decisive instrument, honest
+ceilings, cost + kill per rung. **Why this section has to exist, stated as a theorem, not a hope.** W-2b
+(`runs/w2b_recert/W2B_STATUS.md`) certifies the draft-verify committed stream is **BIT-IDENTICAL to K=1** by RNG-stream
+conservation ("distribution-exact by identity, not approximation"): the verify forward *is* each accepted position's K=1
+forward, drawn from the same seeded stream in the same order. Therefore the entire W-ladder buys **speed on the K=1
+trajectory and changes nothing in its CONTENT.** The C46 iter-2 split verdict (`de84582`: AR **12/48** vs twin@K1+clamp
+**1/48**, SAME weights `mswe2-S`, LOCUS_VERDICT **A**) is a *content* gap, and it is now the sole binding constraint on
+**both** goals. The C46-new-envelope run in flight (task #141, gate-ON W-2 draft-verify + clamp) is bit-identical to
+twin@K1 by construction, so it is **expected to re-land at ≈1/48** — a re-confirmation, not a fix. W accelerates the K=1
+content; **Section X is the only track that changes it.** W and X are orthogonal levers on orthogonal goal-halves.
+
+**The gap reduced to one measured number.** The K=1 diffusion (hybrid_clean) conditional under-grounds `read_file` window
+arguments (`limit`, often `offset`) on **84 %** (forensic, 48 eps) / **89.4 %** (REPRO, N=320) of reads at near-cap
+agentic states, while the **same weights AR-decoded** drop them on **0 %** (REPRO, N=306). Under-grounded reads run to EOF
+→ the 32768 wall → empty patch (36/48 twin ctx-deaths). Isolated to the decode paradigm: temperature-flat (0.83–0.89 at
+every temp incl. greedy), greedy non-deterministic, and the read-clamp is only PARTIAL (0→3/8 committal, 0→1/8 resolve on
+the 8 divergence ids; 4/8 still die). Matched-20 `exact_args` is **near-parity (49/63 both arms)** → the deficit is
+**LONG-HORIZON** (fires only at 28.9–30.2k context), not single-turn. And the failing tokens are **DERIVED** values
+(`limit`/`offset` computed from file length + bug locus — the 0.238-class "must-invent" mass, census free-text-derived
+p10=0.246), **not copies** — so the V1/W copy-parallel machinery does not touch them. Every X lever below targets exactly
+this: **re-align (or bypass) the diffusion decode's derived read-argument conditional to match the AR conditional the same
+weights already carry.**
+
+**The cheap decisive instrument, shared by X.1–X.4 (the N=64 read-arg replay battery).** It already exists — the REPRO
+built it (`runs/k_gate_c46/…/scratchpad/{repro_replay,temp_sweep}.py`, raw `repro_diffusion.json` /
+`repro_ar_control.json`): the **5 byte-exact divergence prompts** (matplotlib-25122, sympy-13647, django-12273,
+matplotlib-20859, django-16256, all at 28.9–30.2k ctx — the *failing* regime) × **N=64 resamples** at the frozen envelope,
+reporting **read-arg grounding rate** (= 1 − unbounded-read rate) + the offset-vs-limit sub-mode split. Frozen baselines to
+beat: **twin grounding 10.6 %**, AR-ctrl **100 %**. Per candidate conversion checkpoint: re-serve, re-run, read the
+grounding rate. **≈1 GPU-h** (one boot + 320 decodes), server torn down at exit. It substitutes for the **full 48-episode
+C46 gate** (multi-GPU-h serving + docker scoring) as the dose-response screen, and it is the **cheapest decisive next
+measurement regardless of which lever is chosen** — because the whole gap reduces to the number it reads, and it
+adjudicates *trainable-vs-architectural* directly (see the highest-risk assumption, X.4). Add a **≤0.1 GPU-h turn-level
+generated-token census** (extend `census_content_mix.py` to bucket generated tokens by turn tool-type) before X.3 pricing.
+
+## X.1 CONVERSION FIDELITY — does more/targeted conversion dose re-align the read-arg conditional?
+
+**Premise-specific framing (do not misread as capability injection).** The W.2 dose-honesty ("~2–3 OOM underdosed vs
+dParallel 140M / Fast-dLLM v2 1B") is for *injecting a missing* parallel-copy capability. Here the capability is **not
+missing** — the same weights AR-decoded ground reads 100 %. This is a **conversion-INDUCED conditional misalignment**: the
+plain two-stream recipe's clean stream `L_AR` stays byte-identical to AR, but the **denoise stream** drifted on read-arg
+positions. That makes re-alignment plausibly *far cheaper* than injection — but also means **raw dose of the plain recipe
+is the weakest sub-lever** (it may entrench the drift), so X.1 ranks three sub-levers, cheapest-first:
+
+- **(a) Read-grounding-weighted `L_diff` (PRIMARY sub-lever).** Add a **`READ_WINDOW_ARG` span class** to O2 (§4.2) — the
+  `limit`/`offset` token positions in `read_file` tool calls — and up-weight its **K=1 sequential CE** (stays sequential:
+  it is derived, never joint-committed; extends `VALUE_SPAN_LOSS_WEIGHT=2.0` → e.g. 4–6 on this class only). Directly
+  attacks the measured 84 %-unbounded locus. Span tagger reuses the census detector, restricted to tool-call arg bodies
+  where the schema key ∈ {`limit`,`offset`}.
+- **(b) High-context read-arg curriculum (the LONG-HORIZON fix — likely load-bearing).** The plain conversion trains
+  block 512; iter-2 windowing reaches block 12288 / ctx_overlap 3072 — **still far below the 28.9–30.2k where the failure
+  fires.** The denoiser may under-ground reads simply because it **never trains reads near the cap.** Curriculum:
+  oversample windows whose masked read-arg slot sits at ≥24k context position (tile from long keeper episodes; firewall
+  verbatim). This is the sub-lever most aligned with the matched-20-parity-but-C46-collapse evidence.
+- **(c) Raw dose 800–1200 steps (WEAKEST, run only as the null control).** The plain recipe longer. Included so the
+  dose-response has a "same recipe, more steps" baseline; do **not** expect it alone to move the battery.
+
+**Cost.** Each conversion dose ≈ the plain conversion (400 steps two-stream, block 512/bd 32, LoRA r16/α32 ≈ a few GPU-h;
+800–1200 proportional), folded — not bolted ([[retrain-freely-rule]]). Probe = **~1 GPU-h** N=64 battery per checkpoint
+(save every ~100 steps; screen 400/800/1200 + the (a)/(b) variants). **In-training safety kit verbatim** (§4): retention
+probe every 50 steps, KL-to-base 0.05 early-stop, matched-20 `exact_args` every 50.
+**KILL (pre-registered).** PROCEED to a full C46 re-gate iff the N=64 battery grounding rate rises **10.6 % → ≥ 50 %** by
+the 800-step (a)+(b) checkpoint **AND** KILL-T1 `exact_args` McNemar net-loss = 0 **AND** KL-to-base ≤ 0.05. **KILL to X.2**
+if grounding < 50 % by 800 steps or the anchor/retention trips. Honest ceiling: even a battery pass is *diagnostic* — the
+B-ceiling holds (AR itself resolves only 12/48), so re-alignment recovers the twin **toward** AR, not past it.
+
+## X.2 READ-GROUNDING-TARGETED TRAINING — AR-self-distillation of the derived read-arg conditional
+
+**The asset X.2 exploits (this is the elegant part).** The correct targets **already exist and are deterministic from the
+SAME weights**: run the export in AR mode (`DECODE_POLICY=careful_live_grammar`, `flare=0`) on read-phase states → it emits
+the correct bounded `read_file(offset=410, limit=50)` the twin drops. Teacher and student are **identical weights, differing
+only in decode mode** — so the distillation target is not a guess and not a foreign teacher; it is the twin's own AR
+conditional, which the REPRO proved grounds 100 % on exactly these states.
+
+**Objective (exact).** A V1-*style* fold into the two-stream conversion, but aimed at **GROUNDING, not parallelism** (V1/W
+were copy-parallel *speed* levers; X.2 is a *correctness* lever, K=1 sequential throughout). For a read-phase state: mask
+the `read_file` arg slot in the denoise stream, keep context clean (it carries the file-length + prior-read signal the arg
+is derived from), and train the denoise-stream **sequential CE against the AR-self-distilled target tokens**
+(`limit`/`offset` produced by the same-weights AR mode on that state). This **amends O2's derived-value bucket** — derived
+read-args stay K=1 sequential (the values-always-sequential invariant is *preserved*, indeed *strengthened* on the exact
+class that's failing), now with a *correct deterministic target signal* rather than only the keeper's original token.
+Data = same-weights AR rollouts over the **train-keeper pool's read turns + synthesized near-cap exploration states**
+(train-side only; §7 firewall verbatim, KILL-D1 re-asserted; the source file for each read is the keeper's own prior
+context, zero eval-ring id).
+
+**Cost.** AR-mode data-gen on read states ≈ **1–2 GPU-h** (short generations); targeted training folded into the
+conversion ≈ **a few GPU-h**; probe = the same **~1 GPU-h** N=64 battery. Total ≈ **4–6 GPU-h**.
+**KILL (pre-registered).** PROCEED to C46 re-gate iff battery grounding **≥ 70 %** AND KILL-T1 net-loss 0 AND KL ≤ 0.05.
+**KILL to X.3-only** if grounding still **< 50 %** after distillation — that is the decisive *architectural* negative (the
+denoise-stream cannot be trained to match the AR conditional even with the AR conditional handed to it as the label).
+**Honest risk (the deep one).** W.0.b establishes the denoise stream attends **bidirectionally within the block**
+(`noisy_to_noisy_mask`, `modeling.py:198`) — a *different conditional* than serial K=1's strictly-causal-with-masked-suffix.
+If the derived arg genuinely needs the strictly-causal view the AR conditional uses and the bidir denoise geometry **cannot
+represent that function**, X.2 fails *by construction* and no target-matching fixes it. The battery is what tells us which
+world we are in — cheaply, before the full spend.
+
+## X.3 AR-ASSIST ROUTING — route read-phase turns to the AR mode of the dual-mode export (pragmatic floor)
+
+**Feasibility, honest about memory.** The **same export runs both modes** — the K1_COMMITTAL REPRO's AR control was *this
+export* under `DECODE_POLICY=careful_live_grammar` (0 FLARE lines, AR MambaHybrid path), grounding reads 100 %. So no
+second weight set is needed; the weights are dual-mode. **But** on the live vLLM-pin OpenAI serving path the decode mode is
+a **BOOT-level** choice (the serve script `qwen35_9b_flare_hybrid_serve.sh` + `VLLM_FASTDLLM_W1_DRAFT_VERIFY`, per
+`run_arm_twin.sh:54`), **not a per-request field** today (the offline HF eval path already takes `decode_policy` per
+`generate()`; the served endpoint does not expose it). Two implementations, and one is ruled out on the 32 GB card:
+- **(a) One server, per-request `decode_policy` (the only viable single-GPU design).** Small engine change: expose the
+  flag the offline path already has as a per-request field, routing each turn through `hybrid_clean` or
+  `careful_live_grammar` on the **already-loaded shared weights** — **~0 extra memory** (one 16.68 GiB weight floor;
+  both paths already live in the engine). Cost = **~0 training**, modest engine work + a proxy turn-classifier ("about to
+  emit a `read_file`/exploration read ⇒ AR; reasoning + edit ⇒ diffusion" — the qwen-code proxy already sees the tool).
+- **(b) Proxy between two servers — INFEASIBLE co-resident.** 2 × 16.68 GiB = **33.4 GiB > 32 GB** (`serving_memory_verdict`
+  weight floor). Only sequential time-share (kills concurrent serving) or a 2nd GPU. Ruled out on the single 5090.
+
+**Fraction of the diffusion serving claim preserved.** Reads are **output-light** (a read turn *generates* only the short
+tool call — REPRO median generated ≈ 69 tok, mostly args; the file bytes are *input*, not generated), while the W-2
+draft-verify **3.3–3.9× speed lever lands on the copy-heavy edit/write turns** (`write_file`/`edit` new_string — where
+copy-mass draft-verify shines). So on a **generated-token-weighted** basis, X.3 keeps the diffusion throughput benefit on
+the turns that actually carry it and routes only the short read turns to AR. **Exact preserved fraction requires the
+≤0.1 GPU-h turn-level generated-token census** (pre-register it as the X.3 gating input); qualitatively the concession is
+**small on throughput** but must be named for what it is: **X.3 concedes the pure-diffusion K=1 quality point** — it papers
+the read-grounding deficit over with AR at serve time rather than curing it, and it complicates the serving claim
+("diffusion-served *except reads*"). It also cannot beat the B-ceiling (recovers toward AR 12/48, not past).
+**Cost ≈ 0 training.** Risk to certified properties: **LOW** on the AR turns (AR mode is the pre-conversion certified
+path). The one real cert cost is the **mid-episode mode SWITCH** — byte-cert that flipping decode mode within a single
+conversation does not corrupt the shared GDN recurrent state / APC never-remask cache (`lossless_apc_design`); pre-register
+this as the X.3 promotion gate (analogue of W-2's A6 online==offline).
+
+## X.4 RANKING + RECOMMENDATION — pre-registered decision rule
+
+**Rank (evidence-directness / cost / risk to certified properties):**
+
+| lever | evidence-directness | training cost | risk to certified properties | what it concedes |
+|---|---|---:|---|---|
+| **X.3 routing** | **HIGHEST** — REPRO already proved same-weights AR grounds reads **100 %**; routing just uses the proven fact | **~0** (engine + proxy) | LOW (AR mode certified) + 1 mode-switch byte-cert | the pure-diffusion K=1 quality point (explicit) |
+| **X.2 AR-self-distill** | MIDDLE — target is deterministic + proven-correct, but *trainability* of the bidir denoise conditional is open | ~4–6 GPU-h | retrain: re-clear KILL-T1 + golden + retention per dose | nothing if it works; else architectural negative |
+| **X.1 conversion fidelity** | LOWEST — no direct evidence dose re-aligns the read-arg conditional (plausible, untested) | cheapest *training* probe (reuse conversion + battery) | retrain: same re-clears | nothing if it works |
+
+**Decision rule (pre-registered, cheapest-decisive-first, mirrors the W-ladder discipline):**
+1. **P0 = X.1(a)+(b) at 800 steps + N=64 battery (~3 GPU-h).** PROCEED to C46 re-gate iff grounding ≥ 50 % ∧ KILL-T1 = 0 ∧
+   KL ≤ 0.05. Else → P1.
+2. **P1 = X.2 AR-self-distillation + N=64 battery (~4–6 GPU-h).** PROCEED to C46 re-gate iff grounding ≥ 70 % ∧ anchors
+   hold. If still < 50 % ⇒ the deficit is **architectural** (bidir denoise conditional) ⇒ X.3 is the answer.
+3. **X.3 built in PARALLEL as the guaranteed floor (~0 training).** Because AR-mode grounds 100 %, routing recovers most
+   of the gap **unconditionally**, independent of whether P0/P1 succeed. It ships the recovered-toward-AR quality even if
+   both training levers fail; if P0/P1 succeed, X.3 is retired (or kept only for defense-in-depth).
+
+**Recommended FIRST probe: the N=64 read-arg replay battery on the X.1(a)+(b) 800-step dose** — it is the cheapest
+decisive measurement (~1 GPU-h on top of a ~2 GPU-h dose), reuses a *built and validated* instrument at the exact 28.9–30.2k
+failing regime, and its read directly adjudicates the whole ladder. Regardless of the training outcome, **stand up X.3(a)
+per-request routing as the floor** — it is ~0-training and cannot fail to help.
+
+**THE SINGLE HIGHEST-RISK ASSUMPTION (spanning X.1–X.2).** That the read-arg grounding deficit is a **TRAINABLE property of
+the denoise-stream conditional** — i.e. that the bidirectional-within-block denoise attention geometry (W.0.b) *can* be
+trained to derive the correct `limit`/`offset` from causal context the way the strictly-causal AR conditional does. If it is
+**architectural** (the denoise geometry cannot represent the derivation), X.1 **and** X.2 fail by construction and **only
+X.3 works** (it sidesteps by using the AR path outright). The N=64 battery is precisely the instrument that reads
+trainable-vs-architectural for ~1 GPU-h — which is why it is the recommended first move and why X.3 is built in parallel as
+the hedge against the assumption being false.
