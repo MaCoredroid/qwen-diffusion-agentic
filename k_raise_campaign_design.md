@@ -2038,3 +2038,87 @@ n-gram index. Required properties, adapted to the FLARE block loop:
    anchored match property must be certified to never draft the slipped-by-one candidate class).
 5. **W-1 deliverable order**: port/adapt reference implementation -> miner cert battery (incl. pointer-slip) ->
    wire into FLARE loop behind an env gate -> bounded live A/B -> C46 re-run under the new envelope.
+
+---
+
+## STATUS(W-0) — 2026-07-13: RUNG W-0 EXECUTED — serial-faithful draft-and-verify acceptance probe — **PROCEED-CONDITIONAL**
+
+Run of record `runs/w0_probe/` (`w0_probe.py` + `w0_report.py` + `w0_clamp_coverage.py`; raw
+`w0_probe_raw.json`, report `w0_report.json`/`W0_REPORT.md`). Object = **twin@plain** (HF form:
+`mswe-S-iter2-merged` base + `mswe2_S_twinK1` conversion adapter, merged — the served
+`qwen3.5-9b-fastdllm-mswe2-S-twinK1-vllm-bf16`, preservation-certified). Instrument = the **byte-faithful
+eager fp32 two-stream** (`flare_two_stream_noisy_logits`, the certified V2/V1 machinery) extended per SECTION W:
+window 3072 (up from 1792), full-softmax reads warped by the EXACT engine sampler
+(temp 0.6 → top_k 20 → top_p 0.95), + serial-faithful
+staged reads, full-reveal verify, false-accept battery, rejection-sampling sim, and the DIRECTIVE-5 recency +
+batched-verify readouts. Population = **655 in-window spans / 12375
+copy-mass tokens** (655 forwarded of 862). GPU-h = **1.214** (hard cap 2.5);
+server DOWN, GPU idle at exit (probe is process-scoped).
+
+**SDPA honesty:** an SDPA fp32 fast-path was built to reach ~23k but REJECTED for the measured numbers — it
+preserves argmax exactly but perturbs warped p̃ at isolated positions (max |Δp̃| 0.67); all headline numbers use
+the eager instrument at window 3072. Measure (e) shows 3072 is not the binding limit: on the
+on-policy C46-iter2 traces copy sources are recency-local (100% present, 99%+ within 3072), so the >3072 tail is
+keeper-synthetic, not serving traffic.
+
+**Pre-registered PROCEED rule vs measured (each bar):**
+
+| bar | required | measured | pass |
+|---|---|---|---|
+| serial-faithful commit tok/fwd (in-window copy mass) | ≥ 8.0 | **18.18** | PASS |
+| implied blended speedup (census-anchored) | ≥ 1.5× | **1.885×** | PASS |
+| serial-vs-full-reveal committed gap (leak tax) | ≤ 15% | **1.11%** | PASS |
+| full-span false-accept (perturbed candidates) | = 0 | **5** deploy-class (neardup 4/82, singlesub 1/202) | **FAIL** |
+| (KILL floor) mean envelope acceptance ā serial | ≥ 0.98/tok | **0.9913** | PASS |
+
+**The measured numbers (each vs its design anchor):**
+- **(a) Serial-faithful acceptance** ā = **0.9913**/token (greedy argmax==gold
+  0.993; design anchor pos-0 0.9865 → measured pos-0 0.9729).
+  Whole-span (mass-wtd) 0.9385; ā³² 0.7569. The
+  frozen-envelope acceptance — SECTION W's "one unmeasured quantity everything prices from" — is measured **≥ 0.98**.
+- **(b) Full-reveal leak tax:** verify ā 0.9953; per-position leak (verify−serial)
+  mean +0.00137, Δargmax 0.00097; **committed
+  tok/fwd gap 1.11%** (≤15% ⇒ full-reveal IS a usable one-forward verify surrogate; **NO SURROGATE-FAIL**).
+  Parallel-mask wall (context): interior argmax==gold **0.0794** (design 0.107) — the
+  dominance wall draft-verify inverts to 0.995 (~12× reversal, both twins, zero training).
+- **(d) Rejection-sampling multi-round sim:** serial-faithful **18.18 tok/fwd** on copy mass
+  (full-reveal 17.98; design oracle 14.6–15.8). Parallel-baseline 1.15.
+- **implied blended** = `992727/(431048/18.2 + 203775 + 357904/1.196)` → value-region
+  2.791× → **blended 1.885×** (design est 1.77×, census ceiling 2.98×).
+- **(c) False-accept battery — the ONE bar that does NOT clear:** value-corruption (single-token substitution)
+  1/202 (the 1 accept is a +7-token-shift artifact landing on a valid
+  token) and **real near-duplicate distractor 4/82 (4.9%)** — a genuine ambiguity where two context
+  sources share a seed and the model equally accepts the non-emitted one. **A prob floor does NOT fix it** (the worst
+  false-accepts have min p̃=1.0, indistinguishable from gold; floor 0.95 still leaves 2 while losing 17% of true copies).
+  Synthetic off-by-one 8/202 (excluded by exact-substring mining).
+- **(e) Clamp-vs-coverage (C46-iter2 served, limit=100):** copy-source present **1.0 span /
+  1.0 mass**; ctx len mean 14229.0 (frac>24k
+  0.0); src_dist p50/90/99 [225, 1028, 2268]. **The clamp
+  does NOT starve copy sources** (100% survive, recency-local); the 21/48 ctx_overflow_deaths are episode-accumulation,
+  ORTHOGONAL to copy-source truncation.
+- **(g) DIRECTIVE-5 recency-first:** recency-hit-rate **0.8809** (gold = most-recent mined candidate);
+  verify-rounds-to-accept recency **1.256** vs naive 1.508
+  (recency cuts rounds AND is the false-accept mitigation — restricts the ~5% neardup risk to the ~12% non-recency-hit spans);
+  src_dist p50/90/99 [295, 1721, 2946]; n_cand p50/90/max [1, 6, 270].
+- **(f) ambiguity vs depth:** near sources (≤256) mean n_cand 6.37 recency-hit
+  0.9037; far (1025-3072) whole-span verify p drops to
+  0.8537, recency-hit 0.7951 —
+  ambiguity/false-accept both rise with depth (deeper = more distractors, lower recency locality).
+- **(h) DIRECTIVE-5 batched-verify cost model** (b1→b16 curve): cap8 → **1.009 fwd/span**
+  (19.12ms), **1.226× wall** vs sequential — recency-first keeps
+  candidates-to-verify ≈1 so batched verify collapses to ≈ a single forward.
+
+**VERDICT = PROCEED-CONDITIONAL.** Three of four PROCEED bars clear by wide margins (serial **18.2**≥8; blended
+**1.885**≥1.5; leak **1.1%**≤15) and the ā KILL floor clears (**0.991**≥0.98):
+**the SPEED thesis of draft-and-verify is PROVEN and serial-faithful** (the verify asymmetry is real, NOT a
+full-reveal artifact — leak 1.1%). **But the pre-registered false-accept=0 bar is NOT met by decode-alone**
+(real near-duplicate distractors accept ~4.9%; a prob floor does not cleanly separate them). This is not a
+KILL (ā/blended clear) nor a SURROGATE-FAIL (leak clears); it is the design's pre-registered "add-a-floor-and-re-simulate"
+branch resolving NEGATIVE — the correctness guard must be **structural**, not a threshold.
+
+**DISPOSITION: PROCEED to W-1 with the false-accept finding as W-1's load-bearing correctness gate** (recency-first +
+copy-assert + a 2nd-candidate/margin rule so an ambiguous near-dup is NOT committed without disambiguation), and **W-2's
+KILL-T1 `exact_args` matched-20 certification is now mandatory and decisive** — exactly consistent with W.0.b (draft-verify
+is a NEW envelope, **not** lossless by construction) and W.4 (KILL-T1 re-certified empirically, "lossless by construction"
+banned). Carry-forward caveats: (i) multi-round sim is teacher-forced post-rejection (oracle upper bound — W-1 kills this
+on-policy); (ii) window 3072 eager (on-policy fully covered; >3072 tail keeper-synthetic).
