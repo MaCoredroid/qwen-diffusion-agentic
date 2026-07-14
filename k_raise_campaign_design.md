@@ -2236,3 +2236,48 @@ FA battery (off-by-one / substitution / whitespace) through the live engine; (b)
 throughput + blended tok/fwd; (c) the formal 5-turn A6 online==offline; (d) the 6-episode C46 A/B
 (`runs/k_gate_c46_iter2` ctx_overflow ids). Plus the reject-tax tuning lever above. Pin commits are LOCAL on
 `qwen3_5-flare-modelstate` (origin is upstream vllm — never pushed there).
+
+## STATUS(W-1c) — the OWED LiveCert battery RAN — **VERDICT: STOP (live seam breaks byte-safety on copy mass)**
+
+Object = twin@plain twinK1, gate-ON twin (`VLLM_FASTDLLM_W1_DRAFT_VERIFY=1`), frozen C46-iter2 envelope (mask
+248077, maxlen 32768, gmu 0.74, seqs 4, `VLLM_FLARE_BIDIR_PROBE=1`). Three bounded boots (gate-OFF ref, gate-ON,
+gate-OFF determinism control); server DOWN + GPU idle (385 MiB, 0%) at exit; ~0.5 GPU-h of ~4. Full result +
+harnesses + raw jsonl/logs: `runs/w1c_livecert/` (`W1C_STATUS.md`, `results.json`). Pin UNCHANGED (no commits;
+still `abb2f65`).
+
+**(a) LIVE PERTURBED FA BATTERY — registered bar MET.** 12 requests (3 canonical spans × off-by-one / single-sub /
+near-dup / whitespace), each seeding canonical + a class distractor; deploy-class (single-sub+near-dup) full-span
+false-accepts = **0**; gate-ON byte-identical to gate-OFF **12/12**; emits canonical **12/12**. BUT the registered
+cases seed a distractor (exercising the common-prefix guard); they do NOT exercise the single-source copy-value case
+that (b) found corrupts.
+
+**(b) W-0 SPAN-CORPUS LIVE THROUGHPUT — modest real speedup + a BYTE-SAFETY VIOLATION.** copy-mass tok/fwd K=1
+**1.19 → gate-ON 2.80 (2.35×)**; blended **1.24 → 2.43 (1.95×)**; copy ms/committed-tok **24.35 → 15.42**; non-copy
+turns net **SLOWER** (20.68 → 26.66, reject-tax). Reject-tax share **0.859 copy / 1.0 path** — the strict whole-span
+full-reveal verify rejects ~86% of copy drafts on-policy, so the **CPU-cert 14.41 copy-tok/fwd does NOT reproduce
+live** (live 2.80, ~5× below; the teacher-forced ā=0.9913 projection dies on-policy exactly as flagged). The
+reject-tax lever is a decode-behavior change, not a one-knob env change — **NOT enacted.**
+
+**(c) FORMAL A6.** 5 real banked agentic turns, temp-0; **all 5 fired** (real turns always carry copy mass);
+tool-call turns **2/2 byte-identical + exact args**; free-text reasoning drifts (1/3 content-diverged). "Unfired
+byte-identical" shown on the **4/4 path turns** in (b) (0 firing). (b) proves fired copy-value turns CAN corrupt, so
+"fired exact-args valid" is NOT a live guarantee.
+
+**(d) 6-EPISODE C46 A/B — NOT RUN (disciplined stop).** The byte-lossless precondition failed at (b); a throughput
+A/B of a value-corrupting fast path is not a meaningful win and would inject corrupted edits. Plan (`d_plan.json`, 6
+django ctx_overflow ids seed-matched to banked gate-OFF) + `run_d.sh` ready; re-owed once the seam is fixed.
+
+**DECISIVE CONTROL — determinism, 5×/snippet, gate-OFF vs gate-ON:** gate-OFF K=1 is bit-reproducible + exact on ALL
+6 copy snippets (**30/30**). gate-ON W-1 firing **non-deterministically corrupts copied tool-call VALUES on 3/6
+snippets** (idx3 4/5, idx4 4/5, idx5 **0/5** — `'+00:00'` → `'+00:`, a 31-token span ACCEPTED and committed;
+`projected_value_tokens_exact` tripwire = 0, missed it). **23/30 exact gate-ON (~23% of copy-heavy generations
+corrupt).** So the CPU-certified **structural-FA=0 does NOT transfer to the live seam** (`_hc_stage_verify`/
+`_hc_verify_read`): the wide read-only-denoise verify canvas gives a temp-0 argmax that is (1) non-deterministic and
+(2) diverges from serial K=1 (the W-0 (b) full-reveal leak, on-policy), so accepted spans corrupt values — the exact
+byte-safety the guard must guarantee, violated live. This contradicts the W-1/W-1b banked claim of "byte-safe
+speedup on the arg-value copy mass" (those 3 W-1b smoke cases happened to be the safe class, like idx0–2 here).
+
+**VERDICT = STOP** per the bars. Not dispatch-ready for the full C46-under-new-envelope run. Next lever (design, not
+enacted): make the live verify commit only the **serial-K=1-equal prefix, deterministically** (fix seam faithfulness
+to the CPU-certified guard), add a real value-divergence tripwire, then re-run the LiveCert before any gate-ON
+dispatch. The K=1 gate-OFF path remains byte-exact + deterministic and is unaffected (gate default OFF).

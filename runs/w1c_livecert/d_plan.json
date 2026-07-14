@@ -1,0 +1,46 @@
+{
+ "concurrency": 4,
+ "base_seed": 1234,
+ "pool_sha256": "w1c_d_ctxoverflow6",
+ "total_instances": 6,
+ "shards": [
+  {
+   "shard_id": 0,
+   "base_seed": 1234,
+   "diff_proxy_port": 33200,
+   "instance_ids": [
+    "django__django-14631"
+   ],
+   "n": 1
+  },
+  {
+   "shard_id": 1,
+   "base_seed": 101234,
+   "diff_proxy_port": 33201,
+   "instance_ids": [
+    "django__django-14170",
+    "django__django-14725"
+   ],
+   "n": 2
+  },
+  {
+   "shard_id": 2,
+   "base_seed": 201234,
+   "diff_proxy_port": 33202,
+   "instance_ids": [
+    "django__django-11163",
+    "django__django-13195"
+   ],
+   "n": 2
+  },
+  {
+   "shard_id": 3,
+   "base_seed": 301234,
+   "diff_proxy_port": 33203,
+   "instance_ids": [
+    "django__django-11211"
+   ],
+   "n": 1
+  }
+ ]
+}
