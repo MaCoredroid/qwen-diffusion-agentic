@@ -1967,3 +1967,28 @@ Two user-directed refinements, binding on W-0 measurement and the W-1 prototype:
    COUPLING RISK (wrong draft at span A perturbing verification of span B) before joint-verify is enabled;
    fallback = per-span verify. Verify cost model (forwards per committed token, batched) is a required W-0 output
    alongside the acceptance numbers.
+
+---
+
+## DIRECTIVE-5(2026-07-13) — USER: RECENCY-FIRST VERIFICATION + CHEAP/BATCHABLE VERIFY
+
+Two user design rules for the SECTION-W draft-and-verify mechanism, binding on W-0 (measure) and W-1 (implement):
+
+1. **RECENCY-FIRST candidate ordering (most-recent context first).** Mining ranks candidates by recency of their
+   source occurrence (reverse context order); verification proceeds most-recent-first with EARLY EXIT on first
+   accept. Rationale: in agentic SWE the correct copy source is near-always the most recent occurrence (the file
+   just read, the path just emitted); stale near-duplicates deeper in context are exactly the false-accept
+   distractors. Expected effects to MEASURE in W-0: (a) verify-rounds-to-accept distribution under recency order
+   vs naive order; (b) false-accept reduction from recency priority (the perturbed/distractor battery re-scored
+   with recency rank as tiebreak).
+2. **VERIFY MUST BE CHEAP AND BATCHABLE — moving window if the candidate set exceeds the batch.** Multiple
+   candidates for a span verify in ONE batched forward (m canvases, batch dim m); measured engine batch curve
+   (18.7→35.3 ms/fwd b1→b16, p2_batched_rollout_bench) prices m=4–8 at ~1.5–2× a single forward, far below m
+   sequential rounds. If candidates exceed the batch cap, verify in RECENCY-ORDERED CHUNKS (moving window) with
+   early exit. W-0 must report the implied verify-cost model (expected forwards/span = f(candidate count, batch
+   cap, recency-hit rate)); W-1 implements batched verify natively in the FLARE loop (sync-scheduler compatible —
+   the m canvases are independent, no cross-request state).
+
+These compose with the W-0 extra readouts already pinned (clamped-trace in-window coverage; ambiguity vs context
+depth): recency-first is the designed MITIGATION for the large-context ambiguity risk — W-0 measures whether it
+suffices (false-accept 0 bar unchanged).
