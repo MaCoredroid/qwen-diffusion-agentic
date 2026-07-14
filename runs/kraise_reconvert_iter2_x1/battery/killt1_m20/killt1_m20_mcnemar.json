@@ -1,0 +1,42 @@
+{
+  "n_paired_turns": 63,
+  "only_in_pre": [],
+  "only_in_post": [],
+  "gold_sha256_mismatch_count": 0,
+  "gold_sha256_mismatch_keys": [],
+  "anchor_exact_args": 49,
+  "pre_sft": {
+    "exact_args": "49/63",
+    "valid_tool_call": "63/63",
+    "episode_exact": "13/20"
+  },
+  "post_sft": {
+    "exact_args": "50/63",
+    "valid_tool_call": "62/63",
+    "episode_exact": "14/20"
+  },
+  "mcnemar": {
+    "b_pre_right_post_wrong": 0,
+    "c_post_right_pre_wrong": 1,
+    "net_loss_b_minus_c": -1,
+    "p_two_sided_exact": 1.0
+  },
+  "erosion_profile": {
+    "eroded_turns_pre_right_post_wrong": [],
+    "gained_turns_post_right_pre_wrong": [
+      "heldout_seed_run1clean_0031#t1"
+    ]
+  },
+  "gates": {
+    "raw_post_ge_anchor_minus_3": {
+      "value": 50,
+      "bar": 46,
+      "PASS": true
+    },
+    "mcnemar_netloss_not_significant_p_ge_0.05": {
+      "p": 1.0,
+      "PASS": true
+    }
+  },
+  "VERDICT": "PASS"
+}
