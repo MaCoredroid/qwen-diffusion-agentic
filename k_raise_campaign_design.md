@@ -2650,6 +2650,54 @@ router, ships at AR-read quality today). All within budget; C46 loop now ~3h.
 
 ---
 
+## STATUS(2026-07-14) — X.2 BUILD + LAUNCH: AR-self-distillation conversion **LAUNCHED** (KL-instrumented, conservative weight, detached-caged)
+
+The X.1 lesson made binding. X.1 was KILLED because a NARROW 5× read-arg weight patched grounding but distorted the
+broad policy (loop-halts 14→34) with KL UNINSTRUMENTED. X.2 fixes BOTH failure modes and is now training.
+
+**PHASE DATA — deterministic AR-self-distillation targets (booted the same-weights AR teacher ONCE).**
+Booted `models/qwen3.5-9b-fastdllm-mswe-S-iter2-vllm-bf16` under `DECODE_POLICY=careful_live_grammar` (the native
+AR path = the 12/48 policy), generated greedy (temp 0, deterministic) read-arg values over the KEEPER pool's
+read-phase states, tore the server down (GPU idle 385 MiB at exit). Instrument: `runs/x2_ar_target_gen.sh` +
+`scripts/x2_gen_client.py` (token-id-prefix /v1/completions, each prefix ends exactly at the `<parameter=limit|offset>`
+marker — the read-phase state the arg is derived from). **1568/1568 targets, 0 errors** (813 limit + 755 offset).
+- **Leakage (HARD-asserted, `scripts/x2_ar_self_distill.py requests`):** source = keeper `train_swe_sft_windowed`
+  (383 episodes, teacher stock-9b-ar/opus, SWE-Gym+Verified). Reconstructed the 113-id eval holdout byte-identically;
+  **sha256 == pinned c56f473a**; **0 keeper episodes in the holdout**; **8 episodes RESERVED (disjoint) for the KL
+  probe** and excluded from training. Re-asserted on the assembled dataset (0 used-eps in holdout).
+- **Dataset (`data/swe_x2_ar_distill_mix/x2_train.json`, sha 1428d5ec, gitignored):** X.1(b)-style read-arg-centered
+  windows with the keeper's own value REPLACED by the AR-self-distilled value (splice; keeper file_path + structure
+  kept; read turn stays K=1 sequential supervised). 1568 slots → 4656 (3× hi-ctx oversample) + 102 keeper general
+  retention tiles = **4758 instances, max_len 2048**. **The on-policy evidence: 969/1568 (62%) AR targets DIFFER
+  from the keeper value** — X.2 is genuinely distilling the model's OWN conditional, not X.1 relabeled.
+
+**PHASE LAUNCH — the distillation conversion (`runs/x2_conversion_runner.sh`, pid ALIVE, setsid-detached, caged).**
+- **Conservative weight (NOT 5×):** `FASTDLLM_READ_WINDOW_ARG_LOSS_WEIGHT=2.0` == the standard O2 derived-value
+  weight; the X.1 5.0 narrow up-weight is DROPPED. The lever is the on-policy target, not the weight. Values stay
+  always-sequential (VALUE_SPAN 2.0, MASK_PROB 0.0). Confirmed live: the read-window loss hook fires every step
+  (`read_window_weight=2.0`, 5–29 read-window tokens/step).
+- **MANDATORY KL INSTRUMENTATION (the piece X.1 omitted):** single-GPU realized the proven s2_pilot way — bit-exact
+  segmented training (`FASTDLLM_STOP_AT_STEP` fixed-HORIZON=800 + `RESUME_FROM_CHECKPOINT`, cosine schedule identical
+  to a continuous run) so the GPU is FREE between 100-step segments for `scripts/s2_kl_probe.py` (KL-to-base over a
+  HELD non-read probe = the 24 reserved-episode turns; the loop-halt/broad-policy drift detector, NOT the read
+  conditional we intend to move). **HARD TRIP at KL>0.05 → STOP at that checkpoint** (the S2 kit rule that halted A_S2
+  at step 120). Evidence wired: **step-0 sanity KL=0.0** logged (base==base) BEFORE any training; per-checkpoint
+  `[kl]` lines append to `train.log`/`kl_to_base.jsonl`.
+- **Live:** train.log stepping (loss 3.21 @ step 5, ~19.4 s/step, GPU 31.7 GiB/56% — fits at 2048; the 4096 first
+  attempt OOM'd the FLARE 2-stream softmax, so 2048 = what X.1 actually trained on per its .meta). Base
+  `mswe-S-iter2-merged`, seed 81102, LoRA r16/α32.
+- **Honest caveats:** (a) AR targets were conditioned on ≤4096 context but trained in 2048 windows — the read is at
+  the window's right edge and the derivation signal (the immediately-preceding tool_response file-length) is local,
+  so this is a small, named approximation. (b) KL-to-base ≤0.05 remains a guard, not a promotion; the real verdict is
+  the C46 re-gate (bar ≥12/46) after the run + a KILL-T1 matched-20 pre-gate. (c) B-ceiling holds: recovers toward AR
+  12/48, not past.
+- **ETA:** ~4.3h train + ~7 inter-segment KL probes; earlier if the KL trip fires. Artifacts (gitignored):
+  `runs/kraise_reconvert_iter2_x2/{ar_targets.jsonl,x2_kl_probe.json,x2_*_manifest.json,mswe2_S_x2_ardistill_h800_seed81102/}`.
+  **Next dispatch (owed): KILL-T1 matched-20 pre-gate → C46 re-gate on the X.2 twin, with the KL trace read alongside
+  the loop-halt anatomy (the X.1 mechanism check).**
+
+---
+
 # SECTION Y — CONVERSION AS LONG-CONTEXT AR-SELF-DISTILLATION (the principled fix the X.1 kill demands)
 
 Appended 2026-07-14. Same rigor as W/X: pre-registered kills, measured numbers only, one cheap decisive instrument

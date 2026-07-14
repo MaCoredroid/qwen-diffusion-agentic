@@ -1,0 +1,33 @@
+{
+  "spec": "k_raise_campaign_design.md SECTION X.2 (AR-self-distillation, requests phase)",
+  "src": "data/swe_sft_pool/train_swe_sft_windowed.tokenized.jsonl",
+  "max_len": 4096,
+  "holdout_sha256": "c56f473ad31e52bee0f85151562f4e2122e4815dfa3f1b776b15fe121e8d168e",
+  "holdout_n": 113,
+  "leakage_assert_train_eps_in_holdout": 0,
+  "n_keeper_episodes_total": 383,
+  "n_train_episodes": 375,
+  "n_kl_probe_episodes": 8,
+  "kl_probe_episodes": [
+    "django__django-14580",
+    "django__django-16901",
+    "getmoto__moto-5118",
+    "pandas-dev__pandas-48050",
+    "pydantic__pydantic-8567",
+    "pytest-dev__pytest-5809",
+    "sympy__sympy-12481",
+    "sympy__sympy-13372"
+  ],
+  "train_kl_disjoint": true,
+  "total_supervised_read_slots": 1568,
+  "n_generation_requests": 1568,
+  "slot_keys": {
+    "offset": 755,
+    "limit": 813
+  },
+  "readarg_depth_min": 194,
+  "readarg_depth_med": 4083,
+  "readarg_depth_max": 4085,
+  "gen_requests": "runs/kraise_reconvert_iter2_x2/gen_requests.jsonl",
+  "gen_prefixes": "runs/kraise_reconvert_iter2_x2/gen_prefixes.jsonl"
+}

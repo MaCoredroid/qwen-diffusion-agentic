@@ -1,0 +1,29 @@
+{
+  "spec": "k_raise_campaign_design.md SECTION X.2 AR-self-distillation (assemble phase)",
+  "objective": "read_file limit/offset value slots carry the SAME-WEIGHTS AR teacher's greedy value (on-policy, deterministic); keeper structure/file_path kept; read turn stays K=1 sequential supervised.",
+  "distill_weight_note": "READ_WINDOW_ARG loss weight = 2.0 (== O2 standard derived-value weight); X.1 used 5.0 (narrow high-weight patch) \u2014 dropped per the X.1 lesson. The lever is the on-policy target, not the weight.",
+  "src": "data/swe_sft_pool/train_swe_sft_windowed.tokenized.jsonl",
+  "out_json": "data/swe_x2_ar_distill_mix/x2_train.json",
+  "out_json_sha256": "1428d5ecb8de2c5bdeea46ca4f9a003b69bc39cfaa035af44a4d90f03ed71d7e",
+  "max_len": 2048,
+  "hictx": 2048,
+  "oversample": 3,
+  "general_frac": 0.25,
+  "holdout_sha256": "c56f473ad31e52bee0f85151562f4e2122e4815dfa3f1b776b15fe121e8d168e",
+  "leakage_used_eps_in_holdout": 0,
+  "n_train_episodes_used": 220,
+  "n_read_slots_ok": 1568,
+  "n_read_windows_after_oversample": 4656,
+  "n_general_tiles": 102,
+  "total_instances": 4758,
+  "drops": {
+    "no_generation": 0,
+    "parse_fail": 0,
+    "unbounded": 0
+  },
+  "ar_target_equals_keeper_value": 599,
+  "ar_target_differs_from_keeper": 969,
+  "instance_len_min": 207,
+  "instance_len_med": 2048,
+  "instance_len_max": 2048
+}
