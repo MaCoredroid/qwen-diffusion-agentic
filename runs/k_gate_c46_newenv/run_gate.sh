@@ -131,6 +131,13 @@ echo "[gate] preflight clear ${u}MiB $(stamp)"
 status "twin gate-ON+clamp diffusion arm (W-2 causal draft-verify, clamp=100, gmu0.74 c=$C, cap 75) $(stamp)"
 run_arm diffusion run_arm_twin.sh; TWIN_RC=$?
 echo "[gate] twin arm rc=$TWIN_RC $(stamp)"
+# PERMANENT DORMANCY GUARD (RUNG W-2b): fail-closed if the arm aborted because the
+# copy draft-verify fired zero spans across episode 1 (a byte-identical placebo of
+# the banked gate-OFF twin). Never score / bank a dormant-gate run.
+if [[ -f "$ROOT/DORMANT_GATE.txt" ]]; then
+  status "ABORT: DORMANT_GATE — copy verify fired no spans in episode 1 (placebo run prevented) $(stamp)"
+  echo "[state] DORMANT_GATE $(cat "$ROOT/DORMANT_GATE.txt")"; exit 8
+fi
 DPRED="$ROOT/diffusion/predictions.jsonl"
 [[ ! -s "$DPRED" ]] && { status "ANOMALY twin predictions missing/empty $(stamp)"; exit 2; }
 sleep 5

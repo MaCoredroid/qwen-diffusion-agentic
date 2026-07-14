@@ -1,0 +1,44 @@
+{
+ "temp": 0.6,
+ "seed": 20260714,
+ "bit_identity": {
+  "recert": "30/30",
+  "recert_mismatches": [],
+  "fa": "12/12",
+  "fa_mismatches": [],
+  "VERDICT": "BIT-IDENTICAL"
+ },
+ "reproducibility": {
+  "recert_off": "6/6",
+  "recert_on": "6/6"
+ },
+ "exact_vs_gold": {
+  "recert_off": "30/30",
+  "recert_on": "30/30",
+  "fa_off": "0/12",
+  "fa_on": "0/12"
+ },
+ "fa_battery": {
+  "correct_resolution": "12/12",
+  "false_accepts": 0
+ },
+ "w1_counters_live": {
+  "on": "True",
+  "spans": 138,
+  "toks": 2905,
+  "vfwd": 138,
+  "rej": 10,
+  "arej": 0
+ },
+ "w1_dormancy_fixed": true,
+ "arej_zero": true,
+ "tok_per_fwd": {
+  "gate_off": 1.171,
+  "gate_on": 4.513,
+  "forwards_off": 3936,
+  "forwards_on": 1021,
+  "gen_off": 4608,
+  "gen_on": 4608,
+  "forward_speedup_off_over_on": 3.855
+ }
+}

@@ -60,8 +60,9 @@ monlog="$OUTBASE/logs/${ARM}_monitor.log"
 gpu_used()  { nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | head -1 | tr -d ' '; }
 gpu_capps() { nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null | grep -c . ; }
 
-ACTIVE_SCOPE=""; MONPID=""
+ACTIVE_SCOPE=""; MONPID=""; DORMPID=""
 cleanup() {
+  [[ -n "$DORMPID" ]] && kill "$DORMPID" 2>/dev/null || true
   [[ -n "$MONPID" ]] && kill "$MONPID" 2>/dev/null || true
   pkill -TERM -f "run_swe_bench_qwen_code.py .*${OUTBASE}/${ARM}" 2>/dev/null || true
   if [[ -n "$ACTIVE_SCOPE" ]]; then
@@ -219,9 +220,50 @@ print(','.join(p['instance_ids']), p['$PROXY_PORT_KEY'], p['base_seed'])")
   sleep 3
 done
 
+# ---- PERMANENT DORMANCY PREFLIGHT (RUNG W-2b) --------------------------------
+# After the FIRST episode completes, assert the copy draft-verify actually FIRED
+# (cumulative w1 spans>0 in the server log). A dormant gate (spans=0) means this
+# run would decode byte-identically to the banked gate-OFF twin -- a structurally
+# NULL placebo -- so ABORT rather than burn the full 48-episode GPU budget on it
+# (dc585bf burned eps 1-3 discovering exactly this). The W-2b engine fires the
+# verify at ANY temperature; if this ever trips again the cause is upstream (gate
+# booted OFF / env), never the removed temp==0 short-circuit.
+dormancy_watch() {
+  local dl=$((SECONDS+2400))
+  while :; do
+    local eps
+    eps=$(find "$OUTBASE/$ARM" -path '*/verified/per_task/*/runner_metadata.json' 2>/dev/null | wc -l)
+    if [[ "$eps" -ge 1 ]]; then
+      local spans
+      spans=$(grep -oE 'w1\[on=True spans=[0-9]+' "$slog" 2>/dev/null | grep -oE '[0-9]+$' | sort -n | tail -1)
+      spans=${spans:-0}
+      if [[ "$spans" -gt 0 ]]; then
+        echo "[state] DORMANT_PREFLIGHT_PASS spans=$spans after eps=$eps $(date -u +%FT%TZ)" >&2
+      else
+        echo "[state] DORMANT_GATE spans=0 after eps=$eps -- aborting placebo run $(date -u +%FT%TZ)" >&2
+        echo "DORMANT_GATE eps=$eps spans=0 $(date -u +%FT%TZ)" > "$OUTBASE/DORMANT_GATE.txt"
+        pkill -TERM -f "run_swe_bench_qwen_code.py .*${OUTBASE}/${ARM}" 2>/dev/null || true
+        systemctl --user stop "${SCOPE}.scope" 2>/dev/null || true
+      fi
+      return
+    fi
+    [[ $SECONDS -gt $dl ]] && { echo "[state] DORMANT_PREFLIGHT TIMEOUT no episode after 2400s $(date -u +%FT%TZ)" >&2; return; }
+    sleep 15
+  done
+}
+dormancy_watch & DORMPID=$!
+
 echo "[$ARM] waiting on ${#PIDS[@]} shards: ${PIDS[*]}" >&2
 rc_all=0
 for pid in "${PIDS[@]}"; do wait "$pid" || rc_all=$?; done
+[[ -n "$DORMPID" ]] && kill "$DORMPID" 2>/dev/null || true; DORMPID=""
+if [[ -f "$OUTBASE/DORMANT_GATE.txt" ]]; then
+  echo "[$ARM] ABORT DORMANT_GATE -- copy verify fired zero spans across episode 1; not a valid gate-ON run" >&2
+  T_END=$(date +%s)
+  printf '{"arm":"%s","concurrency":%s,"clamp":%s,"wall_start_epoch":%s,"wall_end_epoch":%s,"wall_seconds":%s,"aborted":"DORMANT_GATE"}\n' \
+    "$ARM" "$C" "$CLAMP" "$T_START" "$T_END" "$((T_END-T_START))" > "$OUTBASE/$ARM/arm_timing.json"
+  exit 8
+fi
 T_END=$(date +%s)
 echo "[$ARM] all shards done rc_all=$rc_all $(date -u +%FT%TZ)" >&2
 printf '{"arm":"%s","concurrency":%s,"clamp":%s,"wall_start_epoch":%s,"wall_end_epoch":%s,"wall_seconds":%s}\n' \
