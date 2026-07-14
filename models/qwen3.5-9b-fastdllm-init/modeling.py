@@ -1903,27 +1903,68 @@ class Fast_dLLM_Qwen3_5ForCausalLM(Fast_dLLM_Qwen3_5PreTrainedModel, GenerationM
             return None
         return value_spans & (labels != -100)
 
+    def _read_window_arg_loss_weight(self):
+        # X.1(a) READ_WINDOW_ARG (k_raise_campaign_design.md SECTION X.1). Default 1.0 -> strict
+        # no-op: the plain conversion path never sets this env and is byte-identical.
+        raw = os.environ.get("FASTDLLM_READ_WINDOW_ARG_LOSS_WEIGHT", "1.0")
+        try:
+            w = float(raw)
+        except ValueError as exc:
+            raise ValueError(f"Invalid FASTDLLM_READ_WINDOW_ARG_LOSS_WEIGHT={raw!r}") from exc
+        if w <= 0:
+            raise ValueError("FASTDLLM_READ_WINDOW_ARG_LOSS_WEIGHT must be positive")
+        return w
+
+    def _read_window_arg_active_mask(self, labels):
+        # env-gated hook like scripts/v1_copy_span_infill.py: ALL X.1(a) detection logic lives in
+        # scripts/x1_read_window_arg_loss.py; this method only imports+calls it (cached).
+        fn = getattr(self, "_x1_read_window_fn", None)
+        if fn is None:
+            import sys as _sys
+            import importlib as _il
+            _d = os.path.join(os.environ.get("QWEN_DIFFUSION_ROOT", "/home/mark/qwen_diffusion"), "scripts")
+            if _d not in _sys.path:
+                _sys.path.insert(0, _d)
+            # importlib (not a literal `import x1_...`) so HF check_imports does not treat the
+            # local X.1 module as a pip package while statically scanning this modeling file.
+            fn = _il.import_module("x1_read_window_arg_loss").read_window_active_mask
+            self._x1_read_window_fn = fn
+        return fn(labels)
+
     def _argument_span_loss_weights(self, labels):
         weight, _, _ = self._argument_span_loss_settings()
         value_span_weight, value_span_token_ids = self._value_span_loss_settings()
+        read_window_weight = self._read_window_arg_loss_weight()
         needs_argument_span = weight != 1.0
         needs_value_span = value_span_weight != 1.0 and bool(value_span_token_ids)
-        if not needs_argument_span and not needs_value_span:
+        needs_read_window = read_window_weight != 1.0
+        if not needs_argument_span and not needs_value_span and not needs_read_window:
             return None
 
         active_spans = self._argument_span_active_mask(labels)
-        if active_spans is None:
+        if active_spans is None and not needs_read_window:
             return None
         loss_weights = torch.ones(labels.shape, device=labels.device, dtype=torch.float32)
-        if needs_argument_span:
-            loss_weights = torch.where(active_spans, torch.full_like(loss_weights, weight), loss_weights)
-        if needs_value_span:
-            value_span_ids = torch.tensor(value_span_token_ids, device=labels.device, dtype=labels.dtype)
-            value_span = torch.isin(labels, value_span_ids) & active_spans
-            value_span_weights = torch.full_like(loss_weights, value_span_weight)
-            loss_weights = torch.where(value_span, torch.maximum(loss_weights, value_span_weights), loss_weights)
+        if active_spans is not None:
+            if needs_argument_span:
+                loss_weights = torch.where(active_spans, torch.full_like(loss_weights, weight), loss_weights)
+            if needs_value_span:
+                value_span_ids = torch.tensor(value_span_token_ids, device=labels.device, dtype=labels.dtype)
+                value_span = torch.isin(labels, value_span_ids) & active_spans
+                value_span_weights = torch.full_like(loss_weights, value_span_weight)
+                loss_weights = torch.where(value_span, torch.maximum(loss_weights, value_span_weights), loss_weights)
+            else:
+                value_span = torch.zeros_like(active_spans)
         else:
-            value_span = torch.zeros_like(active_spans)
+            value_span = torch.zeros(labels.shape, device=labels.device, dtype=torch.bool)
+
+        # X.1(a) READ_WINDOW_ARG: upweight read_file limit/offset value CE on THIS class only
+        # (derived, stays K=1 sequential). No-op unless FASTDLLM_READ_WINDOW_ARG_LOSS_WEIGHT != 1.0.
+        read_window = torch.zeros(labels.shape, device=labels.device, dtype=torch.bool)
+        if needs_read_window:
+            read_window = self._read_window_arg_active_mask(labels)
+            rw_weights = torch.full_like(loss_weights, read_window_weight)
+            loss_weights = torch.where(read_window, torch.maximum(loss_weights, rw_weights), loss_weights)
 
         debug_limit = int(os.environ.get("FASTDLLM_DEBUG_ARGUMENT_SPAN_LOSS", "0") or 0)
         debug_calls = getattr(self, "_debug_argument_span_loss_calls", 0)
@@ -1933,9 +1974,11 @@ class Fast_dLLM_Qwen3_5ForCausalLM(Fast_dLLM_Qwen3_5PreTrainedModel, GenerationM
                 "[fastdllm-qwen35-debug] argument_span_loss "
                 f"weight={weight} start_ids={len(start_ids)} end_ids={len(end_ids)} "
                 f"value_span_weight={value_span_weight} value_span_ids={len(value_span_token_ids)} "
+                f"read_window_weight={read_window_weight} "
                 f"valid={int((labels != -100).sum().detach().cpu())} "
-                f"argument_span={int(active_spans.sum().detach().cpu())} "
-                f"value_span={int(value_span.sum().detach().cpu())}",
+                f"argument_span={int(active_spans.sum().detach().cpu()) if active_spans is not None else 0} "
+                f"value_span={int(value_span.sum().detach().cpu())} "
+                f"read_window={int(read_window.sum().detach().cpu())}",
                 flush=True,
             )
             self._debug_argument_span_loss_calls = debug_calls + 1
