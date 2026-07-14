@@ -2632,3 +2632,18 @@ spent before this finisher.
 **Next dispatch:** the full X.1 pipeline (windowed-retrain unchanged; X.1 conversion of the primary; C46 re-gate) —
 PROCEED per the pre-registered rule. Artifacts (gitignored): `runs/kraise_reconvert_iter2_x1/battery/{x1twin,baseK1,
 x1ar,killt1,x1ckpt600}.json`; export `models/qwen3.5-9b-fastdllm-mswe2-S-x1-vllm-bf16`.
+
+---
+
+## STATUS(2026-07-14) — X.1 C46 GATE: **1/48 — MISS. Grounding fixed (ctx deaths 26→18) but failure mass MOVED to loop-halts (14→34)**
+
+runs/k_gate_c46_x1/ (identical newenv config, model-only delta; KILL-T1 pre-gate 50/63 PASS; arej=0; tok/fwd 1.89,
+wall/ep 190.6s — fastest twin run). vs newenv twin 3/48: net −2, p=0.625 (a wash, not a significant regression);
+vs AR 12/48: p=0.001. MECHANISM: the X.1 fix did its job (grounded reads → fewer walls, faster episodes) but
+loop-halts exploded 14→34 (71% of episodes), committed edits 22→16 — the 800-step 5×-weight read-heavy curriculum
+patched grounding while distorting the broader policy. KL was NOT instrumented (the rule's own uninstrumented
+clause) — drift is the prime suspect. LESSON: narrow behavioral patches at high weight trade pathologies; the
+principled fix targets the WHOLE deficient conditional. X.1-as-designed: KILLED at the gate. Decision fork (user):
+X.1b (re-dose: low weight, KL-guarded, mixed curriculum), X.2 (AR-self-distillation of the full read-phase
+conditional — deterministic targets from the 12/48 AR policy; the X.1 lesson strengthens this), X.3 (AR-assist
+router, ships at AR-read quality today). All within budget; C46 loop now ~3h.
