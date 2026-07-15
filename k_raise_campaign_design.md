@@ -2972,3 +2972,27 @@ Both X.1/X.2 lessons are hard-wired. X.2 was KILLED (KILL-T1 49→0/63, loop can
   - **KILL-T1 matched-20 exact_args CANARY** (`eval_flare_northstar_hybrid_clean.py` diffusion hybrid_clean + `swe_sft_arm1_anchor_mcnemar.py` vs the banked 49/63 anchor) → **net-loss > 3 → STOP at the PRIOR checkpoint** (binding lesson 2, the guard KL missed in X.2). The 8-ep loop canary stays the finisher's post-training gate (binding lesson 4).
 - **Step-0 sanity fired BEFORE training (both instruments proven wired):** KL base==base = **0.0** (all 16 probes); KILL-T1 base offline-diffusion decode = **0/63, net-loss 49** vs the AR-49 anchor. This is the EXPECTED unconverted-base floor — `mswe-S-iter2-merged` with NO conversion adapter is the AR-SFT model, OOD through the hybrid_clean diffusion decoder (the X.2 "merge/decode-path divergence"); the runner logged the NOTE and proceeded (step-0 is a reference, not a gate). So the canary measures whether Y's conversion checkpoints EMIT FULL MULTI-PARAM tool calls (approach 49) or collapse to ~0 like X.2 — Y trains every tool-call region ALWAYS, so it should emit params; a checkpoint that stays ~0/63 (net-loss >3) trips and stops at the prior checkpoint (the X.2-collapse detector). First distill+denoise training steps confirmed stepping (step 5: distill_loss 0.086 + denoise L_diff 3.54 both healthy, peak 30.47 GiB, ~38 s/step).
 - **Dose (Y.3):** HORIZON **400** cosine, LR 1e-5, seed 71201, screens at 100/200/300/400 (X.2 grounding saturates ~200–300; both guards halt earlier on drift; cosine fully decays at 400). ETA ~5–6 GPU-h (~4h train + 4 canaries + KL probes), server/GPU released between segments. Artifacts (gitignored): `runs/kraise_reconvert_iter2_y/{y_targets_manifest.json,y_kl_probe.json,mswe2_S_y_ardistill_h400_seed71201/,canary/}`. **Next dispatch (finisher): promote-target selection from the screen (best pre-trip checkpoint) → export to vllm-bf16 → 8-ep loop canary + N=64 read battery + C46 re-gate (≥12/48) + the R2 W-2 draft-verify battery (arej=0, tok/fwd not regressed — the denoise-preservation check, Y.5 risk-1).**
+
+---
+
+## STATUS(2026-07-15) — Y LADDER VERDICT: **STOP at the loop canary** — the four-variant pattern names a mechanism
+
+Y battery: grounding base 0.509 → ckpt100 0.559 → ckpt200 0.766 → AR 1.000. KILL-T1: ckpt100 47/63 (net-loss 2,
+PASS), ckpt200 **0/63** (the X.2 cliff, crossed between steps 100–200 at mean-KL 0.025→0.0505 — 4th demonstration
+that mean-KL is a weak proxy even WITH tool-call probe coverage). Loop canary on ckpt100: **7/8 loop-halts (bar
+≤3/8) FAIL**; ctx-deaths 1/8 (was 6/8 — grounding+clamp mechanically effective); committal 4/8; resolved 0/8.
+
+**THE FOUR-VARIANT TABLE (the campaign's central empirical result):**
+| variant | grounding | KILL-T1 | loops |
+|---|---|---|---|
+| X.1 (5.0 narrow) | 1.000 | 50/63 | 34/48 EXPLODED |
+| X.2 ckpt200 (2.0 narrow) | 0.872 | 0/63 COLLAPSED | 6/8 |
+| Y ckpt200 (1.0 balanced) | 0.766 | 0/63 COLLAPSED | — |
+| Y ckpt100 (1.0 balanced) | 0.559 | 47/63 HELD | 7/8 FAIL |
+
+**MECHANISM HYPOTHESIS (pre-registered, testable):** distilling AR-GREEDY targets is mode-seeking — it SHARPENS
+the twin's conditional. Sharpening explains BOTH observed effects at once: exactness/grounding improves (sharper
+= more exact) AND serve-time repetition increases at temp 0.6 (sharper = lower entropy = repeated identical calls
+→ the qwen-code loop detector fires). Prediction: ckpt100's decode entropy on probe turns is measurably below
+base twin's. If confirmed → Y-v2 = distill TEMPERATURE-MATCHED SAMPLED targets (entropy-preserving), not greedy.
+Entropy probe (~0.5 GPU-h) dispatched; the Y-v2-vs-alternatives decision escalates to the user with the probe.
